@@ -18,6 +18,7 @@ namespace LightningGE
 			default:
 				return DefWindowProc(hwnd, uMsg, wParam, lParam);
 			}
+			return 0;
 		}
 
 		WinWindow::WinWindow():m_hWnd(nullptr), m_Caption("Lightning Win32 Window")
@@ -51,7 +52,7 @@ namespace LightningGE
 			wndcls.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 			wndcls.lpszMenuName = NULL;
 			wndcls.lpszClassName = s_WindowClassName;
-			wndcls.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
+			wndcls.hIconSm = (HICON)LoadIcon(hInstance, IDI_APPLICATION);
 
 			if (!RegisterClassEx(&wndcls))
 			{

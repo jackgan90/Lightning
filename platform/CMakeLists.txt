@@ -6,6 +6,8 @@ set(WINDOW_SYSTEM_HEADERS	iwindow.h
 set(WINDOW_SYSTEM_SOURCES	winwindow.cpp
 							windowmanager.cpp)
 
+set(PROJECT_COMPILE_FLAGS "/wd4251")
+
 source_group("window" FILES 
 			${WINDOW_SYSTEM_HEADERS}
 			${WINDOW_SYSTEM_SOURCES})
@@ -21,4 +23,6 @@ set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 include_directories(../foundation)
 add_library(${PROJECT_NAME} SHARED ${WINDOW_SYSTEM_HEADERS} ${WINDOW_SYSTEM_SOURCES})
 add_dependencies(${PROJECT_NAME} foundation)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${PROJECT_COMPILE_FLAGS})
 
