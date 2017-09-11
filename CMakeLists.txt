@@ -1,0 +1,11 @@
+cmake_minimum_required(VERSION 2.8)
+
+project(LightningGE)
+
+set(SOURCE_FILES entry.cpp)
+
+set(LIGHTNINGGE_LINKER_FLAGS "/MD")
+
+set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${LIGHTNINGGE_LINKER_FLAGS})
+
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
