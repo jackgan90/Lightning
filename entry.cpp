@@ -1,13 +1,11 @@
-#include <iostream>
-#include <cstdlib>
 #include "platform\iwindow.h"
 #include "platform\windowmanager.h"
+#include "logger.h"
 #ifdef LIGHTNINGGE_WIN32
 #include <Windows.h>
 #endif
 
 
-using namespace std;
 using namespace LightningGE::WindowSystem;
 #ifdef _MSC_VER
 int APIENTRY WinMain(HINSTANCE hInstance,
@@ -16,7 +14,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 					 int       nCmdShow)
 #endif
 {
-	cout << "This is LightingGE entry." << endl;
+	Logger logger;
+	logger.Log(Info, "This is LightingGE entry.");
 	auto pWindow = WindowManager::Instance()->MakeWindow();
 	pWindow->Init();
 	pWindow->Show(true);
