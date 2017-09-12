@@ -14,8 +14,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 					 int       nCmdShow)
 #endif
 {
-	Logger logger;
-	logger.Log(Info, "This is LightingGE entry.");
+	LightningGE::Utility::Logger logger;
+	logger.Log(LightningGE::Utility::Info, "This is LightingGE entry.");
 	auto pWindow = WindowManager::Instance()->MakeWindow();
 	pWindow->Init();
 	pWindow->Show(true);

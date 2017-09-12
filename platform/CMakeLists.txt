@@ -23,7 +23,7 @@ endif()
 
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 
-include_directories(../foundation)
+include_directories("../foundation" "../utilities")
 add_library(${PROJECT_NAME} SHARED ${WINDOW_SYSTEM_HEADERS} ${WINDOW_SYSTEM_SOURCES})
 add_dependencies(${PROJECT_NAME} foundation)
 

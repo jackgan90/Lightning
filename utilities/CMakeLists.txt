@@ -22,3 +22,5 @@ endif()
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${PROJECT_COMPILE_FLAGS})
+add_dependencies(${PROJECT_NAME} foundation)
+target_link_libraries(${PROJECT_NAME} "foundation")
