@@ -8,17 +8,20 @@ set(LOGGING_DIRECTORY logging)
 set(LOGGING_HEADERS ${LOGGING_DIRECTORY}/logger.h)
 set(LOGGING_SOURCES ${LOGGING_DIRECTORY}/logger.cpp)
 
+set(HEADERS utilitiesexportdef.h)
+
 list(APPEND HEADERS ${LOGGING_HEADERS})
 list(APPEND SOURCES ${LOGGING_SOURCES})
 
 source_group("logging" FILES ${LOGGING_HEADERS}
 							 ${LOGGING_SOURCES})
 
-include_directories(../foundation)
+include_directories("../foundation" ".")
 
-if(WIN32)
+if (WIN32)
 	set(PROJECT_COMPILE_FLAGS "/wd4251")
 endif()
+define_dll_export_macro(UTILITIES)
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${PROJECT_COMPILE_FLAGS})

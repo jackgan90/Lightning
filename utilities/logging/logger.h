@@ -1,14 +1,13 @@
 #pragma once
 #include <string>
 #include <fstream>
-#include "common.h"
 #include "timesystem.h"
+#include "utilitiesexportdef.h"
 
 namespace LightningGE
 {
 	namespace Utility
 	{
-		const char* LogFileName = "log.txt";
 		enum LogLevel
 		{
 			Debug,
@@ -17,7 +16,7 @@ namespace LightningGE
 			Error
 		};
 
-		class DLLEXPORT Logger
+		class LIGHTNINGGE_UTILITIES_API Logger
 		{
 		public:
 			Logger();
@@ -35,6 +34,6 @@ namespace LightningGE
 			std::string LogLevelToPrefix(LogLevel level)const;
 			std::fstream m_fs;
 		};
-		Logger logger;
+		LIGHTNINGGE_UTILITIES_API Logger logger;
 	}
 }

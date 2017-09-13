@@ -1,12 +1,12 @@
 #pragma once
 #include <memory>
-#include "common.h"
+#include "platformexportdef.h"
 
 namespace LightningGE
 {
 	namespace WindowSystem
 	{
-		class DLLEXPORT IWindow
+		class LIGHTNINGGE_PLATFORM_API IWindow
 		{
 		public:
 			friend class WindowManager;

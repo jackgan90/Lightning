@@ -1,10 +1,24 @@
 project(platform)
 
-set(WINDOW_SYSTEM_HEADERS	iwindow.h
-							winwindow.h
-							windowmanager.h)
-set(WINDOW_SYSTEM_SOURCES	winwindow.cpp
-							windowmanager.cpp)
+set(WINDOW_SUBSYSTEM_DIR "window")
+set(APPLICATION_SUBSYSTEM_DIR "application")
+
+set(WINDOW_SYSTEM_HEADERS	${WINDOW_SUBSYSTEM_DIR}/iwindow.h
+							${WINDOW_SUBSYSTEM_DIR}/windowmanager.h)
+
+set(WINDOW_SYSTEM_SOURCES	${WINDOW_SUBSYSTEM_DIR}/winwindow.cpp
+							${WINDOW_SUBSYSTEM_DIR}/windowmanager.cpp)
+
+
+set(APPLICATION_HEADERS		${APPLICATION_SUBSYSTEM_DIR}/iapplication.h)
+set(APPLICATION_SOURCES		${APPLICATION_SUBSYSTEM_DIR}/application.cpp)
+
+if(WIN32)
+	list(APPEND WINDOW_SYSTEM_HEADERS ${WINDOW_SUBSYSTEM_DIR}/winwindow.h)
+	list(APPEND WINDOW_SYSTEM_HEADERS ${WINDOW_SUBSYSTEM_DIR}/winwindow.cpp)
+	list(APPEND APPLICATION_HEADERS ${APPLICATION_SUBSYSTEM_DIR}/win32application.h)
+	list(APPEND APPLICATION_SOURCES ${APPLICATION_SUBSYSTEM_DIR}/win32application.cpp)
+endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
@@ -17,16 +31,25 @@ source_group("window" FILES
 			${WINDOW_SYSTEM_HEADERS}
 			${WINDOW_SYSTEM_SOURCES})
 
+source_group("application" FILES 
+			${APPLICATION_HEADERS}
+			${APPLICATION_SOURCES})
+
+set(HEADERS platformexportdef.h)
+list(APPEND HEADERS ${WINDOW_SYSTEM_HEADERS} ${APPLICATION_HEADERS})
+set(SOURCES ${WINDOW_SYSTEM_SOURCES} ${APPLICATION_SOURCES})
+
 if (WIN32)
-	add_definitions("-DLIGHTNINGGE_WIN32")
+	add_definitions(-DLIGHTNINGGE_WIN32)
 endif()
+define_dll_export_macro(PLATFORM)
 
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 
-include_directories("../foundation" "../utilities")
-add_library(${PROJECT_NAME} SHARED ${WINDOW_SYSTEM_HEADERS} ${WINDOW_SYSTEM_SOURCES})
-add_dependencies(${PROJECT_NAME} foundation)
+include_directories("../foundation" "../utilities" ".")
+add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
+add_dependencies(${PROJECT_NAME} foundation utilities)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${PROJECT_COMPILE_FLAGS})
-target_link_libraries(${PROJECT_NAME} "utilities")
+target_link_libraries(${PROJECT_NAME} utilities foundation)
 

@@ -4,7 +4,7 @@ namespace LightningGE
 {
 	namespace Utility
 	{
-
+		const char* LogFileName = "log.txt";
 		using string = std::string;
 
 		Logger::Logger()

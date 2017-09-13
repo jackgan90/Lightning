@@ -22,9 +22,8 @@ namespace LightningGE
 		WindowPtr WindowManager::MakeWindow()
 		{
 		#ifdef LIGHTNINGGE_WIN32
-			WindowPtr pWindow = std::make_shared<WinWindow>(WinWindow());
-			m_windows[m_currentID++] = pWindow;
-			return pWindow;
+			m_windows.insert(std::make_pair(m_currentID++, std::make_shared<WinWindow>()));
+			return m_windows[m_currentID-1];
 		#endif
 			return WindowPtr();
 		}

@@ -1,12 +1,12 @@
 #pragma once
 #include <string>
-#include "common.h"
+#include "foundationexportdef.h"
 
 namespace LightningGE
 {
 	namespace Foundation
 	{
-		class DLLEXPORT Time
+		class LIGHTNINGGE_FOUNDATION_API Time
 		{
 		public:
 			static std::string currentTimeString();

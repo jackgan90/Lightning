@@ -15,8 +15,10 @@ namespace LightningGE
 			switch (uMsg)
 			{
 			case WM_CREATE:
+				logger.Log(LogLevel::Info, "Win32 window created!");
 				break;
 			case WM_DESTROY:
+				logger.Log(LogLevel::Info, "WM_DESTROY received!");
 				PostQuitMessage(0);
 				break;
 			default:
@@ -28,17 +30,22 @@ namespace LightningGE
 		WinWindow::WinWindow():m_hWnd(nullptr), m_Caption("Lightning Win32 Window")
 			,m_width(800), m_height(600)
 		{
-
+			logger.Log(LogLevel::Info, "Win32 window constructed!");
 		}
 
 		WinWindow::~WinWindow()
 		{
-
+			destroy();
+			logger.Log(LogLevel::Info, "Win32 window destructed!");
 		}
 
 		void WinWindow::destroy()
 		{
-
+			if (m_hWnd)
+			{
+				::DestroyWindow(m_hWnd);
+				m_hWnd = nullptr;
+			}
 		}
 
 		bool WinWindow::Init()
