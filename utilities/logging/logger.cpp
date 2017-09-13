@@ -1,7 +1,5 @@
 #include "logger.h"
-#include "timesystem.h"
 
-using Time = LightningGE::Foundation::Time;
 namespace LightningGE
 {
 	namespace Utility
@@ -18,13 +16,6 @@ namespace LightningGE
 		{
 			m_fs.flush();
 			m_fs.close();
-		}
-
-		void Logger::Log(LogLevel level, string text)
-		{
-			auto prefix = LogLevelToPrefix(level);
-			auto timeStr = Time::currentTimeString();
-			m_fs << timeStr << " " << prefix << " " << text;
 		}
 
 		string Logger::LogLevelToPrefix(LogLevel level)const

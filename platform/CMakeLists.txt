@@ -28,4 +28,5 @@ add_library(${PROJECT_NAME} SHARED ${WINDOW_SYSTEM_HEADERS} ${WINDOW_SYSTEM_SOUR
 add_dependencies(${PROJECT_NAME} foundation)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${PROJECT_COMPILE_FLAGS})
+target_link_libraries(${PROJECT_NAME} "utilities")
 

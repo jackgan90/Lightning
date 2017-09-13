@@ -1,4 +1,8 @@
 #include "winwindow.h"
+#include "logging\logger.h"
+
+using LightningGE::Utility::logger;
+using LogLevel = LightningGE::Utility::LogLevel;
 
 namespace LightningGE
 {
@@ -40,35 +44,39 @@ namespace LightningGE
 		bool WinWindow::Init()
 		{
 			WNDCLASSEX wndcls;
-			HINSTANCE hInstance = GetModuleHandle(NULL);
+			HINSTANCE hInstance = ::GetModuleHandle(NULL);
 			wndcls.cbSize = sizeof(WNDCLASSEX);
 			wndcls.style = CS_HREDRAW | CS_VREDRAW;
 			wndcls.lpfnWndProc = WndProc;
 			wndcls.cbClsExtra = 0;
 			wndcls.cbWndExtra = 0;
 			wndcls.hInstance = hInstance;
-			wndcls.hIcon = LoadIcon(hInstance, IDI_APPLICATION);
-			wndcls.hCursor = LoadCursor(hInstance, IDC_ARROW);
+			wndcls.hIcon = ::LoadIcon(hInstance, IDI_APPLICATION);
+			wndcls.hCursor = ::LoadCursor(hInstance, IDC_ARROW);
 			wndcls.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 			wndcls.lpszMenuName = NULL;
 			wndcls.lpszClassName = s_WindowClassName;
-			wndcls.hIconSm = (HICON)LoadIcon(hInstance, IDI_APPLICATION);
+			wndcls.hIconSm = (HICON)::LoadIcon(hInstance, IDI_APPLICATION);
 
-			if (!RegisterClassEx(&wndcls))
+			if (!::RegisterClassEx(&wndcls))
 			{
-				//TODO : add log
+				DWORD error = ::GetLastError();
+				logger.Log(LogLevel::Error, "Register window class failed!ErrorCode : 0x%x", error);
 				return false;
 			}
+			logger.Log(LogLevel::Info, "Register window class succeed!");
 
-			m_hWnd = CreateWindow(s_WindowClassName, m_Caption.c_str(), 
+			m_hWnd = ::CreateWindow(s_WindowClassName, m_Caption.c_str(), 
 				WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 
 				m_width, m_height, NULL, NULL, hInstance, NULL);
 
 			if (!m_hWnd)
 			{
-				//TODO : add log
+				DWORD error = ::GetLastError();
+				logger.Log(LogLevel::Error, "Create window failed!ErrorCode : %x", error);
 				return false;
 			}
+			logger.Log(LogLevel::Info, "Create window succeed!");
 			return true;
 		}
 
@@ -79,10 +87,10 @@ namespace LightningGE
 			ShowWindow(m_hWnd, show ? SW_SHOW : SW_HIDE);
 			UpdateWindow(m_hWnd);
 			MSG msg;
-			while (GetMessage(&msg, NULL, 0, 0))
+			while (::GetMessage(&msg, NULL, 0, 0))
 			{
-				TranslateMessage(&msg);
-				DispatchMessage(&msg);
+				::TranslateMessage(&msg);
+				::DispatchMessage(&msg);
 			}
 			return true;
 		}
