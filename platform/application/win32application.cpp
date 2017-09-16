@@ -1,6 +1,6 @@
 #include "win32application.h"
-#include "logging/logger.h"
-#include "../window/windowmanager.h"
+#include "logger.h"
+#include "windowmanager.h"
 
 using LogLevel = LightningGE::Utility::LogLevel;
 using LightningGE::Utility::logger;

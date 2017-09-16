@@ -46,7 +46,7 @@ define_dll_export_macro(PLATFORM)
 
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 
-include_directories("../foundation" "../utilities" ".")
+include_directories("../foundation" "../utilities" "../utilities/logging" "." "window")
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 add_dependencies(${PROJECT_NAME} foundation utilities)
 

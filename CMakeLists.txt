@@ -25,7 +25,7 @@ set(SOURCE_FILES entry.cpp)
 
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${LIGHTNINGGE_LINKER_FLAGS})
 
-include_directories("foundation" "utilities" "platform")
+include_directories("foundation" "utilities" "utilities/logging" "platform" "platform/application")
 add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} foundation utilities platform)
 

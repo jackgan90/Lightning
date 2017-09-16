@@ -1,5 +1,5 @@
 #include "winwindow.h"
-#include "logging\logger.h"
+#include "logger.h"
 
 using LightningGE::Utility::logger;
 using LogLevel = LightningGE::Utility::LogLevel;

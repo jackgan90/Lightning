@@ -1,7 +1,7 @@
 #pragma once
 #include "platformexportdef.h"
 #include "iapplication.h"
-#include "../window/iwindow.h"
+#include "iwindow.h"
 
 namespace LightningGE
 {

@@ -1,5 +1,5 @@
-#include "logging\logger.h" //for logging
-#include "platform\application\iapplication.h" //for application
+#include "logger.h" //for logging
+#include "iapplication.h" //for application
 #ifdef LIGHTNINGGE_WIN32
 #include <Windows.h>	//for WinMain
 #endif
