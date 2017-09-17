@@ -5,10 +5,15 @@ set(CMAKE_MODULE_PATH
 )
 include(helpers)
 
+# options start
+option(LIGHTNINGGE_USE_D3D12 "Enable DirectX 12 renderer." ON)
+# options end
+
 project(LightningGE)
 add_subdirectory(foundation)
 add_subdirectory(platform)
 add_subdirectory(utilities)
+add_subdirectory(renderer)
 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
