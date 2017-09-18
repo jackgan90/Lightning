@@ -1,4 +1,3 @@
 #pragma once
 
-#define DLLEXPORT __declspec(dllexport)
-#define DLLIMPORT __declspec(dllimport)
+#define SMART_POINTER_DYNAMIC_CAST(subclass, smartptr) (dynamic_cast<subclass*>(smartptr.get()))

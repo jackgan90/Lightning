@@ -1,5 +1,6 @@
 #pragma once
 #include <unordered_map>
+#include <vector>
 #include "iwindow.h"
 #include "platformexportdef.h"
 
@@ -16,6 +17,7 @@ namespace LightningGE
 			~WindowManager();
 			WindowPtr MakeWindow();
 			static WindowManager* Instance();
+			std::vector<WindowPtr> GetAllWindows()const;
 		private:
 			WindowManager();
 		private:

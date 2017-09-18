@@ -1,11 +1,14 @@
 #pragma once
 #include <memory>
 #include "platformexportdef.h"
+#include "iwindownativehandle.h"
 
 namespace LightningGE
 {
 	namespace WindowSystem
 	{
+		using WINDOWWIDTH = unsigned int;
+		using WINDOWHEIGHT = unsigned int;
 		class LIGHTNINGGE_PLATFORM_API IWindow
 		{
 		public:
@@ -13,6 +16,9 @@ namespace LightningGE
 			virtual void destroy() = 0;
 			virtual bool Init() = 0;
 			virtual bool Show(bool show) = 0;
+			virtual WINDOWWIDTH GetWidth()const = 0;
+			virtual WINDOWHEIGHT GetHeight()const = 0;
+			virtual const IWindowNativeHandle* GetNativeHandle()const = 0;
 			virtual ~IWindow(){};
 		protected:
 			IWindow() {};

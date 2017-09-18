@@ -28,6 +28,14 @@ namespace LightningGE
 			return WindowPtr();
 		}
 
+		std::vector<WindowPtr> WindowManager::GetAllWindows()const
+		{
+			std::vector<WindowPtr> windows;
+			for (auto w : m_windows)
+				windows.push_back(w.second);
+			return windows;
+		}
+
 		WindowManager::~WindowManager()
 		{
 			for (auto w : m_windows)

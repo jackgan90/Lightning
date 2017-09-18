@@ -1,8 +1,12 @@
+#include "common.h"
+#include "windowmanager.h"
 #include "winwindow.h"
 #include "logger.h"
+#include <vector>
 
 using LightningGE::Utility::logger;
 using LogLevel = LightningGE::Utility::LogLevel;
+using std::vector;
 
 namespace LightningGE
 {
@@ -10,10 +14,35 @@ namespace LightningGE
 	{
 		char* WinWindow::s_WindowClassName = "DefaultWin32Window";
 
+		WinWindow* GetWinWindow(HWND hWnd)
+		{
+			auto windows = WindowManager::Instance()->GetAllWindows();
+			for (auto window : windows)
+			{
+				const IWindowNativeHandle* pHandle = window->GetNativeHandle();
+				if (const WinWindowNativeHandle* pWinHandle = dynamic_cast<const WinWindowNativeHandle*>(pHandle))
+				{
+					if (pWinHandle->OwnWindowsHandle(hWnd))
+						return SMART_POINTER_DYNAMIC_CAST(WinWindow, window);
+				}
+			}
+			return nullptr;
+		}
+
 		LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
+			WinWindow* pWindow = GetWinWindow(hwnd);
 			switch (uMsg)
 			{
+			case WM_SIZE:
+			{
+				RECT rect;
+				::GetClientRect(hwnd, &rect);
+				pWindow->m_width = rect.right - rect.left;
+				pWindow->m_height = rect.bottom - rect.top;
+				//logger.Log(LogLevel::Debug, "window resize.width:%d, height : %d", pWindow->m_width, pWindow->m_height);
+				break;
+			}
 			case WM_CREATE:
 				logger.Log(LogLevel::Info, "Win32 window created!");
 				break;
@@ -27,7 +56,7 @@ namespace LightningGE
 			return 0;
 		}
 
-		WinWindow::WinWindow():m_hWnd(nullptr), m_Caption("Lightning Win32 Window")
+		WinWindow::WinWindow():m_nativeHandle(nullptr), m_Caption("Lightning Win32 Window")
 			,m_width(800), m_height(600)
 		{
 			logger.Log(LogLevel::Info, "Win32 window constructed!");
@@ -41,10 +70,9 @@ namespace LightningGE
 
 		void WinWindow::destroy()
 		{
-			if (m_hWnd)
+			if (m_nativeHandle)
 			{
-				::DestroyWindow(m_hWnd);
-				m_hWnd = nullptr;
+				::DestroyWindow(SMART_POINTER_DYNAMIC_CAST(WinWindowNativeHandle, m_nativeHandle)->m_hWnd);
 			}
 		}
 
@@ -73,26 +101,35 @@ namespace LightningGE
 			}
 			logger.Log(LogLevel::Info, "Register window class succeed!");
 
-			m_hWnd = ::CreateWindow(s_WindowClassName, m_Caption.c_str(), 
+			RECT windowRect;
+			windowRect.left = 0;
+			windowRect.right = m_width;
+			windowRect.top = 0;
+			windowRect.bottom = m_height;
+			::AdjustWindowRectEx(&windowRect, WS_OVERLAPPEDWINDOW, FALSE, NULL);
+			logger.Log(LogLevel::Debug, "Window width:%d, window height:%d", windowRect.right - windowRect.left, windowRect.bottom - windowRect.top);
+			HWND hWnd = ::CreateWindow(s_WindowClassName, m_Caption.c_str(), 
 				WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 
-				m_width, m_height, NULL, NULL, hInstance, NULL);
+				windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, NULL, NULL, hInstance, NULL);
 
-			if (!m_hWnd)
+			if (!hWnd)
 			{
 				DWORD error = ::GetLastError();
 				logger.Log(LogLevel::Error, "Create window failed!ErrorCode : %x", error);
 				return false;
 			}
+			m_nativeHandle = std::make_shared<WinWindowNativeHandle>(hWnd);
 			logger.Log(LogLevel::Info, "Create window succeed!");
 			return true;
 		}
 
 		bool WinWindow::Show(bool show)
 		{
-			if (!m_hWnd)
+			auto hWnd = SMART_POINTER_DYNAMIC_CAST(WinWindowNativeHandle, m_nativeHandle)->m_hWnd;
+			if (!m_nativeHandle || !hWnd)
 				return false;
-			ShowWindow(m_hWnd, show ? SW_SHOW : SW_HIDE);
-			UpdateWindow(m_hWnd);
+			ShowWindow(hWnd, show ? SW_SHOW : SW_HIDE);
+			UpdateWindow(hWnd);
 			MSG msg;
 			while (::GetMessage(&msg, NULL, 0, 0))
 			{
@@ -100,6 +137,21 @@ namespace LightningGE
 				::DispatchMessage(&msg);
 			}
 			return true;
+		}
+
+		WINDOWWIDTH WinWindow::GetWidth()const
+		{
+			return m_width;
+		}
+
+		WINDOWHEIGHT WinWindow::GetHeight()const
+		{
+			return m_height;
+		}
+
+		const IWindowNativeHandle* WinWindow::GetNativeHandle()const
+		{
+			return m_nativeHandle.get();
 		}
 	}
 }
