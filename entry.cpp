@@ -15,14 +15,23 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 #endif
 {
 	logger.Log(LightningGE::Utility::Info, "This is LightingGE entry.");
-	IApplication* pApp = IApplication::getApp();
+	ApplicationPtr pApp = IApplication::getApp();
 	if (!pApp->Init())
+	{
+		logger.Log(LightningGE::Utility::Error, "Application initialize error!");
 		return 1;
+	}
 	if (!pApp->Start())
+	{
+		logger.Log(LightningGE::Utility::Error, "Application start error!");
 		return 1;
+	}
 	if (pApp->Run())
+	{
+		logger.Log(LightningGE::Utility::Error, "Application run error!");
 		return 1;
+	}
 	pApp->Quit();
-	delete pApp;
+	logger.Log(LightningGE::Utility::Info, "Application quit.");
 	return 0;
 }

@@ -8,10 +8,10 @@ namespace LightningGE
 {
 	namespace App
 	{
-		IApplication* IApplication::getApp()
+		ApplicationPtr IApplication::getApp()
 		{
 #ifdef LIGHTNINGGE_WIN32
-			return new Win32Application();
+			return std::make_shared<Win32Application>();
 #endif // LIGHTNINGGE_WIN32
 			return nullptr;
 		}

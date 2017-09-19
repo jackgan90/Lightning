@@ -2,8 +2,10 @@ project(foundation)
 
 set(HEADERS	common.h
 			timesystem.h
+			filesystem.h
 			foundationexportdef.h)
 set(SOURCES common.cpp
+			filesystem.cpp
 			timesystem.cpp)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
