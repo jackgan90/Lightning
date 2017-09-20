@@ -1,5 +1,8 @@
 #include "filesystem.h"
+#include <boost/filesystem.hpp>
 
+using namespace boost::filesystem;
+using std::string;
 namespace LightningGE
 {
 	namespace Foundation
@@ -26,7 +29,8 @@ namespace LightningGE
 
 		GeneralFileSystem::GeneralFileSystem()
 		{
-
+			path p = boost::filesystem::current_path();
+			m_root = p.string();
 		}
 		
 		GeneralFileSystem::~GeneralFileSystem()

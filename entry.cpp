@@ -1,5 +1,5 @@
 #include "logger.h" //for logging
-#include "iapplication.h" //for application
+#include "appfactory.h" //for application
 #ifdef LIGHTNINGGE_WIN32
 #include <Windows.h>	//for WinMain
 #endif
@@ -15,7 +15,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 #endif
 {
 	logger.Log(LightningGE::Utility::Info, "This is LightingGE entry.");
-	ApplicationPtr pApp = IApplication::getApp();
+	ApplicationPtr pApp = AppFactory::getApp();
 	if (!pApp->Init())
 	{
 		logger.Log(LightningGE::Utility::Error, "Application initialize error!");

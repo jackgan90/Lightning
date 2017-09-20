@@ -1,4 +1,5 @@
 project(renderer)
+message(STATUS "Configuring project renderer")
 
 set(HEADERS rendererexportdef.h
 			idevice.h

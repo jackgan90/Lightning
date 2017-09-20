@@ -16,7 +16,6 @@ namespace LightningGE
 			virtual int Run() = 0;
 			virtual void Quit() = 0;
 			virtual ~IApplication(){}
-			static ApplicationPtr getApp();
 		};
 	}
 }

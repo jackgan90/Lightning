@@ -1,4 +1,5 @@
 project(platform)
+message(STATUS "Configuring project platform")
 
 set(WINDOW_SUBSYSTEM_DIR "window")
 set(APPLICATION_SUBSYSTEM_DIR "application")
@@ -11,8 +12,10 @@ set(WINDOW_SYSTEM_SOURCES	${WINDOW_SUBSYSTEM_DIR}/winwindow.cpp
 							${WINDOW_SUBSYSTEM_DIR}/windowmanager.cpp)
 
 
-set(APPLICATION_HEADERS		${APPLICATION_SUBSYSTEM_DIR}/iapplication.h)
-set(APPLICATION_SOURCES		${APPLICATION_SUBSYSTEM_DIR}/application.cpp)
+set(APPLICATION_HEADERS		${APPLICATION_SUBSYSTEM_DIR}/iapplication.h
+							${APPLICATION_SUBSYSTEM_DIR}/appfactory.h)
+set(APPLICATION_SOURCES		${APPLICATION_SUBSYSTEM_DIR}/application.cpp
+							${APPLICATION_SUBSYSTEM_DIR}/appfactory.cpp)
 
 if(WIN32)
 	list(APPEND WINDOW_SYSTEM_HEADERS ${WINDOW_SUBSYSTEM_DIR}/winwindow.h
@@ -54,5 +57,5 @@ add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 add_dependencies(${PROJECT_NAME} foundation utilities)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${PROJECT_COMPILE_FLAGS})
-target_link_libraries(${PROJECT_NAME} utilities foundation)
+target_link_libraries(${PROJECT_NAME} foundation utilities)
 

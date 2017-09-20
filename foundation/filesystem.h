@@ -21,15 +21,17 @@ namespace LightningGE
 			virtual ~IFileSystem() {}
 			virtual IFile* FindFile(std::string path) = 0;
 			virtual bool SetRoot(std::string root_path) = 0;
+			virtual const std::string GetRoot() const = 0;
 		};
 
-		class GeneralFileSystem : public IFileSystem
+		class LIGHTNINGGE_FOUNDATION_API GeneralFileSystem : public IFileSystem
 		{
 		public:
 			GeneralFileSystem();
 			~GeneralFileSystem()override;
 			IFile* FindFile(std::string path)override;
 			bool SetRoot(std::string root_path)override;
+			const std::string GetRoot() const { return m_root; }
 		protected:
 			std::string m_root;
 		};

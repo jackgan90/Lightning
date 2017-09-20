@@ -2,6 +2,7 @@
 #include "platformexportdef.h"
 #include "iapplication.h"
 #include "iwindow.h"
+#include "filesystem.h"
 
 namespace LightningGE
 {
@@ -13,14 +14,17 @@ namespace LightningGE
 		public:
 			Win32Application();
 			~Win32Application()override;
+			Win32Application(const Win32Application&) = delete;
+			Win32Application(Win32Application&&) = delete;
+			Win32Application& operator=(const Win32Application&) = delete;
 			bool Init()override;
 			bool Start()override;
 			int Run()override;
 			void Quit()override;
-		protected:
-			WindowPtr m_pWin;
 		private:
 			void TryDestroyWindow();
+			WindowPtr m_pWin;
+			Foundation::IFileSystem* m_filesystem;
 		};
 	}
 }

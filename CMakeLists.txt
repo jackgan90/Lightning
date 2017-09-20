@@ -7,9 +7,13 @@ include(helpers)
 
 # options start
 option(LIGHTNINGGE_USE_D3D12 "Enable DirectX 12 renderer." ON)
+set(LIGHTNINGGE_DEPENDENCIES_DIR "${CMAKE_SOURCE_DIR}/dependencies" CACHE PATH "Dependencies directory")
+get_filename_component(LIGHTNINGGE_DEPENDENCIES_DIR ${LIGHTNINGGE_DEPENDENCIES_DIR} ABSOLUTE)
+message(STATUS "Dependencies directory is ${LIGHTNINGGE_DEPENDENCIES_DIR}")
 # options end
 
 project(LightningGE)
+message(STATUS "Configuring project LightningGE")
 add_subdirectory(foundation)
 add_subdirectory(platform)
 add_subdirectory(utilities)

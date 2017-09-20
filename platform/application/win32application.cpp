@@ -1,3 +1,4 @@
+#include "common.h"
 #include "win32application.h"
 #include "logger.h"
 #include "windowmanager.h"
@@ -11,12 +12,14 @@ namespace LightningGE
 	{
 		Win32Application::Win32Application()
 		{
-
+			m_filesystem = new Foundation::GeneralFileSystem();
+			logger.Log(LogLevel::Info, "File system created!Current working directory:%s", m_filesystem->GetRoot().c_str());
 		}
 
 		Win32Application::~Win32Application()
 		{
 			TryDestroyWindow();
+			SAFE_DELETE(m_filesystem);
 		}
 
 		void Win32Application::TryDestroyWindow()
