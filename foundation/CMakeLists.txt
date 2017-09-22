@@ -4,9 +4,11 @@ message(STATUS "Configuring project foundation")
 set(HEADERS	common.h
 			timesystem.h
 			filesystem.h
+			filesystemfactory.h
 			foundationexportdef.h)
 set(SOURCES common.cpp
 			filesystem.cpp
+			filesystemfactory.cpp
 			timesystem.cpp)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
@@ -14,7 +16,9 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 if (WIN32)
 	set(PROJECT_COMPILE_FLAGS "/wd4251")
+	add_definitions(-DLIGHTNINGGE_WIN32)
 endif()
+
 define_dll_export_macro(FOUNDATION)
 
 include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/boost)

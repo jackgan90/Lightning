@@ -31,6 +31,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
 
 if(WIN32)
 	set(PROJECT_COMPILE_FLAGS "/wd4251")
+	add_definitions(-DLIGHTNINGGE_WIN32)
 endif()
 
 source_group("window" FILES 
@@ -45,14 +46,12 @@ set(HEADERS platformexportdef.h)
 list(APPEND HEADERS ${WINDOW_SYSTEM_HEADERS} ${APPLICATION_HEADERS})
 set(SOURCES ${WINDOW_SYSTEM_SOURCES} ${APPLICATION_SOURCES})
 
-if (WIN32)
-	add_definitions(-DLIGHTNINGGE_WIN32)
-endif()
 define_dll_export_macro(PLATFORM)
 
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 
 include_directories("../foundation" "../utilities" "../utilities/logging" "." "window")
+include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/boost)
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 add_dependencies(${PROJECT_NAME} foundation utilities)
 

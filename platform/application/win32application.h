@@ -24,7 +24,7 @@ namespace LightningGE
 		private:
 			void TryDestroyWindow();
 			WindowPtr m_pWin;
-			Foundation::IFileSystem* m_filesystem;
+			Foundation::FileSystemPtr m_filesystem;
 		};
 	}
 }
