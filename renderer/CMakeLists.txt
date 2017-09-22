@@ -30,7 +30,10 @@ if(WIN32)
 endif()
 
 define_dll_export_macro(RENDERER)
-include_directories("." "../platform" "../platform/window")
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}
+					${CMAKE_SOURCE_DIR}/platform 
+					${CMAKE_SOURCE_DIR}/platform/window)
+
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${PROJECT_COMPILE_FLAGS})
 add_dependencies(${PROJECT_NAME} foundation utilities platform)

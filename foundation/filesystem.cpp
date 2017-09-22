@@ -20,14 +20,14 @@ namespace LightningGE
 
 		GeneralFile::GeneralFile(GeneralFile&& f)
 		{
-			MoveFrom(std::forward<GeneralFile>(f));
+			MoveFrom(std::move(f));
 		}
 
 		GeneralFile& GeneralFile::operator=(GeneralFile&& f)
 		{
 			if (this != &f)
 			{
-				MoveFrom(std::forward<GeneralFile>(f));
+				MoveFrom(std::move(f));
 			}
 			return *this;
 		}
@@ -43,6 +43,7 @@ namespace LightningGE
 			m_path = f.m_path;
 			m_sizeDirty = f.m_sizeDirty;
 			m_file = f.m_file;
+			f.m_file = nullptr;
 		}
 		
 
@@ -157,7 +158,7 @@ namespace LightningGE
 			});
 			if (it != end)
 			{
-				m_cachedFiles.insert(std::make_pair(filename, FilePtr(new GeneralFile(it->path().string()))));
+				m_cachedFiles.insert(std::make_pair(filename, std::make_shared<GeneralFile>(it->path().string())));
 				return m_cachedFiles[filename];
 			}
 			return FilePtr();

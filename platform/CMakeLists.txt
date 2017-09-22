@@ -50,7 +50,12 @@ define_dll_export_macro(PLATFORM)
 
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 
-include_directories("../foundation" "../utilities" "../utilities/logging" "." "window")
+include_directories(${CMAKE_SOURCE_DIR}/foundation
+					${CMAKE_SOURCE_DIR}/utilities
+					${CMAKE_SOURCE_DIR}/utilities/logging
+					${CMAKE_CURRENT_SOURCE_DIR} 
+					${CMAKE_CURRENT_SOURCE_DIR}/window)
+
 include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/boost)
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 add_dependencies(${PROJECT_NAME} foundation utilities)

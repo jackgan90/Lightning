@@ -17,7 +17,8 @@ list(APPEND SOURCES ${LOGGING_SOURCES})
 source_group("logging" FILES ${LOGGING_HEADERS}
 							 ${LOGGING_SOURCES})
 
-include_directories("../foundation" ".")
+include_directories(${CMAKE_SOURCE_DIR}/foundation
+					${CMAKE_CURRENT_SOURCE_DIR})
 
 if (WIN32)
 	set(PROJECT_COMPILE_FLAGS "/wd4251")
