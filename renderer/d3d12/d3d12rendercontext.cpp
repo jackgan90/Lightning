@@ -3,6 +3,7 @@
 #include "winwindownativehandle.h"
 #include "d3d12rendercontext.h"
 #include "d3d12device.h"
+#include "d3d12swapchain.h"
 #include "logger.h"
 
 namespace LightningGE
@@ -100,9 +101,15 @@ namespace LightningGE
 				dynamic_cast<const WindowSystem::WinWindowNativeHandle*>(DYNAMIC_CAST_PTR(WinWindow, pWindow)->GetNativeHandle());
 			swapChainDesc.OutputWindow = *const_cast<WindowSystem::WinWindowNativeHandle*>(pNativeHandle);
 			swapChainDesc.SampleDesc = sampleDesc;
-			swapChainDesc.Windowed = false;
+			swapChainDesc.Windowed = TRUE;
 
+			//TODO : is there potential memory leak here?
+			IDXGISwapChain* tempSwapChain;
 
+			dxgiFactory->CreateSwapChain(DYNAMIC_CAST_PTR(D3D12Device, m_device)->m_commandQueue.Get(),
+				&swapChainDesc, &tempSwapChain);
+			
+			m_swapChain = SwapChainPtr(new D3D12SwapChain(static_cast<IDXGISwapChain3*>(tempSwapChain)));
 			return true;
 		}
 

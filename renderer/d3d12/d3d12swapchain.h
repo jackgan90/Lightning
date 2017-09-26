@@ -9,7 +9,7 @@ namespace LightningGE
 	namespace Renderer
 	{
 		using Microsoft::WRL::ComPtr;
-		class LIGHTNINGGE_RENDERER_API D3D12SwapChain : ISwapChain
+		class LIGHTNINGGE_RENDERER_API D3D12SwapChain : public ISwapChain
 		{
 		public:
 			D3D12SwapChain(ComPtr<IDXGISwapChain3> pSwapChain);
