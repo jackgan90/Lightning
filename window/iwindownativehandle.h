@@ -1,5 +1,5 @@
 #pragma once
-#include "platformexportdef.h"
+#include "windowexportdef.h"
 #include <memory>
 
 namespace LightningGE
@@ -10,7 +10,7 @@ namespace LightningGE
 		{
 			IDENTIFIER_WINDOWS_HANDLE,
 		};
-		class LIGHTNINGGE_PLATFORM_API IWindowNativeHandle
+		class LIGHTNINGGE_WINDOW_API IWindowNativeHandle
 		{
 		public:
 			virtual bool operator==(const IWindowNativeHandle& handle) = 0;

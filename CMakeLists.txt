@@ -16,6 +16,7 @@ project(LightningGE)
 message(STATUS "Configuring project LightningGE")
 add_subdirectory(foundation)
 add_subdirectory(platform)
+add_subdirectory(window)
 add_subdirectory(utilities)
 add_subdirectory(renderer)
 
@@ -36,7 +37,7 @@ set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${LIGHTNINGGE_LINKER_FLAGS}
 
 include_directories(foundation utilities utilities/logging platform platform/application)
 add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES})
-add_dependencies(${PROJECT_NAME} foundation utilities platform)
+add_dependencies(${PROJECT_NAME} foundation utilities platform renderer)
 
-target_link_libraries(${PROJECT_NAME} utilities platform)
+target_link_libraries(${PROJECT_NAME} utilities platform renderer)
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${PROJECT_COMPILE_FLAGS})

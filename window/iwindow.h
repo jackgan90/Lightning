@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "platformexportdef.h"
+#include "windowexportdef.h"
 #include "iwindownativehandle.h"
 
 namespace LightningGE
@@ -9,7 +9,7 @@ namespace LightningGE
 	{
 		using WINDOWWIDTH = unsigned int;
 		using WINDOWHEIGHT = unsigned int;
-		class LIGHTNINGGE_PLATFORM_API IWindow
+		class LIGHTNINGGE_WINDOW_API IWindow
 		{
 		public:
 			friend class WindowManager;

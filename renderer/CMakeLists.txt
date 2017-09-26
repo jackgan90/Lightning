@@ -4,19 +4,22 @@ message(STATUS "Configuring project renderer")
 set(HEADERS rendererexportdef.h
 			idevice.h
 			irendercontext.h
-			iswapchain.h)
+			iswapchain.h
+			irendertarget.h)
 
 if (WIN32)
 	add_definitions(-DLIGHTNINGGE_WIN32)
 endif()
 
 if(LIGHTNINGGE_USE_D3D12)
-	set(D3D12_HEADERS	"d3d12/d3d12device.h"
-						"d3d12/d3d12rendercontext.h"
-						"d3d12/d3d12swapchain.h")
-	set(D3D12_SOURCES	"d3d12/d3d12device.cpp"
-						"d3d12/d3d12rendercontext.cpp"
-						"d3d12/d3d12swapchain.cpp")
+	set(D3D12_HEADERS	d3d12/d3d12device.h
+						d3d12/d3d12rendercontext.h
+						d3d12/d3d12swapchain.h
+						d3d12/d3d12rendertarget.h)
+	set(D3D12_SOURCES	d3d12/d3d12device.cpp
+						d3d12/d3d12rendercontext.cpp
+						d3d12/d3d12swapchain.cpp
+						d3d12/d3d12rendertarget.cpp)
 	list(APPEND HEADERS ${D3D12_HEADERS})
 	list(APPEND SOURCES ${D3D12_SOURCES})
 	source_group("d3d12" FILES ${D3D12_HEADERS} ${D3D12_SOURCES})
@@ -31,10 +34,16 @@ endif()
 
 define_dll_export_macro(RENDERER)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
+					${CMAKE_SOURCE_DIR}/foundation
+					${CMAKE_SOURCE_DIR}/utilities
+					${CMAKE_SOURCE_DIR}/utilities/logging
 					${CMAKE_SOURCE_DIR}/platform 
-					${CMAKE_SOURCE_DIR}/platform/window)
+					${CMAKE_SOURCE_DIR}/window)
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${PROJECT_COMPILE_FLAGS})
-add_dependencies(${PROJECT_NAME} foundation utilities platform)
-target_link_libraries(${PROJECT_NAME} foundation utilities platform)
+add_dependencies(${PROJECT_NAME} foundation utilities window)
+target_link_libraries(${PROJECT_NAME} foundation utilities window)
+if(LIGHTNINGGE_USE_D3D12)
+	target_link_libraries(${PROJECT_NAME} dxgi.lib d3d12.lib)
+endif()

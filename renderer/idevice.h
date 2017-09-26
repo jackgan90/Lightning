@@ -1,5 +1,7 @@
 #pragma once
 #include "rendererexportdef.h"
+#include "irendertarget.h"
+#include <memory>
 
 namespace LightningGE
 {
@@ -8,7 +10,9 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API IDevice
 		{
 		public:
-			virtual ~IDevice() = 0;
+			virtual ~IDevice() {}
+			virtual RenderTargetPtr CreateRenderTarget() = 0;
 		};
+		using DevicePtr = std::shared_ptr<IDevice>;
 	}
 }

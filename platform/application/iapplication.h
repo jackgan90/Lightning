@@ -16,6 +16,15 @@ namespace LightningGE
 			virtual int Run() = 0;
 			virtual void Quit() = 0;
 			virtual ~IApplication(){}
+		protected:
+			virtual bool InitRenderContext() = 0;
 		};
+
+		class LIGHTNINGGE_PLATFORM_API Application : public IApplication
+		{
+		public:
+			bool Start()override;
+		};
+
 	}
 }

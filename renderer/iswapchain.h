@@ -1,5 +1,6 @@
 #pragma once
 #include "rendererexportdef.h"
+#include <memory>
 
 namespace LightningGE
 {
@@ -8,8 +9,10 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API ISwapChain
 		{
 		public:
-			virtual ~ISwapChain() = 0;
+			virtual ~ISwapChain() {};
 			virtual bool Present() = 0;
+			virtual unsigned int GetBufferCount()const = 0;
 		};
+		using SwapChainPtr = std::shared_ptr<ISwapChain>;
 	}
 }

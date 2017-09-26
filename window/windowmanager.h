@@ -2,14 +2,14 @@
 #include <unordered_map>
 #include <vector>
 #include "iwindow.h"
-#include "platformexportdef.h"
+#include "windowexportdef.h"
 
 namespace LightningGE
 {
 	namespace WindowSystem
 	{
 		using WINDOWID = unsigned int;
-		class LIGHTNINGGE_PLATFORM_API WindowManager
+		class LIGHTNINGGE_WINDOW_API WindowManager
 		{
 		public:
 			WindowManager(const WindowManager& wm) = delete;

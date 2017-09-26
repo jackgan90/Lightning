@@ -7,7 +7,7 @@ namespace LightningGE
 {
 	namespace WindowSystem
 	{
-		class LIGHTNINGGE_PLATFORM_API WinWindow : public IWindow
+		class LIGHTNINGGE_WINDOW_API WinWindow : public IWindow
 		{
 		public:
 			WinWindow();

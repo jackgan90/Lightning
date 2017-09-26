@@ -1,5 +1,6 @@
 #include "common.h"
 #include "win32application.h"
+#include "d3d12\d3d12rendercontext.h"
 #include "logger.h"
 #include "windowmanager.h"
 #include "filesystemfactory.h"
@@ -58,6 +59,8 @@ namespace LightningGE
 					return false;
 				}
 				m_pWin->Init();
+				m_renderContext = std::shared_ptr<Renderer::IRenderContext>(new Renderer::D3D12RenderContext());
+				Application::Start();
 			}
 			return true;
 		}
@@ -77,6 +80,11 @@ namespace LightningGE
 		{
 			TryDestroyWindow();
 			logger.Log(LogLevel::Info, "Win32Application quit!");
+		}
+
+		bool Win32Application::InitRenderContext()
+		{
+			return m_renderContext->Init(m_pWin);
 		}
 	}
 }
