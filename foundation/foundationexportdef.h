@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef WIN32
+#ifdef LIGHTNINGGE_WIN32
 #ifdef LIGHTNINGGE_FOUNDATION_EXPORT
 #define LIGHTNINGGE_FOUNDATION_API __declspec(dllexport)
 #else

@@ -1,8 +1,8 @@
 project(utilities)
 message(STATUS "Configuring project utilities")
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(LOGGING_DIRECTORY logging)
 
@@ -22,6 +22,7 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 
 if (WIN32)
 	set(PROJECT_COMPILE_FLAGS "/wd4251")
+	add_definitions(-DLIGHTNINGGE_WIN32)
 endif()
 define_dll_export_macro(UTILITIES)
 

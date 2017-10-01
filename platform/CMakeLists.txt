@@ -15,8 +15,8 @@ if(WIN32)
 	list(APPEND APPLICATION_SOURCES ${APPLICATION_SUBSYSTEM_DIR}/win32application.cpp)
 endif()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 if(WIN32)
 	set(PROJECT_COMPILE_FLAGS "/wd4251")
@@ -41,8 +41,8 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_CURRENT_SOURCE_DIR} 
 					${CMAKE_SOURCE_DIR}/renderer
 					${CMAKE_SOURCE_DIR}/window)
-
 include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/boost)
+
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 add_dependencies(${PROJECT_NAME} foundation utilities window renderer)
 
