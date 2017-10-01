@@ -23,7 +23,10 @@ namespace LightningGE
 			int Run()override;
 			void Quit()override;
 		protected:
+			bool CreateMainWindow()override;
 			bool InitRenderContext() override;
+			WindowSystem::WindowPtr GetMainWindow() const override { return m_pWin; }
+			void OnWindowIdle(const WindowSystem::WindowIdleParam& param)override;
 		private:
 			void TryDestroyWindow();
 			WindowPtr m_pWin;

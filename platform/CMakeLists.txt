@@ -19,7 +19,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 if(WIN32)
-	set(PROJECT_COMPILE_FLAGS "/wd4251")
 	add_definitions(-DLIGHTNINGGE_WIN32)
 endif()
 
@@ -46,6 +45,10 @@ include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/boost)
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 add_dependencies(${PROJECT_NAME} foundation utilities window renderer)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${PROJECT_COMPILE_FLAGS})
+if(MSVC)
+	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/wd4251")
+	set(CMAKE_CXX_FLAGS_DEBUG "/Od /Zi")
+	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
+endif()
 target_link_libraries(${PROJECT_NAME} foundation utilities window renderer)
 

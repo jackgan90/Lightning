@@ -6,10 +6,13 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(HEADERS	windowexportdef.h
 			iwindow.h
+			window.h
 			iwindownativehandle.h
-			windowmanager.h)
+			windowmanager.h
+			windowmessage.h)
 
-set(SOURCES	winwindow.cpp
+set(SOURCES	window.cpp
+			winwindow.cpp
 			windowmanager.cpp)
 
 if(WIN32)
@@ -17,7 +20,6 @@ if(WIN32)
 						winwindownativehandle.h)
 	list(APPEND SOURCES winwindow.cpp
 						winwindownativehandle.cpp)
-	set(PROJECT_COMPILE_FLAGS "/wd4251")
 	add_definitions(-DLIGHTNINGGE_WIN32)
 endif()
 
@@ -32,6 +34,10 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 add_dependencies(${PROJECT_NAME} foundation utilities)
 
-set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${PROJECT_COMPILE_FLAGS})
+if(MSVC)
+	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/wd4251")
+	set(CMAKE_CXX_FLAGS_DEBUG "/Od /Zi")
+	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
+endif()
 target_link_libraries(${PROJECT_NAME} foundation utilities)
 

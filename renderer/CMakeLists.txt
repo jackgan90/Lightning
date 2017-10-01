@@ -28,10 +28,6 @@ endif()
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-if(WIN32)
-	set(PROJECT_COMPILE_FLAGS "/wd4251")
-endif()
-
 define_dll_export_macro(RENDERER)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/foundation
@@ -41,7 +37,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/window)
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
-set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${PROJECT_COMPILE_FLAGS})
+if(MSVC)
+	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/wd4251")
+	set(CMAKE_CXX_FLAGS_DEBUG "/Od /Zi")
+	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
+endif()
 add_dependencies(${PROJECT_NAME} foundation utilities window)
 target_link_libraries(${PROJECT_NAME} foundation utilities window)
 if(LIGHTNINGGE_USE_D3D12)

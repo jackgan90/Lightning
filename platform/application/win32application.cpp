@@ -5,7 +5,7 @@
 #include "windowmanager.h"
 #include "filesystemfactory.h"
 
-using LogLevel = LightningGE::Utility::LogLevel;
+using LightningGE::Utility::LogLevel;
 using LightningGE::Utility::logger;
 
 namespace LightningGE
@@ -49,20 +49,10 @@ namespace LightningGE
 
 		bool Win32Application::Start()
 		{
-			logger.Log(LogLevel::Info, "Win32Application start successfully!");
-			using WindowSystem::WindowManager;
-			if (!m_pWin)
-			{
-				m_pWin = WindowManager::Instance()->MakeWindow();
-				if (!m_pWin)
-				{
-					return false;
-				}
-				m_pWin->Init();
-				m_renderContext = std::shared_ptr<Renderer::IRenderContext>(new Renderer::D3D12RenderContext());
-				Application::Start();
-			}
-			return true;
+			bool result = Application::Start();
+			if(result)
+				logger.Log(LogLevel::Info, "Win32Application start successfully!");
+			return result;
 		}
 
 		int Win32Application::Run()
@@ -82,9 +72,29 @@ namespace LightningGE
 			logger.Log(LogLevel::Info, "Win32Application quit!");
 		}
 
+		bool Win32Application::CreateMainWindow()
+		{
+			if (!m_pWin)
+			{
+				m_pWin = WindowSystem::WindowManager::Instance()->MakeWindow();
+				if (!m_pWin)
+				{
+					return false;
+				}
+				m_pWin->Init();
+			}
+			return true;
+		}
+
 		bool Win32Application::InitRenderContext()
 		{
+			m_renderContext = std::shared_ptr<Renderer::IRenderContext>(new Renderer::D3D12RenderContext());
 			return m_renderContext->Init(m_pWin);
+		}
+
+		void Win32Application::OnWindowIdle(const WindowSystem::WindowIdleParam& param)
+		{
+			logger.Log(LogLevel::Debug, "WindowIdle");
 		}
 	}
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include "iwindow.h"
+#include "window.h"
 #include "winwindownativehandle.h"
 #include <string>
 
@@ -7,7 +7,7 @@ namespace LightningGE
 {
 	namespace WindowSystem
 	{
-		class LIGHTNINGGE_WINDOW_API WinWindow : public IWindow
+		class LIGHTNINGGE_WINDOW_API WinWindow : public Window
 		{
 		public:
 			WinWindow();
@@ -15,7 +15,7 @@ namespace LightningGE
 			~WinWindow()override;
 			bool Init()override;
 			bool Show(bool show)override;
-			const IWindowNativeHandle* GetNativeHandle()const override;
+			const WindowNativeHandlePtr GetNativeHandle()const override { return m_nativeHandle; }
 			WINDOWWIDTH GetWidth()const override;
 			WINDOWHEIGHT GetHeight()const override;
 		private:

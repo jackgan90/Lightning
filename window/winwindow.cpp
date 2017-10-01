@@ -19,8 +19,8 @@ namespace LightningGE
 			auto windows = WindowManager::Instance()->GetAllWindows();
 			for (auto window : windows)
 			{
-				const IWindowNativeHandle* pHandle = window->GetNativeHandle();
-				if (const WinWindowNativeHandle* pWinHandle = dynamic_cast<const WinWindowNativeHandle*>(pHandle))
+				const WindowNativeHandlePtr pHandle = window->GetNativeHandle();
+				if (const WinWindowNativeHandle* pWinHandle = dynamic_cast<const WinWindowNativeHandle*>(pHandle.get()))
 				{
 					if (pWinHandle->OwnWindowsHandle(hWnd))
 						return DYNAMIC_CAST_PTR(WinWindow, window);
@@ -131,10 +131,19 @@ namespace LightningGE
 			ShowWindow(hWnd, show ? SW_SHOW : SW_HIDE);
 			UpdateWindow(hWnd);
 			MSG msg;
-			while (::GetMessage(&msg, NULL, 0, 0))
+			while (true)
 			{
-				::TranslateMessage(&msg);
-				::DispatchMessage(&msg);
+				if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+				{
+					if (msg.message == WM_QUIT)
+						break;
+					::TranslateMessage(&msg);
+					::DispatchMessage(&msg);
+				}
+				else
+				{
+					Window::OnIdle();
+				}
 			}
 			return true;
 		}
@@ -147,11 +156,6 @@ namespace LightningGE
 		WINDOWHEIGHT WinWindow::GetHeight()const
 		{
 			return m_height;
-		}
-
-		const IWindowNativeHandle* WinWindow::GetNativeHandle()const
-		{
-			return m_nativeHandle.get();
 		}
 	}
 }

@@ -24,10 +24,6 @@ add_subdirectory(renderer)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 if (WIN32)
-	set(PROJECT_COMPILE_FLAGS "/wd4251")
-endif()
-
-if (WIN32)
 	add_definitions("-DLIGHTNINGGE_WIN32")
 endif()
 
@@ -35,8 +31,12 @@ set(SOURCE_FILES entry.cpp)
 
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${LIGHTNINGGE_LINKER_FLAGS})
 
-include_directories(foundation utilities utilities/logging platform platform/application)
+include_directories(foundation utilities utilities/logging platform platform/application window)
 add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} foundation utilities platform renderer)
 target_link_libraries(${PROJECT_NAME} utilities platform renderer)
-set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS ${PROJECT_COMPILE_FLAGS})
+if(MSVC)
+	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/wd4251")
+	set(CMAKE_CXX_FLAGS_DEBUG "/Od /Zi")
+	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
+endif()

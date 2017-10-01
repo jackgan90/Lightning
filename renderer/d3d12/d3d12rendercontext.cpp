@@ -11,6 +11,7 @@ namespace LightningGE
 	using Utility::logger;
 	using Utility::LogLevel;
 	using WindowSystem::WinWindow;
+	using WindowSystem::WindowNativeHandlePtr;
 	namespace Renderer
 	{
 		D3D12RenderContext::~D3D12RenderContext()
@@ -98,7 +99,7 @@ namespace LightningGE
 			swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 			swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 			const WindowSystem::WinWindowNativeHandle *pNativeHandle = \
-				dynamic_cast<const WindowSystem::WinWindowNativeHandle*>(DYNAMIC_CAST_PTR(WinWindow, pWindow)->GetNativeHandle());
+				dynamic_cast<const WindowSystem::WinWindowNativeHandle*>(DYNAMIC_CAST_PTR(WinWindow, pWindow)->GetNativeHandle().get());
 			swapChainDesc.OutputWindow = *const_cast<WindowSystem::WinWindowNativeHandle*>(pNativeHandle);
 			swapChainDesc.SampleDesc = sampleDesc;
 			swapChainDesc.Windowed = TRUE;
