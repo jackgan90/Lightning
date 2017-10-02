@@ -5,8 +5,8 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		using Utility::LogLevel;
-		using Utility::logger;
+		using Foundation::LogLevel;
+		using Foundation::logger;
 		D3D12Device::D3D12Device(ComPtr<ID3D12Device> pDevice)
 		{
 			m_device = pDevice;

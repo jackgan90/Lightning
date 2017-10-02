@@ -4,8 +4,8 @@
 #include "logger.h"
 #include <vector>
 
-using LightningGE::Utility::logger;
-using LogLevel = LightningGE::Utility::LogLevel;
+using LightningGE::Foundation::logger;
+using LogLevel = LightningGE::Foundation::LogLevel;
 using std::vector;
 
 namespace LightningGE

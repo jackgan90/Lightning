@@ -12,8 +12,8 @@
 
 namespace LightningGE
 {
-	using Utility::logger;
-	using Utility::LogLevel;
+	using Foundation::logger;
+	using Foundation::LogLevel;
 	using WindowSystem::WinWindow;
 	using WindowSystem::WindowNativeHandlePtr;
 	namespace Renderer

@@ -5,8 +5,8 @@
 #include "windowmanager.h"
 #include "filesystemfactory.h"
 
-using LightningGE::Utility::LogLevel;
-using LightningGE::Utility::logger;
+using LightningGE::Foundation::LogLevel;
+using LightningGE::Foundation::logger;
 
 namespace LightningGE
 {

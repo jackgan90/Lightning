@@ -35,20 +35,18 @@ define_dll_export_macro(PLATFORM)
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 
 include_directories(${CMAKE_SOURCE_DIR}/foundation
-					${CMAKE_SOURCE_DIR}/utilities
-					${CMAKE_SOURCE_DIR}/utilities/logging
 					${CMAKE_CURRENT_SOURCE_DIR} 
 					${CMAKE_SOURCE_DIR}/renderer
 					${CMAKE_SOURCE_DIR}/window)
 include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/boost)
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
-add_dependencies(${PROJECT_NAME} foundation utilities window renderer)
+add_dependencies(${PROJECT_NAME} foundation window renderer)
 
 if(MSVC)
 	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/wd4251")
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /DDEBUG")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
-target_link_libraries(${PROJECT_NAME} foundation utilities window renderer)
+target_link_libraries(${PROJECT_NAME} foundation window renderer)
 

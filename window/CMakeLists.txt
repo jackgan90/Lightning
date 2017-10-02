@@ -27,17 +27,15 @@ define_dll_export_macro(WINDOW)
 
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 
-include_directories(${CMAKE_SOURCE_DIR}/foundation
-					${CMAKE_SOURCE_DIR}/utilities
-					${CMAKE_SOURCE_DIR}/utilities/logging)
+include_directories(${CMAKE_SOURCE_DIR}/foundation)
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
-add_dependencies(${PROJECT_NAME} foundation utilities)
+add_dependencies(${PROJECT_NAME} foundation)
 
 if(MSVC)
 	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/wd4251")
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /DDEBUG")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
-target_link_libraries(${PROJECT_NAME} foundation utilities)
+target_link_libraries(${PROJECT_NAME} foundation)
 

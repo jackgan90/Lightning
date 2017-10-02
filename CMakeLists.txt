@@ -31,10 +31,10 @@ set(SOURCE_FILES entry.cpp)
 
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${LIGHTNINGGE_LINKER_FLAGS})
 
-include_directories(foundation utilities utilities/logging platform platform/application window)
+include_directories(foundation platform platform/application window)
 add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES})
-add_dependencies(${PROJECT_NAME} foundation utilities platform renderer)
-target_link_libraries(${PROJECT_NAME} utilities platform renderer)
+add_dependencies(${PROJECT_NAME} foundation platform renderer)
+target_link_libraries(${PROJECT_NAME} platform renderer)
 if(MSVC)
 	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/wd4251")
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /DDEBUG")

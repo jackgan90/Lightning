@@ -5,11 +5,12 @@
 #include <Windows.h>
 #endif
 #include "timesystem.h"
-#include "utilitiesexportdef.h"
+#include "foundationexportdef.h"
+#include <iostream>
 
 namespace LightningGE
 {
-	namespace Utility
+	namespace Foundation
 	{
 		enum LogLevel
 		{
@@ -19,7 +20,7 @@ namespace LightningGE
 			Error
 		};
 
-		class LIGHTNINGGE_UTILITIES_API Logger
+		class LIGHTNINGGE_FOUNDATION_API Logger
 		{
 		public:
 			Logger();
@@ -37,12 +38,15 @@ namespace LightningGE
 				char outputBuffer[512];
 				sprintf_s(outputBuffer, "%s %s %s\n", timeStr.c_str(), prefix.c_str(), buf);
 				::OutputDebugString(outputBuffer);
+				std::cout;
 #endif
 			}
 		private:
 			std::string LogLevelToPrefix(LogLevel level)const;
 			std::fstream m_fs;
 		};
-		LIGHTNINGGE_UTILITIES_API Logger logger;
+#ifndef LIGHTNINGGE_INTERNAL_LOGGER
+		LIGHTNINGGE_FOUNDATION_API Logger logger;
+#endif
 	}
-}
+} 

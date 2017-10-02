@@ -1,5 +1,6 @@
 #include "filesystem.h"
 #include "common.h"
+#include "configmanager.h"
 #include <algorithm>
 
 using std::string;
@@ -136,8 +137,8 @@ namespace LightningGE
 
 		GeneralFileSystem::GeneralFileSystem()
 		{
-			path p = boost::filesystem::current_path();
-			m_root = p.string();
+			//path p = boost::filesystem::current_path();
+			m_root = ConfigManager::Instance()->GetConfig().ResourceRoot;
 		}
 		
 		GeneralFileSystem::~GeneralFileSystem()

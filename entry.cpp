@@ -5,8 +5,8 @@
 #endif
 
 using namespace LightningGE::App;
-using LightningGE::Utility::logger;
-using LogLevel = LightningGE::Utility::LogLevel;
+using LightningGE::Foundation::logger;
+using LogLevel = LightningGE::Foundation::LogLevel;
 #ifdef WIN32
 int APIENTRY WinMain(HINSTANCE hInstance,
 					 HINSTANCE hPrevInstance,
@@ -14,24 +14,24 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 					 int       nCmdShow)
 #endif
 {
-	logger.Log(LightningGE::Utility::Info, "This is LightingGE entry.");
+	logger.Log(LightningGE::Foundation::Info, "This is LightingGE entry.");
 	ApplicationPtr pApp = AppFactory::GetApp();
 	if (!pApp->Init())
 	{
-		logger.Log(LightningGE::Utility::Error, "Application initialize error!");
+		logger.Log(LightningGE::Foundation::Error, "Application initialize error!");
 		return 1;
 	}
 	if (!pApp->Start())
 	{
-		logger.Log(LightningGE::Utility::Error, "Application start error!");
+		logger.Log(LightningGE::Foundation::Error, "Application start error!");
 		return 1;
 	}
 	if (pApp->Run())
 	{
-		logger.Log(LightningGE::Utility::Error, "Application run error!");
+		logger.Log(LightningGE::Foundation::Error, "Application run error!");
 		return 1;
 	}
 	pApp->Quit();
-	logger.Log(LightningGE::Utility::Info, "Application quit.");
+	logger.Log(LightningGE::Foundation::Info, "Application quit.");
 	return 0;
 }

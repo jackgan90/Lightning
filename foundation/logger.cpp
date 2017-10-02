@@ -2,11 +2,11 @@
 
 namespace LightningGE
 {
-	namespace Utility
+	namespace Foundation
 	{
 		const char* LogFileName = "log.txt";
 		using string = std::string;
-
+		LIGHTNINGGE_FOUNDATION_API Logger logger;
 		Logger::Logger()
 		{
 			m_fs.open(LogFileName, std::fstream::out);

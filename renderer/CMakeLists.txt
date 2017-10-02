@@ -36,8 +36,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 define_dll_export_macro(RENDERER)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/foundation
-					${CMAKE_SOURCE_DIR}/utilities
-					${CMAKE_SOURCE_DIR}/utilities/logging
 					${CMAKE_SOURCE_DIR}/platform 
 					${CMAKE_SOURCE_DIR}/window)
 if(LIGHTNINGGE_USE_D3D12)
@@ -50,8 +48,8 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /DDEBUG")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
-add_dependencies(${PROJECT_NAME} foundation utilities window)
-target_link_libraries(${PROJECT_NAME} foundation utilities window)
+add_dependencies(${PROJECT_NAME} foundation window)
+target_link_libraries(${PROJECT_NAME} foundation window)
 if(LIGHTNINGGE_USE_D3D12)
 	target_link_libraries(${PROJECT_NAME} dxgi.lib d3d12.lib)
 	target_link_libraries(${PROJECT_NAME} debug dxguid.lib)

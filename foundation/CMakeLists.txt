@@ -4,10 +4,14 @@ message(STATUS "Configuring project foundation")
 set(HEADERS	common.h
 			timesystem.h
 			filesystem.h
+			logger.h
 			filesystemfactory.h
+			configmanager.h
 			foundationexportdef.h)
 set(SOURCES common.cpp
 			filesystem.cpp
+			logger.cpp
+			configmanager.cpp
 			filesystemfactory.cpp
 			timesystem.cpp)
 
@@ -18,6 +22,7 @@ if (WIN32)
 	add_definitions(-DLIGHTNINGGE_WIN32)
 	add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
 endif()
+add_definitions(-DLIGHTNINGGE_INTERNAL_LOGGER)
 
 define_dll_export_macro(FOUNDATION)
 
