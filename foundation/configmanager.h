@@ -11,6 +11,8 @@ namespace LightningGE
 		{
 			std::string ResourceRoot;		//the root directory of resources(shader,script,mesh etc)
 			unsigned int SwapChainBufferCount;	//the buffer count of swapchain
+			bool MSAAEnabled;				//is msaa enabled?
+			unsigned int MSAASampleCount;	// msaa sample count
 		};
 
 		class LIGHTNINGGE_FOUNDATION_API ConfigManager

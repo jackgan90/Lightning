@@ -1,4 +1,5 @@
 #include <d3dx12.h>
+#include <cassert>
 #include "common.h"
 #include "winwindow.h"
 #include "winwindownativehandle.h"
@@ -9,11 +10,14 @@
 #include "d3d12rendertargetmanager.h"
 #include "d3d12rendertarget.h"
 #include "logger.h"
+#include "configmanager.h"
 
 namespace LightningGE
 {
 	using Foundation::logger;
 	using Foundation::LogLevel;
+	using Foundation::ConfigManager;
+	using Foundation::EngineConfig;
 	using WindowSystem::WinWindow;
 	using WindowSystem::WindowNativeHandlePtr;
 	namespace Renderer
@@ -105,17 +109,34 @@ namespace LightningGE
 
 		bool D3D12RenderContext::InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, WindowPtr pWindow)
 		{
-			//TODO : init swapchain based on configuration
+			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
+			UINT sampleCount = 1;
+			bool msaaEnabled = false;
+			UINT qualityLevels = 0;
+			if (config.MSAAEnabled)
+			{
+				D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels;
+				msQualityLevels.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+				msQualityLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
+				msQualityLevels.SampleCount = config.MSAASampleCount > 0 ? config.MSAASampleCount : 1;
+				msQualityLevels.NumQualityLevels = 0;
+				DYNAMIC_CAST_PTR(D3D12Device, m_device)->m_device->CheckFeatureSupport(
+					D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msQualityLevels, sizeof(msQualityLevels));
+				qualityLevels = msQualityLevels.NumQualityLevels;
+				sampleCount = msQualityLevels.SampleCount;
+				assert(qualityLevels > 0 && "Unexpected MSAA quality levels.");
+			}
 			DXGI_MODE_DESC bufferDesc = {};
 			bufferDesc.Width = pWindow->GetWidth();
 			bufferDesc.Height = pWindow->GetHeight();
 			bufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 
 			DXGI_SAMPLE_DESC sampleDesc = {};
-			sampleDesc.Count = 1;
+			sampleDesc.Count = msaaEnabled ? sampleCount : 1;
+			sampleDesc.Quality = msaaEnabled ? qualityLevels - 1 : 0;
 
 			DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
-			swapChainDesc.BufferCount = 3;
+			swapChainDesc.BufferCount = config.SwapChainBufferCount;
 			swapChainDesc.BufferDesc = bufferDesc;
 			swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 			swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
@@ -125,7 +146,6 @@ namespace LightningGE
 			swapChainDesc.SampleDesc = sampleDesc;
 			swapChainDesc.Windowed = TRUE;
 
-			//TODO : is there potential memory leak here?
 			ComPtr<IDXGISwapChain> tempSwapChain;
 
 			dxgiFactory->CreateSwapChain(DYNAMIC_CAST_PTR(D3D12Device, m_device)->m_commandQueue.Get(),

@@ -34,7 +34,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 define_dll_export_macro(RENDERER)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}
+include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
+					${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/platform 
 					${CMAKE_SOURCE_DIR}/window)
