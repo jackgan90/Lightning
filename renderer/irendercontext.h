@@ -17,6 +17,7 @@ namespace LightningGE
 			virtual bool Init(WindowPtr pWindow) = 0;
 			virtual DevicePtr GetDevice() = 0;
 			virtual SwapChainPtr GetSwapChain() = 0;
+			virtual void Render() = 0;
 		};
 		using RenderContextPtr = std::shared_ptr<IRenderContext>;
 	}

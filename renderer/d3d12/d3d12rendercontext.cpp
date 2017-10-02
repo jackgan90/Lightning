@@ -1,9 +1,13 @@
+#include <d3dx12.h>
 #include "common.h"
 #include "winwindow.h"
 #include "winwindownativehandle.h"
 #include "d3d12rendercontext.h"
 #include "d3d12device.h"
 #include "d3d12swapchain.h"
+#include "rendererfactory.h"
+#include "d3d12rendertargetmanager.h"
+#include "d3d12rendertarget.h"
 #include "logger.h"
 
 namespace LightningGE
@@ -33,6 +37,11 @@ namespace LightningGE
 				return false;
 			}
 			if (!InitSwapChain(dxgiFactory, pWindow))
+			{
+				return false;
+			}
+			m_renderTargetManager = RendererFactory::GetRenderTargetManager(m_device, m_swapChain);
+			if (!BindSwapChainRenderTargets())
 			{
 				return false;
 			}
@@ -114,6 +123,45 @@ namespace LightningGE
 			return true;
 		}
 
+		bool D3D12RenderContext::BindSwapChainRenderTargets()
+		{
+			ComPtr<ID3D12Device> pd3ddevice = DYNAMIC_CAST_PTR(D3D12Device, m_device)->m_device;
+			D3D12_DESCRIPTOR_HEAP_DESC desc{};
+			int renderTargetCount = m_swapChain->GetBufferCount();
+			desc.NumDescriptors = renderTargetCount;
+			desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+			desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+
+			HRESULT hr = pd3ddevice->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&m_rtvDescriptorHeap));
+			if (FAILED(hr))
+			{
+				logger.Log(LogLevel::Error, "Failed to create render target descriptor heap!");
+				return false;
+			}
+			UINT descriptorSize = pd3ddevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+			CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart());
+
+			ComPtr<IDXGISwapChain3> pd3dswapchain = DYNAMIC_CAST_PTR(D3D12SwapChain, m_swapChain)->m_swapChain;
+			ComPtr<ID3D12Resource>* swapChainTargets = new ComPtr<ID3D12Resource>[renderTargetCount];
+			D3D12RenderTargetManager* pRTManager = DYNAMIC_CAST_PTR(D3D12RenderTargetManager, m_renderTargetManager);
+			for (int i = 0; i < renderTargetCount; i++)
+			{
+				hr = pd3dswapchain->GetBuffer(i, IID_PPV_ARGS(&swapChainTargets[i]));
+				if (FAILED(hr))
+				{
+					logger.Log(LogLevel::Error, "Failed to get d3d12 swapchain buffer %d", i);
+					delete []swapChainTargets;
+					return false;
+				}
+				pd3ddevice->CreateRenderTargetView(swapChainTargets[i].Get(), nullptr, rtvHandle);
+				pRTManager->m_renderTargets[pRTManager->m_currentID++] = RenderTargetPtr(new D3D12RenderTarget(swapChainTargets[i]));
+				rtvHandle.Offset(descriptorSize);
+			}
+			delete []swapChainTargets;
+			return true;
+		}
+
+
 
 		DevicePtr D3D12RenderContext::GetDevice()
 		{
@@ -123,6 +171,11 @@ namespace LightningGE
 		SwapChainPtr D3D12RenderContext::GetSwapChain()
 		{
 			return m_swapChain;
+		}
+
+		void D3D12RenderContext::Render()
+		{
+
 		}
 
 	}

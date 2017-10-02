@@ -9,7 +9,7 @@ namespace LightningGE
 		class LIGHTNINGGE_PLATFORM_API AppFactory
 		{
 		public:
-			static ApplicationPtr getApp();
+			static ApplicationPtr GetApp();
 		};
 	}
 }

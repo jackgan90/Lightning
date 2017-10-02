@@ -12,6 +12,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API D3D12SwapChain : public ISwapChain
 		{
 		public:
+			friend class D3D12RenderContext;
 			D3D12SwapChain(ComPtr<IDXGISwapChain3> pSwapChain);
 			~D3D12SwapChain()override;
 			bool Present()override;

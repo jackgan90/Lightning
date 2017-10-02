@@ -15,7 +15,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 #endif
 {
 	logger.Log(LightningGE::Utility::Info, "This is LightingGE entry.");
-	ApplicationPtr pApp = AppFactory::getApp();
+	ApplicationPtr pApp = AppFactory::GetApp();
 	if (!pApp->Init())
 	{
 		logger.Log(LightningGE::Utility::Error, "Application initialize error!");

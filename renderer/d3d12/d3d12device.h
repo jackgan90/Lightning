@@ -14,7 +14,6 @@ namespace LightningGE
 			friend class D3D12RenderContext;
 			D3D12Device(ComPtr<ID3D12Device> pDevice);
 			~D3D12Device()override;
-			RenderTargetPtr CreateRenderTarget() override;
 		private:
 			ComPtr<ID3D12Device> m_device;
 			ComPtr<ID3D12CommandQueue> m_commandQueue;

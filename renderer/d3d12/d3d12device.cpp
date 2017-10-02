@@ -23,11 +23,5 @@ namespace LightningGE
 		{
 
 		}
-
-		RenderTargetPtr D3D12Device::CreateRenderTarget()
-		{
-			return RenderTargetPtr();
-		}
-
 	}
 }

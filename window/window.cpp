@@ -16,7 +16,7 @@ namespace LightningGE
 		{
 			if (m_msgHandlers.find(MESSAGE_IDLE) != m_msgHandlers.end())
 			{
-				m_msgHandlers[MESSAGE_IDLE](MESSAGE_IDLE, WindowIdleParam( GetNativeHandle()));
+				m_msgHandlers[MESSAGE_IDLE](MESSAGE_IDLE, WindowIdleParam(this));
 			}
 		}
 	}

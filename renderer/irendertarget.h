@@ -12,5 +12,6 @@ namespace LightningGE
 			virtual ~IRenderTarget() {}
 		};
 		using RenderTargetPtr = std::shared_ptr<IRenderTarget>;
+		using RenderTargetID = int;
 	}
 }

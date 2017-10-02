@@ -4,6 +4,9 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
+		D3D12RenderTarget::D3D12RenderTarget(ComPtr<ID3D12Resource> pRenderTarget) :m_nativeRenderTarget(pRenderTarget)
+		{
 
+		}
 	}
 }

@@ -94,7 +94,7 @@ namespace LightningGE
 
 		void Win32Application::OnWindowIdle(const WindowSystem::WindowIdleParam& param)
 		{
-			logger.Log(LogLevel::Debug, "WindowIdle");
+			m_renderContext->Render();
 		}
 	}
 }

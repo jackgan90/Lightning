@@ -1,11 +1,12 @@
 #pragma once
-#include "iwindownativehandle.h"
+#include "iwindow.h"
 #include <functional>
 
 namespace LightningGE
 {
 	namespace WindowSystem
 	{
+		class IWindow;
 		enum WindowMessage
 		{
 			MESSAGE_CREATED,
@@ -16,28 +17,25 @@ namespace LightningGE
 
 		struct WindowMessageParam
 		{
-
+			WindowMessageParam(const IWindow* ptr):pWindow(ptr){}
+			const IWindow* pWindow;
 		};
 
 		struct WindowCreatedParam : WindowMessageParam
 		{
-			WindowNativeHandlePtr nativeHandle;
 		};
 
 		struct WindowDestroyedParam : WindowMessageParam
 		{
-			WindowNativeHandlePtr nativeHandle;
 		};
 
 		struct WindowIdleParam : WindowMessageParam
 		{
-			WindowIdleParam(const WindowNativeHandlePtr ptr) : nativeHandle(ptr){}
-			WindowNativeHandlePtr nativeHandle;
+			WindowIdleParam(const IWindow* ptr) : WindowMessageParam(ptr){}
 		};
 
 		struct WindowResizeParam : WindowMessageParam
 		{
-			WindowNativeHandlePtr nativeHandle;
 			unsigned int width;
 			unsigned int height;
 		};

@@ -8,7 +8,7 @@ namespace LightningGE
 {
 	namespace App
 	{
-		ApplicationPtr AppFactory::getApp()
+		ApplicationPtr AppFactory::GetApp()
 		{
 #ifdef LIGHTNINGGE_WIN32
 			return std::make_shared<Win32Application>();

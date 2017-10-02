@@ -5,7 +5,10 @@ set(HEADERS rendererexportdef.h
 			idevice.h
 			irendercontext.h
 			iswapchain.h
-			irendertarget.h)
+			irendertarget.h
+			irendertargetmanager.h
+			rendererfactory.h)
+set(SOURCES rendererfactory.cpp)
 
 if (WIN32)
 	add_definitions(-DLIGHTNINGGE_WIN32)
@@ -15,11 +18,13 @@ if(LIGHTNINGGE_USE_D3D12)
 	set(D3D12_HEADERS	d3d12/d3d12device.h
 						d3d12/d3d12rendercontext.h
 						d3d12/d3d12swapchain.h
-						d3d12/d3d12rendertarget.h)
+						d3d12/d3d12rendertarget.h
+						d3d12/d3d12rendertargetmanager.h)
 	set(D3D12_SOURCES	d3d12/d3d12device.cpp
 						d3d12/d3d12rendercontext.cpp
 						d3d12/d3d12swapchain.cpp
-						d3d12/d3d12rendertarget.cpp)
+						d3d12/d3d12rendertarget.cpp
+						d3d12/d3d12rendertargetmanager.cpp)
 	list(APPEND HEADERS ${D3D12_HEADERS})
 	list(APPEND SOURCES ${D3D12_SOURCES})
 	source_group("d3d12" FILES ${D3D12_HEADERS} ${D3D12_SOURCES})
@@ -35,6 +40,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/utilities/logging
 					${CMAKE_SOURCE_DIR}/platform 
 					${CMAKE_SOURCE_DIR}/window)
+if(LIGHTNINGGE_USE_D3D12)
+	include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/d3d12)
+endif()
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 if(MSVC)
