@@ -8,5 +8,10 @@ namespace LightningGE
 		{
 
 		}
+
+		void D3D12RenderTarget::ReleaseRenderResources()
+		{
+			m_nativeRenderTarget.Reset();
+		}
 	}
 }

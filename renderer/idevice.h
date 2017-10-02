@@ -11,6 +11,7 @@ namespace LightningGE
 		{
 		public:
 			virtual ~IDevice() {}
+			virtual void ReleaseRenderResources() = 0;
 		};
 		using DevicePtr = std::shared_ptr<IDevice>;
 	}

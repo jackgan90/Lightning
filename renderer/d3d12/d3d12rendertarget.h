@@ -12,6 +12,7 @@ namespace LightningGE
 		{
 		public:
 			D3D12RenderTarget(ComPtr<ID3D12Resource> pRenderTarget);
+			void ReleaseRenderResources()override;
 		private:
 			ComPtr<ID3D12Resource> m_nativeRenderTarget;
 		};

@@ -16,6 +16,7 @@ namespace LightningGE
 			D3D12SwapChain(ComPtr<IDXGISwapChain3> pSwapChain);
 			~D3D12SwapChain()override;
 			bool Present()override;
+			void ReleaseRenderResources()override;
 			unsigned int GetBufferCount() const override{ return m_bufferCount; }
 		private:
 			unsigned int m_bufferCount;

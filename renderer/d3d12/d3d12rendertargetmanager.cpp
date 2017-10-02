@@ -15,5 +15,13 @@ namespace LightningGE
 			return RenderTargetPtr();
 		}
 
+		void D3D12RenderTargetManager::ReleaseRenderResources()
+		{
+			for (auto it : m_renderTargets)
+				it.second->ReleaseRenderResources();
+			m_renderTargets.clear();
+			m_pDevice.reset();
+			m_pSwapChain.reset();
+		}
 	}
 }

@@ -22,6 +22,7 @@ namespace LightningGE
 				}
 				return RenderTargetPtr();
 			}
+			void ReleaseRenderResources()override;
 		private:
 			DevicePtr m_pDevice;
 			SwapChainPtr m_pSwapChain;

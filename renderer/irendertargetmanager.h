@@ -13,6 +13,7 @@ namespace LightningGE
 			virtual ~IRenderTargetManager(){}
 			virtual RenderTargetPtr CreateRenderTarget() = 0;
 			virtual RenderTargetPtr GetRenderTarget(const RenderTargetID&) = 0;
+			virtual void ReleaseRenderResources() = 0;
 		};
 		using RenderTargetManagerPtr = std::shared_ptr<IRenderTargetManager>;
 	}

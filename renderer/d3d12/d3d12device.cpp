@@ -23,5 +23,10 @@ namespace LightningGE
 		{
 
 		}
+
+		void D3D12Device::ReleaseRenderResources()
+		{
+			m_commandQueue.Reset();
+		}
 	}
 }

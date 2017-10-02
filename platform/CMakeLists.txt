@@ -47,7 +47,7 @@ add_dependencies(${PROJECT_NAME} foundation utilities window renderer)
 
 if(MSVC)
 	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/wd4251")
-	set(CMAKE_CXX_FLAGS_DEBUG "/Od /Zi")
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /DDEBUG")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
 target_link_libraries(${PROJECT_NAME} foundation utilities window renderer)

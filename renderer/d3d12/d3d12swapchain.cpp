@@ -22,5 +22,10 @@ namespace LightningGE
 		{
 			return true;
 		}
+
+		void D3D12SwapChain::ReleaseRenderResources()
+		{
+
+		}
 	}
 }

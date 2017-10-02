@@ -12,6 +12,7 @@ namespace LightningGE
 			virtual ~ISwapChain() {};
 			virtual bool Present() = 0;
 			virtual unsigned int GetBufferCount()const = 0;
+			virtual void ReleaseRenderResources() = 0;
 		};
 		using SwapChainPtr = std::shared_ptr<ISwapChain>;
 	}

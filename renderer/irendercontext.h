@@ -18,6 +18,7 @@ namespace LightningGE
 			virtual DevicePtr GetDevice() = 0;
 			virtual SwapChainPtr GetSwapChain() = 0;
 			virtual void Render() = 0;
+			virtual void ReleaseRenderResources() = 0;
 		};
 		using RenderContextPtr = std::shared_ptr<IRenderContext>;
 	}

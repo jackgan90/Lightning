@@ -25,6 +25,10 @@ namespace LightningGE
 
 		bool D3D12RenderContext::Init(WindowPtr pWindow)
 		{
+#ifdef DEBUG
+			::D3D12GetDebugInterface(IID_PPV_ARGS(&m_d3d12Debug));
+			m_d3d12Debug->EnableDebugLayer();
+#endif
 			ComPtr<IDXGIFactory4> dxgiFactory;
 			HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(&dxgiFactory));
 			if (FAILED(hr))
@@ -36,23 +40,31 @@ namespace LightningGE
 			{
 				return false;
 			}
+			
 			if (!InitSwapChain(dxgiFactory, pWindow))
 			{
 				return false;
 			}
+			
 			m_renderTargetManager = RendererFactory::GetRenderTargetManager(m_device, m_swapChain);
 			if (!BindSwapChainRenderTargets())
 			{
 				return false;
 			}
+			
 			logger.Log(LogLevel::Info, "Initialize D3D12 render context succeeded!");
+			
+#ifdef DEBUG
+			InitDXGIDebug();
+			m_dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
+#endif
 			return true;
 		}
 
 		bool D3D12RenderContext::InitDevice(ComPtr<IDXGIFactory4> dxgiFactory)
 		{
 
-			IDXGIAdapter1* adaptor = nullptr;
+			ComPtr<IDXGIAdapter1> adaptor;
 			int adaptorIndex = 0;
 			bool adaptorFound = false;
 			HRESULT hr;
@@ -67,7 +79,7 @@ namespace LightningGE
 					adaptorIndex++;
 					continue;
 				}
-				hr = D3D12CreateDevice(adaptor, D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), nullptr);
+				hr = D3D12CreateDevice(adaptor.Get(), D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), nullptr);
 				if (SUCCEEDED(hr))
 				{
 					adaptorFound = true;
@@ -81,7 +93,7 @@ namespace LightningGE
 				return false;
 			}
 			ComPtr<ID3D12Device> pDevice;
-			hr = D3D12CreateDevice(adaptor, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&pDevice));
+			hr = D3D12CreateDevice(adaptor.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&pDevice));
 			if (FAILED(hr))
 			{
 				logger.Log(LogLevel::Error, "Failed to create d3d12 device!");
@@ -114,12 +126,13 @@ namespace LightningGE
 			swapChainDesc.Windowed = TRUE;
 
 			//TODO : is there potential memory leak here?
-			IDXGISwapChain* tempSwapChain;
+			ComPtr<IDXGISwapChain> tempSwapChain;
 
 			dxgiFactory->CreateSwapChain(DYNAMIC_CAST_PTR(D3D12Device, m_device)->m_commandQueue.Get(),
 				&swapChainDesc, &tempSwapChain);
-			
-			m_swapChain = SwapChainPtr(new D3D12SwapChain(static_cast<IDXGISwapChain3*>(tempSwapChain)));
+			ComPtr<IDXGISwapChain3> swapChain;
+			tempSwapChain.As(&swapChain);
+			m_swapChain = SwapChainPtr(new D3D12SwapChain(swapChain));
 			return true;
 		}
 
@@ -178,5 +191,26 @@ namespace LightningGE
 
 		}
 
+		void D3D12RenderContext::ReleaseRenderResources()
+		{
+			logger.Log(LogLevel::Info, "Start to clean up render context.");
+			m_device->ReleaseRenderResources();
+			m_swapChain->ReleaseRenderResources();
+			m_renderTargetManager->ReleaseRenderResources();
+			m_rtvDescriptorHeap.Reset();
+#ifdef DEBUG
+			m_dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
+#endif // DEBUG
+		}
+
+#ifdef DEBUG
+		void D3D12RenderContext::InitDXGIDebug()
+		{
+			HMODULE dxgiDebugHandle = ::GetModuleHandle("Dxgidebug.dll");
+			typedef LRESULT (*DXGIGetDebugInterfaceFunc)(REFIID, void**);
+			DXGIGetDebugInterfaceFunc pDXGIGetDebugInterface = reinterpret_cast<DXGIGetDebugInterfaceFunc>(::GetProcAddress(dxgiDebugHandle, "DXGIGetDebugInterface"));
+			pDXGIGetDebugInterface(IID_PPV_ARGS(&m_dxgiDebug));
+		}
+#endif
 	}
 }
