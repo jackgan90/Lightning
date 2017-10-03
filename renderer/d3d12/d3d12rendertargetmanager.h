@@ -1,17 +1,20 @@
 #pragma once
+#include <unordered_map>
+#include <wrl/client.h>
+#include <d3d12.h>
 #include "irendertargetmanager.h"
 #include "idevice.h"
 #include "iswapchain.h"
-#include <unordered_map>
 
 namespace LightningGE
 {
 	namespace Renderer
 	{
+		using Microsoft::WRL::ComPtr;
 		class LIGHTNINGGE_RENDERER_API D3D12RenderTargetManager : public IRenderTargetManager
 		{
 		public:
-			friend class D3D12RenderContext;
+			friend class D3D12SwapChain;
 			D3D12RenderTargetManager(DevicePtr pDevice, SwapChainPtr pSwapChain);
 			RenderTargetPtr CreateRenderTarget()override;
 			RenderTargetPtr GetRenderTarget(const RenderTargetID& targetID) override
@@ -22,6 +25,7 @@ namespace LightningGE
 				}
 				return RenderTargetPtr();
 			}
+			RenderTargetPtr CreateSwapChainRenderTarget(ComPtr<ID3D12Resource> swapChainRT, const D3D12_CPU_DESCRIPTOR_HANDLE& handle);
 			void ReleaseRenderResources()override;
 		private:
 			DevicePtr m_pDevice;

@@ -13,7 +13,7 @@ namespace LightningGE
 		RenderTargetManagerPtr RendererFactory::s_renderTargetMgr;
 		RenderContextPtr RendererFactory::s_renderContext;
 		RendererPtr RendererFactory::s_renderer;
-		RenderTargetManagerPtr RendererFactory::GetRenderTargetManager(DevicePtr pDevice, SwapChainPtr pSwapChain)
+		RenderTargetManagerPtr RendererFactory::CreateRenderTargetManager(DevicePtr pDevice, SwapChainPtr pSwapChain)
 		{
 			if (!s_renderTargetMgr)
 			{
@@ -24,7 +24,7 @@ namespace LightningGE
 			return s_renderTargetMgr;
 		}
 
-		RenderContextPtr RendererFactory::GetRenderContext()
+		RenderContextPtr RendererFactory::CreateRenderContext()
 		{
 			if (!s_renderContext)
 			{
@@ -35,7 +35,7 @@ namespace LightningGE
 			return s_renderContext;
 		}
 
-		RendererPtr RendererFactory::GetRenderer(RenderContextPtr pRenderContext)
+		RendererPtr RendererFactory::CreateRenderer(RenderContextPtr pRenderContext)
 		{
 			if (!s_renderer)
 			{

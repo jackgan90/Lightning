@@ -37,8 +37,10 @@ set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_CURRENT_SOURCE_DIR} 
 					${CMAKE_SOURCE_DIR}/renderer
-					${CMAKE_SOURCE_DIR}/window)
-include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/boost)
+					${CMAKE_SOURCE_DIR}/renderer/types
+					${CMAKE_SOURCE_DIR}/window
+					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen
+					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost)
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 add_dependencies(${PROJECT_NAME} foundation window renderer)

@@ -1,6 +1,7 @@
 project(renderer)
 message(STATUS "Configuring project renderer")
 
+
 set(HEADERS rendererexportdef.h
 			idevice.h
 			irendercontext.h
@@ -14,6 +15,14 @@ set(HEADERS rendererexportdef.h
 set(SOURCES rendererfactory.cpp
 			renderer.cpp)
 
+set(TYPES_HEADERS types/color.h)
+set(TYPES_SOURCES types/color.cpp)
+
+list(APPEND HEADERS ${TYPES_HEADERS})
+list(APPEND SOURCES ${TYPES_SOURCES})
+
+source_group("types" FILES ${TYPES_HEADERS} ${TYPES_SOURCES})
+
 if (WIN32)
 	add_definitions(-DLIGHTNINGGE_WIN32)
 endif()
@@ -24,13 +33,15 @@ if(LIGHTNINGGE_USE_D3D12)
 						d3d12/d3d12swapchain.h
 						d3d12/d3d12rendertarget.h
 						d3d12/d3d12rendertargetmanager.h
-						d3d12/d3d12renderer.h)
+						d3d12/d3d12renderer.h
+						d3d12/d3d12descriptorheapmanager.h)
 	set(D3D12_SOURCES	d3d12/d3d12device.cpp
 						d3d12/d3d12rendercontext.cpp
 						d3d12/d3d12swapchain.cpp
 						d3d12/d3d12rendertarget.cpp
 						d3d12/d3d12rendertargetmanager.cpp
-						d3d12/d3d12renderer.cpp)
+						d3d12/d3d12renderer.cpp
+						d3d12/d3d12descriptorheapmanager.cpp)
 	list(APPEND HEADERS ${D3D12_HEADERS})
 	list(APPEND SOURCES ${D3D12_SOURCES})
 	source_group("d3d12" FILES ${D3D12_HEADERS} ${D3D12_SOURCES})
@@ -42,9 +53,11 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 define_dll_export_macro(RENDERER)
 include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
 					${CMAKE_CURRENT_SOURCE_DIR}
+					${CMAKE_CURRENT_SOURCE_DIR}/types
 					${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/platform 
-					${CMAKE_SOURCE_DIR}/window)
+					${CMAKE_SOURCE_DIR}/window
+					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen)
 if(LIGHTNINGGE_USE_D3D12)
 	include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/d3d12)
 endif()

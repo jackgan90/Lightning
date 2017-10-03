@@ -13,14 +13,15 @@ namespace LightningGE
 			void ReleaseRenderResources()override;
 			DevicePtr GetDevice()override;
 			SwapChainPtr GetSwapChain()override;
+			RenderContextPtr CreateRenderContext()override { return m_context; }
 		protected:
 			void BeginRender();
 			void DoRender();
 			void EndRender();
 		private:
+			void WaitForPreviousFrame();
 			RenderContextPtr m_context;
-			DevicePtr m_device;
-			SwapChainPtr m_swapChain;
+			UINT m_currentBackBufferIndex;
 		};
 	}
 }

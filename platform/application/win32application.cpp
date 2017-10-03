@@ -89,13 +89,13 @@ namespace LightningGE
 
 		bool Win32Application::InitRenderContext()
 		{
-			Renderer::RenderContextPtr pContext = Renderer::RendererFactory::GetRenderContext();
+			Renderer::RenderContextPtr pContext = Renderer::RendererFactory::CreateRenderContext();
 			if (!pContext)
 				return false;
 			bool result = pContext->Init(m_pWin);
 			if (result)
 			{
-				m_renderer = Renderer::RendererFactory::GetRenderer(pContext);
+				m_renderer = Renderer::RendererFactory::CreateRenderer(pContext);
 			}
 			return result;
 		}

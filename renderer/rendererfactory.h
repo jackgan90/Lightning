@@ -13,10 +13,13 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API RendererFactory
 		{
 		public:
-			static RenderTargetManagerPtr GetRenderTargetManager(DevicePtr pDevice, SwapChainPtr pSwapChain);
+			static RenderTargetManagerPtr CreateRenderTargetManager(DevicePtr pDevice, SwapChainPtr pSwapChain);
 			//TODO some graphics API may coexist more than one context in the application process,try to resovle the condition
-			static RenderContextPtr GetRenderContext();
-			static RendererPtr GetRenderer(RenderContextPtr pRenderContext);
+			static RenderContextPtr CreateRenderContext();
+			static RendererPtr CreateRenderer(RenderContextPtr pRenderContext);
+			static RenderTargetManagerPtr GetRenderTargetManager() { return s_renderTargetMgr; }
+			static RenderContextPtr GetRenderContext() { return s_renderContext; }
+			static RendererPtr GetRenderer() { return s_renderer; }
 		private:
 			static RenderTargetManagerPtr s_renderTargetMgr;
 			static RenderContextPtr s_renderContext;
