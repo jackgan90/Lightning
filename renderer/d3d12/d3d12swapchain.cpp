@@ -66,12 +66,20 @@ namespace LightningGE
 					return false;
 				}
 				pd3ddevice->CreateRenderTargetView(swapChainTargets[i].Get(), nullptr, rtvHandle);
-				pRTManager->CreateSwapChainRenderTarget(swapChainTargets[i], rtvHandle);
+				auto rt = pRTManager->CreateSwapChainRenderTarget(swapChainTargets[i], rtvHandle);
+				m_renderTargets[i] = rt->GetID();
 				rtvHandle.Offset(pHeapInfo->incrementSize);
 			}
 			delete []swapChainTargets;
 			return true;
 		}
 
+		RenderTargetPtr D3D12SwapChain::GetBufferRenderTarget(unsigned int bufferIndex)
+		{
+			auto it = m_renderTargets.find(bufferIndex);
+			if (it == m_renderTargets.end())
+				return RenderTargetPtr();
+			return RendererFactory::GetRenderTargetManager()->GetRenderTarget(it->second);
+		}
 	}
 }

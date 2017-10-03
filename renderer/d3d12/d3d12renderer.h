@@ -14,6 +14,8 @@ namespace LightningGE
 			DevicePtr GetDevice()override;
 			SwapChainPtr GetSwapChain()override;
 			RenderContextPtr CreateRenderContext()override { return m_context; }
+			void SetClearColor(const Color& color)override;
+			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 		protected:
 			void BeginRender();
 			void DoRender();
@@ -22,6 +24,7 @@ namespace LightningGE
 			void WaitForPreviousFrame();
 			RenderContextPtr m_context;
 			UINT m_currentBackBufferIndex;
+			Color m_clearColor;
 		};
 	}
 }

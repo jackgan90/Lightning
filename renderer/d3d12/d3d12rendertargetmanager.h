@@ -19,11 +19,12 @@ namespace LightningGE
 			RenderTargetPtr CreateRenderTarget()override;
 			RenderTargetPtr GetRenderTarget(const RenderTargetID& targetID) override
 			{
-				if (m_renderTargets.find(targetID) != m_renderTargets.end())
+				auto it = m_renderTargets.find(targetID);
+				if (it == m_renderTargets.end())
 				{
-					return m_renderTargets[targetID];
+					return RenderTargetPtr();
 				}
-				return RenderTargetPtr();
+				return it->second;
 			}
 			RenderTargetPtr CreateSwapChainRenderTarget(ComPtr<ID3D12Resource> swapChainRT, const D3D12_CPU_DESCRIPTOR_HANDLE& handle);
 			void ReleaseRenderResources()override;

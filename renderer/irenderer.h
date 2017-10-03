@@ -4,6 +4,7 @@
 #include "idevice.h"
 #include "iswapchain.h"
 #include "irendercontext.h"
+#include "color.h"
 #include <memory>
 
 namespace LightningGE
@@ -17,6 +18,7 @@ namespace LightningGE
 			virtual DevicePtr GetDevice() = 0;
 			virtual SwapChainPtr GetSwapChain() = 0;
 			virtual RenderContextPtr CreateRenderContext() = 0;
+			virtual void SetClearColor(const Color& color) = 0;
 		};
 		using RendererPtr = std::shared_ptr<IRenderer>;
 	}

@@ -22,10 +22,12 @@ namespace LightningGE
 			bool Present()override;
 			void ReleaseRenderResources()override;
 			unsigned int GetBufferCount() const override{ return m_bufferCount; }
+			RenderTargetPtr GetBufferRenderTarget(unsigned int bufferIndex)override;
 			bool BindSwapChainRenderTargets();
 		private:
 			unsigned int m_bufferCount;
 			ComPtr<IDXGISwapChain3> m_swapChain;
+			std::unordered_map<UINT, RenderTargetID> m_renderTargets;
 			D3D12Device* m_device;
 		};
 	}
