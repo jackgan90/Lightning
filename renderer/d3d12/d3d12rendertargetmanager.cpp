@@ -20,8 +20,6 @@ namespace LightningGE
 			for (auto it : m_renderTargets)
 				it.second->ReleaseRenderResources();
 			m_renderTargets.clear();
-			m_pDevice.reset();
-			m_pSwapChain.reset();
 		}
 	}
 }

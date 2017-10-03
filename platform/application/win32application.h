@@ -3,7 +3,7 @@
 #include "iapplication.h"
 #include "iwindow.h"
 #include "filesystem.h"
-#include "irendercontext.h"
+#include "irenderer.h"
 
 namespace LightningGE
 {
@@ -31,7 +31,7 @@ namespace LightningGE
 			void TryDestroyWindow();
 			WindowPtr m_pWin;
 			Foundation::FileSystemPtr m_filesystem;
-			Renderer::RenderContextPtr m_renderContext;
+			Renderer::RendererPtr m_renderer;
 		};
 	}
 }

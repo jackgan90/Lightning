@@ -10,6 +10,8 @@ namespace LightningGE
 		{
 		public:
 			static ApplicationPtr GetApp();
+		private:
+			static ApplicationPtr s_app;
 		};
 	}
 }

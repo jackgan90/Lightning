@@ -55,12 +55,15 @@ namespace LightningGE
 			{
 				return false;
 			}
-			
+			if (!CreateFences())
+			{
+				return false;
+			}
 			logger.Log(LogLevel::Info, "Initialize D3D12 render context succeeded!");
 			
 #ifdef DEBUG
 			InitDXGIDebug();
-			m_dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
+			REPORT_LIVE_OBJECTS;
 #endif
 			return true;
 		}
@@ -194,32 +197,47 @@ namespace LightningGE
 			return true;
 		}
 
-
-
-		DevicePtr D3D12RenderContext::GetDevice()
+		bool D3D12RenderContext::CreateFences()
 		{
-			return m_device;
+			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
+			HRESULT hr;
+			D3D12Device* pDevice = DYNAMIC_CAST_PTR(D3D12Device, m_device);
+			ComPtr<ID3D12Device> pd3d12device = pDevice->m_device;
+			for (int i = 0; i < config.SwapChainBufferCount; i++)
+			{
+				m_fenceValues.push_back(0);
+				ComPtr<ID3D12Fence> fence;
+				hr = pd3d12device->CreateFence(m_fenceValues.back(), D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+				if (FAILED(hr))
+				{
+					logger.Log(LogLevel::Error, "Failed to create fence!");
+					return false;
+				}
+				m_fences.push_back(fence);
+			}
+			m_fenceEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+			if (!m_fenceEvent)
+			{
+				logger.Log(LogLevel::Error, "Failed to create fence event!");
+				return false;
+			}
+			return true;
 		}
 
-		SwapChainPtr D3D12RenderContext::GetSwapChain()
-		{
-			return m_swapChain;
-		}
 
-		void D3D12RenderContext::Render()
-		{
-
-		}
 
 		void D3D12RenderContext::ReleaseRenderResources()
 		{
 			logger.Log(LogLevel::Info, "Start to clean up render context.");
-			m_device->ReleaseRenderResources();
-			m_swapChain->ReleaseRenderResources();
-			m_renderTargetManager->ReleaseRenderResources();
 			m_rtvDescriptorHeap.Reset();
+			m_fences.clear();
+			::CloseHandle(m_fenceEvent);
+			m_fenceEvent = nullptr;
+			m_renderTargetManager->ReleaseRenderResources();
+			m_swapChain->ReleaseRenderResources();
+			m_device->ReleaseRenderResources();
 #ifdef DEBUG
-			m_dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
+			REPORT_LIVE_OBJECTS;
 #endif // DEBUG
 		}
 

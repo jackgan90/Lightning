@@ -25,7 +25,7 @@ namespace LightningGE
 
 		void D3D12SwapChain::ReleaseRenderResources()
 		{
-
+			m_swapChain.Reset();
 		}
 	}
 }

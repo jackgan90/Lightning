@@ -1,18 +1,16 @@
 #pragma once
-#include "rendererexportdef.h"
+#include "irenderresourceuser.h"
 #include <memory>
 
 namespace LightningGE
 {
 	namespace Renderer
 	{
-		class LIGHTNINGGE_RENDERER_API ISwapChain
+		class LIGHTNINGGE_RENDERER_API ISwapChain : public IRenderResourceUser
 		{
 		public:
-			virtual ~ISwapChain() {};
 			virtual bool Present() = 0;
 			virtual unsigned int GetBufferCount()const = 0;
-			virtual void ReleaseRenderResources() = 0;
 		};
 		using SwapChainPtr = std::shared_ptr<ISwapChain>;
 	}

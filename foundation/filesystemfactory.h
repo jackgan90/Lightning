@@ -10,6 +10,8 @@ namespace LightningGE
 		{
 		public:
 			static FileSystemPtr FileSystem();
+		private:
+			static FileSystemPtr s_fs;
 		};
 	}
 }

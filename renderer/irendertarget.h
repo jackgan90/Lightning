@@ -1,16 +1,14 @@
 #pragma once
 #include "rendererexportdef.h"
+#include "irenderresourceuser.h"
 #include <memory>
 
 namespace LightningGE
 {
 	namespace Renderer
 	{
-		class LIGHTNINGGE_RENDERER_API IRenderTarget
+		class LIGHTNINGGE_RENDERER_API IRenderTarget : public IRenderResourceUser
 		{
-		public:
-			virtual ~IRenderTarget() {}
-			virtual void ReleaseRenderResources() = 0;
 		};
 		using RenderTargetPtr = std::shared_ptr<IRenderTarget>;
 		using RenderTargetID = int;

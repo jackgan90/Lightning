@@ -20,6 +20,7 @@ namespace LightningGE
 			ComPtr<ID3D12Device> m_device;
 			ComPtr<ID3D12CommandQueue> m_commandQueue;
 			std::vector<ComPtr<ID3D12CommandAllocator>> m_commandAllocators;
+			ComPtr<ID3D12GraphicsCommandList> m_commandList;
 		};
 	}
 }

@@ -5,12 +5,16 @@ namespace LightningGE
 {
 	namespace Foundation
 	{
+		FileSystemPtr FileSystemFactory::s_fs;
 		FileSystemPtr FileSystemFactory::FileSystem()
 		{
+			if (!s_fs)
+			{
 #ifdef LIGHTNINGGE_WIN32
-			return std::make_shared<GeneralFileSystem>();
+			return FileSystemPtr(new GeneralFileSystem());
 #endif
-			return nullptr;
+			}
+			return s_fs;
 		}
 	}
 }
