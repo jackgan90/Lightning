@@ -6,7 +6,6 @@
 #endif
 #include "timesystem.h"
 #include "foundationexportdef.h"
-#include <iostream>
 
 namespace LightningGE
 {
@@ -38,7 +37,6 @@ namespace LightningGE
 				char outputBuffer[512];
 				sprintf_s(outputBuffer, "%s %s %s\n", timeStr.c_str(), prefix.c_str(), buf);
 				::OutputDebugString(outputBuffer);
-				std::cout;
 #endif
 			}
 		private:

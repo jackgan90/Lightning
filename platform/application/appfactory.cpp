@@ -1,5 +1,5 @@
-#include "appfactory.h"
 #include <memory>
+#include "appfactory.h"
 #ifdef LIGHTNINGGE_WIN32
 #include "win32application.h"
 #endif

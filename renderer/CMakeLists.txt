@@ -28,6 +28,7 @@ if (WIN32)
 endif()
 
 if(LIGHTNINGGE_USE_D3D12)
+	add_definitions(-DLIGHTNINGGE_USE_D3D12)
 	set(D3D12_HEADERS	d3d12/d3d12device.h
 						d3d12/d3d12rendercontext.h
 						d3d12/d3d12swapchain.h
@@ -59,12 +60,14 @@ include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
 					${CMAKE_SOURCE_DIR}/window
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen)
 if(LIGHTNINGGE_USE_D3D12)
-	include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/d3d12)
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/d3d12
+						${LIGHTNINGGE_DEPENDENCIES_DIR}/d3d12)
 endif()
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 if(MSVC)
 	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/wd4251")
+	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/EHsc")
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /DDEBUG")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()

@@ -1,7 +1,7 @@
 #pragma once
+#include <string>
 #include "window.h"
 #include "winwindownativehandle.h"
-#include <string>
 
 namespace LightningGE
 {

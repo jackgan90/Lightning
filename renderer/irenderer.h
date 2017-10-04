@@ -1,11 +1,11 @@
 #pragma once
+#include <memory>
 #include "rendererexportdef.h"
 #include "irenderresourceuser.h"
 #include "idevice.h"
 #include "iswapchain.h"
 #include "irendercontext.h"
 #include "color.h"
-#include <memory>
 
 namespace LightningGE
 {

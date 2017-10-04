@@ -1,6 +1,6 @@
 #pragma once
-#include "iwindow.h"
 #include <functional>
+#include "iwindow.h"
 
 namespace LightningGE
 {

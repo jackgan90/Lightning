@@ -1,8 +1,8 @@
-#include "logger.h" //for logging
-#include "appfactory.h" //for application
 #ifdef LIGHTNINGGE_WIN32
 #include <Windows.h>	//for WinMain
 #endif
+#include "logger.h" //for logging
+#include "appfactory.h" //for application
 
 using namespace LightningGE::App;
 using LightningGE::Foundation::logger;

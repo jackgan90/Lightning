@@ -1,8 +1,8 @@
 #include "rendererfactory.h"
-#ifdef LIGHTNINGGE_WIN32
-#include "d3d12/d3d12rendertargetmanager.h"
-#include "d3d12/d3d12rendercontext.h"
-#include "d3d12/d3d12renderer.h"
+#ifdef LIGHTNINGGE_USE_D3D12
+#include "d3d12rendertargetmanager.h"
+#include "d3d12rendercontext.h"
+#include "d3d12renderer.h"
 #endif
 
 
@@ -17,9 +17,9 @@ namespace LightningGE
 		{
 			if (!s_renderTargetMgr)
 			{
-#ifdef LIGHTNINGGE_WIN32
+#ifdef LIGHTNINGGE_USE_D3D12
 				s_renderTargetMgr = RenderTargetManagerPtr(new D3D12RenderTargetManager(pDevice, pSwapChain));
-#endif // LIGHTNINGGE_WIN32
+#endif // LIGHTNINGGE_USE_D3D12
 			}
 			return s_renderTargetMgr;
 		}
@@ -28,9 +28,9 @@ namespace LightningGE
 		{
 			if (!s_renderContext)
 			{
-#ifdef LIGHTNINGGE_WIN32
+#ifdef LIGHTNINGGE_USE_D3D12
 				s_renderContext = RenderContextPtr(new D3D12RenderContext());
-#endif // LIGHTNINGGE_WIN32
+#endif // LIGHTNINGGE_USE_D3D12
 			}
 			return s_renderContext;
 		}
@@ -39,9 +39,9 @@ namespace LightningGE
 		{
 			if (!s_renderer)
 			{
-#ifdef LIGHTNINGGE_WIN32
+#ifdef LIGHTNINGGE_USE_D3D12
 				s_renderer = RendererPtr(new D3D12Renderer(pRenderContext));
-#endif // LIGHTNINGGE_WIN32
+#endif // LIGHTNINGGE_USE_D3D12
 				
 			}
 			return s_renderer;

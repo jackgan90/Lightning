@@ -1,6 +1,6 @@
 #pragma once
-#include "iwindownativehandle.h"
 #include <Windows.h>
+#include "iwindownativehandle.h"
 
 namespace LightningGE
 {

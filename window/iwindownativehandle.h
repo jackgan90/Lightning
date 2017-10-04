@@ -1,6 +1,6 @@
 #pragma once
-#include "windowexportdef.h"
 #include <memory>
+#include "windowexportdef.h"
 
 namespace LightningGE
 {

@@ -1,7 +1,7 @@
 #pragma once
+#include <memory>
 #include "rendererexportdef.h"
 #include "irenderresourceuser.h"
-#include <memory>
 
 namespace LightningGE
 {

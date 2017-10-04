@@ -1,7 +1,7 @@
+#include <algorithm>
 #include "filesystem.h"
 #include "common.h"
 #include "configmanager.h"
-#include <algorithm>
 
 using std::string;
 using namespace boost::filesystem;
