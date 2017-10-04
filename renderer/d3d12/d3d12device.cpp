@@ -61,7 +61,7 @@ namespace LightningGE
 			m_device.Reset();
 		}
 
-		void D3D12Device::ClearRenderTarget(const RenderTargetPtr& rt, const ColorF& color)
+		void D3D12Device::ClearRenderTarget(const RenderTargetPtr& rt, const ColorF& color, const RectI* pRects, const int rectCount)
 		{
 			D3D12RenderTarget *pTarget = static_cast<D3D12RenderTarget*>(rt.get());
 			ComPtr<ID3D12Resource> nativeRenderTarget = pTarget->GetNative();
@@ -73,7 +73,24 @@ namespace LightningGE
 			const float clearColor[] = { color.r(), color.g(), color.b(), color.a() };
 			auto rtvHandle = pTarget->GetCPUHandle();
 			m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
-			m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+			if (pRects && rectCount)
+			{
+				//TODO here may new a few small objects ,consider use memory allocator to boost performance
+				D3D12_RECT* d3dRect = new D3D12_RECT[rectCount];
+				for (int i = 0; i < rectCount; i++)
+				{
+					d3dRect[i].left = pRects[i].left();
+					d3dRect[i].right = pRects[i].right();
+					d3dRect[i].top = pRects[i].top();
+					d3dRect[i].bottom = pRects[i].bottom();
+				}
+				m_commandList->ClearRenderTargetView(rtvHandle, clearColor, rectCount, d3dRect);
+				delete[] d3dRect;
+			}
+			else
+			{
+				m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+			}
 
 			if (rt->IsSwapChainRenderTarget())
 				m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget.Get(),

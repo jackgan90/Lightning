@@ -15,7 +15,8 @@ set(HEADERS rendererexportdef.h
 set(SOURCES rendererfactory.cpp
 			renderer.cpp)
 
-set(TYPES_HEADERS types/color.h)
+set(TYPES_HEADERS	types/color.h
+					types/rect.h)
 
 list(APPEND HEADERS ${TYPES_HEADERS})
 

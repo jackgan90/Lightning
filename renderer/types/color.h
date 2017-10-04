@@ -8,6 +8,7 @@ namespace LightningGE
 		template<typename T>
 		struct Color
 		{
+			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 			Color():value(0){}
 			Color(T r, T g, T b, T a):value(r, g, b, a){}
 			Color(const T* components):value(components[0], components[1], components[2], components[3]){}
