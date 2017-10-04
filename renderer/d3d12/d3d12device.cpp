@@ -61,7 +61,7 @@ namespace LightningGE
 			m_device.Reset();
 		}
 
-		void D3D12Device::ClearRenderTarget(const RenderTargetPtr& rt, const Color& color)
+		void D3D12Device::ClearRenderTarget(const RenderTargetPtr& rt, const ColorF& color)
 		{
 			D3D12RenderTarget *pTarget = static_cast<D3D12RenderTarget*>(rt.get());
 			ComPtr<ID3D12Resource> nativeRenderTarget = pTarget->GetNative();
@@ -70,7 +70,7 @@ namespace LightningGE
 					D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
 			//TODO : check gpu?
-			const float clearColor[] = { color(0), color(1), color(2), color(3) };
+			const float clearColor[] = { color.r(), color.g(), color.b(), color.a() };
 			auto rtvHandle = pTarget->GetCPUHandle();
 			m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 			m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);

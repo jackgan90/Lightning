@@ -19,7 +19,7 @@ namespace LightningGE
 			friend class D3D12SwapChain;
 			D3D12Device(ComPtr<ID3D12Device> pDevice, D3D12RenderContext* pContext);
 			~D3D12Device()override;
-			void ClearRenderTarget(const RenderTargetPtr& rt, const Color& color)override;
+			void ClearRenderTarget(const RenderTargetPtr& rt, const ColorF& color)override;
 			void ReleaseRenderResources()override;
 		private:
 			ComPtr<ID3D12Device> m_device;

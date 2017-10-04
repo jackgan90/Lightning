@@ -126,7 +126,7 @@ namespace LightningGE
 				msQualityLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
 				msQualityLevels.SampleCount = config.MSAASampleCount > 0 ? config.MSAASampleCount : 1;
 				msQualityLevels.NumQualityLevels = 0;
-				DYNAMIC_CAST_PTR(D3D12Device, m_device)->m_device->CheckFeatureSupport(
+				STATIC_CAST_PTR(D3D12Device, m_device)->m_device->CheckFeatureSupport(
 					D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msQualityLevels, sizeof(msQualityLevels));
 				qualityLevels = msQualityLevels.NumQualityLevels;
 				sampleCount = msQualityLevels.SampleCount;
@@ -147,14 +147,14 @@ namespace LightningGE
 			swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 			swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
 			const WindowSystem::WinWindowNativeHandle *pNativeHandle = \
-				dynamic_cast<const WindowSystem::WinWindowNativeHandle*>(DYNAMIC_CAST_PTR(WinWindow, pWindow)->GetNativeHandle().get());
+				dynamic_cast<const WindowSystem::WinWindowNativeHandle*>(STATIC_CAST_PTR(WinWindow, pWindow)->GetNativeHandle().get());
 			swapChainDesc.OutputWindow = *const_cast<WindowSystem::WinWindowNativeHandle*>(pNativeHandle);
 			swapChainDesc.SampleDesc = sampleDesc;
 			swapChainDesc.Windowed = TRUE;
 
 			ComPtr<IDXGISwapChain> tempSwapChain;
 
-			dxgiFactory->CreateSwapChain(DYNAMIC_CAST_PTR(D3D12Device, m_device)->m_commandQueue.Get(),
+			dxgiFactory->CreateSwapChain(STATIC_CAST_PTR(D3D12Device, m_device)->m_commandQueue.Get(),
 				&swapChainDesc, &tempSwapChain);
 			ComPtr<IDXGISwapChain3> swapChain;
 			tempSwapChain.As(&swapChain);
@@ -167,7 +167,7 @@ namespace LightningGE
 		{
 			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
 			HRESULT hr;
-			D3D12Device* pDevice = DYNAMIC_CAST_PTR(D3D12Device, m_device);
+			D3D12Device* pDevice = STATIC_CAST_PTR(D3D12Device, m_device);
 			ComPtr<ID3D12Device> pd3d12device = pDevice->m_device;
 			for (int i = 0; i < config.SwapChainBufferCount; i++)
 			{

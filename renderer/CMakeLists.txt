@@ -16,12 +16,10 @@ set(SOURCES rendererfactory.cpp
 			renderer.cpp)
 
 set(TYPES_HEADERS types/color.h)
-set(TYPES_SOURCES types/color.cpp)
 
 list(APPEND HEADERS ${TYPES_HEADERS})
-list(APPEND SOURCES ${TYPES_SOURCES})
 
-source_group("types" FILES ${TYPES_HEADERS} ${TYPES_SOURCES})
+source_group("types" FILES ${TYPES_HEADERS})
 
 if (WIN32)
 	add_definitions(-DLIGHTNINGGE_WIN32)

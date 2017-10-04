@@ -23,7 +23,7 @@ namespace LightningGE
 				if (const WinWindowNativeHandle* pWinHandle = dynamic_cast<const WinWindowNativeHandle*>(pHandle.get()))
 				{
 					if (pWinHandle->OwnWindowsHandle(hWnd))
-						return DYNAMIC_CAST_PTR(WinWindow, window);
+						return STATIC_CAST_PTR(WinWindow, window);
 				}
 			}
 			return nullptr;
@@ -72,7 +72,7 @@ namespace LightningGE
 		{
 			if (m_nativeHandle)
 			{
-				::DestroyWindow(DYNAMIC_CAST_PTR(WinWindowNativeHandle, m_nativeHandle)->m_hWnd);
+				::DestroyWindow(STATIC_CAST_PTR(WinWindowNativeHandle, m_nativeHandle)->m_hWnd);
 			}
 		}
 
@@ -125,7 +125,7 @@ namespace LightningGE
 
 		bool WinWindow::Show(bool show)
 		{
-			auto hWnd = DYNAMIC_CAST_PTR(WinWindowNativeHandle, m_nativeHandle)->m_hWnd;
+			auto hWnd = STATIC_CAST_PTR(WinWindowNativeHandle, m_nativeHandle)->m_hWnd;
 			if (!m_nativeHandle || !hWnd)
 				return false;
 			ShowWindow(hWnd, show ? SW_SHOW : SW_HIDE);

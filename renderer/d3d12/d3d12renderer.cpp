@@ -9,7 +9,8 @@ namespace LightningGE
 	{
 		using Foundation::logger;
 		using Foundation::LogLevel;
-		D3D12Renderer::D3D12Renderer(RenderContextPtr pContext) :m_context(pContext), m_clearColor(0.5, 0.5, 0.5, 1.0)
+		D3D12Renderer::D3D12Renderer(RenderContextPtr pContext) : 
+			m_context(pContext), m_clearColor(0.5f, 0.5f, 0.5f, 1.0f)
 		{
 			D3D12RenderContext* pD3D12Context = static_cast<D3D12RenderContext*>(m_context.get());
 			D3D12SwapChain* pSwapChain = static_cast<D3D12SwapChain*>(pD3D12Context->m_swapChain.get());
@@ -25,7 +26,7 @@ namespace LightningGE
 
 		void D3D12Renderer::BeginRender()
 		{
-
+			m_frameIndex++;
 		}
 
 		void D3D12Renderer::DoRender()
@@ -84,7 +85,7 @@ namespace LightningGE
 			++pContext->m_fenceValues[m_currentBackBufferIndex];
 		}
 
-		void D3D12Renderer::SetClearColor(const Color& color)
+		void D3D12Renderer::SetClearColor(const ColorF& color)
 		{
 			m_clearColor = color;
 		}

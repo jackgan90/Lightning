@@ -12,7 +12,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API IDevice : public IRenderResourceUser
 		{
 		public:
-			virtual void ClearRenderTarget(const RenderTargetPtr& rt, const Color& color) = 0;
+			virtual void ClearRenderTarget(const RenderTargetPtr& rt, const ColorF& color) = 0;
 		};
 		using DevicePtr = std::shared_ptr<IDevice>;
 	}

@@ -18,7 +18,8 @@ namespace LightningGE
 			virtual DevicePtr GetDevice() = 0;
 			virtual SwapChainPtr GetSwapChain() = 0;
 			virtual RenderContextPtr CreateRenderContext() = 0;
-			virtual void SetClearColor(const Color& color) = 0;
+			virtual void SetClearColor(const ColorF& color) = 0;
+			virtual unsigned long GetCurrentFrameIndex()const = 0;
 		};
 		using RendererPtr = std::shared_ptr<IRenderer>;
 	}
