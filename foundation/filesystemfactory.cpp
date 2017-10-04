@@ -11,7 +11,7 @@ namespace LightningGE
 			if (!s_fs)
 			{
 #ifdef LIGHTNINGGE_WIN32
-			return FileSystemPtr(new GeneralFileSystem());
+				s_fs = FileSystemPtr(new GeneralFileSystem());
 #endif
 			}
 			return s_fs;

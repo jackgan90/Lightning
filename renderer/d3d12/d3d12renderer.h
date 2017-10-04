@@ -9,6 +9,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API D3D12Renderer : public Renderer
 		{
 		public:
+			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 			D3D12Renderer(RenderContextPtr pContext);
 			void ReleaseRenderResources()override;
 			DevicePtr GetDevice()override;
