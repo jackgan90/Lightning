@@ -9,7 +9,7 @@ namespace LightningGE
 		struct Color
 		{
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-			Color():value(0){}
+			Color():value(0, 0, 0, 0){}
 			Color(T r, T g, T b, T a):value(r, g, b, a){}
 			Color(const T* components):value(components[0], components[1], components[2], components[3]){}
 			Eigen::Matrix<T, 4, 1> value;

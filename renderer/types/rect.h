@@ -9,7 +9,7 @@ namespace LightningGE
 		struct Rect
 		{
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-			Rect():value(0){}
+			Rect():value(0, 0, 0, 0){}
 			Rect(T left, T top, T width, T height):value(left, top, width, height){}
 			Rect(const T* dimension):value(dimension[0], dimension[1], dimension[2], dimension[3]){}
 			Eigen::Matrix<T, 4, 1> value;
