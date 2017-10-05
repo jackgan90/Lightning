@@ -1,0 +1,10 @@
+<lightning_game_engine_configuration>
+	<resource>
+		<root>E:\LightningGE_res</root>
+	</resource>
+	<render>
+		<swap_chain_buffer_count>3</SwapChainBufferCount>
+		<msaa_enable>true</msaa_enable>
+		<msaa_sample_count>4</msaa_sample_count>
+	</render>
+</lightning_game_engine_configuration>
