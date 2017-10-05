@@ -1,6 +1,7 @@
 #pragma once
 #include <d3d12.h>
 #include "iblendstate.h"
+#include "idepthstencilstate.h"
 
 namespace LightningGE
 {
@@ -54,6 +55,56 @@ namespace LightningGE
 					return D3D12_BLEND_INV_DEST_ALPHA;
 				default:
 					return D3D12_BLEND_ZERO;
+				}
+			}
+
+			static D3D12_COMPARISON_FUNC MapCmpFunc(const CmpFunc& func)
+			{
+				switch (func)
+				{
+				case NEVER:
+					return D3D12_COMPARISON_FUNC_NEVER;
+				case LESS:
+					return D3D12_COMPARISON_FUNC_LESS;
+				case EQUAL:
+					return D3D12_COMPARISON_FUNC_EQUAL;
+				case LESS_EQUAL:
+					return D3D12_COMPARISON_FUNC_LESS_EQUAL;
+				case GREATER:
+					return D3D12_COMPARISON_FUNC_GREATER;
+				case NOT_EQUAL:
+					return D3D12_COMPARISON_FUNC_NOT_EQUAL;
+				case GREATER_EQUAL:
+					return D3D12_COMPARISON_FUNC_GREATER_EQUAL;
+				case ALWAYS:
+					return D3D12_COMPARISON_FUNC_ALWAYS;
+				default:
+					return D3D12_COMPARISON_FUNC_LESS;
+				}
+			}
+
+			static D3D12_STENCIL_OP MapStencilOp(const StencilOp& op)
+			{
+				switch (op)
+				{
+				case KEEP:
+					return D3D12_STENCIL_OP_KEEP;
+				case ZERO:
+					return D3D12_STENCIL_OP_ZERO;
+				case REPLACE:
+					return D3D12_STENCIL_OP_REPLACE;
+				case INCREASE_CLAMP:
+					return D3D12_STENCIL_OP_INCR_SAT;
+				case DECREASE_CLAMP:
+					return D3D12_STENCIL_OP_DECR_SAT;
+				case INVERT:
+					return D3D12_STENCIL_OP_INVERT;
+				case INCREASE_WRAP:
+					return D3D12_STENCIL_OP_INCR;
+				case DECREASE_WRAP:
+					return D3D12_STENCIL_OP_DECR;
+				default:
+					return D3D12_STENCIL_OP_KEEP;
 				}
 			}
 		};

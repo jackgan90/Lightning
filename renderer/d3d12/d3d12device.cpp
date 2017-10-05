@@ -3,6 +3,8 @@
 #include "d3d12rendertarget.h"
 #include "d3d12swapchain.h"
 #include "d3d12pipelinestateobject.h"
+#include "d3d12blendstate.h"
+#include "d3d12depthstencilstate.h"
 #include "logger.h"
 #include "configmanager.h"
 
@@ -101,18 +103,18 @@ namespace LightningGE
 
 		BlendStatePtr D3D12Device::CreateBlendState()
 		{
-			return BlendStatePtr();
+			return BlendStatePtr(new D3D12BlendState());
 		}
 
 		DepthStencilStatePtr D3D12Device::CreateDepthStencilState()
 		{
-			return DepthStencilStatePtr();
+			return DepthStencilStatePtr(new D3D12DepthStencilState());
 		}
 
 
 		PipelineStateObjectPtr D3D12Device::CreatePipelineStateObject()
 		{
-			return PipelineStateObjectPtr();
+			return PipelineStateObjectPtr(new D3D12PipelineStateObject());
 		}
 
 	}

@@ -11,6 +11,7 @@ namespace LightningGE
 		class D3D12BlendState : public IBlendState
 		{
 		public:
+			friend class D3D12PipelineStateObject;
 			D3D12BlendState();
 			const BlendConfiguration* GetConfiguration(const RenderTargetPtr& renderTarget)override;
 			bool SetConfiguration(const RenderTargetPtr& renderTarget, const BlendConfiguration& configuration)override;

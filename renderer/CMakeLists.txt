@@ -14,9 +14,15 @@ set(HEADERS rendererexportdef.h
 			renderer.h
 			iblendstate.h
 			idepthstencilstate.h
-			ipipelinestateobject.h)
+			ipipelinestateobject.h
+			semantics.h
+			ivertexbuffer.h
+			vertexbuffer.h
+			rendererhelper.h)
 set(SOURCES rendererfactory.cpp
-			renderer.cpp)
+			renderer.cpp
+			vertexbuffer.cpp
+			rendererhelper.cpp)
 
 set(TYPES_HEADERS	types/color.h
 					types/rect.h)

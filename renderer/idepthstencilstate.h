@@ -32,6 +32,9 @@ namespace LightningGE
 
 		struct StencilFace
 		{
+			StencilFace() : cmpFunc(ALWAYS), passOp(KEEP), failOp(KEEP), depthFailOp(KEEP)
+			{
+			}
 			CmpFunc cmpFunc;
 			StencilOp passOp;
 			StencilOp failOp;
@@ -40,6 +43,12 @@ namespace LightningGE
 
 		struct DepthStencilConfiguration
 		{
+			DepthStencilConfiguration() : depthTestEnable(true), depthWriteEnable(true), depthCmpFunc(LESS)
+				,stencilEnable(false), stencilRef(0), stencilReadMask(0xff), stencilWriteMask(0xff)
+				,frontFace(), backFace()
+			{
+
+			}
 			//depth config
 			bool depthTestEnable;
 			bool depthWriteEnable;
@@ -56,7 +65,7 @@ namespace LightningGE
 		{
 		public:
 			virtual ~IDepthStencilState(){}
-			virtual const DepthStencilConfiguration& GetConfiguration()const = 0;
+			virtual const DepthStencilConfiguration& GetConfiguration() = 0;
 			virtual bool SetConfiguration(const DepthStencilConfiguration& configuration) = 0;
 			virtual bool EnableDepthTest(bool enable) = 0;
 			virtual bool EnableStenciltest(bool enable) = 0;
