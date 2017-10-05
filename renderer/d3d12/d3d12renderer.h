@@ -16,6 +16,7 @@ namespace LightningGE
 			SwapChainPtr GetSwapChain()override;
 			RenderContextPtr CreateRenderContext()override { return m_context; }
 			void SetClearColor(const ColorF& color)override;
+			void ApplyPipelineStateObject(const PipelineStateObjectPtr& pso)override;
 		protected:
 			void BeginRender();
 			void DoRender();
@@ -23,6 +24,7 @@ namespace LightningGE
 		private:
 			void WaitForPreviousFrame();
 			RenderContextPtr m_context;
+			PipelineStateObjectPtr m_pso;
 			UINT m_currentBackBufferIndex;
 			ColorF m_clearColor;
 		};

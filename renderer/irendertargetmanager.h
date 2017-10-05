@@ -11,7 +11,9 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API IRenderTargetManager : public IRenderResourceKeeper
 		{
 		public:
+			//create a render target
 			virtual RenderTargetPtr CreateRenderTarget() = 0;
+			//obtain a render target by ID
 			virtual RenderTargetPtr GetRenderTarget(const RenderTargetID&) = 0;
 		};
 		using RenderTargetManagerPtr = std::shared_ptr<IRenderTargetManager>;

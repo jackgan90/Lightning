@@ -21,6 +21,9 @@ namespace LightningGE
 			~D3D12Device()override;
 			void ClearRenderTarget(const RenderTargetPtr& rt, const ColorF& color, const RectI* pRects = nullptr, const int rectCount = 0)override;
 			void ReleaseRenderResources()override;
+			BlendStatePtr CreateBlendState()override;
+			DepthStencilStatePtr CreateDepthStencilState()override;
+			PipelineStateObjectPtr CreatePipelineStateObject()override;
 		private:
 			ComPtr<ID3D12Device> m_device;
 			ComPtr<ID3D12CommandQueue> m_commandQueue;

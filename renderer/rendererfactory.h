@@ -1,8 +1,8 @@
 #pragma once
 #include "rendererexportdef.h"
-#include "irendercontext.h"
 #include "idevice.h"
 #include "iswapchain.h"
+#include "irendercontext.h"
 #include "irendertargetmanager.h"
 #include "irenderer.h"
 
@@ -13,12 +13,18 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API RendererFactory
 		{
 		public:
+			//create a singleton render target manager of the implementation
 			static RenderTargetManagerPtr CreateRenderTargetManager(DevicePtr pDevice, SwapChainPtr pSwapChain);
 			//TODO some graphics API may coexist more than one context in the application process,try to resovle the condition
+			//create a render context which can be used to initialize rendering pipeline
 			static RenderContextPtr CreateRenderContext();
+			//create a singleton renderer to control the rendering workflow
 			static RendererPtr CreateRenderer(RenderContextPtr pRenderContext);
+			//return an already created render target manager instance
 			static RenderTargetManagerPtr GetRenderTargetManager() { return s_renderTargetMgr; }
+			//return an already created render context
 			static RenderContextPtr GetRenderContext() { return s_renderContext; }
+			//return an already created renderer
 			static RendererPtr GetRenderer() { return s_renderer; }
 		private:
 			static RenderTargetManagerPtr s_renderTargetMgr;

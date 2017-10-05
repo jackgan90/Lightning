@@ -9,7 +9,9 @@ namespace LightningGE
 		{
 		public:
 			Renderer();
+			//entry point of render system
 			void Render()override;
+			//return the current frame index
 			unsigned long GetCurrentFrameIndex()const override;
 		protected:
 			virtual void BeginRender() = 0;

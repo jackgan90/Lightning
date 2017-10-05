@@ -2,6 +2,7 @@
 #include "d3d12device.h"
 #include "d3d12rendertarget.h"
 #include "d3d12swapchain.h"
+#include "d3d12pipelinestateobject.h"
 #include "logger.h"
 #include "configmanager.h"
 
@@ -97,5 +98,22 @@ namespace LightningGE
 					D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 
 		}
+
+		BlendStatePtr D3D12Device::CreateBlendState()
+		{
+			return BlendStatePtr();
+		}
+
+		DepthStencilStatePtr D3D12Device::CreateDepthStencilState()
+		{
+			return DepthStencilStatePtr();
+		}
+
+
+		PipelineStateObjectPtr D3D12Device::CreatePipelineStateObject()
+		{
+			return PipelineStateObjectPtr();
+		}
+
 	}
 }

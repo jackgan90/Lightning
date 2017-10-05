@@ -14,6 +14,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API IRenderContext : public IRenderResourceKeeper
 		{
 		public:
+			//initialize a render environment for rendering
 			virtual bool Init(const WindowPtr& pWindow) = 0;
 		};
 		using RenderContextPtr = std::shared_ptr<IRenderContext>;

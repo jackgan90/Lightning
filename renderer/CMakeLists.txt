@@ -11,7 +11,10 @@ set(HEADERS rendererexportdef.h
 			rendererfactory.h
 			irenderresourcekeeper.h
 			irenderer.h
-			renderer.h)
+			renderer.h
+			iblendstate.h
+			idepthstencilstate.h
+			ipipelinestateobject.h)
 set(SOURCES rendererfactory.cpp
 			renderer.cpp)
 
@@ -34,14 +37,21 @@ if(LIGHTNINGGE_USE_D3D12)
 						d3d12/d3d12rendertarget.h
 						d3d12/d3d12rendertargetmanager.h
 						d3d12/d3d12renderer.h
-						d3d12/d3d12descriptorheapmanager.h)
+						d3d12/d3d12descriptorheapmanager.h
+						d3d12/d3d12blendstate.h
+						d3d12/d3d12depthstencilstate.h
+						d3d12/d3d12pipelinestateobject.h
+						d3d12/d3d12typemapper.h)
 	set(D3D12_SOURCES	d3d12/d3d12device.cpp
 						d3d12/d3d12rendercontext.cpp
 						d3d12/d3d12swapchain.cpp
 						d3d12/d3d12rendertarget.cpp
 						d3d12/d3d12rendertargetmanager.cpp
 						d3d12/d3d12renderer.cpp
-						d3d12/d3d12descriptorheapmanager.cpp)
+						d3d12/d3d12descriptorheapmanager.cpp
+						d3d12/d3d12blendstate.cpp
+						d3d12/d3d12depthstencilstate.cpp
+						d3d12/d3d12pipelinestateobject.cpp)
 	list(APPEND HEADERS ${D3D12_HEADERS})
 	list(APPEND SOURCES ${D3D12_SOURCES})
 	source_group("d3d12" FILES ${D3D12_HEADERS} ${D3D12_SOURCES})
