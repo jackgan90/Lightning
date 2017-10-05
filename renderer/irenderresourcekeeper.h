@@ -5,11 +5,11 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		class LIGHTNINGGE_RENDERER_API IRenderResourceUser
+		class LIGHTNINGGE_RENDERER_API IRenderResourceKeeper
 		{
 		public:
 			virtual void ReleaseRenderResources() = 0;
-			virtual ~IRenderResourceUser() {}
+			virtual ~IRenderResourceKeeper() {}
 		};
 	}
 }

@@ -9,7 +9,7 @@ set(HEADERS rendererexportdef.h
 			irendertarget.h
 			irendertargetmanager.h
 			rendererfactory.h
-			irenderresourceuser.h
+			irenderresourcekeeper.h
 			irenderer.h
 			renderer.h)
 set(SOURCES rendererfactory.cpp

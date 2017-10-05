@@ -1,13 +1,13 @@
 #pragma once
 #include <memory>
-#include "irenderresourceuser.h"
+#include "irenderresourcekeeper.h"
 #include "irendertarget.h"
 
 namespace LightningGE
 {
 	namespace Renderer
 	{
-		class LIGHTNINGGE_RENDERER_API ISwapChain : public IRenderResourceUser
+		class LIGHTNINGGE_RENDERER_API ISwapChain : public IRenderResourceKeeper
 		{
 		public:
 			virtual bool Present() = 0;

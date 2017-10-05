@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include "rendererexportdef.h"
-#include "irenderresourceuser.h"
+#include "irenderresourcekeeper.h"
 #include "idevice.h"
 #include "iswapchain.h"
 #include "irendercontext.h"
@@ -11,7 +11,7 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		class LIGHTNINGGE_RENDERER_API IRenderer : public IRenderResourceUser
+		class LIGHTNINGGE_RENDERER_API IRenderer : public IRenderResourceKeeper
 		{
 		public:
 			virtual void Render() = 0;

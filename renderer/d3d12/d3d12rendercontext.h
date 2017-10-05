@@ -25,11 +25,11 @@ namespace LightningGE
 			friend class D3D12Renderer;
 			friend class D3D12Device;
 			~D3D12RenderContext()override;
-			bool Init(WindowPtr pWindow)override;
+			bool Init(const WindowPtr& pWindow)override;
 			void ReleaseRenderResources()override;
 		private:
 			bool InitDevice(ComPtr<IDXGIFactory4> dxgiFactory);
-			bool InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, WindowPtr pWindow);
+			bool InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, const WindowPtr& pWindow);
 			bool CreateFences();
 			DevicePtr m_device;
 			SwapChainPtr m_swapChain;

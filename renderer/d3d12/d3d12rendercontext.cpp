@@ -28,7 +28,7 @@ namespace LightningGE
 
 		}
 
-		bool D3D12RenderContext::Init(WindowPtr pWindow)
+		bool D3D12RenderContext::Init(const WindowPtr& pWindow)
 		{
 #ifdef DEBUG
 			::D3D12GetDebugInterface(IID_PPV_ARGS(&m_d3d12Debug));
@@ -113,7 +113,7 @@ namespace LightningGE
 			return true;
 		}
 
-		bool D3D12RenderContext::InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, WindowPtr pWindow)
+		bool D3D12RenderContext::InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, const WindowPtr& pWindow)
 		{
 			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
 			UINT sampleCount = 1;

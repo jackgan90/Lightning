@@ -5,7 +5,7 @@
 #include <vector>
 #include <wrl\client.h>
 #include "d3d12device.h"
-#include "irenderresourceuser.h"
+#include "irenderresourcekeeper.h"
 
 namespace LightningGE
 {
@@ -22,7 +22,7 @@ namespace LightningGE
 			UINT heapID;
 		};
 
-		class D3D12DescriptorHeapManager : public IRenderResourceUser
+		class D3D12DescriptorHeapManager : public IRenderResourceKeeper
 		{
 		public:
 			friend class D3D12RenderContext;
