@@ -8,15 +8,13 @@ namespace LightningGE
 	namespace Renderer
 	{
 		using Microsoft::WRL::ComPtr;
-		class D3D12Shader : public IShader
+		class D3D12Shader : public Shader
 		{
 		public:
 			D3D12Shader(ShaderType type);
 			std::string GetEntryPoint()const override; 
-			void SetEntryPoint(const std::string& entryPoint)override;
 			ShaderType GetType()const override;
-			void DefineMacro(const ShaderDefine& define)override;
-			const ShaderDefine GetMacro()const override;
+			const ShaderDefine GetMacros()const override;
 			bool Compile(const Foundation::FilePtr& file, const ShaderDefine& define)override;
 			const std::string GetCompileErrorLog()const override;
 			std::string GetName()const override;
@@ -28,8 +26,6 @@ namespace LightningGE
 		private:
 			void GetShaderModelString(char* buf)const;
 			ShaderType m_type;
-			std::string m_entryPoint;
-			ShaderDefine m_macros;
 			std::string m_name;
 #ifdef DEBUG
 			std::string m_source;

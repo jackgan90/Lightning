@@ -1,5 +1,6 @@
 #include <d3dcompiler.h>
 #include <sstream>
+#include "shadermanager.h"
 #include "d3d12shader.h"
 
 namespace LightningGE
@@ -9,7 +10,8 @@ namespace LightningGE
 		using Foundation::FileSize;
 		using Foundation::FilePointerType;
 		using Foundation::FileAnchor;
-		D3D12Shader::D3D12Shader(ShaderType type):m_type(type), m_entryPoint("main")
+
+		D3D12Shader::D3D12Shader(ShaderType type):Shader(), m_type(type)
 			,m_name(""), m_compileError(""), m_smMajorVersion(5), m_smMinorVersion(0)
 #ifdef DEBUG
 			,m_source("")
@@ -23,22 +25,12 @@ namespace LightningGE
 			return m_entryPoint;
 		}
 
-		void D3D12Shader::SetEntryPoint(const std::string& entryPoint)
-		{
-			m_entryPoint = entryPoint;
-		}
-
 		ShaderType D3D12Shader::GetType()const
 		{
 			return m_type;
 		}
 
-		void D3D12Shader::DefineMacro(const ShaderDefine& define)
-		{
-			m_macros += define;
-		}
-
-		const ShaderDefine D3D12Shader::GetMacro()const
+		const ShaderDefine D3D12Shader::GetMacros()const
 		{
 			return m_macros;
 		}
@@ -203,6 +195,5 @@ namespace LightningGE
 			ss << "_" << m_smMajorVersion << "_" << m_smMinorVersion;
 			std::strcpy(buf, ss.str().c_str());
 		}
-
 	}
 }

@@ -10,8 +10,10 @@ namespace LightningGE
 		class ShaderManager : public IShaderManager
 		{
 		public:
+			ShaderPtr GetShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)override;
 			void ReleaseRenderResources()override;
 		protected:
+			virtual ShaderPtr CreateConcreteShader(ShaderType type) = 0;
 			ShaderMap m_shaders;
 		};
 	}

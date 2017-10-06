@@ -1,11 +1,13 @@
 #pragma once
 #include <memory>
 #include "rendererexportdef.h"
+#include "hashableobject.h"
 
 namespace LightningGE
 {
 	namespace Renderer
 	{
+		using Utility::HashableObject;
 		enum CmpFunc
 		{
 			NEVER,
@@ -61,7 +63,7 @@ namespace LightningGE
 			StencilFace frontFace;
 			StencilFace backFace;
 		};
-		class LIGHTNINGGE_RENDERER_API IDepthStencilState
+		class LIGHTNINGGE_RENDERER_API IDepthStencilState : public HashableObject
 		{
 		public:
 			virtual ~IDepthStencilState(){}
@@ -74,5 +76,19 @@ namespace LightningGE
 			//TODO basically there's still lots of methods need to add here,when it's necessary I will put them
 		};
 		using DepthStencilStatePtr = std::shared_ptr<IDepthStencilState>;
+
+		class DepthStencilState : public IDepthStencilState
+		{
+		public:
+			const DepthStencilConfiguration& GetConfiguration()override;
+			bool SetConfiguration(const DepthStencilConfiguration& configuration)override;
+			bool EnableDepthTest(bool enable)override;
+			bool EnableStenciltest(bool enable)override;
+			bool EnableDepthStencilTest(bool enable)override;
+			bool SetStencilRef(const unsigned char ref)override;
+		protected:
+			size_t CalculateHashInternal()override;
+			DepthStencilConfiguration m_config;
+		};
 	}
 }

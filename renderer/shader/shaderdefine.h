@@ -24,7 +24,7 @@ namespace LightningGE
 			void Exclude(const ShaderDefine& define);
 			bool HasMacro(const std::string& macroName)const;
 			void Define(const std::string& macroName, const std::string& macroValue);
-			const std::string GetMacro(const std::string& macroName)const;
+			const std::string GetMacros(const std::string& macroName)const;
 			const DefineMap& GetAllDefine()const;
 			size_t GetMacroCount()const;
 		private:

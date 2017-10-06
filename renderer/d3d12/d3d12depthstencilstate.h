@@ -6,17 +6,14 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		class D3D12DepthStencilState : public IDepthStencilState
+		class D3D12DepthStencilState : public DepthStencilState
 		{
 		public:
 			friend class D3D12PipelineStateObject;
 			D3D12DepthStencilState();
-			const DepthStencilConfiguration& GetConfiguration()override;
 			bool SetConfiguration(const DepthStencilConfiguration& configuration)override;
 			bool EnableDepthTest(bool enable)override;
 			bool EnableStenciltest(bool enable)override;
-			bool EnableDepthStencilTest(bool enable)override;
-			bool SetStencilRef(const unsigned char ref)override;
 		private:
 			void InternalSetD3DDesc();
 			DepthStencilConfiguration m_config;

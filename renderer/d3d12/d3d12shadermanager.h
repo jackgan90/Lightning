@@ -7,7 +7,8 @@ namespace LightningGE
 	{
 		class D3D12ShaderManager : public ShaderManager
 		{
-			ShaderPtr GetShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)override;
+		protected:
+			ShaderPtr CreateConcreteShader(ShaderType type)override;
 		};
 	}
 }

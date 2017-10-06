@@ -25,6 +25,8 @@ namespace LightningGE
 			ShaderManagerPtr pShaderMgr = RendererFactory::GetShaderManager();
 			if (pShaderMgr)
 				pShaderMgr->ReleaseRenderResources();
+			if (m_pso)
+				m_pso->ReleaseRenderResources();
 			//render context must be the last object to release resources,other resources should go before it
 			m_context->ReleaseRenderResources();
 		}
@@ -32,6 +34,7 @@ namespace LightningGE
 		void D3D12Renderer::BeginRender()
 		{
 			m_frameIndex++;
+			RendererFactory::CreateShaderManager()->GetShader(SHADER_TYPE_VERTEX, "default.vs", ShaderDefine());
 		}
 
 		void D3D12Renderer::DoRender()

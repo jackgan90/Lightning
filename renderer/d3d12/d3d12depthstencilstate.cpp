@@ -10,14 +10,10 @@ namespace LightningGE
 			InternalSetD3DDesc();
 		}
 
-		const DepthStencilConfiguration& D3D12DepthStencilState::GetConfiguration()
-		{
-			return m_config;
-		}
-
 		bool D3D12DepthStencilState::SetConfiguration(const DepthStencilConfiguration& configuration)
 		{
-			m_config = configuration;
+			if (!DepthStencilState::SetConfiguration(configuration))
+				return false;
 			InternalSetD3DDesc();
 			return true;
 		}
@@ -45,30 +41,17 @@ namespace LightningGE
 
 		bool D3D12DepthStencilState::EnableDepthTest(bool enable)
 		{
-			m_config.depthTestEnable = enable;
+			if (!DepthStencilState::EnableDepthTest(enable))
+				return false;
 			m_desc.DepthEnable = enable;
 			return true;
 		}
 
 		bool D3D12DepthStencilState::EnableStenciltest(bool enable)
 		{
-			m_config.stencilEnable = enable;
+			if (!DepthStencilState::EnableStenciltest(enable))
+				return false;
 			m_desc.StencilEnable = enable;
-			return true;
-		}
-
-		bool D3D12DepthStencilState::EnableDepthStencilTest(bool enable)
-		{
-			if (!EnableDepthTest(enable))
-				return false;
-			if (!EnableStenciltest(enable))
-				return false;
-			return true;
-		}
-
-		bool D3D12DepthStencilState::SetStencilRef(const unsigned char ref)
-		{
-			m_config.stencilRef = ref;
 			return true;
 		}
 

@@ -23,7 +23,10 @@ set(HEADERS rendererexportdef.h
 set(SOURCES rendererfactory.cpp
 			renderer.cpp
 			vertexbuffer.cpp
-			rendererhelper.cpp)
+			rendererhelper.cpp
+			blendstate.cpp
+			depthstencilstate.cpp
+			rasterizerstate.cpp)
 
 set(TYPES_HEADERS	types/color.h
 					types/rect.h)
@@ -34,7 +37,8 @@ set(SHADER_HEADERS	shader/ishader.h
 					shader/shadermanager.h)
 set(SHADER_SOURCES	shader/shaderdefine.cpp
 					shader/shadermanager.cpp
-					shader/shadermanager.cpp)
+					shader/shadermanager.cpp
+					shader/shader.cpp)
 
 list(APPEND HEADERS ${TYPES_HEADERS} ${SHADER_HEADERS})
 list(APPEND SOURCES ${SHADER_SOURCES})

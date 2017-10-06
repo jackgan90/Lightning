@@ -1,10 +1,12 @@
 #pragma once
 #include <memory>
+#include "hashableobject.h"
 
 namespace LightningGE
 {
 	namespace Renderer
 	{
+		using Utility::HashableObject;
 		enum FillMode
 		{
 			FILLMODE_WIREFRAME,
@@ -35,7 +37,7 @@ namespace LightningGE
 			FrontFaceWindingOrder frontFaceWindingOrder;
 		};
 
-		class IRasterizerState
+		class IRasterizerState : public HashableObject
 		{
 		public:
 			virtual ~IRasterizerState(){}
@@ -49,5 +51,22 @@ namespace LightningGE
 			virtual FrontFaceWindingOrder GetFrontFaceWindingOrder()const = 0;
 		};
 		using RasterizerStatePtr = std::shared_ptr<IRasterizerState>;
+
+		class RasterizerState : public IRasterizerState
+		{
+		public:
+			RasterizerState();
+			const RasterizerStateConfiguration& GetConfiguration()override;
+			bool SetConfiguration(const RasterizerStateConfiguration& config)override;
+			bool SetFillMode(FillMode mode)override;
+			FillMode GetFillMode()const override;
+			bool SetCullMode(CullMode mode)override;
+			CullMode GetCullMode()const override;
+			bool SetFrontFaceWindingOrder(FrontFaceWindingOrder order)override;
+			FrontFaceWindingOrder GetFrontFaceWindingOrder()const override;
+		protected:
+			size_t CalculateHashInternal()override;
+			RasterizerStateConfiguration m_config;
+		};
 	}
 }

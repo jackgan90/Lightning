@@ -49,5 +49,11 @@ namespace LightningGE
 			m_desc.RasterizerState = STATIC_CAST_PTR(D3D12RasterizerState, m_rasterizerState)->m_desc;
 		}
 
+		void D3D12PipelineStateObject::ReleaseRenderResources()
+		{
+
+		}
+
+
 	}
 }

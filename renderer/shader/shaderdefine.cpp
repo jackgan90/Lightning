@@ -86,7 +86,7 @@ namespace LightningGE
 		}
 
 
-		const std::string ShaderDefine::GetMacro(const std::string& macroName)const
+		const std::string ShaderDefine::GetMacros(const std::string& macroName)const
 		{
 			auto it = m_define.find(macroName);
 			return it == m_define.end() ? "" : it->second;

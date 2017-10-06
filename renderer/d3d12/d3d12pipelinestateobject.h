@@ -15,6 +15,7 @@ namespace LightningGE
 			BlendStatePtr GetBlendState()const override;
 			DepthStencilStatePtr GetDepthStencilState()const override;
 			RasterizerStatePtr GetRasterizerState()const override;
+			void ReleaseRenderResources()override;
 		private:
 			void SynchronizeGraphicsDesc();
 			BlendStatePtr m_blendState;

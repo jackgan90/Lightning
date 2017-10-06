@@ -40,6 +40,7 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/renderer/types
 					${CMAKE_SOURCE_DIR}/renderer/shader
 					${CMAKE_SOURCE_DIR}/window
+					${CMAKE_SOURCE_DIR}/utilities
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost)
 
