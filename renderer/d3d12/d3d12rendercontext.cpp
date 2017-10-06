@@ -66,8 +66,8 @@ namespace LightningGE
 			
 #ifdef DEBUG
 			InitDXGIDebug();
-			REPORT_LIVE_OBJECTS;
 #endif
+			REPORT_LIVE_OBJECTS;
 			return true;
 		}
 
@@ -202,9 +202,7 @@ namespace LightningGE
 			D3D12DescriptorHeapManager::Instance()->ReleaseRenderResources();
 			m_swapChain->ReleaseRenderResources();
 			m_device->ReleaseRenderResources();
-#ifdef DEBUG
 			REPORT_LIVE_OBJECTS;
-#endif // DEBUG
 		}
 
 #ifdef DEBUG

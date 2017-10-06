@@ -6,6 +6,7 @@
 #include "d3d12pipelinestateobject.h"
 #include "d3d12blendstate.h"
 #include "d3d12depthstencilstate.h"
+#include "d3d12rasterizerstate.h"
 #include "d3d12shader.h"
 #include "shadermanager.h"
 #include "logger.h"
@@ -130,6 +131,12 @@ namespace LightningGE
 		{
 			return RendererFactory::CreateShaderManager()->GetShader(type, shaderName, defineMap);
 		}
+
+		RasterizerStatePtr D3D12Device::CreateRasterizerState()
+		{
+			return RasterizerStatePtr(new D3D12RasterizerState());
+		}
+
 
 	}
 }

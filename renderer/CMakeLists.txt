@@ -18,7 +18,8 @@ set(HEADERS rendererexportdef.h
 			semantics.h
 			ivertexbuffer.h
 			vertexbuffer.h
-			rendererhelper.h)
+			rendererhelper.h
+			irasterizerstate.h)
 set(SOURCES rendererfactory.cpp
 			renderer.cpp
 			vertexbuffer.cpp
@@ -61,7 +62,8 @@ if(LIGHTNINGGE_USE_D3D12)
 						d3d12/d3d12pipelinestateobject.h
 						d3d12/d3d12typemapper.h
 						d3d12/d3d12shader.h
-						d3d12/d3d12shadermanager.h)
+						d3d12/d3d12shadermanager.h
+						d3d12/d3d12rasterizerstate.h)
 	set(D3D12_SOURCES	d3d12/d3d12device.cpp
 						d3d12/d3d12rendercontext.cpp
 						d3d12/d3d12swapchain.cpp
@@ -73,7 +75,8 @@ if(LIGHTNINGGE_USE_D3D12)
 						d3d12/d3d12depthstencilstate.cpp
 						d3d12/d3d12pipelinestateobject.cpp
 						d3d12/d3d12shader.cpp
-						d3d12/d3d12shadermanager.cpp)
+						d3d12/d3d12shadermanager.cpp
+						d3d12/d3d12rasterizerstate.cpp)
 	list(APPEND HEADERS ${D3D12_HEADERS})
 	list(APPEND SOURCES ${D3D12_SOURCES})
 	source_group("d3d12" FILES ${D3D12_HEADERS} ${D3D12_SOURCES})

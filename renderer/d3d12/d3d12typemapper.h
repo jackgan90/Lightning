@@ -2,6 +2,7 @@
 #include <d3d12.h>
 #include "iblendstate.h"
 #include "idepthstencilstate.h"
+#include "irasterizerstate.h"
 
 namespace LightningGE
 {
@@ -105,6 +106,34 @@ namespace LightningGE
 					return D3D12_STENCIL_OP_DECR;
 				default:
 					return D3D12_STENCIL_OP_KEEP;
+				}
+			}
+
+			static D3D12_FILL_MODE MapFillMode(const FillMode& mode)
+			{
+				switch (mode)
+				{
+				case FILLMODE_SOLID:
+					return D3D12_FILL_MODE_SOLID;
+				case FILLMODE_WIREFRAME:
+					return D3D12_FILL_MODE_WIREFRAME;
+				default:
+					return D3D12_FILL_MODE_SOLID;
+				}
+			}
+
+			static D3D12_CULL_MODE MapCullMode(const CullMode& mode)
+			{
+				switch (mode)
+				{
+				case CULLMODE_NONE:
+					return D3D12_CULL_MODE_NONE;
+				case CULLMODE_FRONT:
+					return D3D12_CULL_MODE_FRONT;
+				case CULLMODE_BACK:
+					return D3D12_CULL_MODE_BACK;
+				default:
+					return D3D12_CULL_MODE_BACK;
 				}
 			}
 		};

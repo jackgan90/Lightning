@@ -5,6 +5,7 @@
 #include "irenderresourcekeeper.h"
 #include "iblendstate.h"
 #include "idepthstencilstate.h"
+#include "irasterizerstate.h"
 #include "ipipelinestateobject.h"
 #include "ivertexbuffer.h"
 #include "ishader.h"
@@ -25,6 +26,7 @@ namespace LightningGE
 			virtual PipelineStateObjectPtr CreatePipelineStateObject() = 0;
 			virtual VertexBufferPtr CreateVertexBuffer() = 0;
 			virtual ShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap) = 0;
+			virtual RasterizerStatePtr CreateRasterizerState() = 0;
 		};
 		using DevicePtr = std::shared_ptr<IDevice>;
 	}

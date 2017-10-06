@@ -26,6 +26,7 @@ namespace LightningGE
 			PipelineStateObjectPtr CreatePipelineStateObject()override;
 			VertexBufferPtr CreateVertexBuffer()override;
 			ShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)override;
+			RasterizerStatePtr CreateRasterizerState()override;
 		private:
 			ComPtr<ID3D12Device> m_device;
 			ComPtr<ID3D12CommandQueue> m_commandQueue;
