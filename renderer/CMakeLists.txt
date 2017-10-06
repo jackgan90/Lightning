@@ -27,9 +27,21 @@ set(SOURCES rendererfactory.cpp
 set(TYPES_HEADERS	types/color.h
 					types/rect.h)
 
-list(APPEND HEADERS ${TYPES_HEADERS})
+set(SHADER_HEADERS	shader/ishader.h
+					shader/shaderdefine.h
+					shader/ishadermanager.h
+					shader/shadermanager.h)
+set(SHADER_SOURCES	shader/shaderdefine.cpp
+					shader/shadermanager.cpp
+					shader/shadermanager.cpp)
+
+list(APPEND HEADERS ${TYPES_HEADERS} ${SHADER_HEADERS})
+list(APPEND SOURCES ${SHADER_SOURCES})
 
 source_group("types" FILES ${TYPES_HEADERS})
+source_group("shader" FILES 
+							${SHADER_HEADERS}
+							${SHADER_SOURCES})
 
 if (WIN32)
 	add_definitions(-DLIGHTNINGGE_WIN32)
@@ -47,7 +59,9 @@ if(LIGHTNINGGE_USE_D3D12)
 						d3d12/d3d12blendstate.h
 						d3d12/d3d12depthstencilstate.h
 						d3d12/d3d12pipelinestateobject.h
-						d3d12/d3d12typemapper.h)
+						d3d12/d3d12typemapper.h
+						d3d12/d3d12shader.h
+						d3d12/d3d12shadermanager.h)
 	set(D3D12_SOURCES	d3d12/d3d12device.cpp
 						d3d12/d3d12rendercontext.cpp
 						d3d12/d3d12swapchain.cpp
@@ -57,7 +71,9 @@ if(LIGHTNINGGE_USE_D3D12)
 						d3d12/d3d12descriptorheapmanager.cpp
 						d3d12/d3d12blendstate.cpp
 						d3d12/d3d12depthstencilstate.cpp
-						d3d12/d3d12pipelinestateobject.cpp)
+						d3d12/d3d12pipelinestateobject.cpp
+						d3d12/d3d12shader.cpp
+						d3d12/d3d12shadermanager.cpp)
 	list(APPEND HEADERS ${D3D12_HEADERS})
 	list(APPEND SOURCES ${D3D12_SOURCES})
 	source_group("d3d12" FILES ${D3D12_HEADERS} ${D3D12_SOURCES})
@@ -70,7 +86,9 @@ define_dll_export_macro(RENDERER)
 include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
 					${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_CURRENT_SOURCE_DIR}/types
+					${CMAKE_CURRENT_SOURCE_DIR}/shader
 					${CMAKE_SOURCE_DIR}/foundation
+					${CMAKE_SOURCE_DIR}/utilities
 					${CMAKE_SOURCE_DIR}/platform 
 					${CMAKE_SOURCE_DIR}/window
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen)
@@ -86,9 +104,9 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /DDEBUG")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
-add_dependencies(${PROJECT_NAME} foundation window)
-target_link_libraries(${PROJECT_NAME} foundation window)
+add_dependencies(${PROJECT_NAME} foundation window utilities)
+target_link_libraries(${PROJECT_NAME} foundation window utilities)
 if(LIGHTNINGGE_USE_D3D12)
-	target_link_libraries(${PROJECT_NAME} dxgi.lib d3d12.lib)
+	target_link_libraries(${PROJECT_NAME} dxgi.lib d3d12.lib d3dcompiler.lib)
 	target_link_libraries(${PROJECT_NAME} debug dxguid.lib)
 endif()

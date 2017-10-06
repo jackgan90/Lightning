@@ -4,22 +4,26 @@ message(STATUS "Configuring project utilities")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(HEADERS utilitiesexportdef.h)
+set(HEADERS utilitiesexportdef.h
+			enginealgo.h)
+set(SOURCES enginealgo.cpp)
 
 
 include_directories(${CMAKE_SOURCE_DIR}/foundation
-					${CMAKE_CURRENT_SOURCE_DIR})
+					${CMAKE_CURRENT_SOURCE_DIR}
+					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost)
 
 if (WIN32)
 	add_definitions(-DLIGHTNINGGE_WIN32)
 endif()
 define_dll_export_macro(UTILITIES)
 
-#add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
+add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 if(MSVC)
-	#set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/wd4251")
-	#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /DDEBUG")
-	#set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
+	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/wd4251")
+	set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "/EHsc")
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /DDEBUG")
+	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
-#add_dependencies(${PROJECT_NAME} foundation)
-#target_link_libraries(${PROJECT_NAME} foundation)
+add_dependencies(${PROJECT_NAME} foundation)
+target_link_libraries(${PROJECT_NAME} foundation)

@@ -9,12 +9,12 @@ namespace LightningGE
 {
 	namespace Foundation
 	{
-		GeneralFile::GeneralFile():m_sizeDirty(true), m_file(nullptr)
+		GeneralFile::GeneralFile():m_sizeDirty(true), m_file(nullptr), m_access(FileAccess::ACCESS_READ)
 		{
 
 		}
 
-		GeneralFile::GeneralFile(const std::string& path):m_path(path), m_sizeDirty(true), m_file(nullptr)
+		GeneralFile::GeneralFile(const std::string& path, FileAccess bitmask):m_path(path), m_sizeDirty(true), m_file(nullptr), m_access(bitmask)
 		{
 
 		}
@@ -44,6 +44,7 @@ namespace LightningGE
 			m_path = f.m_path;
 			m_sizeDirty = f.m_sizeDirty;
 			m_file = f.m_file;
+			m_access = f.m_access;
 			f.m_file = nullptr;
 		}
 		
@@ -117,7 +118,12 @@ namespace LightningGE
 		{
 			if (!m_file)
 			{
-				m_file = new fstream(m_path);
+				int mode = 0;
+				if (m_access & FileAccess::ACCESS_READ)
+					mode |= std::fstream::in;
+				if (m_access & FileAccess::ACCESS_WRITE)
+					mode |= std::fstream::out;
+				m_file = new fstream(m_path, std::fstream::binary | mode);
 			}
 		}
 
@@ -135,6 +141,12 @@ namespace LightningGE
 			return m_path.string();
 		}
 
+		const std::string GeneralFile::GetName()const
+		{
+			return m_path.filename().string();
+		}
+
+
 		GeneralFileSystem::GeneralFileSystem()
 		{
 			//path p = boost::filesystem::current_path();
@@ -146,7 +158,7 @@ namespace LightningGE
 
 		}
 
-		FilePtr GeneralFileSystem::FindFile(const std::string& filename)
+		FilePtr GeneralFileSystem::FindFile(const std::string& filename, FileAccess bitmask)
 		{
 			//TODO : multithreaded access must be resolved
 			auto cachedFile = m_cachedFiles.find(filename);
@@ -159,7 +171,7 @@ namespace LightningGE
 			});
 			if (it != end)
 			{
-				m_cachedFiles.insert(std::make_pair(filename, std::make_shared<GeneralFile>(it->path().string())));
+				m_cachedFiles.insert(std::make_pair(filename, std::make_shared<GeneralFile>(it->path().string(), bitmask)));
 				return m_cachedFiles[filename];
 			}
 			return FilePtr();

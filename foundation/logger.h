@@ -30,7 +30,7 @@ namespace LightningGE
 				//output to file
 				auto prefix = LogLevelToPrefix(level);
 				auto timeStr = Foundation::Time::currentTimeString();
-				char buf[256];
+				char buf[512];
 				sprintf(buf, text.c_str(), std::forward<Args>(args)...);
 				m_fs << timeStr << " " << prefix << " " << buf << std::endl;
 #ifdef _MSC_VER

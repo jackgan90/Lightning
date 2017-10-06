@@ -1,10 +1,13 @@
 #include <d3dx12.h>
+#include "rendererfactory.h"
 #include "d3d12device.h"
 #include "d3d12rendertarget.h"
 #include "d3d12swapchain.h"
 #include "d3d12pipelinestateobject.h"
 #include "d3d12blendstate.h"
 #include "d3d12depthstencilstate.h"
+#include "d3d12shader.h"
+#include "shadermanager.h"
 #include "logger.h"
 #include "configmanager.h"
 
@@ -115,6 +118,17 @@ namespace LightningGE
 		PipelineStateObjectPtr D3D12Device::CreatePipelineStateObject()
 		{
 			return PipelineStateObjectPtr(new D3D12PipelineStateObject());
+		}
+
+		VertexBufferPtr D3D12Device::CreateVertexBuffer()
+		{
+			//TODO : replace with d3d12 vertex buffer
+			return VertexBufferPtr();
+		}
+
+		ShaderPtr D3D12Device::CreateShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)
+		{
+			return RendererFactory::CreateShaderManager()->GetShader(type, shaderName, defineMap);
 		}
 
 	}

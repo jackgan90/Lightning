@@ -1,3 +1,4 @@
+#include "rendererfactory.h"
 #include "d3d12renderer.h"
 #include "d3d12swapchain.h"
 #include "d3d12device.h"
@@ -21,6 +22,10 @@ namespace LightningGE
 		void D3D12Renderer::ReleaseRenderResources()
 		{
 			WaitForPreviousFrame();
+			ShaderManagerPtr pShaderMgr = RendererFactory::GetShaderManager();
+			if (pShaderMgr)
+				pShaderMgr->ReleaseRenderResources();
+			//render context must be the last object to release resources,other resources should go before it
 			m_context->ReleaseRenderResources();
 		}
 

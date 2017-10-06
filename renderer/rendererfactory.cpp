@@ -3,6 +3,7 @@
 #include "d3d12rendertargetmanager.h"
 #include "d3d12rendercontext.h"
 #include "d3d12renderer.h"
+#include "d3d12shadermanager.h"
 #endif
 
 
@@ -13,6 +14,7 @@ namespace LightningGE
 		RenderTargetManagerPtr RendererFactory::s_renderTargetMgr;
 		RenderContextPtr RendererFactory::s_renderContext;
 		RendererPtr RendererFactory::s_renderer;
+		ShaderManagerPtr RendererFactory::s_shaderMgr;
 		RenderTargetManagerPtr RendererFactory::CreateRenderTargetManager(DevicePtr pDevice, SwapChainPtr pSwapChain)
 		{
 			if (!s_renderTargetMgr)
@@ -46,6 +48,18 @@ namespace LightningGE
 			}
 			return s_renderer;
 		}
+
+		ShaderManagerPtr RendererFactory::CreateShaderManager()
+		{
+			if (!s_shaderMgr)
+			{
+#ifdef LIGHTNINGGE_USE_D3D12
+				s_shaderMgr = ShaderManagerPtr(new D3D12ShaderManager());
+#endif //LIGHTNINGGE_USE_D3D12
+			}
+			return s_shaderMgr;
+		}
+
 
 	}
 }

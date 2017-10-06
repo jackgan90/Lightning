@@ -6,6 +6,8 @@
 #include "iblendstate.h"
 #include "idepthstencilstate.h"
 #include "ipipelinestateobject.h"
+#include "ivertexbuffer.h"
+#include "ishader.h"
 #include "rect.h"
 #include "color.h"
 
@@ -21,6 +23,8 @@ namespace LightningGE
 			virtual BlendStatePtr CreateBlendState() = 0;
 			virtual DepthStencilStatePtr CreateDepthStencilState() = 0;
 			virtual PipelineStateObjectPtr CreatePipelineStateObject() = 0;
+			virtual VertexBufferPtr CreateVertexBuffer() = 0;
+			virtual ShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap) = 0;
 		};
 		using DevicePtr = std::shared_ptr<IDevice>;
 	}

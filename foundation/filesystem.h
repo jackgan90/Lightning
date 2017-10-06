@@ -23,6 +23,12 @@ namespace LightningGE
 			Current,
 			End
 		};
+
+		enum FileAccess
+		{
+			ACCESS_READ = 1,
+			ACCESS_WRITE = 2,
+		};
 		class LIGHTNINGGE_FOUNDATION_API IFile
 		{
 		public:
@@ -32,6 +38,7 @@ namespace LightningGE
 			virtual void SetFilePointer(FilePointerType type, FileAnchor anchor, FileSize offset) = 0;
 			virtual void Close() = 0;
 			virtual const std::string GetPath()const = 0;
+			virtual const std::string GetName()const = 0;
 		};
 		using FilePtr = std::shared_ptr<IFile>;
 
@@ -39,7 +46,7 @@ namespace LightningGE
 		{
 		public:
 			virtual ~IFileSystem() {}
-			virtual FilePtr FindFile(const std::string& filename) = 0;
+			virtual FilePtr FindFile(const std::string& filename, FileAccess bitmask) = 0;
 			virtual bool SetRoot(std::string root_path) = 0;
 			virtual const std::string GetRoot() const = 0;
 		};
@@ -50,7 +57,7 @@ namespace LightningGE
 		public:
 			GeneralFileSystem();
 			~GeneralFileSystem()override;
-			FilePtr FindFile(const std::string& filename)override;
+			FilePtr FindFile(const std::string& filename, FileAccess bitmask)override;
 			bool SetRoot(std::string root_path)override;
 			const std::string GetRoot() const { return m_root.string(); }
 		protected:
@@ -63,7 +70,7 @@ namespace LightningGE
 		public:
 			friend class GeneralFileSystem;
 			GeneralFile();
-			GeneralFile(const std::string& path);
+			GeneralFile(const std::string& path, FileAccess bitmask);
 			//should not copy an existing file which may cause chaos file access.
 			GeneralFile(const GeneralFile& f) = delete;
 			GeneralFile& operator=(const GeneralFile& f) = delete;
@@ -75,6 +82,7 @@ namespace LightningGE
 			FileSize Read(char* buf, FileSize length)override;
 			void Close()override;
 			const std::string GetPath()const override;
+			const std::string GetName()const override;
 		protected:
 			void CalculateFileSize();
 			void OpenFile();
@@ -83,6 +91,7 @@ namespace LightningGE
 			boost::filesystem::path m_path;
 			bool m_sizeDirty;
 			std::fstream* m_file;
+			FileAccess m_access;
 		};
 
 	}

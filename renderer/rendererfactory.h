@@ -4,6 +4,7 @@
 #include "iswapchain.h"
 #include "irendercontext.h"
 #include "irendertargetmanager.h"
+#include "ishadermanager.h"
 #include "irenderer.h"
 
 namespace LightningGE
@@ -20,16 +21,21 @@ namespace LightningGE
 			static RenderContextPtr CreateRenderContext();
 			//create a singleton renderer to control the rendering workflow
 			static RendererPtr CreateRenderer(RenderContextPtr pRenderContext);
+			//create a singleton shader manager
+			static ShaderManagerPtr CreateShaderManager();
 			//return an already created render target manager instance
 			static RenderTargetManagerPtr GetRenderTargetManager() { return s_renderTargetMgr; }
 			//return an already created render context
 			static RenderContextPtr GetRenderContext() { return s_renderContext; }
 			//return an already created renderer
 			static RendererPtr GetRenderer() { return s_renderer; }
+			//return a shader manager
+			static ShaderManagerPtr GetShaderManager() { return s_shaderMgr; }
 		private:
 			static RenderTargetManagerPtr s_renderTargetMgr;
 			static RenderContextPtr s_renderContext;
 			static RendererPtr s_renderer;
+			static ShaderManagerPtr s_shaderMgr;
 		};
 	}
 }
