@@ -19,7 +19,7 @@ namespace LightningGE
 			const T a()const { return value[3]; }
 		};
 
-		using ColorF = Color<float>;
-		using Color32 = Color<unsigned int>;
+		typedef Color<float> ColorF;
+		typedef Color<unsigned int> Color32;
 	}
 }

@@ -4,9 +4,10 @@
 #include "logger.h" //for logging
 #include "appfactory.h" //for application
 
-using namespace LightningGE::App;
+using LightningGE::App::AppFactory;
+using LightningGE::App::ApplicationPtr;
 using LightningGE::Foundation::logger;
-using LogLevel = LightningGE::Foundation::LogLevel;
+using LightningGE::Foundation::LogLevel;
 #ifdef WIN32
 int APIENTRY WinMain(HINSTANCE hInstance,
 					 HINSTANCE hPrevInstance,
@@ -14,21 +15,21 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 					 int       nCmdShow)
 #endif
 {
-	logger.Log(LightningGE::Foundation::Info, "This is LightingGE entry.");
+	logger.Log(LogLevel::Info, "This is LightingGE entry.");
 	ApplicationPtr pApp = AppFactory::GetApp();
 	if (!pApp->Init())
 	{
-		logger.Log(LightningGE::Foundation::Error, "Application initialize error!");
+		logger.Log(LogLevel::Error, "Application initialize error!");
 		return 0;
 	}
 	if (!pApp->Start())
 	{
-		logger.Log(LightningGE::Foundation::Error, "Application start error!");
+		logger.Log(LogLevel::Error, "Application start error!");
 		return 0;
 	}
 	int res = pApp->Run();
 
 	pApp->Quit();
-	logger.Log(LightningGE::Foundation::Info, "Application quit.");
+	logger.Log(LogLevel::Info, "Application quit.");
 	return res;
 }

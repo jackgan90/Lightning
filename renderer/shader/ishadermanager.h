@@ -16,6 +16,6 @@ namespace LightningGE
 		protected:
 			IShaderManager(){}
 		};
-		using ShaderManagerPtr = std::shared_ptr<IShaderManager>;
+		typedef std::shared_ptr<IShaderManager> ShaderManagerPtr;
 	}
 }

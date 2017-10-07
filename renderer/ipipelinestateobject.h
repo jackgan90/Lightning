@@ -26,7 +26,7 @@ namespace LightningGE
 			virtual RasterizerStatePtr GetRasterizerState()const = 0;
 			virtual ShaderPtr GetShader(ShaderType type)const = 0;
 		};
-		using PipelineStateObjectPtr = std::shared_ptr<IPipelineStateObject>;
+		typedef std::shared_ptr<IPipelineStateObject> PipelineStateObjectPtr;
 
 		typedef std::unordered_map<ShaderType, ShaderPtr> PipelineShaderMap;
 		class LIGHTNINGGE_RENDERER_API PipelineStateObject : public IPipelineStateObject

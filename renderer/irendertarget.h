@@ -7,7 +7,7 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		using RenderTargetID = int;
+		typedef int RenderTargetID;
 		class LIGHTNINGGE_RENDERER_API IRenderTarget : public IRenderResourceKeeper
 		{
 		public:
@@ -16,6 +16,6 @@ namespace LightningGE
 			//return the attached RT ID
 			virtual RenderTargetID GetID()const = 0;
 		};
-		using RenderTargetPtr = std::shared_ptr<IRenderTarget>;
+		typedef std::shared_ptr<IRenderTarget> RenderTargetPtr;
 	}
 }

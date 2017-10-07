@@ -16,6 +16,6 @@ namespace LightningGE
 			//obtain a render target by ID
 			virtual RenderTargetPtr GetRenderTarget(const RenderTargetID&) = 0;
 		};
-		using RenderTargetManagerPtr = std::shared_ptr<IRenderTargetManager>;
+		typedef std::shared_ptr<IRenderTargetManager> RenderTargetManagerPtr;
 	}
 }

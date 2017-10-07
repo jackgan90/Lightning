@@ -30,6 +30,6 @@ namespace LightningGE
 			//apply the pipeline state object
 			virtual void ApplyPipelineStateObject(const PipelineStateObjectPtr& pso) = 0;
 		};
-		using RendererPtr = std::shared_ptr<IRenderer>;
+		typedef std::shared_ptr<IRenderer> RendererPtr;
 	}
 }

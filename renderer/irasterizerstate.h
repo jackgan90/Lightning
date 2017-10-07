@@ -50,7 +50,7 @@ namespace LightningGE
 			virtual bool SetFrontFaceWindingOrder(FrontFaceWindingOrder order) = 0;
 			virtual FrontFaceWindingOrder GetFrontFaceWindingOrder()const = 0;
 		};
-		using RasterizerStatePtr = std::shared_ptr<IRasterizerState>;
+		typedef std::shared_ptr<IRasterizerState> RasterizerStatePtr;
 
 		class RasterizerState : public IRasterizerState
 		{

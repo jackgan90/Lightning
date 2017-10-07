@@ -36,7 +36,7 @@ namespace LightningGE
 			virtual void GetShaderModelVersion(int& major, int& minor) = 0;
 		};
 
-		using ShaderPtr = std::shared_ptr<IShader>;
+		typedef std::shared_ptr<IShader> ShaderPtr;
 
 		class LIGHTNINGGE_RENDERER_API Shader : public IShader
 		{

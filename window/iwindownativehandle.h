@@ -17,6 +17,6 @@ namespace LightningGE
 			virtual ~IWindowNativeHandle(){}
 			virtual NativeHandleIdentifier GetIdentifier()const = 0;
 		};
-		using WindowNativeHandlePtr = std::shared_ptr<IWindowNativeHandle>;
+		typedef std::shared_ptr<IWindowNativeHandle> WindowNativeHandlePtr;
 	}
 }

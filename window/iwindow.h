@@ -9,8 +9,8 @@ namespace LightningGE
 {
 	namespace WindowSystem
 	{
-		using WINDOWWIDTH = unsigned int;
-		using WINDOWHEIGHT = unsigned int;
+		typedef unsigned int WINDOWWIDTH;
+		typedef unsigned int WINDOWHEIGHT;
 		class LIGHTNINGGE_WINDOW_API IWindow
 		{
 		public:
@@ -27,6 +27,6 @@ namespace LightningGE
 		protected:
 			IWindow() {};
 		};
-		using WindowPtr = std::shared_ptr<IWindow>;
+		typedef std::shared_ptr<IWindow> WindowPtr;
 	}
 }

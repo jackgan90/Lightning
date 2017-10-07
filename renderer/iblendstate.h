@@ -61,7 +61,7 @@ namespace LightningGE
 			virtual bool Enable(const RenderTargetPtr& renderTarget, bool enable) = 0;
 			virtual bool SetFactors(const RenderTargetPtr& renderTarget, BlendFactor srcColor, BlendFactor srcAlpha, BlendFactor destColor, BlendFactor destAlpha) = 0;
 		};
-		using BlendStatePtr = std::shared_ptr<IBlendState>;
+		typedef std::shared_ptr<IBlendState> BlendStatePtr;
 
 		class LIGHTNINGGE_RENDERER_API BlendState : public IBlendState
 		{

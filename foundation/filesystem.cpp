@@ -3,8 +3,6 @@
 #include "common.h"
 #include "configmanager.h"
 
-using std::string;
-using namespace boost::filesystem;
 namespace LightningGE
 {
 	namespace Foundation
@@ -123,7 +121,7 @@ namespace LightningGE
 					mode |= std::fstream::in;
 				if (m_access & FileAccess::ACCESS_WRITE)
 					mode |= std::fstream::out;
-				m_file = new fstream(m_path, std::fstream::binary | mode);
+				m_file = new boost::filesystem::fstream(m_path.string(), std::fstream::binary | mode);
 			}
 		}
 
@@ -164,9 +162,9 @@ namespace LightningGE
 			auto cachedFile = m_cachedFiles.find(filename);
 			if (cachedFile != m_cachedFiles.end())
 				return cachedFile->second;
-			const recursive_directory_iterator end;
-			const auto it = std::find_if(recursive_directory_iterator(m_root), end, 
-				[&filename](const directory_entry& e) {
+			const boost::filesystem::recursive_directory_iterator end;
+			const auto it = std::find_if(boost::filesystem::recursive_directory_iterator(m_root), end, 
+				[&filename](const boost::filesystem::directory_entry& e) {
 				return e.path().filename() == filename;
 			});
 			if (it != end)

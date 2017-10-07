@@ -50,6 +50,6 @@ namespace LightningGE
 			//get binding location.Typically invoked by device to bind the buffer
 			virtual int GetBindingLocation()const = 0;
 		};
-		using VertexBufferPtr = std::shared_ptr<IVertexBuffer>;
+		typedef std::shared_ptr<IVertexBuffer> VertexBufferPtr;
 	}
 }

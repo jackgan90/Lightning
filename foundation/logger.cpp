@@ -5,7 +5,6 @@ namespace LightningGE
 	namespace Foundation
 	{
 		const char* LogFileName = "log.txt";
-		using string = std::string;
 		LIGHTNINGGE_FOUNDATION_API Logger logger;
 		Logger::Logger()
 		{
@@ -18,7 +17,7 @@ namespace LightningGE
 			m_fs.close();
 		}
 
-		string Logger::LogLevelToPrefix(LogLevel level)const
+		std::string Logger::LogLevelToPrefix(LogLevel level)const
 		{
 			switch (level)
 			{

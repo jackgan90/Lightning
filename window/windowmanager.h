@@ -8,7 +8,7 @@ namespace LightningGE
 {
 	namespace WindowSystem
 	{
-		using WINDOWID = unsigned int;
+		typedef unsigned int WINDOWID;
 		class LIGHTNINGGE_WINDOW_API WindowManager
 		{
 		public:

@@ -8,7 +8,7 @@ namespace LightningGE
 	namespace App
 	{
 		class IApplication;
-		using ApplicationPtr = std::shared_ptr<IApplication>;
+		typedef std::shared_ptr<IApplication> ApplicationPtr;
 		class LIGHTNINGGE_PLATFORM_API IApplication
 		{
 		public:

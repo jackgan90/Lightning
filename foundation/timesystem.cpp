@@ -4,12 +4,11 @@
 #include <iomanip>
 #include "timesystem.h"
 
-using string = std::string;
 namespace LightningGE
 {
 	namespace Foundation
 	{
-		string Time::currentTimeString()
+		std::string Time::currentTimeString()
 		{
 			auto now = std::chrono::system_clock::now();
 			auto tt = std::chrono::system_clock::to_time_t(now);

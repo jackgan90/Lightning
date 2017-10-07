@@ -4,14 +4,14 @@
 #include "logger.h"
 #include <vector>
 
-using LightningGE::Foundation::logger;
-using LogLevel = LightningGE::Foundation::LogLevel;
-using std::vector;
 
 namespace LightningGE
 {
 	namespace WindowSystem
 	{
+		using LightningGE::Foundation::logger;
+		using LightningGE::Foundation::LogLevel;
+		using std::vector;
 		char* WinWindow::s_WindowClassName = "DefaultWin32Window";
 
 		WinWindow* GetWinWindow(HWND hWnd)
@@ -130,7 +130,7 @@ namespace LightningGE
 				return false;
 			ShowWindow(hWnd, show ? SW_SHOW : SW_HIDE);
 			UpdateWindow(hWnd);
-			MSG msg;
+			MSG msg{};
 			while (true)
 			{
 				if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))

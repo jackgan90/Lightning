@@ -19,7 +19,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API IDevice : public IRenderResourceKeeper
 		{
 		public:
-			//clear a specified render target,possiblly parts of it defined by an array of rects
+			//clear a specified render target,possibly parts of it defined by an array of rects
 			virtual void ClearRenderTarget(const RenderTargetPtr& rt, const ColorF& color, const RectI* pRects = nullptr, const int rectCount=0) = 0;
 			virtual BlendStatePtr CreateBlendState() = 0;
 			virtual DepthStencilStatePtr CreateDepthStencilState() = 0;
@@ -28,6 +28,6 @@ namespace LightningGE
 			virtual ShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap) = 0;
 			virtual RasterizerStatePtr CreateRasterizerState() = 0;
 		};
-		using DevicePtr = std::shared_ptr<IDevice>;
+		typedef std::shared_ptr<IDevice> DevicePtr;
 	}
 }

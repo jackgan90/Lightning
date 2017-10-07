@@ -21,7 +21,7 @@ namespace LightningGE
 			const T bottom()const { return value[1] + value[3]; }
 		};
 
-		using RectI = Rect<int>;
-		using RectF = Rect<float>;
+		typedef Rect<int> RectI;
+		typedef Rect<float> RectF;
 	}
 }
