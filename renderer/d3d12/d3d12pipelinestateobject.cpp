@@ -8,39 +8,6 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		bool D3D12PipelineStateObject::ApplyBlendState(const BlendStatePtr& blendState)
-		{
-			m_blendState = blendState;
-			return true;
-		}
-
-		bool D3D12PipelineStateObject::ApplyDepthStencilState(const DepthStencilStatePtr& dsState)
-		{
-			m_depthStencilState = dsState;
-			return true;
-		}
-
-		bool D3D12PipelineStateObject::ApplyRasterizerState(const RasterizerStatePtr& rasterizerState)
-		{
-			m_rasterizerState = rasterizerState;
-			return true;
-		}
-
-
-		BlendStatePtr D3D12PipelineStateObject::GetBlendState()const
-		{
-			return m_blendState;
-		}
-
-		DepthStencilStatePtr D3D12PipelineStateObject::GetDepthStencilState()const
-		{
-			return m_depthStencilState;
-		}
-
-		RasterizerStatePtr D3D12PipelineStateObject::GetRasterizerState()const
-		{
-			return m_rasterizerState;
-		}
 
 		void D3D12PipelineStateObject::SynchronizeGraphicsDesc()
 		{
@@ -51,7 +18,7 @@ namespace LightningGE
 
 		void D3D12PipelineStateObject::ReleaseRenderResources()
 		{
-
+			//TODO : release render resources
 		}
 
 

@@ -26,7 +26,8 @@ set(SOURCES rendererfactory.cpp
 			rendererhelper.cpp
 			blendstate.cpp
 			depthstencilstate.cpp
-			rasterizerstate.cpp)
+			rasterizerstate.cpp
+			pipelinestateobject.cpp)
 
 set(TYPES_HEADERS	types/color.h
 					types/rect.h)
