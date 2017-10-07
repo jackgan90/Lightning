@@ -24,8 +24,8 @@ namespace LightningGE
 			const EngineConfig& GetConfig()const { return m_config; }
 		private:
 			ConfigManager();
-			boost::property_tree::ptree m_tree;
 			EngineConfig m_config;
+			boost::property_tree::ptree m_tree;
 		};
 	}
 }

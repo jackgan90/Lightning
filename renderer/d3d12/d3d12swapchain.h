@@ -26,9 +26,9 @@ namespace LightningGE
 			bool BindSwapChainRenderTargets();
 		private:
 			unsigned int m_bufferCount;
+			D3D12Device* m_device;
 			ComPtr<IDXGISwapChain3> m_swapChain;
 			std::unordered_map<UINT, RenderTargetID> m_renderTargets;
-			D3D12Device* m_device;
 		};
 	}
 }

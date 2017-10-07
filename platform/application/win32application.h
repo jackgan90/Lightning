@@ -29,8 +29,8 @@ namespace LightningGE
 			void OnWindowIdle(const WindowSystem::WindowIdleParam& param)override;
 		private:
 			void TryDestroyWindow();
-			WindowPtr m_pWin;
 			Foundation::FileSystemPtr m_filesystem;
+			WindowPtr m_pWin;
 			Renderer::RendererPtr m_renderer;
 		};
 	}

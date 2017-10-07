@@ -37,11 +37,11 @@ namespace LightningGE
 				ComPtr<ID3D12DescriptorHeap> heap;
 			};
 			static D3D12DescriptorHeapManager* CreateInstance(ComPtr<ID3D12Device> pdevice);
+			ComPtr<ID3D12Device> m_device;
 			D3D12DescriptorHeapManager(ComPtr<ID3D12Device> pdevice);
 			std::unordered_map<UINT, _HeapAllocationInfoInternal> m_heaps;
 			std::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, UINT> m_incrementSizes;
 			UINT m_currentID;
-			ComPtr<ID3D12Device> m_device;
 			static D3D12DescriptorHeapManager* s_instance;
 		};
 	}
