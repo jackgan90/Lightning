@@ -19,19 +19,16 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	if (!pApp->Init())
 	{
 		logger.Log(LightningGE::Foundation::Error, "Application initialize error!");
-		return 1;
+		return 0;
 	}
 	if (!pApp->Start())
 	{
 		logger.Log(LightningGE::Foundation::Error, "Application start error!");
-		return 1;
+		return 0;
 	}
-	if (pApp->Run())
-	{
-		logger.Log(LightningGE::Foundation::Error, "Application run error!");
-		return 1;
-	}
+	int res = pApp->Run();
+
 	pApp->Quit();
 	logger.Log(LightningGE::Foundation::Info, "Application quit.");
-	return 0;
+	return res;
 }

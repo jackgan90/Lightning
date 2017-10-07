@@ -22,6 +22,7 @@ namespace LightningGE
 			virtual WINDOWWIDTH GetWidth()const = 0;
 			virtual WINDOWHEIGHT GetHeight()const = 0;
 			virtual const WindowNativeHandlePtr GetNativeHandle()const = 0;
+			virtual int GetDestroyCode() = 0;
 			virtual ~IWindow(){};
 		protected:
 			IWindow() {};

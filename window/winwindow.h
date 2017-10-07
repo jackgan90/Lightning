@@ -18,6 +18,7 @@ namespace LightningGE
 			const WindowNativeHandlePtr GetNativeHandle()const override { return m_nativeHandle; }
 			WINDOWWIDTH GetWidth()const override;
 			WINDOWHEIGHT GetHeight()const override;
+			int GetDestroyCode()override;
 		private:
 			friend LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 			friend WinWindow* GetWinWindow(HWND hWnd);
@@ -25,6 +26,7 @@ namespace LightningGE
 			std::string m_Caption;
 			WINDOWWIDTH m_width;
 			WINDOWHEIGHT m_height;
+			int m_destroyCode;
 			static char* s_WindowClassName;
 		};
 	}

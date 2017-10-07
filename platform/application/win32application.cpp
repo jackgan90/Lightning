@@ -16,15 +16,6 @@ namespace LightningGE
 		{
 			m_filesystem = Foundation::FileSystemFactory::FileSystem();
 			logger.Log(LogLevel::Info, "File system created!Current working directory:%s", m_filesystem->GetRoot().c_str());
-			//Foundation::FilePtr file = m_filesystem->FindFile("test.txt");
-			//if (file)
-			//{
-			//	Foundation::FileSize fileSize = file->GetSize();
-			//	char* buffer = new char[fileSize+1];
-			//	buffer[fileSize] = '\0';
-			//	file->Read(buffer, fileSize);
-			//	logger.Log(LogLevel::Debug, "File content is %s", buffer);
-			//}
 		}
 
 		Win32Application::~Win32Application()
@@ -60,10 +51,11 @@ namespace LightningGE
 			if (m_pWin)
 			{
 				logger.Log(LogLevel::Info, "Win32Application start running!");
-				m_pWin->Show(true);
-				return 0;
+				if(!m_pWin->Show(true));
+					return 0;
+				return m_pWin->GetDestroyCode();
 			}
-			return 1;
+			return 0;
 		}
 
 		void Win32Application::Quit()

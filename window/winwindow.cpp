@@ -136,7 +136,10 @@ namespace LightningGE
 				if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 				{
 					if (msg.message == WM_QUIT)
+					{
+						m_destroyCode = msg.wParam;	
 						break;
+					}
 					::TranslateMessage(&msg);
 					::DispatchMessage(&msg);
 				}
@@ -156,6 +159,10 @@ namespace LightningGE
 		WINDOWHEIGHT WinWindow::GetHeight()const
 		{
 			return m_height;
+		}
+		int WinWindow::GetDestroyCode()
+		{
+			return m_destroyCode;
 		}
 	}
 }
