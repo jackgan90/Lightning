@@ -15,14 +15,14 @@ namespace LightningGE
 			static void Finalize();
 #ifdef LIGHTNINGGE_WIN32
 		public:
-			static ApplicationPtr<Win32Application::allocator_type, Win32Application::class_name_type> GetApp();
+			static ApplicationPtr<Win32Application::allocator_type> GetApp();
 		private:
-			static ApplicationPtr<Win32Application::allocator_type, Win32Application::class_name_type> s_app;
+			static ApplicationPtr<Win32Application::allocator_type> s_app;
 #else
 		public:
-			static ApplicationPtr<Application, Application::allocator_type> GetApp();
+			static ApplicationPtr<Application::allocator_type> GetApp();
 		private:
-			static ApplicationPtr<Application, Application::allocator_type> s_app;
+			static ApplicationPtr<Application::allocator_type> s_app;
 #endif
 		};
 

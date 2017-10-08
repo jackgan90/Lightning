@@ -8,8 +8,8 @@ namespace LightningGE
 {
 	namespace App
 	{
-		template<typename AllocatorType, typename className>
-		class LIGHTNINGGE_PLATFORM_API IApplication : public memory::ILeakFreeObject<AllocatorType, className>
+		template<typename AllocatorType>
+		class LIGHTNINGGE_PLATFORM_API IApplication : public memory::ILeakFreeObject<AllocatorType>
 		{
 		public:
 			virtual bool Init() = 0;
@@ -19,11 +19,11 @@ namespace LightningGE
 			virtual ~IApplication(){}
 		};
 
-		template<typename AllocatorType, typename className>
-		using ApplicationPtr = std::shared_ptr<IApplication<AllocatorType, className>>;
+		template<typename AllocatorType>
+		using ApplicationPtr = std::shared_ptr<IApplication<AllocatorType>>;
 
-		template<typename AllocatorType, typename className>
-		class LIGHTNINGGE_PLATFORM_API Application : public IApplication<AllocatorType, className>
+		template<typename AllocatorType>
+		class LIGHTNINGGE_PLATFORM_API Application : public IApplication<AllocatorType>
 		{
 		public:
 			bool Start()override;
@@ -36,8 +36,8 @@ namespace LightningGE
 		};
 
 #ifdef	LIGHTNINGGE_PLATFORM_EXPORT
-		template<typename AllocatorType, typename className>
-		bool Application<AllocatorType, className>::Start()
+		template<typename AllocatorType>
+		bool Application<AllocatorType>::Start()
 		{
 			bool result = true;
 			result &= CreateMainWindow();
@@ -48,8 +48,8 @@ namespace LightningGE
 			return result;
 		}
 
-		template<typename AllocatorType, typename className>
-		void Application<AllocatorType, className>::RegisterWindowHandlers()
+		template<typename AllocatorType>
+		void Application<AllocatorType>::RegisterWindowHandlers()
 		{
 			WindowPtr pWin = GetMainWindow();
 			if (pWin)

@@ -12,8 +12,7 @@ namespace LightningGE
 	{
 		using WindowSystem::WindowPtr;
 		using memory::BaseMemoryAllocator;
-		DECLARE_CLASS_NAME(Win32Application)
-		class LIGHTNINGGE_PLATFORM_API Win32Application : public Application<BaseMemoryAllocator, USE_CLASS_NAME(Win32Application)>
+		class LIGHTNINGGE_PLATFORM_API Win32Application : public Application<BaseMemoryAllocator>
 		{
 		public:
 			Win32Application();
