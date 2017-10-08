@@ -8,7 +8,7 @@ namespace LightningGE
 {
 	namespace App
 	{
-		ApplicationPtr AppFactory::s_app;
+		ApplicationPtr AppFactory::s_app = nullptr;
 		ApplicationPtr AppFactory::GetApp()
 		{
 			if (!s_app)
@@ -18,6 +18,10 @@ namespace LightningGE
 			#endif
 			}
 			return s_app;
+		}
+		void AppFactory::Finalize()
+		{
+			s_app.reset();
 		}
 	}
 }

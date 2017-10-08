@@ -169,7 +169,7 @@ namespace LightningGE
 			});
 			if (it != end)
 			{
-				m_cachedFiles.insert(std::make_pair(filename, std::make_shared<GeneralFile>(it->path().string(), bitmask)));
+				m_cachedFiles.insert(std::make_pair(filename, FilePtr(new GeneralFile(it->path().string(), bitmask))));
 				return m_cachedFiles[filename];
 			}
 			return FilePtr();

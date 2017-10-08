@@ -5,7 +5,8 @@ namespace LightningGE
 {
 	namespace Foundation
 	{
-		FileSystemPtr FileSystemFactory::s_fs;
+		FileSystemPtr FileSystemFactory::s_fs = nullptr;
+
 		FileSystemPtr FileSystemFactory::FileSystem()
 		{
 			if (!s_fs)
@@ -16,5 +17,11 @@ namespace LightningGE
 			}
 			return s_fs;
 		}
+
+		void FileSystemFactory::Finalize()
+		{
+			s_fs.reset();
+		}
+
 	}
 }

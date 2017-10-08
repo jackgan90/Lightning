@@ -10,11 +10,6 @@ namespace LightningGE
 		namespace pt = boost::property_tree;
 		const char* ConfigManager::CONFIG_FILE_NAME = "config.xml";
 		extern Logger logger;
-		ConfigManager* ConfigManager::Instance()
-		{
-			static ConfigManager instance;
-			return &instance;
-		}
 
 		std::string ConfigManager::GetConfigString(const std::string& node_path)
 		{

@@ -31,6 +31,8 @@ namespace LightningGE
 			static RendererPtr GetRenderer() { return s_renderer; }
 			//return a shader manager
 			static ShaderManagerPtr GetShaderManager() { return s_shaderMgr; }
+			//finalize renderer factory, should be called only at the end of the app
+			static void Finalize();
 		private:
 			static RenderTargetManagerPtr s_renderTargetMgr;
 			static RenderContextPtr s_renderContext;

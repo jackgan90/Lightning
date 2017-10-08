@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <vector>
+#include "singleton.h"
 #include "iwindow.h"
 #include "windowexportdef.h"
 
@@ -9,14 +10,12 @@ namespace LightningGE
 	namespace WindowSystem
 	{
 		typedef unsigned int WINDOWID;
-		class LIGHTNINGGE_WINDOW_API WindowManager
+		class LIGHTNINGGE_WINDOW_API WindowManager : public Singleton<WindowManager>
 		{
 		public:
-			WindowManager(const WindowManager& wm) = delete;
-			WindowManager(WindowManager&& wm) = delete;
+			friend class Singleton<WindowManager>;
 			~WindowManager();
 			WindowPtr MakeWindow();
-			static WindowManager* Instance();
 			std::vector<WindowPtr> GetAllWindows()const;
 		private:
 			WindowManager();

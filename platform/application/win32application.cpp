@@ -60,7 +60,8 @@ namespace LightningGE
 
 		void Win32Application::Quit()
 		{
-			m_renderer->ReleaseRenderResources();
+			m_renderer->Finalize();
+			Foundation::FileSystemFactory::Finalize();
 			TryDestroyWindow();
 			logger.Log(LogLevel::Info, "Win32Application quit!");
 		}

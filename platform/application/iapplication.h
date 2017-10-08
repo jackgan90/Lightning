@@ -2,6 +2,7 @@
 #include <memory>
 #include "platformexportdef.h"
 #include "iwindow.h"
+#include "singleton.h"
 
 namespace LightningGE
 {

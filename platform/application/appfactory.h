@@ -10,6 +10,7 @@ namespace LightningGE
 		{
 		public:
 			static ApplicationPtr GetApp();
+			static void Finalize();
 		private:
 			static ApplicationPtr s_app;
 		};

@@ -4,6 +4,7 @@
 #include "iwindow.h"
 #include "filesystem.h"
 #include "irenderer.h"
+#include "memorysystem.h"
 
 namespace LightningGE
 {
@@ -12,7 +13,9 @@ namespace LightningGE
 		using WindowSystem::WindowPtr;
 		class LIGHTNINGGE_PLATFORM_API Win32Application : public Application
 		{
+			MEMORY_ALLOCATOR_OPERATOR_OVERRIDE(Win32Application, BaseMemoryAllocator)
 		public:
+			friend class Singleton<Win32Application>;
 			Win32Application();
 			~Win32Application()override;
 			Win32Application(const Win32Application&) = delete;

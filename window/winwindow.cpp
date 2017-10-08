@@ -118,7 +118,7 @@ namespace LightningGE
 				logger.Log(LogLevel::Error, "Create window failed!ErrorCode : %x", error);
 				return false;
 			}
-			m_nativeHandle = std::make_shared<WinWindowNativeHandle>(hWnd);
+			m_nativeHandle = WindowNativeHandlePtr(new WinWindowNativeHandle(hWnd));
 			logger.Log(LogLevel::Info, "Create window succeed!");
 			return true;
 		}

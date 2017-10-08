@@ -11,17 +11,16 @@
 #include "irendercontext.h"
 #include "irendertargetmanager.h"
 
-
-
-namespace LightningGE
-{
-	namespace Renderer
-	{
 #ifdef DEBUG
 #define REPORT_LIVE_OBJECTS if(m_dxgiDebug) {m_dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);}
 #else
 #define REPORT_LIVE_OBJECTS
 #endif
+
+namespace LightningGE
+{
+	namespace Renderer
+	{
 		using Microsoft::WRL::ComPtr;
 		class LIGHTNINGGE_RENDERER_API D3D12RenderContext : public IRenderContext
 		{

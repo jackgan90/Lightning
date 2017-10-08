@@ -60,6 +60,14 @@ namespace LightningGE
 			return s_shaderMgr;
 		}
 
+		void RendererFactory::Finalize()
+		{
+			s_shaderMgr.reset();
+			s_renderTargetMgr.reset();
+			s_renderer.reset();
+			s_renderContext.reset();
+		}
+
 
 	}
 }
