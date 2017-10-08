@@ -19,7 +19,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	//the memory allocator must be allocated at the first line
 	memory::AllocatorManager manager;
 	logger.Log(LogLevel::Info, "This is LightingGE entry.");
-	ApplicationPtr pApp = AppFactory::GetApp();
+	auto pApp = AppFactory::GetApp();
 	if (!pApp->Init())
 	{
 		logger.Log(LogLevel::Error, "Application initialize error!");

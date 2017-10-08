@@ -11,11 +11,11 @@ namespace LightningGE
 	namespace App
 	{
 		using WindowSystem::WindowPtr;
-		class LIGHTNINGGE_PLATFORM_API Win32Application : public Application
+		using memory::BaseMemoryAllocator;
+		DECLARE_CLASS_NAME(Win32Application)
+		class LIGHTNINGGE_PLATFORM_API Win32Application : public Application<BaseMemoryAllocator, USE_CLASS_NAME(Win32Application)>
 		{
-			MEMORY_ALLOCATOR_OPERATOR_OVERRIDE(Win32Application, BaseMemoryAllocator)
 		public:
-			friend class Singleton<Win32Application>;
 			Win32Application();
 			~Win32Application()override;
 			Win32Application(const Win32Application&) = delete;

@@ -2,15 +2,14 @@
 #include <memory>
 #include "platformexportdef.h"
 #include "iwindow.h"
-#include "singleton.h"
+#include "memorysystem.h"
 
 namespace LightningGE
 {
 	namespace App
 	{
-		class IApplication;
-		typedef std::shared_ptr<IApplication> ApplicationPtr;
-		class LIGHTNINGGE_PLATFORM_API IApplication
+		template<typename AllocatorType, typename className>
+		class LIGHTNINGGE_PLATFORM_API IApplication : public memory::ILeakFreeObject<AllocatorType, className>
 		{
 		public:
 			virtual bool Init() = 0;
@@ -20,7 +19,11 @@ namespace LightningGE
 			virtual ~IApplication(){}
 		};
 
-		class LIGHTNINGGE_PLATFORM_API Application : public IApplication
+		template<typename AllocatorType, typename className>
+		using ApplicationPtr = std::shared_ptr<IApplication<AllocatorType, className>>;
+
+		template<typename AllocatorType, typename className>
+		class LIGHTNINGGE_PLATFORM_API Application : public IApplication<AllocatorType, className>
 		{
 		public:
 			bool Start()override;
@@ -32,5 +35,31 @@ namespace LightningGE
 			virtual WindowSystem::WindowPtr GetMainWindow() const = 0;
 		};
 
+#ifdef	LIGHTNINGGE_PLATFORM_EXPORT
+		template<typename AllocatorType, typename className>
+		bool Application<AllocatorType, className>::Start()
+		{
+			bool result = true;
+			result &= CreateMainWindow();
+			if(result)
+				result &= InitRenderContext();
+			if (result)
+				RegisterWindowHandlers();
+			return result;
+		}
+
+		template<typename AllocatorType, typename className>
+		void Application<AllocatorType, className>::RegisterWindowHandlers()
+		{
+			WindowPtr pWin = GetMainWindow();
+			if (pWin)
+			{
+				pWin->RegisterWindowMessageHandler(WindowSystem::MESSAGE_IDLE, 
+					[&](WindowSystem::WindowMessage msg, const WindowSystem::WindowMessageParam& param) 
+					{this->OnWindowIdle(reinterpret_cast<const WindowSystem::WindowIdleParam&>(param)); });
+			}
+		}
+
+#endif
 	}
 }

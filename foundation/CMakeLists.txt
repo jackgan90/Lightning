@@ -6,7 +6,9 @@ set(MEMORY_HEADERS	memory/memoryexportdef.h
 					memory/imemoryallocator.h
 					memory/basememoryallocator.h
 					memory/allocatormanager.h
-					memory/memorysystem.h)
+					memory/memorysystem.h
+					memory/leakfreeobject.h
+					memory/allocatorid.h)
 
 set(MEMORY_SOURCES	memory/basememoryallocator.cpp
 					memory/allocatormanager.cpp)

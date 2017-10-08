@@ -36,7 +36,13 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/foundation/memory
 					${CMAKE_SOURCE_DIR}/platform 
 					${CMAKE_SOURCE_DIR}/platform/application 
-					${CMAKE_SOURCE_DIR}/window)
+					${CMAKE_SOURCE_DIR}/window
+					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
+					${CMAKE_SOURCE_DIR}/renderer
+					${CMAKE_SOURCE_DIR}/renderer/types
+					${CMAKE_SOURCE_DIR}/renderer/shader
+					${CMAKE_SOURCE_DIR}/utilities
+					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen)
 add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} foundation platform renderer)
 target_link_libraries(${PROJECT_NAME} platform renderer)

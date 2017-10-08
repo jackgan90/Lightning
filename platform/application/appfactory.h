@@ -1,6 +1,9 @@
 #pragma once
 #include "platformexportdef.h"
 #include "iapplication.h"
+#ifdef LIGHTNINGGE_WIN32
+#include "win32application.h"
+#endif
 
 namespace LightningGE
 {
@@ -9,10 +12,19 @@ namespace LightningGE
 		class LIGHTNINGGE_PLATFORM_API AppFactory
 		{
 		public:
-			static ApplicationPtr GetApp();
 			static void Finalize();
+#ifdef LIGHTNINGGE_WIN32
+		public:
+			static ApplicationPtr<Win32Application::allocator_type, Win32Application::class_name_type> GetApp();
 		private:
-			static ApplicationPtr s_app;
+			static ApplicationPtr<Win32Application::allocator_type, Win32Application::class_name_type> s_app;
+#else
+		public:
+			static ApplicationPtr<Application, Application::allocator_type> GetApp();
+		private:
+			static ApplicationPtr<Application, Application::allocator_type> s_app;
+#endif
 		};
+
 	}
 }

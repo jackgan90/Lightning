@@ -1,24 +1,33 @@
 #include <memory>
 #include "appfactory.h"
-#ifdef LIGHTNINGGE_WIN32
-#include "win32application.h"
-#endif
 
 namespace LightningGE
 {
 	namespace App
 	{
-		ApplicationPtr AppFactory::s_app = nullptr;
-		ApplicationPtr AppFactory::GetApp()
+
+#ifdef LIGHTNINGGE_WIN32
+		ApplicationPtr<Win32Application::allocator_type, Win32Application::class_name_type> AppFactory::s_app = nullptr;
+
+		ApplicationPtr<Win32Application::allocator_type, Win32Application::class_name_type> AppFactory::GetApp()
 		{
 			if (!s_app)
 			{
-			#ifdef LIGHTNINGGE_WIN32
-				s_app = ApplicationPtr(new Win32Application());
-			#endif
+				s_app = ApplicationPtr<Win32Application::allocator_type, Win32Application::class_name_type>(new Win32Application());
 			}
 			return s_app;
 		}
+#else
+		//basically this branch should never execute
+		ApplicationPtr<Application, Application::allocator_type> AppFactory::s_app = nullptr;
+
+		ApplicationPtr<Application, Application::allocator_type> AppFactory::GetApp()
+		{
+			return nullptr;
+		}
+
+#endif
+
 		void AppFactory::Finalize()
 		{
 			s_app.reset();
