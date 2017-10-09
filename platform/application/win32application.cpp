@@ -15,6 +15,8 @@ namespace LightningGE
 		using Renderer::RendererFactory;
 		using Renderer::IRenderContext;
 		using Renderer::IRenderer;
+		using Renderer::IRenderTargetManager;
+		using Renderer::IShaderManager;
 		Win32Application::Win32Application()
 		{
 			logger.Log(LogLevel::Info, "File system created!Current working directory:%s", FileSystemFactory::Instance()->FileSystem()->GetRoot().c_str());
@@ -62,9 +64,11 @@ namespace LightningGE
 
 		void Win32Application::Quit()
 		{
+			m_renderer->ReleaseRenderResources();
 			RendererFactory<IRenderContext>::Instance()->Finalize();
 			RendererFactory<IRenderer>::Instance()->Finalize();
-			m_renderer->Finalize();
+			RendererFactory<IRenderTargetManager>::Instance()->Finalize();
+			RendererFactory<IShaderManager>::Instance()->Finalize();
 			FileSystemFactory::Instance()->Finalize();
 			TryDestroyWindow();
 			logger.Log(LogLevel::Info, "Win32Application quit!");

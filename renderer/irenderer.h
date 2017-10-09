@@ -29,8 +29,6 @@ namespace LightningGE
 			virtual unsigned long GetCurrentFrameIndex()const = 0;
 			//apply the pipeline state object
 			virtual void ApplyPipelineStateObject(const PipelineStateObjectPtr& pso) = 0;
-			//called at the end of the application lifecycle.should release any resource
-			virtual void Finalize() = 0;
 		};
 		typedef std::shared_ptr<IRenderer> RendererPtr;
 	}

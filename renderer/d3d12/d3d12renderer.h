@@ -17,7 +17,6 @@ namespace LightningGE
 			RenderContextPtr CreateRenderContext()override { return m_context; }
 			void SetClearColor(const ColorF& color)override;
 			void ApplyPipelineStateObject(const PipelineStateObjectPtr& pso)override;
-			void Finalize()override;
 		protected:
 			void BeginRender();
 			void DoRender();

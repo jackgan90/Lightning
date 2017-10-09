@@ -104,13 +104,5 @@ namespace LightningGE
 			//TODO : maybe call d3d12 method to really apply the pipeline state?
 		}
 
-		void D3D12Renderer::Finalize()
-		{
-			ReleaseRenderResources();
-			RendererFactory<IShaderManager>::Instance()->Finalize();
-		}
-
-
-
 	}
 }
