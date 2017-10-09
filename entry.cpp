@@ -16,8 +16,6 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 					 int       nCmdShow)
 #endif
 {
-	//the memory allocator must be allocated at the first line
-	memory::AllocatorManager manager;
 	logger.Log(LogLevel::Info, "This is LightingGE entry.");
 	auto pApp = AppFactory::GetApp();
 	if (!pApp->Init())
@@ -35,6 +33,5 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	pApp->Quit();
 	logger.Log(LogLevel::Info, "Application quit.");
 	pApp.reset();
-	AppFactory::Finalize();
 	return res;
 }

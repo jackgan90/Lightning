@@ -7,13 +7,13 @@ namespace LightningGE
 	{
 
 #ifdef LIGHTNINGGE_WIN32
-		ApplicationPtr<Win32Application::allocator_type> AppFactory::s_app = nullptr;
+		ApplicationPtr AppFactory::s_app = nullptr;
 
-		ApplicationPtr<Win32Application::allocator_type> AppFactory::GetApp()
+		ApplicationPtr AppFactory::GetApp()
 		{
 			if (!s_app)
 			{
-				s_app = ApplicationPtr<Win32Application::allocator_type>(new Win32Application());
+				s_app = ApplicationPtr(new Win32Application());
 			}
 			return s_app;
 		}
