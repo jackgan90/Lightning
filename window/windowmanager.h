@@ -10,10 +10,10 @@ namespace LightningGE
 	namespace WindowSystem
 	{
 		typedef unsigned int WINDOWID;
-		class LIGHTNINGGE_WINDOW_API WindowManager : public Singleton<WindowManager>
+		class LIGHTNINGGE_WINDOW_API WindowManager : public Foundation::Singleton<WindowManager>
 		{
 		public:
-			friend class Singleton<WindowManager>;
+			friend class Foundation::Singleton<WindowManager>;
 			~WindowManager();
 			WindowPtr MakeWindow();
 			std::vector<WindowPtr> GetAllWindows()const;

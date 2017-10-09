@@ -6,7 +6,6 @@
 #include "appfactory.h" //for application
 
 using LightningGE::App::AppFactory;
-using LightningGE::App::ApplicationPtr;
 using LightningGE::Foundation::logger;
 using LightningGE::Foundation::LogLevel;
 #ifdef WIN32
@@ -17,7 +16,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 #endif
 {
 	logger.Log(LogLevel::Info, "This is LightingGE entry.");
-	auto pApp = AppFactory::GetApp();
+	auto pApp = AppFactory::Instance()->GetApp();
 	if (!pApp->Init())
 	{
 		logger.Log(LogLevel::Error, "Application initialize error!");
@@ -32,6 +31,6 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	pApp->Quit();
 	logger.Log(LogLevel::Info, "Application quit.");
-	pApp.reset();
+	AppFactory::Instance()->Finalize();
 	return res;
 }

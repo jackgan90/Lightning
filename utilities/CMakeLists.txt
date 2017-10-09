@@ -19,6 +19,9 @@ if (WIN32)
 	add_definitions(-DLIGHTNINGGE_WIN32
 					-DMEMORY_PLATFORM_WIN32)
 endif()
+if(LIGHTNINGGE_USE_D3D12)
+	add_definitions(-DLIGHTNINGGE_USE_D3D12)
+endif()
 define_dll_export_macro(UTILITIES)
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})

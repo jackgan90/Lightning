@@ -5,22 +5,14 @@ namespace LightningGE
 {
 	namespace Foundation
 	{
-		FileSystemPtr FileSystemFactory::s_fs = nullptr;
-
-		FileSystemPtr FileSystemFactory::FileSystem()
+		IFileSystem<GeneralFileSystem>* FileSystemFactory::FileSystem()
 		{
-			if (!s_fs)
-			{
-#ifdef LIGHTNINGGE_WIN32
-				s_fs = FileSystemPtr(new GeneralFileSystem());
-#endif
-			}
-			return s_fs;
+			return GeneralFileSystem::Instance();
 		}
 
 		void FileSystemFactory::Finalize()
 		{
-			s_fs.reset();
+
 		}
 
 	}

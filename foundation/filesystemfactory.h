@@ -1,18 +1,17 @@
 #pragma once
 #include "foundationexportdef.h"
 #include "filesystem.h"
+#include "singleton.h"
 
 namespace LightningGE
 {
 	namespace Foundation
 	{
-		class LIGHTNINGGE_FOUNDATION_API FileSystemFactory
+		class LIGHTNINGGE_FOUNDATION_API FileSystemFactory : public Singleton<FileSystemFactory>
 		{
 		public:
-			static FileSystemPtr FileSystem();
-			static void Finalize();
-		private:
-			static FileSystemPtr s_fs;
+			IFileSystem<GeneralFileSystem>* FileSystem();
+			void Finalize();
 		};
 	}
 }

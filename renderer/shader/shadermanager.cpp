@@ -11,7 +11,6 @@ namespace LightningGE
 	namespace Renderer
 	{
 		using Foundation::FileSystemFactory;
-		using Foundation::FileSystemPtr;
 		using Foundation::FilePtr;
 		using Foundation::FileAccess;
 		using Foundation::logger;
@@ -30,7 +29,7 @@ namespace LightningGE
 			auto it = m_shaders.find(hash);
 			if (it != m_shaders.end())
 				return it->second;
-			FileSystemPtr fs = FileSystemFactory::FileSystem();
+			auto fs = FileSystemFactory::Instance()->FileSystem();
 			FilePtr shaderFile = fs->FindFile(shaderName, FileAccess::ACCESS_READ);
 			if (!shaderFile)
 				return nullptr;

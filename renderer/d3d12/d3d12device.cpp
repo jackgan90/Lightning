@@ -129,7 +129,7 @@ namespace LightningGE
 
 		ShaderPtr D3D12Device::CreateShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)
 		{
-			return RendererFactory::CreateShaderManager()->GetShader(type, shaderName, defineMap);
+			return RendererFactory<IShaderManager>::Instance()->Create()->GetShader(type, shaderName, defineMap);
 		}
 
 		RasterizerStatePtr D3D12Device::CreateRasterizerState()

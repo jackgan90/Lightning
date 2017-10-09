@@ -58,7 +58,7 @@ namespace LightningGE
 				return false;
 			}
 			
-			m_renderTargetManager = RendererFactory::CreateRenderTargetManager(m_device, m_swapChain);
+			m_renderTargetManager = RendererFactory<IRenderTargetManager>::Instance()->Create(m_device, m_swapChain);
 			D3D12DescriptorHeapManager::CreateInstance(static_cast<D3D12Device*>(m_device.get())->m_device);
 			D3D12SwapChain *d3d12swapchain = static_cast<D3D12SwapChain*>(m_swapChain.get());
 			if (!d3d12swapchain->BindSwapChainRenderTargets())

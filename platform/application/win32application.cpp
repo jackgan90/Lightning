@@ -5,17 +5,19 @@
 #include "windowmanager.h"
 #include "filesystemfactory.h"
 
-using LightningGE::Foundation::LogLevel;
-using LightningGE::Foundation::logger;
-
 namespace LightningGE
 {
 	namespace App
 	{
+		using Foundation::LogLevel;
+		using Foundation::logger;
+		using Foundation::FileSystemFactory;
+		using Renderer::RendererFactory;
+		using Renderer::IRenderContext;
+		using Renderer::IRenderer;
 		Win32Application::Win32Application()
 		{
-			m_filesystem = Foundation::FileSystemFactory::FileSystem();
-			logger.Log(LogLevel::Info, "File system created!Current working directory:%s", m_filesystem->GetRoot().c_str());
+			logger.Log(LogLevel::Info, "File system created!Current working directory:%s", FileSystemFactory::Instance()->FileSystem()->GetRoot().c_str());
 		}
 
 		Win32Application::~Win32Application()
@@ -60,8 +62,10 @@ namespace LightningGE
 
 		void Win32Application::Quit()
 		{
+			RendererFactory<IRenderContext>::Instance()->Finalize();
+			RendererFactory<IRenderer>::Instance()->Finalize();
 			m_renderer->Finalize();
-			Foundation::FileSystemFactory::Finalize();
+			FileSystemFactory::Instance()->Finalize();
 			TryDestroyWindow();
 			logger.Log(LogLevel::Info, "Win32Application quit!");
 		}
@@ -82,13 +86,13 @@ namespace LightningGE
 
 		bool Win32Application::InitRenderContext()
 		{
-			Renderer::RenderContextPtr pContext = Renderer::RendererFactory::CreateRenderContext();
+			auto pContext = RendererFactory<IRenderContext>::Instance()->Create();
 			if (!pContext)
 				return false;
 			bool result = pContext->Init(m_pWin);
 			if (result)
 			{
-				m_renderer = Renderer::RendererFactory::CreateRenderer(pContext);
+				m_renderer = RendererFactory<IRenderer>::Instance()->Create(pContext);
 			}
 			return result;
 		}

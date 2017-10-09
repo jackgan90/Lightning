@@ -1,43 +1,78 @@
 #pragma once
+#include <memory>
+#include "common.h"
+#include "singleton.h"
 #include "rendererexportdef.h"
 #include "idevice.h"
 #include "iswapchain.h"
-#include "irendercontext.h"
-#include "irendertargetmanager.h"
-#include "ishadermanager.h"
-#include "irenderer.h"
+#include "d3d12rendercontext.h"
+#include "d3d12rendertargetmanager.h"
+#include "d3d12shadermanager.h"
+#include "d3d12renderer.h"
 
 namespace LightningGE
 {
 	namespace Renderer
 	{
-		class LIGHTNINGGE_RENDERER_API RendererFactory
+		//this class is designed to create singleton render objects.only application and render module should use this class
+		template<typename T>
+		class LIGHTNINGGE_RENDERER_API RendererFactory : public Foundation::Singleton<RendererFactory<T>>
 		{
-		public:
-			//create a singleton render target manager of the implementation
-			static RenderTargetManagerPtr CreateRenderTargetManager(DevicePtr pDevice, SwapChainPtr pSwapChain);
-			//TODO some graphics API may coexist more than one context in the application process,try to resovle the condition
-			//create a render context which can be used to initialize rendering pipeline
-			static RenderContextPtr CreateRenderContext();
-			//create a singleton renderer to control the rendering workflow
-			static RendererPtr CreateRenderer(RenderContextPtr pRenderContext);
-			//create a singleton shader manager
-			static ShaderManagerPtr CreateShaderManager();
-			//return an already created render target manager instance
-			static RenderTargetManagerPtr GetRenderTargetManager() { return s_renderTargetMgr; }
-			//return an already created render context
-			static RenderContextPtr GetRenderContext() { return s_renderContext; }
-			//return an already created renderer
-			static RendererPtr GetRenderer() { return s_renderer; }
-			//return a shader manager
-			static ShaderManagerPtr GetShaderManager() { return s_shaderMgr; }
-			//finalize renderer factory, should be called only at the end of the app
-			static void Finalize();
 		private:
-			static RenderTargetManagerPtr s_renderTargetMgr;
-			static RenderContextPtr s_renderContext;
-			static RendererPtr s_renderer;
-			static ShaderManagerPtr s_shaderMgr;
+#ifdef LIGHTNINGGE_USE_D3D12
+			typedef D3D12RenderTargetManager RenderTargetManagerType;
+			typedef D3D12RenderContext RenderContextType;
+			typedef D3D12Renderer RendererType;
+			typedef D3D12ShaderManager ShaderManagerType;
+#endif
+			template<typename Q, typename... Args>
+			std::shared_ptr<Q> CreateInternal(typename std::enable_if<std::is_same<Q, IRenderContext>::value, RenderContextType>::type* t, Args&&... args)
+			{
+				return CreateInterfaceImpl<Q, RenderContextType>(std::forward<Args>(args)...);
+			}
+			template<typename Q, typename... Args>
+			std::shared_ptr<Q> CreateInternal(typename std::enable_if<std::is_same<Q, IRenderTargetManager>::value, RenderTargetManagerType>::type* t, Args&&... args)
+			{
+				return CreateInterfaceImpl<Q, RenderTargetManagerType>(std::forward<Args>(args)...);
+			}
+			template<typename Q, typename... Args>
+			std::shared_ptr<Q> CreateInternal(typename std::enable_if<std::is_same<Q, IRenderer>::value, RendererType>::type* t, Args&&... args)
+			{
+				return CreateInterfaceImpl<Q, RendererType>(std::forward<Args>(args)...);
+			}
+			template<typename Q, typename... Args>
+			std::shared_ptr<Q> CreateInternal(typename std::enable_if<std::is_same<Q, IShaderManager>::value, ShaderManagerType>::type* t, Args&&... args)
+			{
+				return CreateInterfaceImpl<Q, ShaderManagerType>(std::forward<Args>(args)...);
+			}
+		public:
+			template<typename... Args>
+			std::shared_ptr<T> Create(Args&&... args)
+			{
+				if (m_obj)
+				{
+					return m_obj;
+				}
+				m_obj = CreateInternal<T>(nullptr, std::forward<Args>(args)...);
+				return m_obj;
+			}
+
+			std::shared_ptr<T> Get()const
+			{
+				return m_obj;
+			}
+
+			void Finalize()
+			{
+				m_obj.reset();
+			}
+		private:
+			template<typename Interface, typename Implementation, typename... Args>
+			std::shared_ptr<Interface> CreateInterfaceImpl(Args&&... args)
+			{
+				return std::make_shared<Implementation>(new Implementation(std::forward<Args>(args)...));
+			}
+			std::shared_ptr<T> m_obj;
 		};
 	}
 }

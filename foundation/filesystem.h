@@ -5,6 +5,7 @@
 #include <fstream>
 #include <boost/filesystem.hpp>
 #include "foundationexportdef.h"
+#include "singleton.h"
 
 namespace LightningGE
 {
@@ -42,7 +43,8 @@ namespace LightningGE
 		};
 		typedef std::shared_ptr<IFile> FilePtr;
 
-		class LIGHTNINGGE_FOUNDATION_API IFileSystem
+		template<typename Derived>
+		class LIGHTNINGGE_FOUNDATION_API IFileSystem : public Singleton<Derived>
 		{
 		public:
 			virtual ~IFileSystem() {}
@@ -50,9 +52,8 @@ namespace LightningGE
 			virtual bool SetRoot(std::string root_path) = 0;
 			virtual const std::string GetRoot() const = 0;
 		};
-		typedef std::shared_ptr<IFileSystem> FileSystemPtr;
 
-		class LIGHTNINGGE_FOUNDATION_API GeneralFileSystem : public IFileSystem
+		class LIGHTNINGGE_FOUNDATION_API GeneralFileSystem : public IFileSystem<GeneralFileSystem>
 		{
 		public:
 			GeneralFileSystem();

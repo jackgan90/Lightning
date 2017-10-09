@@ -1,6 +1,7 @@
 #pragma once
 #include "platformexportdef.h"
 #include "iapplication.h"
+#include "singleton.h"
 #ifdef LIGHTNINGGE_WIN32
 #include "win32application.h"
 #endif
@@ -9,20 +10,16 @@ namespace LightningGE
 {
 	namespace App
 	{
-		class LIGHTNINGGE_PLATFORM_API AppFactory
+		class LIGHTNINGGE_PLATFORM_API AppFactory : public Foundation::Singleton<AppFactory>
 		{
 		public:
-			static void Finalize();
+			void Finalize();
 #ifdef LIGHTNINGGE_WIN32
 		public:
-			static ApplicationPtr GetApp();
-		private:
-			static ApplicationPtr s_app;
+			IApplication<Win32Application>* GetApp();
 #else
 		public:
-			static ApplicationPtr<Application::allocator_type> GetApp();
-		private:
-			static ApplicationPtr<Application::allocator_type> s_app;
+			IApplication<Application>* GetApp();
 #endif
 		};
 

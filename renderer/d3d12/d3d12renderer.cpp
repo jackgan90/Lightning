@@ -22,7 +22,7 @@ namespace LightningGE
 		void D3D12Renderer::ReleaseRenderResources()
 		{
 			WaitForPreviousFrame();
-			ShaderManagerPtr pShaderMgr = RendererFactory::GetShaderManager();
+			ShaderManagerPtr pShaderMgr = RendererFactory<IShaderManager>::Instance()->Get();
 			if (pShaderMgr)
 				pShaderMgr->ReleaseRenderResources();
 			if (m_pso)
@@ -34,7 +34,7 @@ namespace LightningGE
 		void D3D12Renderer::BeginRender()
 		{
 			m_frameIndex++;
-			RendererFactory::CreateShaderManager()->GetShader(SHADER_TYPE_VERTEX, "default.vs", ShaderDefine());
+			RendererFactory<IShaderManager>::Instance()->Create()->GetShader(SHADER_TYPE_VERTEX, "default.vs", ShaderDefine());
 		}
 
 		void D3D12Renderer::DoRender()
@@ -107,7 +107,7 @@ namespace LightningGE
 		void D3D12Renderer::Finalize()
 		{
 			ReleaseRenderResources();
-			RendererFactory::Finalize();
+			RendererFactory<IShaderManager>::Instance()->Finalize();
 		}
 
 

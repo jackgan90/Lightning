@@ -22,6 +22,10 @@ if(WIN32)
 	add_definitions(-DLIGHTNINGGE_WIN32
 					-DMEMORY_PLATFORM_WIN32)
 endif()
+if(LIGHTNINGGE_USE_D3D12)
+	add_definitions(-DLIGHTNINGGE_USE_D3D12)
+	include_directories(${CMAKE_SOURCE_DIR}/renderer/d3d12)
+endif()
 
 source_group("application" FILES 
 			${APPLICATION_HEADERS}
