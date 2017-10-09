@@ -31,8 +31,15 @@ namespace LightningGE
 		bool D3D12RenderContext::Init(const WindowPtr& pWindow)
 		{
 #ifdef DEBUG
-			::D3D12GetDebugInterface(IID_PPV_ARGS(&m_d3d12Debug));
-			m_d3d12Debug->EnableDebugLayer();
+			auto res = ::D3D12GetDebugInterface(IID_PPV_ARGS(&m_d3d12Debug));
+			if (FAILED(res))
+			{
+				logger.Log(LogLevel::Warning, "Failed to get d3d12 debug interface!You should enable Graphics Tools optional feature!ErrorCode : 0x%x", res);
+			}
+			else
+			{
+				m_d3d12Debug->EnableDebugLayer();
+			}
 #endif
 			ComPtr<IDXGIFactory4> dxgiFactory;
 			HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(&dxgiFactory));
@@ -208,9 +215,24 @@ namespace LightningGE
 #ifdef DEBUG
 		void D3D12RenderContext::InitDXGIDebug()
 		{
-			HMODULE dxgiDebugHandle = ::GetModuleHandle("Dxgidebug.dll");
-			typedef LRESULT (*DXGIGetDebugInterfaceFunc)(REFIID, void**);
+			//HMODULE dxgiDebugHandle = ::GetModuleHandle("Dxgidebug.dll");
+			//don't use GetModuleHandle because Dxgidebug.dll may not be loaded automatically by the app
+			//so we just load the dll here explicitly
+			HMODULE dxgiDebugHandle = ::LoadLibrary("Dxgidebug.dll");
+			if (!dxgiDebugHandle)
+			{
+				logger.Log(LogLevel::Warning, "Can't get dxgidebug.dll module,errorCode:0x%x", ::GetLastError());
+				return;
+			}
+			//the __stdcall declaration is required because windows APIs conform to stdcall convention
+			//omit it will cause stack corruption
+			typedef LRESULT (__stdcall *DXGIGetDebugInterfaceFunc)(REFIID, void**);
 			DXGIGetDebugInterfaceFunc pDXGIGetDebugInterface = reinterpret_cast<DXGIGetDebugInterfaceFunc>(::GetProcAddress(dxgiDebugHandle, "DXGIGetDebugInterface"));
+			if (!pDXGIGetDebugInterface)
+			{
+				logger.Log(LogLevel::Warning, "Failed to get debug interface!");
+				return;
+			}
 			pDXGIGetDebugInterface(IID_PPV_ARGS(&m_dxgiDebug));
 		}
 #endif
