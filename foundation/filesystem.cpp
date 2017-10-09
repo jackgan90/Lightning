@@ -1,4 +1,5 @@
 #include <algorithm>
+#include "logger.h"
 #include "filesystem.h"
 #include "common.h"
 #include "configmanager.h"
@@ -7,6 +8,7 @@ namespace LightningGE
 {
 	namespace Foundation
 	{
+		extern Logger logger;
 		GeneralFile::GeneralFile():m_sizeDirty(true), m_file(nullptr), m_access(FileAccess::ACCESS_READ)
 		{
 
@@ -163,14 +165,21 @@ namespace LightningGE
 			if (cachedFile != m_cachedFiles.end())
 				return cachedFile->second;
 			const boost::filesystem::recursive_directory_iterator end;
-			const auto it = std::find_if(boost::filesystem::recursive_directory_iterator(m_root), end, 
-				[&filename](const boost::filesystem::directory_entry& e) {
-				return e.path().filename() == filename;
-			});
-			if (it != end)
+			try
 			{
-				m_cachedFiles.insert(std::make_pair(filename, FilePtr(new GeneralFile(it->path().string(), bitmask))));
-				return m_cachedFiles[filename];
+				const auto it = std::find_if(boost::filesystem::recursive_directory_iterator(m_root), end, 
+					[&filename](const boost::filesystem::directory_entry& e) {
+					return e.path().filename() == filename;
+				});
+				if (it != end)
+				{
+					m_cachedFiles.insert(std::make_pair(filename, FilePtr(new GeneralFile(it->path().string(), bitmask))));
+					return m_cachedFiles[filename];
+				}
+			}
+			catch (const boost::filesystem::filesystem_error& e)
+			{
+				logger.Log(LogLevel::Error, e.what());
 			}
 			return FilePtr();
 		}

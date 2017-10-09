@@ -3,6 +3,9 @@
 #include <fstream>
 #ifdef _MSC_VER
 #include <Windows.h>
+//windows defines its min as a macro,that makes files include this header see min as the macro
+//that's not the intent.at any rate when we need to use min semantic we should use std::min
+#undef min
 #endif
 #include "timesystem.h"
 #include "foundationexportdef.h"
