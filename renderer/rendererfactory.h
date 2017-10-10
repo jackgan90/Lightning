@@ -24,6 +24,11 @@ namespace LightningGE
 	namespace Renderer
 	{
 		//this class is designed to create singleton render objects.only application and render module should use this class
+		//Note : due to the nature of templates,the caller of Create must also be the caller of Finalize.Because the same template
+		//can be specialized in different forms providing different template parameters(class and member).One definition in file A
+		//may not compatible with another definition in file B.In that case,the Instance() method may not always return the expected
+		//singleton instance.Actually the Create method should only be called once in a file,and the file should contain some code to call
+		//the Finalize method.
 		template<typename Interface>
 		class RendererFactory : public Foundation::Singleton<RendererFactory<Interface>>
 		{
