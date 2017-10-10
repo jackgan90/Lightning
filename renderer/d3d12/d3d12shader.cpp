@@ -195,5 +195,24 @@ namespace LightningGE
 			ss << "_" << m_smMajorVersion << "_" << m_smMinorVersion;
 			std::strcpy(buf, ss.str().c_str());
 		}
+
+		void* D3D12Shader::GetByteCodeBuffer()const
+		{
+			if (m_byteCode)
+			{
+				m_byteCode->GetBufferPointer();
+			}
+			return nullptr;
+		}
+
+		SIZE_T D3D12Shader::GetByteCodeBufferSize()const
+		{
+			if (m_byteCode)
+			{
+				m_byteCode->GetBufferSize();
+			}
+			return 0;
+		}
+
 	}
 }

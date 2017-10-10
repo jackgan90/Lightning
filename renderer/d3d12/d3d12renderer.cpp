@@ -2,6 +2,7 @@
 #include "d3d12renderer.h"
 #include "d3d12swapchain.h"
 #include "d3d12device.h"
+#include "d3d12pipelinestateobject.h"
 #include "logger.h"
 
 namespace LightningGE
@@ -100,6 +101,7 @@ namespace LightningGE
 		void D3D12Renderer::ApplyPipelineStateObject(const PipelineStateObjectPtr& pso)
 		{
 			m_pso = pso;
+			STATIC_CAST_PTR(D3D12PipelineStateObject, m_pso)->SynchronizeGraphicsDesc();
 			//TODO : maybe call d3d12 method to really apply the pipeline state?
 		}
 

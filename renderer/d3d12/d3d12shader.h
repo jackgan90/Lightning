@@ -23,6 +23,8 @@ namespace LightningGE
 #endif
 			void GetShaderModelVersion(int& major, int& minor)override;
 			void ReleaseRenderResources()override;
+			void* GetByteCodeBuffer()const;
+			SIZE_T GetByteCodeBufferSize()const;
 		private:
 			void GetShaderModelString(char* buf)const;
 			ShaderType m_type;

@@ -9,6 +9,7 @@ namespace LightningGE
 		class D3D12PipelineStateObject : public PipelineStateObject
 		{
 		public:
+			friend class D3D12Renderer;
 			void ReleaseRenderResources()override;
 		private:
 			void SynchronizeGraphicsDesc();
