@@ -1,0 +1,48 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+DLLEXPORT	E:\LightningGE\foundation\common.h	3;"	d
+DLLIMPORT	E:\LightningGE\foundation\common.h	4;"	d
+IWindow	E:\LightningGE\platform\iwindow.h	/^			IWindow() {};$/;"	f	class:LightningGE::WindowSystem::IWindow
+IWindow	E:\LightningGE\platform\iwindow.h	/^		class DLLEXPORT IWindow$/;"	c	namespace:LightningGE::WindowSystem
+Init	E:\LightningGE\platform\winwindow.cpp	/^		bool WinWindow::Init()$/;"	f	class:LightningGE::WindowSystem::WinWindow
+Instance	E:\LightningGE\platform\windowmanager.cpp	/^		WindowManager* WindowManager::Instance()$/;"	f	class:LightningGE::WindowSystem::WindowManager
+LightningGE	E:\LightningGE\platform\iwindow.h	/^namespace LightningGE$/;"	n
+LightningGE	E:\LightningGE\platform\windowmanager.cpp	/^namespace LightningGE$/;"	n	file:
+LightningGE	E:\LightningGE\platform\windowmanager.h	/^namespace LightningGE$/;"	n
+LightningGE	E:\LightningGE\platform\winwindow.cpp	/^namespace LightningGE$/;"	n	file:
+LightningGE	E:\LightningGE\platform\winwindow.h	/^namespace LightningGE$/;"	n
+MakeWindow	E:\LightningGE\platform\windowmanager.cpp	/^		WindowPtr WindowManager::MakeWindow()$/;"	f	class:LightningGE::WindowSystem::WindowManager
+Show	E:\LightningGE\platform\winwindow.cpp	/^		bool WinWindow::Show(bool show)$/;"	f	class:LightningGE::WindowSystem::WinWindow
+WinMain	E:\LightningGE\entry.cpp	/^int APIENTRY WinMain(HINSTANCE hInstance,$/;"	f
+WinWindow	E:\LightningGE\platform\winwindow.cpp	/^		WinWindow::WinWindow():m_hWnd(nullptr), m_Caption("Lightning Win32 Window")$/;"	f	class:LightningGE::WindowSystem::WinWindow
+WinWindow	E:\LightningGE\platform\winwindow.h	/^		class DLLEXPORT WinWindow : public IWindow$/;"	c	namespace:LightningGE::WindowSystem
+WindowManager	E:\LightningGE\platform\windowmanager.cpp	/^		WindowManager::WindowManager():m_currentID(0)$/;"	f	class:LightningGE::WindowSystem::WindowManager
+WindowManager	E:\LightningGE\platform\windowmanager.h	/^		class DLLEXPORT WindowManager$/;"	c	namespace:LightningGE::WindowSystem
+WindowSystem	E:\LightningGE\platform\iwindow.h	/^	namespace WindowSystem$/;"	n	namespace:LightningGE
+WindowSystem	E:\LightningGE\platform\windowmanager.cpp	/^	namespace WindowSystem$/;"	n	namespace:LightningGE	file:
+WindowSystem	E:\LightningGE\platform\windowmanager.h	/^	namespace WindowSystem$/;"	n	namespace:LightningGE
+WindowSystem	E:\LightningGE\platform\winwindow.cpp	/^	namespace WindowSystem$/;"	n	namespace:LightningGE	file:
+WindowSystem	E:\LightningGE\platform\winwindow.h	/^	namespace WindowSystem$/;"	n	namespace:LightningGE
+WndProc	E:\LightningGE\platform\winwindow.cpp	/^		LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)$/;"	f	namespace:LightningGE::WindowSystem
+destroy	E:\LightningGE\platform\winwindow.cpp	/^		void WinWindow::destroy()$/;"	f	class:LightningGE::WindowSystem::WinWindow
+m_Caption	E:\LightningGE\platform\winwindow.h	/^			std::string m_Caption;$/;"	m	class:LightningGE::WindowSystem::WinWindow
+m_currentID	E:\LightningGE\platform\windowmanager.h	/^			WINDOWID m_currentID;$/;"	m	class:LightningGE::WindowSystem::WindowManager
+m_hWnd	E:\LightningGE\platform\winwindow.h	/^			HWND m_hWnd;$/;"	m	class:LightningGE::WindowSystem::WinWindow
+m_height	E:\LightningGE\platform\winwindow.h	/^			unsigned int m_height;$/;"	m	class:LightningGE::WindowSystem::WinWindow
+m_width	E:\LightningGE\platform\winwindow.h	/^			unsigned int m_width;$/;"	m	class:LightningGE::WindowSystem::WinWindow
+m_windows	E:\LightningGE\platform\windowmanager.h	/^			std::unordered_map<WINDOWID, WindowPtr> m_windows;$/;"	m	class:LightningGE::WindowSystem::WindowManager
+override	E:\LightningGE\platform\winwindow.h	/^			bool Init()override;$/;"	m	class:LightningGE::WindowSystem::WinWindow
+override	E:\LightningGE\platform\winwindow.h	/^			bool Show(bool show)override;$/;"	m	class:LightningGE::WindowSystem::WinWindow
+override	E:\LightningGE\platform\winwindow.h	/^			void destroy()override;$/;"	m	class:LightningGE::WindowSystem::WinWindow
+override	E:\LightningGE\platform\winwindow.h	/^			~WinWindow()override;$/;"	m	class:LightningGE::WindowSystem::WinWindow
+s_WindowClassName	E:\LightningGE\platform\winwindow.cpp	/^		char* WinWindow::s_WindowClassName = "DefaultWin32Window";$/;"	m	class:LightningGE::WindowSystem::WinWindow	file:
+s_WindowClassName	E:\LightningGE\platform\winwindow.h	/^			static char* s_WindowClassName;$/;"	m	class:LightningGE::WindowSystem::WinWindow
+wm	E:\LightningGE\platform\windowmanager.h	/^			WindowManager(WindowManager&& wm) = delete;$/;"	m	class:LightningGE::WindowSystem::WindowManager
+wm	E:\LightningGE\platform\windowmanager.h	/^			WindowManager(const WindowManager& wm) = delete;$/;"	m	class:LightningGE::WindowSystem::WindowManager
+~IWindow	E:\LightningGE\platform\iwindow.h	/^			virtual ~IWindow(){};$/;"	f	class:LightningGE::WindowSystem::IWindow
+~WinWindow	E:\LightningGE\platform\winwindow.cpp	/^		WinWindow::~WinWindow()$/;"	f	class:LightningGE::WindowSystem::WinWindow
+~WindowManager	E:\LightningGE\platform\windowmanager.cpp	/^		WindowManager::~WindowManager()$/;"	f	class:LightningGE::WindowSystem::WindowManager

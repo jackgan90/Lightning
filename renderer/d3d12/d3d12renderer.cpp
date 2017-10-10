@@ -1,9 +1,14 @@
-#include "rendererfactory.h"
+//#include "rendererfactory.h"
 #include "d3d12renderer.h"
 #include "d3d12swapchain.h"
 #include "d3d12device.h"
 #include "d3d12pipelinestateobject.h"
+#include "d3d12descriptorheapmanager.h"
+#include "winwindow.h"
+#include "winwindownativehandle.h"
+#include "configmanager.h"
 #include "logger.h"
+#include "common.h"
 
 namespace LightningGE
 {
@@ -11,38 +16,213 @@ namespace LightningGE
 	{
 		using Foundation::logger;
 		using Foundation::LogLevel;
-		D3D12Renderer::D3D12Renderer(IRenderContext* pContext) : 
-			m_context(pContext), m_clearColor(0.5f, 0.5f, 0.5f, 1.0f)
-		{
-			D3D12RenderContext* pD3D12Context = static_cast<D3D12RenderContext*>(m_context);
-			D3D12SwapChain* pSwapChain = static_cast<D3D12SwapChain*>(pD3D12Context->m_swapChain.get());
-			ComPtr<IDXGISwapChain3> nativeSwapChain = pSwapChain->m_swapChain;
-			m_currentBackBufferIndex = nativeSwapChain->GetCurrentBackBufferIndex();
-		}
+		using Foundation::ConfigManager;
+		using Foundation::EngineConfig;
+		using WindowSystem::WinWindow;
+		using WindowSystem::WinWindowNativeHandle;
 
-		void D3D12Renderer::ReleaseRenderResources()
+		D3D12Renderer::~D3D12Renderer()
 		{
 			WaitForPreviousFrame();
-			if (m_pso)
-				m_pso->ReleaseRenderResources();
-			//render context must be the last object to release resources,other resources should go before it
-			m_context->ReleaseRenderResources();
+			logger.Log(LogLevel::Info, "Start to clean up render context.");
+			m_fences.clear();
+			::CloseHandle(m_fenceEvent);
+			m_fenceEvent = nullptr;
+			//RendererFactory<IRenderTargetManager>::Instance()->Finalize();
+			REPORT_LIVE_OBJECTS;
 		}
+
+		D3D12Renderer::D3D12Renderer(const WindowPtr& pWindow, const FileSystemPtr& fs) 
+			: m_clearColor(0.5f, 0.5f, 0.5f, 1.0f), m_fs(fs)
+		{
+#ifdef DEBUG
+			EnableDebugLayer();
+#endif
+			ComPtr<IDXGIFactory4> dxgiFactory;
+			HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(&dxgiFactory));
+			if (FAILED(hr))
+			{
+				throw DeviceInitException("Failed to create DXGI factory!");
+			}
+			InitDevice(dxgiFactory);
+			m_descriptorMgr = std::make_shared<D3D12DescriptorHeapManager>(static_cast<D3D12Device*>(m_device.get())->m_device);
+			InitSwapChain(dxgiFactory, pWindow);
+			
+			CreateFences();
+			logger.Log(LogLevel::Info, "Initialize D3D12 render context succeeded!");
+			
+			D3D12SwapChain *d3d12swapchain = static_cast<D3D12SwapChain*>(m_swapChain.get());
+			ComPtr<IDXGISwapChain3> nativeSwapChain = d3d12swapchain->m_swapChain;
+			m_currentBackBufferIndex = nativeSwapChain->GetCurrentBackBufferIndex();
+#ifdef DEBUG
+			InitDXGIDebug();
+#endif
+			REPORT_LIVE_OBJECTS;
+		}
+
+#ifdef DEBUG
+		void D3D12Renderer::EnableDebugLayer()
+		{
+			auto res = ::D3D12GetDebugInterface(IID_PPV_ARGS(&m_d3d12Debug));
+			if (FAILED(res))
+			{
+				logger.Log(LogLevel::Warning, "Failed to get d3d12 debug interface!You should enable Graphics Tools optional feature!ErrorCode : 0x%x", res);
+			}
+			else
+			{
+				m_d3d12Debug->EnableDebugLayer();
+			}
+		}
+#endif
+
+
+		void D3D12Renderer::InitDevice(ComPtr<IDXGIFactory4> dxgiFactory)
+		{
+			ComPtr<IDXGIAdapter1> adaptor;
+			int adaptorIndex = 0;
+			bool adaptorFound = false;
+			HRESULT hr;
+
+			while (dxgiFactory->EnumAdapters1(adaptorIndex, &adaptor) != DXGI_ERROR_NOT_FOUND)
+			{
+				DXGI_ADAPTER_DESC1 desc;
+				adaptor->GetDesc1(&desc);
+
+				if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+				{
+					adaptorIndex++;
+					continue;
+				}
+				hr = D3D12CreateDevice(adaptor.Get(), D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), nullptr);
+				if (SUCCEEDED(hr))
+				{
+					adaptorFound = true;
+					break;
+				}
+				adaptorIndex++;
+			}
+			if (!adaptorFound)
+			{
+				throw DeviceInitException("Can't find hardware d3d12 adaptor!");
+			}
+			ComPtr<ID3D12Device> pDevice;
+			hr = D3D12CreateDevice(adaptor.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&pDevice));
+			if (FAILED(hr))
+			{
+				throw DeviceInitException("Failed to create d3d12 device!");
+			}
+			m_device = std::shared_ptr<IDevice>(new D3D12Device(pDevice, m_fs));
+		}
+
+		void D3D12Renderer::InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, const WindowPtr& pWindow)
+		{
+			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
+			UINT sampleCount = 1;
+			bool msaaEnabled = false;
+			UINT qualityLevels = 0;
+			if (config.MSAAEnabled)
+			{
+				D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels;
+				msQualityLevels.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+				msQualityLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
+				msQualityLevels.SampleCount = config.MSAASampleCount > 0 ? config.MSAASampleCount : 1;
+				msQualityLevels.NumQualityLevels = 0;
+				STATIC_CAST_PTR(D3D12Device, m_device)->m_device->CheckFeatureSupport(
+					D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msQualityLevels, sizeof(msQualityLevels));
+				qualityLevels = msQualityLevels.NumQualityLevels;
+				sampleCount = msQualityLevels.SampleCount;
+				assert(qualityLevels > 0 && "Unexpected MSAA quality levels.");
+			}
+			DXGI_MODE_DESC bufferDesc = {};
+			bufferDesc.Width = pWindow->GetWidth();
+			bufferDesc.Height = pWindow->GetHeight();
+			bufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+			DXGI_SAMPLE_DESC sampleDesc = {};
+			sampleDesc.Count = msaaEnabled ? sampleCount : 1;
+			sampleDesc.Quality = msaaEnabled ? qualityLevels - 1 : 0;
+
+			DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
+			swapChainDesc.BufferCount = config.SwapChainBufferCount;
+			swapChainDesc.BufferDesc = bufferDesc;
+			swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+			swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+			const WinWindowNativeHandle *pNativeHandle = \
+				dynamic_cast<const WinWindowNativeHandle*>(STATIC_CAST_PTR(WinWindow, pWindow)->GetNativeHandle().get());
+			swapChainDesc.OutputWindow = *const_cast<WinWindowNativeHandle*>(pNativeHandle);
+			swapChainDesc.SampleDesc = sampleDesc;
+			swapChainDesc.Windowed = TRUE;
+
+			ComPtr<IDXGISwapChain> tempSwapChain;
+
+			dxgiFactory->CreateSwapChain(STATIC_CAST_PTR(D3D12Device, m_device)->m_commandQueue.Get(),
+				&swapChainDesc, &tempSwapChain);
+			ComPtr<IDXGISwapChain3> swapChain;
+			tempSwapChain.As(&swapChain);
+			m_swapChain = SwapChainPtr(new D3D12SwapChain(swapChain, this));
+		}
+
+		void D3D12Renderer::CreateFences()
+		{
+			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
+			HRESULT hr;
+			D3D12Device* pDevice = STATIC_CAST_PTR(D3D12Device, m_device);
+			ComPtr<ID3D12Device> pd3d12device = pDevice->m_device;
+			for (size_t i = 0; i < config.SwapChainBufferCount; i++)
+			{
+				m_fenceValues.push_back(0);
+				ComPtr<ID3D12Fence> fence;
+				hr = pd3d12device->CreateFence(m_fenceValues.back(), D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+				if (FAILED(hr))
+				{
+					throw DeviceInitException("Failed to create fence!");
+				}
+				m_fences.push_back(fence);
+			}
+			m_fenceEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+			if (!m_fenceEvent)
+			{
+				throw DeviceInitException("Failed to create fence event!");
+			}
+		}
+
+#ifdef DEBUG
+		void D3D12Renderer::InitDXGIDebug()
+		{
+			//HMODULE dxgiDebugHandle = ::GetModuleHandle("Dxgidebug.dll");
+			//don't use GetModuleHandle because Dxgidebug.dll may not be loaded automatically by the app
+			//so we just load the dll here explicitly
+			HMODULE dxgiDebugHandle = ::LoadLibrary("Dxgidebug.dll");
+			if (!dxgiDebugHandle)
+			{
+				logger.Log(LogLevel::Warning, "Can't get dxgidebug.dll module,errorCode:0x%x", ::GetLastError());
+				return;
+			}
+			//the __stdcall declaration is required because windows APIs conform to stdcall convention
+			//omit it will cause stack corruption
+			typedef LRESULT (__stdcall *DXGIGetDebugInterfaceFunc)(REFIID, void**);
+			DXGIGetDebugInterfaceFunc pDXGIGetDebugInterface = reinterpret_cast<DXGIGetDebugInterfaceFunc>(::GetProcAddress(dxgiDebugHandle, "DXGIGetDebugInterface"));
+			if (!pDXGIGetDebugInterface)
+			{
+				logger.Log(LogLevel::Warning, "Failed to get debug interface!");
+				return;
+			}
+			pDXGIGetDebugInterface(IID_PPV_ARGS(&m_dxgiDebug));
+		}
+#endif
 
 		void D3D12Renderer::BeginRender()
 		{
 			m_frameIndex++;
-			auto pContext = static_cast<D3D12RenderContext*>(m_context);
-			auto pDevice = static_cast<D3D12Device*>(pContext->m_device.get());
+			auto pDevice = static_cast<D3D12Device*>(m_device.get());
 			pDevice->CreateShader(SHADER_TYPE_VERTEX, "default.vs", ShaderDefine());
 		}
 
 		void D3D12Renderer::DoRender()
 		{
 			WaitForPreviousFrame();
-			D3D12RenderContext* pContext = static_cast<D3D12RenderContext*>(m_context);
-			D3D12SwapChain* pSwapChain = static_cast<D3D12SwapChain*>(pContext->m_swapChain.get());
-			D3D12Device* pDevice = static_cast<D3D12Device*>(pContext->m_device.get());
+			D3D12SwapChain* pSwapChain = static_cast<D3D12SwapChain*>(m_swapChain.get());
+			D3D12Device* pDevice = static_cast<D3D12Device*>(m_device.get());
 			pSwapChain->Present();
 			auto commandAllocator = pDevice->m_commandAllocators[m_currentBackBufferIndex];
 			auto commandList = pDevice->m_commandList;
@@ -56,7 +236,7 @@ namespace LightningGE
 			commandList->Close();
 			ID3D12CommandList* commandListArray[] = { commandList.Get() };
 			commandQueue->ExecuteCommandLists(_countof(commandListArray), commandListArray);
-			commandQueue->Signal(pContext->m_fences[m_currentBackBufferIndex].Get(), pContext->m_fenceValues[m_currentBackBufferIndex]);
+			commandQueue->Signal(m_fences[m_currentBackBufferIndex].Get(), m_fenceValues[m_currentBackBufferIndex]);
 		}
 
 		void D3D12Renderer::EndRender()
@@ -65,32 +245,31 @@ namespace LightningGE
 
 		DevicePtr D3D12Renderer::GetDevice()
 		{
-			return static_cast<D3D12RenderContext*>(m_context)->m_device;
+			return m_device;
 		}
 
 		SwapChainPtr D3D12Renderer::GetSwapChain()
 		{
-			return static_cast<D3D12RenderContext*>(m_context)->m_swapChain;
+			return m_swapChain;
 		}
 
 		void D3D12Renderer::WaitForPreviousFrame()
 		{
 			HRESULT hr;
-			D3D12RenderContext* pContext = static_cast<D3D12RenderContext*>(m_context);
-			D3D12SwapChain* pSwapChain = static_cast<D3D12SwapChain*>(pContext->m_swapChain.get());
+			D3D12SwapChain* pSwapChain = static_cast<D3D12SwapChain*>(m_swapChain.get());
 			ComPtr<IDXGISwapChain3> nativeSwapChain = pSwapChain->m_swapChain;
 			m_currentBackBufferIndex = nativeSwapChain->GetCurrentBackBufferIndex();
-			if (pContext->m_fences[m_currentBackBufferIndex]->GetCompletedValue() < pContext->m_fenceValues[m_currentBackBufferIndex])
+			if (m_fences[m_currentBackBufferIndex]->GetCompletedValue() < m_fenceValues[m_currentBackBufferIndex])
 			{
-				hr = pContext->m_fences[m_currentBackBufferIndex]->SetEventOnCompletion(pContext->m_fenceValues[m_currentBackBufferIndex], pContext->m_fenceEvent);
+				hr = m_fences[m_currentBackBufferIndex]->SetEventOnCompletion(m_fenceValues[m_currentBackBufferIndex], m_fenceEvent);
 				if (FAILED(hr))
 				{
 					logger.Log(LogLevel::Error, "Failed to SetEventOnCompletion, current back buffer index:%d, fence value:%d",
-						m_currentBackBufferIndex, pContext->m_fenceValues[m_currentBackBufferIndex]);
+						m_currentBackBufferIndex, m_fenceValues[m_currentBackBufferIndex]);
 				}
-				::WaitForSingleObject(pContext->m_fenceEvent, INFINITE);
+				::WaitForSingleObject(m_fenceEvent, INFINITE);
 			}
-			++pContext->m_fenceValues[m_currentBackBufferIndex];
+			++m_fenceValues[m_currentBackBufferIndex];
 		}
 
 		void D3D12Renderer::SetClearColor(const ColorF& color)

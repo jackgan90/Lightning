@@ -31,7 +31,15 @@ define_dll_export_macro(WINDOW)
 
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 
-include_directories(${CMAKE_SOURCE_DIR}/foundation
+include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
+					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen
+					${CMAKE_SOURCE_DIR}/platform
+					${CMAKE_SOURCE_DIR}/platform/application
+					${CMAKE_SOURCE_DIR}/renderer
+					${CMAKE_SOURCE_DIR}/renderer/shader
+					${CMAKE_SOURCE_DIR}/renderer/types
+					${CMAKE_SOURCE_DIR}/foundation
+					${CMAKE_SOURCE_DIR}/utilities
 					${CMAKE_SOURCE_DIR}/foundation/memory)
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})

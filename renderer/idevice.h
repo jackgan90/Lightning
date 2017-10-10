@@ -2,7 +2,6 @@
 #include <memory>
 #include "rendererexportdef.h"
 #include "irendertarget.h"
-#include "irenderresourcekeeper.h"
 #include "iblendstate.h"
 #include "idepthstencilstate.h"
 #include "irasterizerstate.h"
@@ -16,9 +15,10 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		class LIGHTNINGGE_RENDERER_API IDevice : public IRenderResourceKeeper
+		class LIGHTNINGGE_RENDERER_API IDevice
 		{
 		public:
+			virtual ~IDevice(){}
 			//clear a specified render target,possibly parts of it defined by an array of rects
 			virtual void ClearRenderTarget(const RenderTargetPtr& rt, const ColorF& color, const RectI* pRects = nullptr, const int rectCount=0) = 0;
 			virtual BlendStatePtr CreateBlendState() = 0;

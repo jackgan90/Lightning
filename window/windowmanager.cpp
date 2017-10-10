@@ -31,9 +31,6 @@ namespace LightningGE
 
 		WindowManager::~WindowManager()
 		{
-			for (auto w : m_windows)
-				w.second->destroy();
-			m_windows.clear();
 		}
 	}
 }

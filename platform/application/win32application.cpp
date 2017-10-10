@@ -13,11 +13,12 @@ namespace LightningGE
 		using Foundation::logger;
 		using Foundation::FileSystemFactory;
 		using Renderer::RendererFactory;
-		using Renderer::IRenderContext;
 		using Renderer::IRenderer;
 		Win32Application::Win32Application()
 		{
-			logger.Log(LogLevel::Info, "File system created!Current working directory:%s", FileSystemFactory::Instance()->FileSystem()->GetRoot().c_str());
+			m_fs = FileSystemFactory::Instance()->CreateFileSystem();
+			m_windowMgr = new WindowManager();
+			logger.Log(LogLevel::Info, "File system created!Current working directory:%s", m_fs->GetRoot().c_str());
 		}
 
 		Win32Application::~Win32Application()
@@ -27,10 +28,9 @@ namespace LightningGE
 
 		void Win32Application::TryDestroyWindow()
 		{
-			if (m_pWin)
+			if (m_window)
 			{
-				m_pWin->destroy();
-				m_pWin.reset();
+				m_window.reset();
 			}
 		}
 
@@ -40,62 +40,52 @@ namespace LightningGE
 			return true;
 		}
 
-		bool Win32Application::Start()
+		void Win32Application::Start()
 		{
-			bool result = Application::Start();
-			if(result)
-				logger.Log(LogLevel::Info, "Win32Application start successfully!");
-			return result;
+			Application::Start();
+			logger.Log(LogLevel::Info, "Win32Application start successfully!");
 		}
 
 		int Win32Application::Run()
 		{
-			if (m_pWin)
+			if (m_window)
 			{
 				logger.Log(LogLevel::Info, "Win32Application start running!");
-				if(!m_pWin->Show(true));
+				if(!m_window->Show(true));
 					return 0;
-				return m_pWin->GetDestroyCode();
+				return m_window->GetDestroyCode();
 			}
 			return 0;
 		}
 
 		void Win32Application::Quit()
 		{
-			m_renderer->ReleaseRenderResources();
-			RendererFactory<IRenderContext>::Instance()->Finalize();
-			RendererFactory<IRenderer>::Instance()->Finalize();
-			m_renderer = nullptr;
-			FileSystemFactory::Instance()->Finalize();
+			//we pre-destruct the application,not in destructor, so we have to 
+			//hand make the order
+			m_renderer.reset();
 			TryDestroyWindow();
+			SAFE_DELETE(m_windowMgr);
+			m_fs.reset();
 			logger.Log(LogLevel::Info, "Win32Application quit!");
 		}
 
 		bool Win32Application::CreateMainWindow()
 		{
-			if (!m_pWin)
+			if (!m_window)
 			{
-				m_pWin = WindowSystem::WindowManager::Instance()->MakeWindow();
-				if (!m_pWin)
+				m_window = m_windowMgr->MakeWindow();
+				if (!m_window)
 				{
 					return false;
 				}
-				m_pWin->Init();
+				m_window->Init();
 			}
 			return true;
 		}
 
-		bool Win32Application::InitRenderContext()
+		void Win32Application::InitRenderContext()
 		{
-			auto pContext = RendererFactory<IRenderContext>::Instance()->Create();
-			if (!pContext)
-				return false;
-			bool result = pContext->Init(m_pWin);
-			if (result)
-			{
-				m_renderer = RendererFactory<IRenderer>::Instance()->Create(pContext);
-			}
-			return result;
+			m_renderer = RendererFactory::Instance()->CreateRenderer(m_window, m_fs);
 		}
 
 		void Win32Application::OnWindowIdle(const WindowSystem::WindowIdleParam& param)

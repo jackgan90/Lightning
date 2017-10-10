@@ -2,7 +2,6 @@
 #include <memory>
 #include <unordered_map>
 #include "rendererexportdef.h"
-#include "irenderresourcekeeper.h"
 #include "iblendstate.h"
 #include "idepthstencilstate.h"
 #include "irasterizerstate.h"
@@ -14,7 +13,7 @@ namespace LightningGE
 	namespace Renderer
 	{
 		using Utility::HashableObject;
-		class LIGHTNINGGE_RENDERER_API IPipelineStateObject : public IRenderResourceKeeper, public HashableObject
+		class LIGHTNINGGE_RENDERER_API IPipelineStateObject : public HashableObject
 		{
 		public:
 			virtual bool ApplyBlendState(const BlendStatePtr& blendState) = 0;

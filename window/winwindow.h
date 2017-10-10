@@ -11,7 +11,6 @@ namespace LightningGE
 		{
 		public:
 			WinWindow();
-			void destroy()override;
 			~WinWindow()override;
 			bool Init()override;
 			bool Show(bool show)override;

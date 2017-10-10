@@ -31,11 +31,5 @@ namespace LightningGE
 			SYNCHRONIZE_SHADER(ds, SHADER_TYPE_DOMAIN, DS)
 		}
 
-		void D3D12PipelineStateObject::ReleaseRenderResources()
-		{
-			//TODO : release render resources
-		}
-
-
 	}
 }

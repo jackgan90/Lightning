@@ -10,8 +10,7 @@ namespace LightningGE
 		class LIGHTNINGGE_FOUNDATION_API FileSystemFactory : public Singleton<FileSystemFactory>
 		{
 		public:
-			IFileSystem<GeneralFileSystem>* FileSystem();
-			void Finalize();
+			FileSystemPtr CreateFileSystem();
 		};
 	}
 }

@@ -159,12 +159,6 @@ namespace LightningGE
 		}
 #endif
 
-
-		void D3D12Shader::ReleaseRenderResources()
-		{
-			m_byteCode.Reset();
-		}
-
 		void D3D12Shader::GetShaderModelVersion(int& major, int& minor)
 		{
 			major = m_smMajorVersion;

@@ -12,11 +12,6 @@ namespace LightningGE
 
 		}
 
-		void D3D12RenderTarget::ReleaseRenderResources()
-		{
-			m_nativeRenderTarget.Reset();
-		}
-
 		bool D3D12RenderTarget::IsSwapChainRenderTarget()const
 		{
 			return m_isSwapChainTarget;

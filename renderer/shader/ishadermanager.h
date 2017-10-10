@@ -9,7 +9,7 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		class IShaderManager : public Foundation::Counter<IShaderManager, 1>, public IRenderResourceKeeper
+		class IShaderManager : public Foundation::Counter<IShaderManager, 1>
 		{
 		public:
 			//return a compiled shader ptr if the specified shader can be created successfully

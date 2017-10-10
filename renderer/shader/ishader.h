@@ -1,7 +1,6 @@
 #pragma once
 #include <string>
 #include "rendererexportdef.h"
-#include "irenderresourcekeeper.h"
 #include "shaderdefine.h"
 #include "filesystem.h"
 #include "hashableobject.h"
@@ -19,7 +18,7 @@ namespace LightningGE
 			SHADER_TYPE_HULL, //tesselation control shader in OpenGL
 			SHADER_TYPE_DOMAIN	//tesselation evaluation shader in OpenGL
 		};
-		class LIGHTNINGGE_RENDERER_API IShader : public IRenderResourceKeeper, public HashableObject
+		class LIGHTNINGGE_RENDERER_API IShader : public HashableObject
 		{
 		public:
 			virtual std::string GetEntryPoint()const = 0; 

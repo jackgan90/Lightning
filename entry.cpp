@@ -1,14 +1,14 @@
 #ifdef LIGHTNINGGE_WIN32
 #include <Windows.h>	//for WinMain
+#include "win32application.h"
 #endif
 #include "logger.h" //for logging
 #include "memorysystem.h"
-#include "appfactory.h" //for application
 
-using LightningGE::App::AppFactory;
 using LightningGE::Foundation::logger;
 using LightningGE::Foundation::LogLevel;
-#ifdef WIN32
+#ifdef LIGHTNINGGE_WIN32
+LightningGE::App::Win32Application* pApp = nullptr;
 int APIENTRY WinMain(HINSTANCE hInstance,
 					 HINSTANCE hPrevInstance,
 					 LPTSTR    lpCmdLine,
@@ -16,21 +16,18 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 #endif
 {
 	logger.Log(LogLevel::Info, "This is LightingGE entry.");
-	auto pApp = AppFactory::Instance()->GetApp();
-	if (!pApp->Init())
+#ifdef LIGHTNINGGE_WIN32
+	LightningGE::App::Win32Application theApp;
+	pApp = &theApp;
+#endif
+	if (!theApp.Init())
 	{
 		logger.Log(LogLevel::Error, "Application initialize error!");
 		return 0;
 	}
-	if (!pApp->Start())
-	{
-		logger.Log(LogLevel::Error, "Application start error!");
-		return 0;
-	}
-	int res = pApp->Run();
+	theApp.Start();
+	int res = theApp.Run();
 
-	pApp->Quit();
 	logger.Log(LogLevel::Info, "Application quit.");
-	AppFactory::Instance()->Finalize();
 	return res;
 }

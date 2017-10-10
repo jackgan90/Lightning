@@ -1,10 +1,10 @@
+#include "win32application.h"
 #include "common.h"
-#include "windowmanager.h"
 #include "winwindow.h"
 #include "logger.h"
 #include <vector>
 
-
+extern LightningGE::App::Win32Application* pApp;
 namespace LightningGE
 {
 	namespace WindowSystem
@@ -13,13 +13,13 @@ namespace LightningGE
 		using LightningGE::Foundation::LogLevel;
 		using std::vector;
 		char* WinWindow::s_WindowClassName = "DefaultWin32Window";
-
+		
 		WinWindow* GetWinWindow(HWND hWnd)
 		{
-			auto windows = WindowManager::Instance()->GetAllWindows();
+			auto windows = pApp->GetWindowManager()->GetAllWindows();
 			for (auto window : windows)
 			{
-				const WindowNativeHandlePtr pHandle = window->GetNativeHandle();
+				const auto pHandle = window->GetNativeHandle();
 				if (const WinWindowNativeHandle* pWinHandle = dynamic_cast<const WinWindowNativeHandle*>(pHandle.get()))
 				{
 					if (pWinHandle->OwnWindowsHandle(hWnd))
@@ -64,16 +64,11 @@ namespace LightningGE
 
 		WinWindow::~WinWindow()
 		{
-			destroy();
-			logger.Log(LogLevel::Info, "Win32 window destructed!");
-		}
-
-		void WinWindow::destroy()
-		{
 			if (m_nativeHandle)
 			{
 				::DestroyWindow(STATIC_CAST_PTR(WinWindowNativeHandle, m_nativeHandle)->m_hWnd);
 			}
+			logger.Log(LogLevel::Info, "Win32 window destructed!");
 		}
 
 		bool WinWindow::Init()

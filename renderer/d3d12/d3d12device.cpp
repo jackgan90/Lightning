@@ -1,5 +1,6 @@
 #include <d3dx12.h>
-#include "rendererfactory.h"
+//#include "rendererfactory.h"
+#include "irenderer.h"
 #include "d3d12device.h"
 #include "d3d12rendertarget.h"
 #include "d3d12swapchain.h"
@@ -20,16 +21,14 @@ namespace LightningGE
 		using Foundation::logger;
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
-		D3D12Device::D3D12Device(ComPtr<ID3D12Device> pDevice, D3D12RenderContext* pContext)
+		D3D12Device::D3D12Device(ComPtr<ID3D12Device> pDevice, const FileSystemPtr& fs):m_fs(fs)
 		{
-			m_context = pContext;
 			m_device = pDevice;
 			D3D12_COMMAND_QUEUE_DESC desc = {};
-			//TODO : here may cause the object he in inconsistent status due to the failure of command queue creation
 			HRESULT hr = m_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&m_commandQueue));
 			if (FAILED(hr))
 			{
-				logger.Log(LogLevel::Error, "Failed to create command queue!");
+				throw DeviceInitException("Failed to create command queue!");
 			}
 			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
 			for (int i = 0; i < config.SwapChainBufferCount; i++)
@@ -38,36 +37,22 @@ namespace LightningGE
 				hr = m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator));
 				if (FAILED(hr))
 				{
-					logger.Log(LogLevel::Error, "Failed to create command allocator!");
-					return;
+					throw DeviceInitException("Failed to create command allocator!");
 				}
 				m_commandAllocators.push_back(allocator);
 			}
 			hr = m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[0].Get(), nullptr, IID_PPV_ARGS(&m_commandList));
 			if (FAILED(hr))
 			{
-				logger.Log(LogLevel::Error, "Failed to create command list!");
-				return;
+				throw DeviceInitException("Failed to create command list!");
 			}
 			m_commandList->Close();
+			m_shaderMgr = std::make_shared<D3D12ShaderManager>(fs);
 		}
 
 		D3D12Device::~D3D12Device()
 		{
 
-		}
-
-		void D3D12Device::ReleaseRenderResources()
-		{
-			m_commandList.Reset();
-			//TODO : command allocator should be reset only after the previous frame has finished execution
-			for (auto allocator : m_commandAllocators)
-				allocator.Reset();
-			m_commandAllocators.clear();
-			m_commandQueue.Reset();
-			m_device.Reset();
-			RendererFactory<IShaderManager>::Instance()->Get()->ReleaseRenderResources();
-			RendererFactory<IShaderManager>::Instance()->Finalize();
 		}
 
 		void D3D12Device::ClearRenderTarget(const RenderTargetPtr& rt, const ColorF& color, const RectI* pRects, const int rectCount)
@@ -131,7 +116,7 @@ namespace LightningGE
 
 		ShaderPtr D3D12Device::CreateShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)
 		{
-			return RendererFactory<IShaderManager>::Instance()->Create()->GetShader(type, shaderName, defineMap);
+			return m_shaderMgr->GetShader(type, shaderName, defineMap);
 		}
 
 		RasterizerStatePtr D3D12Device::CreateRasterizerState()

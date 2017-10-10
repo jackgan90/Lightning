@@ -14,7 +14,6 @@ namespace LightningGE
 			friend class D3D12RenderTargetManager;
 			D3D12RenderTarget(ComPtr<ID3D12Resource> pRenderTarget, bool isSwapChainTarget, const RenderTargetID& rtID);
 			bool IsSwapChainRenderTarget()const override;
-			void ReleaseRenderResources()override;
 			RenderTargetID GetID() const override { return m_ID; }
 			ComPtr<ID3D12Resource> GetNative()const { return m_nativeRenderTarget; }
 			const D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return m_cpuHandle; }

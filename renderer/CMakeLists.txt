@@ -4,12 +4,9 @@ message(STATUS "Configuring project renderer")
 
 set(HEADERS rendererexportdef.h
 			idevice.h
-			irendercontext.h
 			iswapchain.h
 			irendertarget.h
 			irendertargetmanager.h
-			rendererfactory.h
-			irenderresourcekeeper.h
 			irenderer.h
 			renderer.h
 			iblendstate.h
@@ -19,15 +16,17 @@ set(HEADERS rendererexportdef.h
 			ivertexbuffer.h
 			vertexbuffer.h
 			rendererhelper.h
-			irasterizerstate.h)
-set(SOURCES rendererfactory.cpp
-			renderer.cpp
+			irasterizerstate.h
+			renderexception.h
+			rendererfactory.h)
+set(SOURCES renderer.cpp
 			vertexbuffer.cpp
 			rendererhelper.cpp
 			blendstate.cpp
 			depthstencilstate.cpp
 			rasterizerstate.cpp
-			pipelinestateobject.cpp)
+			pipelinestateobject.cpp
+			rendererfactory.cpp)
 
 set(TYPES_HEADERS	types/color.h
 					types/rect.h)
@@ -60,7 +59,6 @@ endif()
 if(LIGHTNINGGE_USE_D3D12)
 	add_definitions(-DLIGHTNINGGE_USE_D3D12)
 	set(D3D12_HEADERS	d3d12/d3d12device.h
-						d3d12/d3d12rendercontext.h
 						d3d12/d3d12swapchain.h
 						d3d12/d3d12rendertarget.h
 						d3d12/d3d12rendertargetmanager.h
@@ -74,7 +72,6 @@ if(LIGHTNINGGE_USE_D3D12)
 						d3d12/d3d12shadermanager.h
 						d3d12/d3d12rasterizerstate.h)
 	set(D3D12_SOURCES	d3d12/d3d12device.cpp
-						d3d12/d3d12rendercontext.cpp
 						d3d12/d3d12swapchain.cpp
 						d3d12/d3d12rendertarget.cpp
 						d3d12/d3d12rendertargetmanager.cpp

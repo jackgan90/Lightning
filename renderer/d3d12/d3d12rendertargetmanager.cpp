@@ -5,7 +5,7 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		D3D12RenderTargetManager::D3D12RenderTargetManager(DevicePtr pDevice, SwapChainPtr pSwapChain) :m_pDevice(pDevice), m_pSwapChain(pSwapChain)
+		D3D12RenderTargetManager::D3D12RenderTargetManager(D3D12Device* pDevice) :m_pDevice(pDevice)
 			,m_currentID(1)
 		{
 
@@ -24,14 +24,6 @@ namespace LightningGE
 			m_renderTargets[rtID] = RenderTargetPtr(pRenderTarget);
 			m_currentID++;
 			return m_renderTargets[rtID];
-		}
-
-
-		void D3D12RenderTargetManager::ReleaseRenderResources()
-		{
-			for (auto it : m_renderTargets)
-				it.second->ReleaseRenderResources();
-			m_renderTargets.clear();
 		}
 	}
 }

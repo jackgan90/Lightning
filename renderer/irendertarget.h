@@ -1,14 +1,13 @@
 #pragma once
 #include <memory>
 #include "rendererexportdef.h"
-#include "irenderresourcekeeper.h"
 
 namespace LightningGE
 {
 	namespace Renderer
 	{
 		typedef int RenderTargetID;
-		class LIGHTNINGGE_RENDERER_API IRenderTarget : public IRenderResourceKeeper
+		class LIGHTNINGGE_RENDERER_API IRenderTarget
 		{
 		public:
 			//return if the render target representing a swap chain buffer(a back buffer)

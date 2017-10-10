@@ -2,7 +2,6 @@
 #include <memory>
 #include <vector>
 #include "rendererexportdef.h"
-#include "irenderresourcekeeper.h"
 #include "semantics.h"
 
 namespace LightningGE
@@ -29,7 +28,7 @@ namespace LightningGE
 		};
 
 		//note:IVertexBuffer assume tightly packed vertex data.
-		class LIGHTNINGGE_RENDERER_API IVertexBuffer : public IRenderResourceKeeper
+		class LIGHTNINGGE_RENDERER_API IVertexBuffer
 		{
 		public:
 			virtual const VertexAttribute& GetAttributeInfo(size_t attributeIndex) = 0;

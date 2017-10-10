@@ -15,7 +15,6 @@ namespace LightningGE
 		{
 		public:
 			friend class WindowManager;
-			virtual void destroy() = 0;
 			virtual bool Init() = 0;
 			virtual bool Show(bool show) = 0;
 			virtual void RegisterWindowMessageHandler(WindowMessage msg, WindowMessageHandler handler) = 0;

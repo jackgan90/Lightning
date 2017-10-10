@@ -16,11 +16,9 @@ namespace LightningGE
 		using Foundation::logger;
 		using Foundation::LogLevel;
 
-		void ShaderManager::ReleaseRenderResources()
+		ShaderManager::ShaderManager(const FileSystemPtr& fs)
 		{
-			std::for_each(m_shaders.begin(), m_shaders.end(),
-				[](std::pair<const std::size_t, ShaderPtr> pair) {pair.second->ReleaseRenderResources(); });
-			m_shaders.clear();
+			m_fs = fs;
 		}
 
 		ShaderPtr ShaderManager::GetShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)
@@ -29,8 +27,7 @@ namespace LightningGE
 			auto it = m_shaders.find(hash);
 			if (it != m_shaders.end())
 				return it->second;
-			auto fs = FileSystemFactory::Instance()->FileSystem();
-			FilePtr shaderFile = fs->FindFile(shaderName, FileAccess::ACCESS_READ);
+			FilePtr shaderFile = m_fs->FindFile(shaderName, FileAccess::ACCESS_READ);
 			if (!shaderFile)
 				return nullptr;
 			ShaderPtr pShader = CreateConcreteShader(type);

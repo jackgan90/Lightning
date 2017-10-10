@@ -3,8 +3,7 @@
 #include <wrl/client.h>
 #include <d3d12.h>
 #include "irendertargetmanager.h"
-#include "idevice.h"
-#include "iswapchain.h"
+#include "d3d12device.h"
 
 namespace LightningGE
 {
@@ -14,8 +13,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API D3D12RenderTargetManager : public IRenderTargetManager
 		{
 		public:
-			friend class D3D12SwapChain;
-			D3D12RenderTargetManager(DevicePtr pDevice, SwapChainPtr pSwapChain);
+			D3D12RenderTargetManager(D3D12Device* pDevice);
 			~D3D12RenderTargetManager()override
 			{
 				int a = 0;
@@ -31,10 +29,8 @@ namespace LightningGE
 				return it->second;
 			}
 			RenderTargetPtr CreateSwapChainRenderTarget(ComPtr<ID3D12Resource> swapChainRT, const D3D12_CPU_DESCRIPTOR_HANDLE& handle);
-			void ReleaseRenderResources()override;
 		private:
-			DevicePtr m_pDevice;
-			SwapChainPtr m_pSwapChain;
+			D3D12Device* m_pDevice;
 			std::unordered_map<RenderTargetID, RenderTargetPtr> m_renderTargets;
 			RenderTargetID m_currentID;
 		};

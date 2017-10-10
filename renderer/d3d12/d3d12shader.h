@@ -22,7 +22,6 @@ namespace LightningGE
 			std::string GetSource()const override;
 #endif
 			void GetShaderModelVersion(int& major, int& minor)override;
-			void ReleaseRenderResources()override;
 			void* GetByteCodeBuffer()const;
 			SIZE_T GetByteCodeBufferSize()const;
 		private:

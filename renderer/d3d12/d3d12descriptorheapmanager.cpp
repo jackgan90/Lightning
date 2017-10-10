@@ -7,18 +7,6 @@ namespace LightningGE
 	{
 		using Foundation::logger;
 		using Foundation::LogLevel;
-		D3D12DescriptorHeapManager* D3D12DescriptorHeapManager::s_instance = nullptr;
-		D3D12DescriptorHeapManager* D3D12DescriptorHeapManager::Instance()
-		{
-			return s_instance;
-		}
-
-		D3D12DescriptorHeapManager* D3D12DescriptorHeapManager::CreateInstance(ComPtr<ID3D12Device> pdevice)
-		{
-			s_instance = new D3D12DescriptorHeapManager(pdevice);
-			return s_instance;
-		}
-
 		D3D12DescriptorHeapManager::D3D12DescriptorHeapManager(ComPtr<ID3D12Device> pdevice)
 			:m_device(pdevice),m_currentID(0)
 		{
@@ -53,13 +41,6 @@ namespace LightningGE
 			if (it == m_heaps.end())
 				return;
 			m_heaps.erase(it);
-		}
-
-
-		void D3D12DescriptorHeapManager::ReleaseRenderResources()
-		{
-			m_heaps.clear();
-			m_device.Reset();
 		}
 
 		UINT D3D12DescriptorHeapManager::GetIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type)

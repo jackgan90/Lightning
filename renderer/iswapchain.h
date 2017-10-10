@@ -1,15 +1,16 @@
 #pragma once
 #include <memory>
-#include "irenderresourcekeeper.h"
+#include <exception>
 #include "irendertarget.h"
 
 namespace LightningGE
 {
 	namespace Renderer
 	{
-		class LIGHTNINGGE_RENDERER_API ISwapChain : public IRenderResourceKeeper
+		class LIGHTNINGGE_RENDERER_API ISwapChain
 		{
 		public:
+			virtual ~ISwapChain(){}
 			//preset the current back buffer to display
 			virtual bool Present() = 0;
 			//get swapchain back buffer count
