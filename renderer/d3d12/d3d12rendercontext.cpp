@@ -176,7 +176,7 @@ namespace LightningGE
 			HRESULT hr;
 			D3D12Device* pDevice = STATIC_CAST_PTR(D3D12Device, m_device);
 			ComPtr<ID3D12Device> pd3d12device = pDevice->m_device;
-			for (int i = 0; i < config.SwapChainBufferCount; i++)
+			for (size_t i = 0; i < config.SwapChainBufferCount; i++)
 			{
 				m_fenceValues.push_back(0);
 				ComPtr<ID3D12Fence> fence;

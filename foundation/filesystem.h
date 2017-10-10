@@ -11,7 +11,8 @@ namespace LightningGE
 {
 	namespace Foundation
 	{
-		typedef long FileSize;
+		typedef std::streamsize FileSize;
+
 		enum FilePointerType
 		{
 			Read,

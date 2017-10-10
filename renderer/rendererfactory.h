@@ -58,7 +58,9 @@ namespace LightningGE
 
 			void Finalize()
 			{
-				SAFE_DELETE(m_obj);
+				assert(m_obj);
+				delete m_obj;
+				m_obj = nullptr;
 			}
 		private:
 			template<typename Implementation, typename... Args>

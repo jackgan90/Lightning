@@ -1,6 +1,6 @@
 #pragma once
-#include <exception>
 #include <unordered_map>
+#include "singleton.h"
 #include "allocatorid.h"
 #include "memoryexportdef.h"
 #include "basememoryallocator.h"
@@ -9,34 +9,15 @@
 
 namespace memory
 {
-	class NullAllocatorManagerException : std::exception
+	class MEMORY_API AllocatorManager : public LightningGE::Foundation::Singleton<AllocatorManager>
 	{
 	public:
-		const char* what()const override;
-	};
-	class MultipleAllocatorManagerException : std::exception
-	{
-	public:
-		const char* what()const override;
-	};
-
-	class MEMORY_API AllocatorManager
-	{
-	public:
-		static AllocatorManager* Instance();
-		static IMemoryAllocator* GetAllocator(const AllocatorID allocatorId);
-
-		AllocatorManager();
-		~AllocatorManager();
+		friend class LightningGE::Foundation::Singleton<AllocatorManager>;
+		IMemoryAllocator* GetAllocator(const AllocatorID allocatorId);
+		~AllocatorManager(){}
 	private:
+		AllocatorManager(){}
 		typedef std::unordered_map<AllocatorID, IMemoryAllocator*> AllocatorMap;
-		static AllocatorManager* s_instance;
-		static AllocatorMap s_allocators;
-		//warning!!!!
-		//warning!!!!
-		//warning!!!!
-		//note : You have to put a line to initialize this member in allocatormanager.cpp!!!!
-		DECLARE_ALLOCATOR_INSTANCE_MEMBER(BaseMemoryAllocator)
 	};	
 
 }

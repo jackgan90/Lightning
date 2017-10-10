@@ -65,6 +65,7 @@ namespace LightningGE
 			m_renderer->ReleaseRenderResources();
 			RendererFactory<IRenderContext>::Instance()->Finalize();
 			RendererFactory<IRenderer>::Instance()->Finalize();
+			m_renderer = nullptr;
 			FileSystemFactory::Instance()->Finalize();
 			TryDestroyWindow();
 			logger.Log(LogLevel::Info, "Win32Application quit!");

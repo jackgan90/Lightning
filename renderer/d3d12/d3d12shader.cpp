@@ -53,7 +53,7 @@ namespace LightningGE
 				return false;
 			}
 			file->SetFilePointer(FilePointerType::Read, FileAnchor::Begin, 0);
-			char* buffer = new char[size + 1];
+			char* buffer = new char[static_cast<std::uint32_t>(size + 1)];
 			FileSize readSize = file->Read(buffer, size);
 			if (readSize < size)
 			{
@@ -88,12 +88,12 @@ namespace LightningGE
 #else
 			UINT flags1 = 0;
 #endif
-			//TODO : flags2 is used to compile effect file.Should implemente it later
+			//TODO : flags2 is used to compile effect file.Should implement it later
 			UINT flags2 = 0;
 			ComPtr<ID3DBlob> errorLog;
 			char shaderModel[32];
 			GetShaderModelString(shaderModel);
-			HRESULT hr = ::D3DCompile(buffer, size + 1, nullptr, pMacros, nullptr, m_entryPoint.c_str(),
+			HRESULT hr = ::D3DCompile(buffer, static_cast<SIZE_T>(size + 1), nullptr, pMacros, nullptr, m_entryPoint.c_str(),
 				shaderModel, flags1, flags2, &m_byteCode, &errorLog);
 			if (FAILED(hr))
 			{
@@ -103,7 +103,7 @@ namespace LightningGE
 				if (macroCount)
 				{
 					ss << "Defined macros:" << std::endl;
-					for (int i = 0; i < macroCount; i++)
+					for (size_t i = 0; i < macroCount; i++)
 					{
 						ss << pMacros[i].Name << ":" << pMacros[i].Definition << std::endl;
 						delete[] pMacros[i].Name;
@@ -132,7 +132,7 @@ namespace LightningGE
 			delete[] buffer;
 			if (pMacros)
 			{
-				for (int i = 0; i < macroCount; i++)
+				for (size_t i = 0; i < macroCount; i++)
 				{
 					delete[] pMacros[i].Name;
 					delete[] pMacros[i].Definition;
