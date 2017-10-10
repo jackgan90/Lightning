@@ -18,6 +18,5 @@ namespace LightningGE
 			//initialize a render environment for rendering
 			virtual bool Init(const WindowPtr& pWindow) = 0;
 		};
-		typedef std::shared_ptr<IRenderContext> RenderContextPtr;
 	}
 }
