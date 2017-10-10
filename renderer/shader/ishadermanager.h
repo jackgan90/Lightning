@@ -2,13 +2,14 @@
 #include <string>
 #include <unordered_map>
 #include <memory>
+#include "counter.h"
 #include "ishader.h"
 
 namespace LightningGE
 {
 	namespace Renderer
 	{
-		class IShaderManager : public IRenderResourceKeeper
+		class IShaderManager : public Foundation::Counter<IShaderManager, 1>, public IRenderResourceKeeper
 		{
 		public:
 			//return a compiled shader ptr if the specified shader can be created successfully

@@ -29,7 +29,7 @@ namespace LightningGE
 		private:
 			void TryDestroyWindow();
 			WindowPtr m_pWin;
-			Renderer::RendererPtr m_renderer;
+			Renderer::IRenderer* m_renderer;
 		};
 	}
 }

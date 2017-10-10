@@ -55,7 +55,7 @@ namespace LightningGE
 			CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(pHeapInfo->cpuHeapStart);
 
 			ComPtr<ID3D12Resource>* swapChainTargets = new ComPtr<ID3D12Resource>[renderTargetCount];
-			D3D12RenderTargetManager* pRTManager = STATIC_CAST_PTR(D3D12RenderTargetManager, RendererFactory<IRenderTargetManager>::Instance()->Get());
+			auto pRTManager = static_cast<D3D12RenderTargetManager*>(RendererFactory<IRenderTargetManager>::Instance()->Get());
 			for (int i = 0; i < renderTargetCount; i++)
 			{
 				hr = m_swapChain->GetBuffer(i, IID_PPV_ARGS(&swapChainTargets[i]));

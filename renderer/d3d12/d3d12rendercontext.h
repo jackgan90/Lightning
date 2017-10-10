@@ -36,7 +36,6 @@ namespace LightningGE
 			bool CreateFences();
 			DevicePtr m_device;
 			SwapChainPtr m_swapChain;
-			RenderTargetManagerPtr m_renderTargetManager;
 			std::vector<ComPtr<ID3D12Fence>> m_fences;
 			std::vector<UINT64> m_fenceValues;
 			HANDLE m_fenceEvent;

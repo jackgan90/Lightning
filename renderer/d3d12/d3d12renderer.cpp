@@ -10,10 +10,10 @@ namespace LightningGE
 	{
 		using Foundation::logger;
 		using Foundation::LogLevel;
-		D3D12Renderer::D3D12Renderer(RenderContextPtr pContext) : 
+		D3D12Renderer::D3D12Renderer(IRenderContext* pContext) : 
 			m_context(pContext), m_clearColor(0.5f, 0.5f, 0.5f, 1.0f)
 		{
-			D3D12RenderContext* pD3D12Context = static_cast<D3D12RenderContext*>(m_context.get());
+			D3D12RenderContext* pD3D12Context = static_cast<D3D12RenderContext*>(m_context);
 			D3D12SwapChain* pSwapChain = static_cast<D3D12SwapChain*>(pD3D12Context->m_swapChain.get());
 			ComPtr<IDXGISwapChain3> nativeSwapChain = pSwapChain->m_swapChain;
 			m_currentBackBufferIndex = nativeSwapChain->GetCurrentBackBufferIndex();
@@ -22,9 +22,6 @@ namespace LightningGE
 		void D3D12Renderer::ReleaseRenderResources()
 		{
 			WaitForPreviousFrame();
-			ShaderManagerPtr pShaderMgr = RendererFactory<IShaderManager>::Instance()->Get();
-			if (pShaderMgr)
-				pShaderMgr->ReleaseRenderResources();
 			if (m_pso)
 				m_pso->ReleaseRenderResources();
 			//render context must be the last object to release resources,other resources should go before it
@@ -34,13 +31,15 @@ namespace LightningGE
 		void D3D12Renderer::BeginRender()
 		{
 			m_frameIndex++;
-			RendererFactory<IShaderManager>::Instance()->Create()->GetShader(SHADER_TYPE_VERTEX, "default.vs", ShaderDefine());
+			auto pContext = static_cast<D3D12RenderContext*>(m_context);
+			auto pDevice = static_cast<D3D12Device*>(pContext->m_device.get());
+			pDevice->CreateShader(SHADER_TYPE_VERTEX, "default.vs", ShaderDefine());
 		}
 
 		void D3D12Renderer::DoRender()
 		{
 			WaitForPreviousFrame();
-			D3D12RenderContext* pContext = static_cast<D3D12RenderContext*>(m_context.get());
+			D3D12RenderContext* pContext = static_cast<D3D12RenderContext*>(m_context);
 			D3D12SwapChain* pSwapChain = static_cast<D3D12SwapChain*>(pContext->m_swapChain.get());
 			D3D12Device* pDevice = static_cast<D3D12Device*>(pContext->m_device.get());
 			pSwapChain->Present();
@@ -65,18 +64,18 @@ namespace LightningGE
 
 		DevicePtr D3D12Renderer::GetDevice()
 		{
-			return static_cast<D3D12RenderContext*>(m_context.get())->m_device;
+			return static_cast<D3D12RenderContext*>(m_context)->m_device;
 		}
 
 		SwapChainPtr D3D12Renderer::GetSwapChain()
 		{
-			return static_cast<D3D12RenderContext*>(m_context.get())->m_swapChain;
+			return static_cast<D3D12RenderContext*>(m_context)->m_swapChain;
 		}
 
 		void D3D12Renderer::WaitForPreviousFrame()
 		{
 			HRESULT hr;
-			D3D12RenderContext* pContext = static_cast<D3D12RenderContext*>(m_context.get());
+			D3D12RenderContext* pContext = static_cast<D3D12RenderContext*>(m_context);
 			D3D12SwapChain* pSwapChain = static_cast<D3D12SwapChain*>(pContext->m_swapChain.get());
 			ComPtr<IDXGISwapChain3> nativeSwapChain = pSwapChain->m_swapChain;
 			m_currentBackBufferIndex = nativeSwapChain->GetCurrentBackBufferIndex();

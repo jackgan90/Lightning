@@ -1,4 +1,5 @@
 #pragma once
+#include "counter.h"
 #include "rendererexportdef.h"
 #include "irenderresourcekeeper.h"
 #include "iwindow.h"
@@ -11,7 +12,7 @@ namespace LightningGE
 	{
 		//interface for initialize rendering context
 		using WindowSystem::WindowPtr;
-		class LIGHTNINGGE_RENDERER_API IRenderContext : public IRenderResourceKeeper
+		class LIGHTNINGGE_RENDERER_API IRenderContext : public IRenderResourceKeeper, public Foundation::Counter<IRenderContext, 1>
 		{
 		public:
 			//initialize a render environment for rendering

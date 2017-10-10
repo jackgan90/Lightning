@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include "counter.h"
 #include "rendererexportdef.h"
 #include "irenderresourcekeeper.h"
 #include "idevice.h"
@@ -12,7 +13,7 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		class LIGHTNINGGE_RENDERER_API IRenderer : public IRenderResourceKeeper
+		class LIGHTNINGGE_RENDERER_API IRenderer : public Foundation::Counter<IRenderer, 1>, public IRenderResourceKeeper 
 		{
 		public:
 			//entry point of render system
@@ -22,7 +23,7 @@ namespace LightningGE
 			//return the swap chain of render system
 			virtual SwapChainPtr GetSwapChain() = 0;
 			//create a platform dependent render context
-			virtual RenderContextPtr CreateRenderContext() = 0;
+			virtual IRenderContext* CreateRenderContext() = 0;
 			//set default render target clear color.At the begining of each frame,the back buffer is cleared to this color
 			virtual void SetClearColor(const ColorF& color) = 0;
 			//get the current frame index

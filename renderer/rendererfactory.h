@@ -13,7 +13,7 @@
 #define DECLARE_RENDERER_FACTORY_PRODUCT(Interface, Implementation) \
 	typedef Implementation Implementation##Type; \
 	template<typename Q, typename... Args> \
-	std::shared_ptr<typename std::enable_if<std::is_same<Q, Interface>::value, Q>::type> CreateInternal(Args&&... args) \
+	typename std::enable_if<std::is_same<Q, Interface>::value, Q>::type* CreateInternal(Args&&... args) \
 	{ \
 		return CreateInterfaceImpl<Implementation##Type>(std::forward<Args>(args)...); \
 	} \
@@ -36,7 +36,7 @@ namespace LightningGE
 #endif
 		public:
 			template<typename... Args>
-			std::shared_ptr<Interface> Create(Args&&... args)
+			Interface* Create(Args&&... args)
 			{
 				if (m_obj)
 				{
@@ -46,22 +46,22 @@ namespace LightningGE
 				return m_obj;
 			}
 
-			std::shared_ptr<Interface> Get()const
+			Interface* Get()const
 			{
 				return m_obj;
 			}
 
 			void Finalize()
 			{
-				m_obj.reset();
+				SAFE_DELETE(m_obj);
 			}
 		private:
 			template<typename Implementation, typename... Args>
-			std::shared_ptr<Interface> CreateInterfaceImpl(Args&&... args)
+			Interface* CreateInterfaceImpl(Args&&... args)
 			{
-				return std::make_shared<Implementation>(std::forward<Args>(args)...);
+				return new Implementation(std::forward<Args>(args)...);
 			}
-			std::shared_ptr<Interface> m_obj;
+			Interface* m_obj;
 		};
 	}
 }

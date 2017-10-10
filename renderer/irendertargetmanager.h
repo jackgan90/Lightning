@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include "counter.h"
 #include "rendererexportdef.h"
 #include "irenderresourcekeeper.h"
 #include "irendertarget.h"
@@ -8,7 +9,7 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		class LIGHTNINGGE_RENDERER_API IRenderTargetManager : public IRenderResourceKeeper
+		class LIGHTNINGGE_RENDERER_API IRenderTargetManager : public Foundation::Counter<IRenderTargetManager, 1>, public IRenderResourceKeeper
 		{
 		public:
 			//create a render target
@@ -16,6 +17,5 @@ namespace LightningGE
 			//obtain a render target by ID
 			virtual RenderTargetPtr GetRenderTarget(const RenderTargetID&) = 0;
 		};
-		typedef std::shared_ptr<IRenderTargetManager> RenderTargetManagerPtr;
 	}
 }

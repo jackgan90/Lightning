@@ -66,6 +66,8 @@ namespace LightningGE
 			m_commandAllocators.clear();
 			m_commandQueue.Reset();
 			m_device.Reset();
+			RendererFactory<IShaderManager>::Instance()->Get()->ReleaseRenderResources();
+			RendererFactory<IShaderManager>::Instance()->Finalize();
 		}
 
 		void D3D12Device::ClearRenderTarget(const RenderTargetPtr& rt, const ColorF& color, const RectI* pRects, const int rectCount)

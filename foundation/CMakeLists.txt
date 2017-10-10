@@ -20,7 +20,8 @@ set(HEADERS	common.h
 			filesystemfactory.h
 			configmanager.h
 			foundationexportdef.h
-			singleton.h)
+			singleton.h
+			counter.h)
 set(SOURCES common.cpp
 			filesystem.cpp
 			logger.cpp

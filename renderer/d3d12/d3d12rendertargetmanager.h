@@ -16,6 +16,10 @@ namespace LightningGE
 		public:
 			friend class D3D12SwapChain;
 			D3D12RenderTargetManager(DevicePtr pDevice, SwapChainPtr pSwapChain);
+			~D3D12RenderTargetManager()override
+			{
+				int a = 0;
+			}
 			RenderTargetPtr CreateRenderTarget()override;
 			RenderTargetPtr GetRenderTarget(const RenderTargetID& targetID) override
 			{

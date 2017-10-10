@@ -10,11 +10,11 @@ namespace LightningGE
 		{
 		public:
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-			D3D12Renderer(RenderContextPtr pContext);
+			D3D12Renderer(IRenderContext* pContext);
 			void ReleaseRenderResources()override;
 			DevicePtr GetDevice()override;
 			SwapChainPtr GetSwapChain()override;
-			RenderContextPtr CreateRenderContext()override { return m_context; }
+			IRenderContext* CreateRenderContext()override { return m_context; }
 			void SetClearColor(const ColorF& color)override;
 			void ApplyPipelineStateObject(const PipelineStateObjectPtr& pso)override;
 		protected:
@@ -23,7 +23,7 @@ namespace LightningGE
 			void EndRender();
 		private:
 			void WaitForPreviousFrame();
-			RenderContextPtr m_context;
+			IRenderContext* m_context;
 			PipelineStateObjectPtr m_pso;
 			UINT m_currentBackBufferIndex;
 			ColorF m_clearColor;

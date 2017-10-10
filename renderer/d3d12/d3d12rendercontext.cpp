@@ -58,7 +58,7 @@ namespace LightningGE
 				return false;
 			}
 			
-			m_renderTargetManager = RendererFactory<IRenderTargetManager>::Instance()->Create(m_device, m_swapChain);
+			RendererFactory<IRenderTargetManager>::Instance()->Create(m_device, m_swapChain);
 			D3D12DescriptorHeapManager::CreateInstance(static_cast<D3D12Device*>(m_device.get())->m_device);
 			D3D12SwapChain *d3d12swapchain = static_cast<D3D12SwapChain*>(m_swapChain.get());
 			if (!d3d12swapchain->BindSwapChainRenderTargets())
@@ -205,7 +205,10 @@ namespace LightningGE
 			m_fences.clear();
 			::CloseHandle(m_fenceEvent);
 			m_fenceEvent = nullptr;
-			m_renderTargetManager->ReleaseRenderResources();
+			auto rtMgr = RendererFactory<IRenderTargetManager>::Instance()->Get();
+			if (rtMgr)
+				rtMgr->ReleaseRenderResources();
+			RendererFactory<IRenderTargetManager>::Instance()->Finalize();
 			D3D12DescriptorHeapManager::Instance()->ReleaseRenderResources();
 			m_swapChain->ReleaseRenderResources();
 			m_device->ReleaseRenderResources();
