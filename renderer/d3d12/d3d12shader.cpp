@@ -13,7 +13,7 @@ namespace LightningGE
 
 		D3D12Shader::D3D12Shader(ShaderType type):Shader(), m_type(type)
 			,m_name(""), m_compileError(""), m_smMajorVersion(5), m_smMinorVersion(0)
-#ifdef DEBUG
+#ifndef NDEBUG
 			,m_source("")
 #endif
 		{
@@ -89,7 +89,7 @@ namespace LightningGE
 				}
 			}
 			//TODO: resolve include
-#ifdef DEBUG
+#ifndef NDEBUG
 			UINT flags1 = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #else
 			UINT flags1 = 0;
@@ -131,7 +131,7 @@ namespace LightningGE
 				return false;
 			}
 
-#ifdef DEBUG
+#ifndef NDEBUG
 			m_source = buffer;
 #endif
 			m_name = file->GetName();
@@ -158,7 +158,7 @@ namespace LightningGE
 			return m_name;
 		}
 
-#ifdef DEBUG
+#ifndef NDEBUG
 		std::string D3D12Shader::GetSource()const
 		{
 			return m_source;

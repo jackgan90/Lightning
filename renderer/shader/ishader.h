@@ -29,7 +29,7 @@ namespace LightningGE
 			virtual bool Compile(const Foundation::FilePtr& file, const ShaderDefine& define) = 0;
 			virtual const std::string GetCompileErrorLog()const = 0;
 			virtual std::string GetName()const = 0;
-#ifdef DEBUG
+#ifndef NDEBUG
 			virtual std::string GetSource()const = 0;
 #endif
 			virtual void GetShaderModelVersion(int& major, int& minor) = 0;

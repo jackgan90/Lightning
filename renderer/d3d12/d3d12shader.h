@@ -19,7 +19,7 @@ namespace LightningGE
 			bool Compile(const Foundation::FilePtr& file, const ShaderDefine& define)override;
 			const std::string GetCompileErrorLog()const override;
 			std::string GetName()const override;
-#ifdef DEBUG
+#ifndef NDEBUG
 			std::string GetSource()const override;
 #endif
 			void GetShaderModelVersion(int& major, int& minor)override;
@@ -29,7 +29,7 @@ namespace LightningGE
 			void GetShaderModelString(char* buf)const;
 			ShaderType m_type;
 			std::string m_name;
-#ifdef DEBUG
+#ifndef NDEBUG
 			std::string m_source;
 #endif
 			std::string m_compileError;

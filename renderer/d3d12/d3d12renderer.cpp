@@ -38,7 +38,7 @@ namespace LightningGE
 		D3D12Renderer::D3D12Renderer(const WindowPtr& pWindow, const FileSystemPtr& fs) : Renderer(fs)
 			,m_clearColor(0.5f, 0.5f, 0.5f, 1.0f)
 		{
-#ifdef DEBUG
+#ifndef NDEBUG
 			EnableDebugLayer();
 #endif
 			ComPtr<IDXGIFactory4> dxgiFactory;
@@ -57,13 +57,13 @@ namespace LightningGE
 			
 			ComPtr<IDXGISwapChain3> nativeSwapChain = m_swapChain->m_swapChain;
 			m_currentBackBufferIndex = nativeSwapChain->GetCurrentBackBufferIndex();
-#ifdef DEBUG
+#ifndef NDEBUG
 			InitDXGIDebug();
 #endif
 			REPORT_LIVE_OBJECTS;
 		}
 
-#ifdef DEBUG
+#ifndef NDEBUG
 		void D3D12Renderer::EnableDebugLayer()
 		{
 			auto res = ::D3D12GetDebugInterface(IID_PPV_ARGS(&m_d3d12Debug));
@@ -187,7 +187,7 @@ namespace LightningGE
 			}
 		}
 
-#ifdef DEBUG
+#ifndef NDEBUG
 		void D3D12Renderer::InitDXGIDebug()
 		{
 			//HMODULE dxgiDebugHandle = ::GetModuleHandle("Dxgidebug.dll");
