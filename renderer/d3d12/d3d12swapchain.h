@@ -5,7 +5,6 @@
 #include <wrl\client.h>
 #include <unordered_map>
 #include "iswapchain.h"
-#include "d3d12renderer.h"
 #include "d3d12rendertargetmanager.h"
 
 namespace LightningGE

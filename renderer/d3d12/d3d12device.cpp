@@ -1,5 +1,6 @@
 #include <d3dx12.h>
 //#include "rendererfactory.h"
+#include "common.h"
 #include "irenderer.h"
 #include "d3d12device.h"
 #include "d3d12rendertarget.h"
@@ -47,12 +48,12 @@ namespace LightningGE
 				throw DeviceInitException("Failed to create command list!");
 			}
 			m_commandList->Close();
-			m_shaderMgr = std::make_shared<D3D12ShaderManager>(fs);
+			m_shaderMgr = new D3D12ShaderManager(fs);
 		}
 
 		D3D12Device::~D3D12Device()
 		{
-
+			SAFE_DELETE(m_shaderMgr);
 		}
 
 		void D3D12Device::ClearRenderTarget(const RenderTargetPtr& rt, const ColorF& color, const RectI* pRects, const int rectCount)

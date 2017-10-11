@@ -3,7 +3,7 @@
 #include "common.h"
 #include "logger.h"
 //#include "rendererfactory.h"
-#include "irenderer.h"
+#include "d3d12renderer.h"
 #include "d3d12swapchain.h"
 #include "d3d12rendertarget.h"
 #include "d3d12rendertargetmanager.h"
@@ -40,7 +40,7 @@ namespace LightningGE
 		{
 			HRESULT hr;
 			auto d3ddevice = static_cast<D3D12Device*>(m_renderer->GetDevice());
-			ComPtr<ID3D12Device> pd3ddevice = d3ddevice->m_device;
+			auto nativeDevice = d3ddevice->GetNativeDevice();
 			D3D12_DESCRIPTOR_HEAP_DESC desc{};
 			int renderTargetCount = GetBufferCount();
 			desc.NumDescriptors = renderTargetCount;
@@ -64,7 +64,7 @@ namespace LightningGE
 					delete []swapChainTargets;
 					throw SwapChainInitException("Failed to get d3d12 swap chain buffer.");
 				}
-				pd3ddevice->CreateRenderTargetView(swapChainTargets[i].Get(), nullptr, rtvHandle);
+				nativeDevice->CreateRenderTargetView(swapChainTargets[i].Get(), nullptr, rtvHandle);
 				auto rt = rtMgr->CreateSwapChainRenderTarget(swapChainTargets[i], rtvHandle);
 				m_renderTargets[i] = rt->GetID();
 				rtvHandle.Offset(pHeapInfo->incrementSize);
