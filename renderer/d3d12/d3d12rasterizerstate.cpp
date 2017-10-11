@@ -5,7 +5,7 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		D3D12RasterizerState::D3D12RasterizerState() :m_desc{}
+		D3D12RasterizerState::D3D12RasterizerState() :RasterizerState(),m_desc{}
 		{
 			InternalSyncConfig();
 		}

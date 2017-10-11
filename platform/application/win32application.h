@@ -25,13 +25,8 @@ namespace LightningGE
 				return m_windowMgr;
 			}
 		protected:
-			bool CreateMainWindow()override;
+			WindowPtr CreateMainWindow()override;
 			IRenderer* CreateRenderer()override;
-			WindowSystem::WindowPtr GetMainWindow() const override { return m_window; }
-		private:
-			WindowManager* m_windowMgr;
-			WindowPtr m_window;
-			
 		};
 	}
 }

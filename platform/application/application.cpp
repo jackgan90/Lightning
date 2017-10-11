@@ -1,3 +1,4 @@
+#include "common.h"
 #include "filesystemfactory.h"
 #include "iapplication.h"
 #include "logger.h"
@@ -13,18 +14,21 @@ namespace LightningGE
 		Application::Application()
 		{
 			m_fs = FileSystemFactory::Instance()->CreateFileSystem();
+			m_windowMgr = new WindowManager();
 			logger.Log(LogLevel::Info, "File system created!Current working directory:%s", m_fs->GetRoot().c_str());
 			logger.Log(LogLevel::Info, "Application initialized successfully!");
 		}
 
 		Application::~Application()
 		{
+			SAFE_DELETE(m_renderer);
+			SAFE_DELETE(m_windowMgr);
 			logger.Log(LogLevel::Info, "Application quit.");
 		}
 
 		void Application::Start()
 		{
-			CreateMainWindow();
+			m_window = CreateMainWindow();
 			m_renderer = CreateRenderer();
 			RegisterWindowHandlers();
 		}

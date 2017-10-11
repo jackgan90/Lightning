@@ -5,7 +5,7 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		D3D12DepthStencilState::D3D12DepthStencilState():m_config()
+		D3D12DepthStencilState::D3D12DepthStencilState():DepthStencilState()
 		{
 			InternalSetD3DDesc();
 		}

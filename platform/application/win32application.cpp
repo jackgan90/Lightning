@@ -13,13 +13,10 @@ namespace LightningGE
 		using Renderer::RendererFactory;
 		Win32Application::Win32Application():Application()
 		{
-			m_windowMgr = new WindowManager();
 		}
 
 		Win32Application::~Win32Application()
 		{
-			SAFE_DELETE(m_renderer);
-			SAFE_DELETE(m_windowMgr);
 		}
 
 		int Win32Application::Run()
@@ -35,13 +32,9 @@ namespace LightningGE
 			return 0;
 		}
 
-		bool Win32Application::CreateMainWindow()
+		WindowPtr Win32Application::CreateMainWindow()
 		{
-			if (!m_window)
-			{
-				m_window = m_windowMgr->MakeWindow();
-			}
-			return true;
+			return m_windowMgr->MakeWindow();
 		}
 
 		IRenderer* Win32Application::CreateRenderer()

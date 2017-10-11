@@ -48,7 +48,6 @@ namespace LightningGE
 			void InitDevice(ComPtr<IDXGIFactory4> dxgiFactory);
 			void InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, const WindowPtr& pWindow);
 			void CreateFences();
-			FileSystemPtr m_fs;
 			D3D12Device* m_device;
 			D3D12SwapChain* m_swapChain;
 			D3D12RenderTargetManager* m_rtMgr;
@@ -56,7 +55,6 @@ namespace LightningGE
 			std::vector<UINT64> m_fenceValues;
 			D3D12DescriptorHeapManager* m_descriptorMgr;
 			HANDLE m_fenceEvent;
-			PipelineStateObjectPtr m_pso;
 			UINT m_currentBackBufferIndex;
 			ColorF m_clearColor;
 #ifdef DEBUG

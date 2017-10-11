@@ -16,7 +16,6 @@ namespace LightningGE
 			bool EnableStenciltest(bool enable)override;
 		private:
 			void InternalSetD3DDesc();
-			DepthStencilConfiguration m_config;
 			D3D12_DEPTH_STENCIL_DESC m_desc;
 		};
 	}

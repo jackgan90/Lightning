@@ -2,7 +2,6 @@
 #include <memory>
 #include <exception>
 #include "renderexception.h"
-#include "counter.h"
 #include "rendererexportdef.h"
 #include "idevice.h"
 #include "iswapchain.h"
@@ -26,9 +25,10 @@ namespace LightningGE
 			SwapChainInitException(const char*const w):RendererException(w){}
 		};
 
-		class LIGHTNINGGE_RENDERER_API IRenderer : public Foundation::Counter<IRenderer, 1>
+		class LIGHTNINGGE_RENDERER_API IRenderer
 		{
 		public:
+			virtual ~IRenderer() {}
 			//entry point of render system
 			virtual void Render() = 0;
 			//return the device of render system

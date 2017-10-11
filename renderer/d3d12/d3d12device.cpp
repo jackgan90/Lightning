@@ -31,7 +31,7 @@ namespace LightningGE
 				throw DeviceInitException("Failed to create command queue!");
 			}
 			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
-			for (int i = 0; i < config.SwapChainBufferCount; i++)
+			for (size_t i = 0; i < config.SwapChainBufferCount; i++)
 			{
 				ComPtr<ID3D12CommandAllocator> allocator;
 				hr = m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator));

@@ -28,7 +28,6 @@ namespace LightningGE
 			m_fenceEvent = nullptr;
 			//Note:we should release resources in advance to make REPORT_LIVE_OBJECTS work correctly because if we let the share pointer
 			//destructor run out of the scope,we cannot trace the objects 
-			m_pso.reset();
 			SAFE_DELETE(m_descriptorMgr);
 			SAFE_DELETE(m_rtMgr);
 			SAFE_DELETE(m_swapChain);
@@ -36,8 +35,8 @@ namespace LightningGE
 			REPORT_LIVE_OBJECTS;
 		}
 
-		D3D12Renderer::D3D12Renderer(const WindowPtr& pWindow, const FileSystemPtr& fs) 
-			: m_clearColor(0.5f, 0.5f, 0.5f, 1.0f), m_fs(fs)
+		D3D12Renderer::D3D12Renderer(const WindowPtr& pWindow, const FileSystemPtr& fs) : Renderer(fs)
+			,m_clearColor(0.5f, 0.5f, 0.5f, 1.0f)
 		{
 #ifdef DEBUG
 			EnableDebugLayer();
@@ -284,8 +283,6 @@ namespace LightningGE
 
 		void D3D12Renderer::ApplyPipelineStateObject(const PipelineStateObjectPtr& pso)
 		{
-			m_pso = pso;
-			STATIC_CAST_PTR(D3D12PipelineStateObject, m_pso)->SynchronizeGraphicsDesc();
 			//TODO : maybe call d3d12 method to really apply the pipeline state?
 		}
 

@@ -12,6 +12,7 @@ namespace LightningGE
 	{
 		using Foundation::FileSystemPtr;
 		using WindowSystem::WindowManager;
+		using WindowSystem::WindowPtr;
 		using Renderer::IRenderer;
 		class LIGHTNINGGE_PLATFORM_API IApplication
 		{
@@ -30,12 +31,14 @@ namespace LightningGE
 			void Start()override;
 		protected:
 			virtual void OnWindowIdle(const WindowSystem::WindowIdleParam& param);
-			virtual bool CreateMainWindow() = 0;
+			virtual WindowPtr CreateMainWindow() = 0;
 			virtual IRenderer* CreateRenderer() = 0;
 			virtual void RegisterWindowHandlers();
-			virtual WindowSystem::WindowPtr GetMainWindow() const = 0;
+			WindowSystem::WindowPtr GetMainWindow() const { return m_window; }
 			FileSystemPtr m_fs;
 			IRenderer* m_renderer;
+			WindowManager* m_windowMgr;
+			WindowPtr m_window;
 		};
 
 	}
