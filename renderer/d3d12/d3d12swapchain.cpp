@@ -26,6 +26,8 @@ namespace LightningGE
 
 		D3D12SwapChain::~D3D12SwapChain()
 		{
+			m_rtMgr.reset();
+			m_renderTargets.clear();
 			m_renderer = nullptr;
 		}
 
@@ -38,7 +40,7 @@ namespace LightningGE
 		void D3D12SwapChain::BindRenderTargets()
 		{
 			HRESULT hr;
-			auto d3ddevice = STATIC_CAST_PTR(D3D12Device, m_renderer->GetDevice());
+			auto d3ddevice = static_cast<D3D12Device*>(m_renderer->GetDevice());
 			ComPtr<ID3D12Device> pd3ddevice = d3ddevice->m_device;
 			D3D12_DESCRIPTOR_HEAP_DESC desc{};
 			int renderTargetCount = GetBufferCount();

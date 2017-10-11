@@ -14,24 +14,18 @@ namespace LightningGE
 		using std::vector;
 		char* WinWindow::s_WindowClassName = "DefaultWin32Window";
 		
-		WinWindow* GetWinWindow(HWND hWnd)
+		LRESULT CALLBACK WinWindow::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
-			auto windows = pApp->GetWindowManager()->GetAllWindows();
-			for (auto window : windows)
+			if (uMsg == WM_NCCREATE)
 			{
-				const auto pHandle = window->GetNativeHandle();
-				if (const WinWindowNativeHandle* pWinHandle = dynamic_cast<const WinWindowNativeHandle*>(pHandle.get()))
-				{
-					if (pWinHandle->OwnWindowsHandle(hWnd))
-						return STATIC_CAST_PTR(WinWindow, window);
-				}
+				CREATESTRUCT* pCS = reinterpret_cast<CREATESTRUCT*>(lParam);
+				LPVOID pThis = pCS->lpCreateParams;
+				SetWindowLongPtr(hwnd, 0, reinterpret_cast<LONG_PTR>(pThis));
+				auto pWindow = reinterpret_cast<WinWindow*>(pThis);
+				pWindow->m_hWnd = hwnd;
+				return TRUE;
 			}
-			return nullptr;
-		}
-
-		LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
-		{
-			WinWindow* pWindow = GetWinWindow(hwnd);
+			auto pWindow = reinterpret_cast<WinWindow*>(GetWindowLongPtrW(hwnd, 0));
 			switch (uMsg)
 			{
 			case WM_SIZE:
@@ -56,17 +50,18 @@ namespace LightningGE
 			return 0;
 		}
 
-		WinWindow::WinWindow():m_nativeHandle(nullptr), m_Caption("Lightning Win32 Window")
-			,m_width(800), m_height(600)
+		WinWindow::WinWindow():m_Caption("Lightning Win32 Window")
+			,m_hWnd(nullptr), m_width(800), m_height(600)
 		{
 			logger.Log(LogLevel::Info, "Win32 window constructed!");
 		}
 
 		WinWindow::~WinWindow()
 		{
-			if (m_nativeHandle)
-			{
-				::DestroyWindow(STATIC_CAST_PTR(WinWindowNativeHandle, m_nativeHandle)->m_hWnd);
+			if(m_hWnd)
+			{ 
+				::DestroyWindow(m_hWnd);
+				m_hWnd = nullptr;
 			}
 			logger.Log(LogLevel::Info, "Win32 window destructed!");
 		}
@@ -79,7 +74,7 @@ namespace LightningGE
 			wndcls.style = CS_HREDRAW | CS_VREDRAW;
 			wndcls.lpfnWndProc = WndProc;
 			wndcls.cbClsExtra = 0;
-			wndcls.cbWndExtra = 0;
+			wndcls.cbWndExtra = sizeof(WinWindow*);
 			wndcls.hInstance = hInstance;
 			wndcls.hIcon = ::LoadIcon(hInstance, IDI_APPLICATION);
 			wndcls.hCursor = ::LoadCursor(hInstance, IDC_ARROW);
@@ -103,9 +98,9 @@ namespace LightningGE
 			windowRect.bottom = m_height;
 			::AdjustWindowRectEx(&windowRect, WS_OVERLAPPEDWINDOW, FALSE, NULL);
 			logger.Log(LogLevel::Debug, "Window width:%d, window height:%d", windowRect.right - windowRect.left, windowRect.bottom - windowRect.top);
-			HWND hWnd = ::CreateWindow(s_WindowClassName, m_Caption.c_str(), 
+			HWND hWnd = ::CreateWindowEx(0, s_WindowClassName, m_Caption.c_str(), 
 				WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 
-				windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, NULL, NULL, hInstance, NULL);
+				windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, NULL, NULL, hInstance, static_cast<LPVOID>(this));
 
 			if (!hWnd)
 			{
@@ -113,18 +108,16 @@ namespace LightningGE
 				logger.Log(LogLevel::Error, "Create window failed!ErrorCode : %x", error);
 				return false;
 			}
-			m_nativeHandle = WindowNativeHandlePtr(new WinWindowNativeHandle(hWnd));
 			logger.Log(LogLevel::Info, "Create window succeed!");
 			return true;
 		}
 
 		bool WinWindow::Show(bool show)
 		{
-			auto hWnd = STATIC_CAST_PTR(WinWindowNativeHandle, m_nativeHandle)->m_hWnd;
-			if (!m_nativeHandle || !hWnd)
+			if (!m_hWnd)
 				return false;
-			ShowWindow(hWnd, show ? SW_SHOW : SW_HIDE);
-			UpdateWindow(hWnd);
+			ShowWindow(m_hWnd, show ? SW_SHOW : SW_HIDE);
+			UpdateWindow(m_hWnd);
 			MSG msg{};
 			while (true)
 			{

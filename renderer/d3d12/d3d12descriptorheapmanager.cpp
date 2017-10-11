@@ -13,6 +13,11 @@ namespace LightningGE
 
 		}
 
+		D3D12DescriptorHeapManager::~D3D12DescriptorHeapManager()
+		{
+			logger.Log(LogLevel::Info, "Descriptor heap manager destruct!");
+		}
+
 
 		const HeapAllocationInfo* D3D12DescriptorHeapManager::Create(const D3D12_DESCRIPTOR_HEAP_DESC& desc)
 		{

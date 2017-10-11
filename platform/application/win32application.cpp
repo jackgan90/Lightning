@@ -23,27 +23,7 @@ namespace LightningGE
 
 		Win32Application::~Win32Application()
 		{
-			TryDestroyWindow();
-		}
-
-		void Win32Application::TryDestroyWindow()
-		{
-			if (m_window)
-			{
-				m_window.reset();
-			}
-		}
-
-		bool Win32Application::Init()
-		{
-			logger.Log(LogLevel::Info, "Win32Application initialized successfully!");
-			return true;
-		}
-
-		void Win32Application::Start()
-		{
-			Application::Start();
-			logger.Log(LogLevel::Info, "Win32Application start successfully!");
+			SAFE_DELETE(m_renderer);
 		}
 
 		int Win32Application::Run()
@@ -51,22 +31,12 @@ namespace LightningGE
 			if (m_window)
 			{
 				logger.Log(LogLevel::Info, "Win32Application start running!");
-				if(!m_window->Show(true));
+				//the call will block
+				if(!m_window->Show(true))
 					return 0;
 				return m_window->GetDestroyCode();
 			}
 			return 0;
-		}
-
-		void Win32Application::Quit()
-		{
-			//we pre-destruct the application,not in destructor, so we have to 
-			//hand make the order
-			m_renderer.reset();
-			TryDestroyWindow();
-			SAFE_DELETE(m_windowMgr);
-			m_fs.reset();
-			logger.Log(LogLevel::Info, "Win32Application quit!");
 		}
 
 		bool Win32Application::CreateMainWindow()

@@ -7,7 +7,6 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(HEADERS	windowexportdef.h
 			iwindow.h
 			window.h
-			iwindownativehandle.h
 			windowmanager.h
 			windowmessage.h)
 
@@ -16,10 +15,8 @@ set(SOURCES	window.cpp
 			windowmanager.cpp)
 
 if(WIN32)
-	list(APPEND HEADERS	winwindow.h
-						winwindownativehandle.h)
-	list(APPEND SOURCES winwindow.cpp
-						winwindownativehandle.cpp)
+	list(APPEND HEADERS	winwindow.h)
+	list(APPEND SOURCES winwindow.cpp)
 	add_definitions(-DLIGHTNINGGE_WIN32
 					-DMEMORY_PLATFORM_WIN32)
 endif()

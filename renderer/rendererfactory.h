@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include "common.h"
 #include "singleton.h"
 #include "rendererexportdef.h"
@@ -17,7 +16,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API RendererFactory : public Foundation::Singleton<RendererFactory>
 		{
 		public:
-			std::shared_ptr<IRenderer> CreateRenderer(const WindowPtr& pWindow, const FileSystemPtr& fs)const;
+			IRenderer* CreateRenderer(const WindowPtr& pWindow, const FileSystemPtr& fs)const;
 		};
 	}
 }

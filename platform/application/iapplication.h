@@ -15,10 +15,8 @@ namespace LightningGE
 		class LIGHTNINGGE_PLATFORM_API IApplication
 		{
 		public:
-			virtual bool Init() = 0;
 			virtual void Start() = 0;
 			virtual int Run() = 0;
-			virtual void Quit() = 0;
 			virtual WindowManager* GetWindowManager()const = 0;
 			virtual ~IApplication(){}
 		};
@@ -26,6 +24,8 @@ namespace LightningGE
 		class LIGHTNINGGE_PLATFORM_API Application : public IApplication
 		{
 		public:
+			Application();
+			~Application()override;
 			void Start()override;
 		protected:
 			virtual void OnWindowIdle(const WindowSystem::WindowIdleParam& param){}

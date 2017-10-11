@@ -9,6 +9,7 @@
 #include "renderer.h"
 #include "filesystem.h"
 #include "d3d12descriptorheapmanager.h"
+#include "d3d12swapchain.h"
 
 #ifdef DEBUG
 #define REPORT_LIVE_OBJECTS if(m_dxgiDebug) {m_dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);}
@@ -28,11 +29,11 @@ namespace LightningGE
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 			D3D12Renderer(const WindowPtr& pContext, const FileSystemPtr& fs);
 			~D3D12Renderer()override;
-			DevicePtr GetDevice()override;
-			SwapChainPtr GetSwapChain()override;
+			IDevice* GetDevice()override;
+			ISwapChain* GetSwapChain()override;
 			void SetClearColor(const ColorF& color)override;
 			void ApplyPipelineStateObject(const PipelineStateObjectPtr& pso)override;
-			std::shared_ptr<D3D12DescriptorHeapManager> GetDescriptorHeapManager()const noexcept
+			D3D12DescriptorHeapManager* GetDescriptorHeapManager()const noexcept
 			{
 				return m_descriptorMgr;
 			}
@@ -46,11 +47,11 @@ namespace LightningGE
 			void InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, const WindowPtr& pWindow);
 			void CreateFences();
 			FileSystemPtr m_fs;
-			DevicePtr m_device;
-			SwapChainPtr m_swapChain;
+			D3D12Device* m_device;
+			D3D12SwapChain* m_swapChain;
 			std::vector<ComPtr<ID3D12Fence>> m_fences;
 			std::vector<UINT64> m_fenceValues;
-			std::shared_ptr<D3D12DescriptorHeapManager> m_descriptorMgr;
+			D3D12DescriptorHeapManager* m_descriptorMgr;
 			HANDLE m_fenceEvent;
 			PipelineStateObjectPtr m_pso;
 			UINT m_currentBackBufferIndex;

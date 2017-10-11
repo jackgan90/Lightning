@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
+#include <Windows.h>
 #include "window.h"
-#include "winwindownativehandle.h"
 
 namespace LightningGE
 {
@@ -14,17 +14,16 @@ namespace LightningGE
 			~WinWindow()override;
 			bool Init()override;
 			bool Show(bool show)override;
-			const WindowNativeHandlePtr GetNativeHandle()const override { return m_nativeHandle; }
 			WINDOWWIDTH GetWidth()const override;
 			WINDOWHEIGHT GetHeight()const override;
 			int GetDestroyCode()override;
+			HWND GetWindowHandle()const { return m_hWnd; }
 		private:
-			friend LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-			friend WinWindow* GetWinWindow(HWND hWnd);
-			WindowNativeHandlePtr m_nativeHandle;
+			static LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 			std::string m_Caption;
 			WINDOWWIDTH m_width;
 			WINDOWHEIGHT m_height;
+			HWND m_hWnd;
 			int m_destroyCode;
 			static char* s_WindowClassName;
 		};

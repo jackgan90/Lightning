@@ -31,10 +31,10 @@ namespace LightningGE
 			//entry point of render system
 			virtual void Render() = 0;
 			//return the device of render system
-			virtual DevicePtr GetDevice() = 0;
+			virtual IDevice* GetDevice() = 0;
 			//return the swap chain of render system
-			virtual SwapChainPtr GetSwapChain() = 0;
-			//set default render target clear color.At the begining of each frame,the back buffer is cleared to this color
+			virtual ISwapChain* GetSwapChain() = 0;
+			//set default render target clear color.At the beginning of each frame,the back buffer is cleared to this color
 			virtual void SetClearColor(const ColorF& color) = 0;
 			//get the current frame index
 			virtual unsigned long GetCurrentFrameIndex()const = 0;
