@@ -3,8 +3,8 @@
 
 namespace memory
 {
-	BaseMemoryAllocator::BaseMemoryAllocator(const DestructListener listener /*= nullptr*/)
-		:IMemoryAllocator(listener)
+	BaseMemoryAllocator::BaseMemoryAllocator()
+		:IMemoryAllocator()
 	{
 
 	}
@@ -56,11 +56,5 @@ namespace memory
 		m_allocatedSize -= it->second.size;
 		m_allocationMap.erase(it);
 	}
-
-	const AllocationMap& BaseMemoryAllocator::GetAllocationMap()const
-	{
-		return m_allocationMap;
-	}
-
 }
 

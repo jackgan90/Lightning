@@ -8,10 +8,12 @@ set(MEMORY_HEADERS	memory/memoryexportdef.h
 					memory/allocatormanager.h
 					memory/memorysystem.h
 					memory/leakfreeobject.h
-					memory/allocatorid.h)
+					memory/allocatorid.h
+					memory/poolallocator.h)
 
 set(MEMORY_SOURCES	memory/basememoryallocator.cpp
-					memory/allocatormanager.cpp)
+					memory/allocatormanager.cpp
+					memory/poolallocator.cpp)
 
 set(HEADERS	common.h
 			timesystem.h
