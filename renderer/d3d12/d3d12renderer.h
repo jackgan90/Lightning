@@ -10,6 +10,7 @@
 #include "filesystem.h"
 #include "d3d12descriptorheapmanager.h"
 #include "d3d12swapchain.h"
+#include "d3d12rendertargetmanager.h"
 
 #ifdef DEBUG
 #define REPORT_LIVE_OBJECTS if(m_dxgiDebug) {m_dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);}
@@ -31,6 +32,7 @@ namespace LightningGE
 			~D3D12Renderer()override;
 			IDevice* GetDevice()override;
 			ISwapChain* GetSwapChain()override;
+			IRenderTargetManager* GetRenderTargetManager()override;
 			void SetClearColor(const ColorF& color)override;
 			void ApplyPipelineStateObject(const PipelineStateObjectPtr& pso)override;
 			D3D12DescriptorHeapManager* GetDescriptorHeapManager()const noexcept
@@ -49,6 +51,7 @@ namespace LightningGE
 			FileSystemPtr m_fs;
 			D3D12Device* m_device;
 			D3D12SwapChain* m_swapChain;
+			D3D12RenderTargetManager* m_rtMgr;
 			std::vector<ComPtr<ID3D12Fence>> m_fences;
 			std::vector<UINT64> m_fenceValues;
 			D3D12DescriptorHeapManager* m_descriptorMgr;

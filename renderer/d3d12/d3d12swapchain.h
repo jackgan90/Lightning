@@ -26,7 +26,6 @@ namespace LightningGE
 			void BindRenderTargets();
 			unsigned int m_bufferCount;
 			D3D12Renderer* m_renderer;
-			std::shared_ptr<D3D12RenderTargetManager> m_rtMgr;
 			ComPtr<IDXGISwapChain3> m_swapChain;
 			std::unordered_map<UINT, RenderTargetID> m_renderTargets;
 		};

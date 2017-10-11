@@ -26,7 +26,6 @@ namespace LightningGE
 
 		D3D12SwapChain::~D3D12SwapChain()
 		{
-			m_rtMgr.reset();
 			m_renderTargets.clear();
 			m_renderer = nullptr;
 		}
@@ -56,7 +55,7 @@ namespace LightningGE
 			CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(pHeapInfo->cpuHeapStart);
 
 			ComPtr<ID3D12Resource>* swapChainTargets = new ComPtr<ID3D12Resource>[renderTargetCount];
-			m_rtMgr = std::make_shared<D3D12RenderTargetManager>(d3ddevice);
+			auto rtMgr = static_cast<D3D12RenderTargetManager*>(m_renderer->GetRenderTargetManager());
 			for (int i = 0; i < renderTargetCount; i++)
 			{
 				hr = m_swapChain->GetBuffer(i, IID_PPV_ARGS(&swapChainTargets[i]));
@@ -66,7 +65,7 @@ namespace LightningGE
 					throw SwapChainInitException("Failed to get d3d12 swap chain buffer.");
 				}
 				pd3ddevice->CreateRenderTargetView(swapChainTargets[i].Get(), nullptr, rtvHandle);
-				auto rt = m_rtMgr->CreateSwapChainRenderTarget(swapChainTargets[i], rtvHandle);
+				auto rt = rtMgr->CreateSwapChainRenderTarget(swapChainTargets[i], rtvHandle);
 				m_renderTargets[i] = rt->GetID();
 				rtvHandle.Offset(pHeapInfo->incrementSize);
 			}
@@ -78,7 +77,7 @@ namespace LightningGE
 			auto it = m_renderTargets.find(bufferIndex);
 			if (it == m_renderTargets.end())
 				return RenderTargetPtr();
-			return m_rtMgr->GetRenderTarget(it->second);
+			return static_cast<D3D12RenderTargetManager*>(m_renderer->GetRenderTargetManager())->GetRenderTarget(it->second);
 		}
 	}
 }

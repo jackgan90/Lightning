@@ -30,6 +30,7 @@ namespace LightningGE
 			//destructor run out of the scope,we cannot trace the objects 
 			m_pso.reset();
 			SAFE_DELETE(m_descriptorMgr);
+			SAFE_DELETE(m_rtMgr);
 			SAFE_DELETE(m_swapChain);
 			SAFE_DELETE(m_device);
 			REPORT_LIVE_OBJECTS;
@@ -49,6 +50,7 @@ namespace LightningGE
 			}
 			InitDevice(dxgiFactory);
 			m_descriptorMgr = new D3D12DescriptorHeapManager(m_device->m_device);
+			m_rtMgr = new D3D12RenderTargetManager(m_device);
 			InitSwapChain(dxgiFactory, pWindow);
 			
 			CreateFences();
@@ -250,6 +252,12 @@ namespace LightningGE
 		{
 			return m_swapChain;
 		}
+
+		IRenderTargetManager* D3D12Renderer::GetRenderTargetManager()
+		{
+			return m_rtMgr;
+		}
+
 
 		void D3D12Renderer::WaitForPreviousFrame()
 		{

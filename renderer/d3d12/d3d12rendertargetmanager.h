@@ -14,10 +14,7 @@ namespace LightningGE
 		{
 		public:
 			D3D12RenderTargetManager(D3D12Device* pDevice);
-			~D3D12RenderTargetManager()override
-			{
-				int a = 0;
-			}
+			~D3D12RenderTargetManager()override;
 			RenderTargetPtr CreateRenderTarget()override;
 			RenderTargetPtr GetRenderTarget(const RenderTargetID& targetID) override
 			{

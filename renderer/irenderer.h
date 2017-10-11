@@ -6,6 +6,7 @@
 #include "rendererexportdef.h"
 #include "idevice.h"
 #include "iswapchain.h"
+#include "irendertargetmanager.h"
 #include "ipipelinestateobject.h"
 #include "color.h"
 
@@ -34,6 +35,8 @@ namespace LightningGE
 			virtual IDevice* GetDevice() = 0;
 			//return the swap chain of render system
 			virtual ISwapChain* GetSwapChain() = 0;
+			//return render target manager
+			virtual IRenderTargetManager* GetRenderTargetManager() = 0;
 			//set default render target clear color.At the beginning of each frame,the back buffer is cleared to this color
 			virtual void SetClearColor(const ColorF& color) = 0;
 			//get the current frame index

@@ -11,6 +11,12 @@ namespace LightningGE
 
 		}
 
+		D3D12RenderTargetManager::~D3D12RenderTargetManager()
+		{
+
+		}
+
+
 		RenderTargetPtr D3D12RenderTargetManager::CreateRenderTarget()
 		{
 			return RenderTargetPtr();
