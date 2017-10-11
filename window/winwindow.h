@@ -12,7 +12,6 @@ namespace LightningGE
 		public:
 			WinWindow();
 			~WinWindow()override;
-			bool Init()override;
 			bool Show(bool show)override;
 			WINDOWWIDTH GetWidth()const override;
 			WINDOWHEIGHT GetHeight()const override;
@@ -20,6 +19,8 @@ namespace LightningGE
 			HWND GetWindowHandle()const { return m_hWnd; }
 		private:
 			static LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+			void RegisterWindowClass(HINSTANCE hInstance);
+			void CreateWindowInternal(HINSTANCE	hInstance);
 			std::string m_Caption;
 			WINDOWWIDTH m_width;
 			WINDOWHEIGHT m_height;

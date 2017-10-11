@@ -14,6 +14,7 @@ namespace LightningGE
 			virtual bool IsSwapChainRenderTarget()const = 0;
 			//return the attached RT ID
 			virtual RenderTargetID GetID()const = 0;
+			virtual ~IRenderTarget() {}
 		};
 		typedef std::shared_ptr<IRenderTarget> RenderTargetPtr;
 	}

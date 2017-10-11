@@ -12,6 +12,7 @@ namespace LightningGE
 		{
 		public:
 			D3D12Shader(ShaderType type);
+			~D3D12Shader()override;
 			std::string GetEntryPoint()const override; 
 			ShaderType GetType()const override;
 			const ShaderDefine GetMacros()const override;

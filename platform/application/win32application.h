@@ -26,14 +26,11 @@ namespace LightningGE
 			}
 		protected:
 			bool CreateMainWindow()override;
-			void InitRenderContext() override;
+			IRenderer* CreateRenderer()override;
 			WindowSystem::WindowPtr GetMainWindow() const override { return m_window; }
-			void OnWindowIdle(const WindowSystem::WindowIdleParam& param)override;
 		private:
-			FileSystemPtr m_fs;
 			WindowManager* m_windowMgr;
 			WindowPtr m_window;
-			IRenderer* m_renderer;
 			
 		};
 	}

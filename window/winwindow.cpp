@@ -53,23 +53,15 @@ namespace LightningGE
 		WinWindow::WinWindow():m_Caption("Lightning Win32 Window")
 			,m_hWnd(nullptr), m_width(800), m_height(600)
 		{
-			logger.Log(LogLevel::Info, "Win32 window constructed!");
+			HINSTANCE hInstance = ::GetModuleHandle(NULL);
+			RegisterWindowClass(hInstance);
+			CreateWindowInternal(hInstance);
+			logger.Log(LogLevel::Info, "Create window succeed!");
 		}
 
-		WinWindow::~WinWindow()
-		{
-			if(m_hWnd)
-			{ 
-				::DestroyWindow(m_hWnd);
-				m_hWnd = nullptr;
-			}
-			logger.Log(LogLevel::Info, "Win32 window destructed!");
-		}
-
-		bool WinWindow::Init()
+		void WinWindow::RegisterWindowClass(HINSTANCE hInstance)
 		{
 			WNDCLASSEX wndcls;
-			HINSTANCE hInstance = ::GetModuleHandle(NULL);
 			wndcls.cbSize = sizeof(WNDCLASSEX);
 			wndcls.style = CS_HREDRAW | CS_VREDRAW;
 			wndcls.lpfnWndProc = WndProc;
@@ -85,12 +77,13 @@ namespace LightningGE
 
 			if (!::RegisterClassEx(&wndcls))
 			{
-				DWORD error = ::GetLastError();
-				logger.Log(LogLevel::Error, "Register window class failed!ErrorCode : 0x%x", error);
-				return false;
+				throw WindowInitException("Register window class failed!ErrorCode : 0x%x", ::GetLastError());
 			}
 			logger.Log(LogLevel::Info, "Register window class succeed!");
+		}
 
+		void WinWindow::CreateWindowInternal(HINSTANCE hInstance)
+		{
 			RECT windowRect;
 			windowRect.left = 0;
 			windowRect.right = m_width;
@@ -104,12 +97,19 @@ namespace LightningGE
 
 			if (!hWnd)
 			{
-				DWORD error = ::GetLastError();
-				logger.Log(LogLevel::Error, "Create window failed!ErrorCode : %x", error);
-				return false;
+				throw WindowInitException("Create window failed!ErrorCode : %x", ::GetLastError());
 			}
-			logger.Log(LogLevel::Info, "Create window succeed!");
-			return true;
+		}
+
+
+		WinWindow::~WinWindow()
+		{
+			if(m_hWnd)
+			{ 
+				::DestroyWindow(m_hWnd);
+				m_hWnd = nullptr;
+			}
+			logger.Log(LogLevel::Info, "Win32 window destructed!");
 		}
 
 		bool WinWindow::Show(bool show)

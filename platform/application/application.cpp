@@ -1,3 +1,4 @@
+#include "filesystemfactory.h"
 #include "iapplication.h"
 #include "logger.h"
 
@@ -8,9 +9,11 @@ namespace LightningGE
 	{
 		using Foundation::logger;
 		using Foundation::LogLevel;
-
+		using Foundation::FileSystemFactory;
 		Application::Application()
 		{
+			m_fs = FileSystemFactory::Instance()->CreateFileSystem();
+			logger.Log(LogLevel::Info, "File system created!Current working directory:%s", m_fs->GetRoot().c_str());
 			logger.Log(LogLevel::Info, "Application initialized successfully!");
 		}
 
@@ -22,7 +25,7 @@ namespace LightningGE
 		void Application::Start()
 		{
 			CreateMainWindow();
-			InitRenderContext();
+			m_renderer = CreateRenderer();
 			RegisterWindowHandlers();
 		}
 
@@ -36,6 +39,13 @@ namespace LightningGE
 					{this->OnWindowIdle(reinterpret_cast<const WindowSystem::WindowIdleParam&>(param)); });
 			}
 		}
+
+		void Application::OnWindowIdle(const WindowSystem::WindowIdleParam& param)
+		{
+			if(m_renderer)
+				m_renderer->Render();
+		}
+
 
 	}
 }

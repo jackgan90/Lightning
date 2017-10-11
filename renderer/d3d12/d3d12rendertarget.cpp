@@ -12,6 +12,11 @@ namespace LightningGE
 
 		}
 
+		D3D12RenderTarget::~D3D12RenderTarget()
+		{
+ 
+		}
+
 		bool D3D12RenderTarget::IsSwapChainRenderTarget()const
 		{
 			return m_isSwapChainTarget;

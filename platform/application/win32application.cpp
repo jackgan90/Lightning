@@ -3,7 +3,6 @@
 #include "rendererfactory.h"
 #include "logger.h"
 #include "windowmanager.h"
-#include "filesystemfactory.h"
 
 namespace LightningGE
 {
@@ -11,19 +10,16 @@ namespace LightningGE
 	{
 		using Foundation::LogLevel;
 		using Foundation::logger;
-		using Foundation::FileSystemFactory;
 		using Renderer::RendererFactory;
-		using Renderer::IRenderer;
-		Win32Application::Win32Application()
+		Win32Application::Win32Application():Application()
 		{
-			m_fs = FileSystemFactory::Instance()->CreateFileSystem();
 			m_windowMgr = new WindowManager();
-			logger.Log(LogLevel::Info, "File system created!Current working directory:%s", m_fs->GetRoot().c_str());
 		}
 
 		Win32Application::~Win32Application()
 		{
 			SAFE_DELETE(m_renderer);
+			SAFE_DELETE(m_windowMgr);
 		}
 
 		int Win32Application::Run()
@@ -44,23 +40,13 @@ namespace LightningGE
 			if (!m_window)
 			{
 				m_window = m_windowMgr->MakeWindow();
-				if (!m_window)
-				{
-					return false;
-				}
-				m_window->Init();
 			}
 			return true;
 		}
 
-		void Win32Application::InitRenderContext()
+		IRenderer* Win32Application::CreateRenderer()
 		{
-			m_renderer = RendererFactory::Instance()->CreateRenderer(m_window, m_fs);
-		}
-
-		void Win32Application::OnWindowIdle(const WindowSystem::WindowIdleParam& param)
-		{
-			m_renderer->Render();
+			return RendererFactory::Instance()->CreateRenderer(m_window, m_fs);
 		}
 	}
 }

@@ -20,6 +20,12 @@ namespace LightningGE
 
 		}
 
+		D3D12Shader::~D3D12Shader()
+		{
+
+		}
+
+
 		std::string D3D12Shader::GetEntryPoint()const
 		{
 			return m_entryPoint;
