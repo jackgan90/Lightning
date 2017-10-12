@@ -20,7 +20,7 @@ namespace LightningGE
 			virtual void Start() = 0;
 			virtual int Run() = 0;
 			virtual WindowManager* GetWindowManager()const = 0;
-			virtual ~IApplication(){}
+			virtual ~IApplication() = default;
 		};
 
 		class LIGHTNINGGE_PLATFORM_API Application : public IApplication

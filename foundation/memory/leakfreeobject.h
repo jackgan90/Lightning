@@ -12,7 +12,7 @@ namespace memory
 	{
 	public:
 		typedef AllocatorType allocator_type;
-		virtual ~ILeakFreeObject(){}
+		virtual ~ILeakFreeObject() = default;
 
 		void* operator new(size_t size)
 		{ 

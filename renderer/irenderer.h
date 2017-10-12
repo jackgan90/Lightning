@@ -28,7 +28,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API IRenderer
 		{
 		public:
-			virtual ~IRenderer() {}
+			virtual ~IRenderer() = default;
 			//entry point of render system
 			virtual void Render() = 0;
 			//return the device of render system

@@ -54,7 +54,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API IBlendState : public HashableObject
 		{
 		public:
-			virtual ~IBlendState() {}
+			virtual ~IBlendState() = default;
 			virtual const BlendConfiguration* GetConfiguration(const RenderTargetPtr& renderTarget) = 0;
 			virtual bool SetConfiguration(const RenderTargetPtr& renderTarget, const BlendConfiguration& configuration) = 0;
 			virtual bool RemoveConfiguration(const RenderTargetPtr& renderTarget) = 0;

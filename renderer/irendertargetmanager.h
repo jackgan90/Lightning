@@ -16,7 +16,7 @@ namespace LightningGE
 			//obtain a render target by ID
 			virtual RenderTargetPtr GetRenderTarget(const RenderTargetID&) = 0;
 
-			virtual ~IRenderTargetManager(){}
+			virtual ~IRenderTargetManager() = default;
 		};
 
 		typedef std::unordered_map<RenderTargetID, RenderTargetPtr> RenderTargetMap;

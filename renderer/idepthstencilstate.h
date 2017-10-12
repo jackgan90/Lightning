@@ -66,7 +66,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API IDepthStencilState : public HashableObject
 		{
 		public:
-			virtual ~IDepthStencilState(){}
+			virtual ~IDepthStencilState() = default;
 			virtual const DepthStencilConfiguration& GetConfiguration() = 0;
 			virtual bool SetConfiguration(const DepthStencilConfiguration& configuration) = 0;
 			virtual bool EnableDepthTest(bool enable) = 0;

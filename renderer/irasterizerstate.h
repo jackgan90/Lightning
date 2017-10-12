@@ -40,7 +40,7 @@ namespace LightningGE
 		class IRasterizerState : public HashableObject
 		{
 		public:
-			virtual ~IRasterizerState(){}
+			virtual ~IRasterizerState() = default;
 			virtual const RasterizerStateConfiguration& GetConfiguration() = 0;
 			virtual bool SetConfiguration(const RasterizerStateConfiguration& config) = 0;
 			virtual bool SetFillMode(FillMode mode) = 0;

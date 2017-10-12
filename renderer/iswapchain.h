@@ -10,7 +10,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API ISwapChain
 		{
 		public:
-			virtual ~ISwapChain(){}
+			virtual ~ISwapChain() = default;
 			//preset the current back buffer to display
 			virtual bool Present() = 0;
 			//get swapchain back buffer count

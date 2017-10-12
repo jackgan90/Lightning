@@ -34,7 +34,7 @@ namespace LightningGE
 		class LIGHTNINGGE_FOUNDATION_API IFile
 		{
 		public:
-			virtual ~IFile() {}
+			virtual ~IFile() = default;
 			virtual FileSize GetSize() = 0;
 			virtual FileSize Read(char* buf, FileSize length) = 0;
 			virtual void SetFilePointer(FilePointerType type, FileAnchor anchor, FileSize offset) = 0;
@@ -47,7 +47,7 @@ namespace LightningGE
 		class LIGHTNINGGE_FOUNDATION_API IFileSystem
 		{
 		public:
-			virtual ~IFileSystem() {}
+			virtual ~IFileSystem() = default;
 			virtual FilePtr FindFile(const std::string& filename, FileAccess bitmask) = 0;
 			virtual bool SetRoot(std::string root_path) = 0;
 			virtual const std::string GetRoot() const = 0;

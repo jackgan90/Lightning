@@ -15,7 +15,7 @@ namespace LightningGE
 			}
 		protected:
 			Singleton(){}
-			virtual ~Singleton(){}
+			virtual ~Singleton() = default;
 		private:
 			Singleton(const Singleton<T>&) = delete;
 			Singleton<T>& operator=(const Singleton<T>&) = delete;
