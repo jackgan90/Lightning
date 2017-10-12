@@ -4,7 +4,7 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		Renderer::Renderer(const FileSystemPtr& fs) :m_frameIndex(0), m_fs(fs)
+		Renderer::Renderer(const SharedFileSystemPtr& fs) :m_frameIndex(0), m_fs(fs)
 		{
 
 		}

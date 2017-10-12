@@ -10,7 +10,7 @@ namespace LightningGE
 {
 	namespace App
 	{
-		using Foundation::FileSystemPtr;
+		using Foundation::SharedFileSystemPtr;
 		using WindowSystem::WindowManager;
 		using WindowSystem::WindowPtr;
 		using Renderer::IRenderer;
@@ -19,7 +19,6 @@ namespace LightningGE
 		public:
 			virtual void Start() = 0;
 			virtual int Run() = 0;
-			virtual WindowManager* GetWindowManager()const = 0;
 			virtual ~IApplication() = default;
 		};
 
@@ -35,7 +34,7 @@ namespace LightningGE
 			virtual IRenderer* CreateRenderer() = 0;
 			virtual void RegisterWindowHandlers();
 			WindowSystem::WindowPtr GetMainWindow() const { return m_window; }
-			FileSystemPtr m_fs;
+			SharedFileSystemPtr m_fs;
 			IRenderer* m_renderer;
 			WindowManager* m_windowMgr;
 			WindowPtr m_window;

@@ -43,7 +43,7 @@ namespace LightningGE
 			m_size = f.m_size;
 			m_path = f.m_path;
 			m_sizeDirty = f.m_sizeDirty;
-			m_file = f.m_file;
+			m_file = std::move(f.m_file);
 			m_access = f.m_access;
 			f.m_file = nullptr;
 		}
@@ -54,7 +54,6 @@ namespace LightningGE
 			if (m_file)
 			{
 				m_file->close();
-				SAFE_DELETE(m_file);
 			}
 		}
 
@@ -123,7 +122,7 @@ namespace LightningGE
 					mode |= std::fstream::in;
 				if (m_access & FileAccess::ACCESS_WRITE)
 					mode |= std::fstream::out;
-				m_file = new boost::filesystem::fstream(m_path.string(), std::fstream::binary | mode);
+				m_file = std::make_unique<boost::filesystem::fstream>(m_path.string(), std::fstream::binary | mode);
 			}
 		}
 

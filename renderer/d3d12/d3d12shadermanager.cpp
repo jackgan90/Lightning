@@ -5,7 +5,7 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		D3D12ShaderManager::D3D12ShaderManager(const FileSystemPtr& fs) :ShaderManager(fs)
+		D3D12ShaderManager::D3D12ShaderManager(const SharedFileSystemPtr& fs) :ShaderManager(fs)
 		{
 
 		}

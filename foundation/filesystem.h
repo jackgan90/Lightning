@@ -52,7 +52,7 @@ namespace LightningGE
 			virtual bool SetRoot(std::string root_path) = 0;
 			virtual const std::string GetRoot() const = 0;
 		};
-		typedef std::shared_ptr<IFileSystem> FileSystemPtr;
+		typedef std::shared_ptr<IFileSystem> SharedFileSystemPtr;
 
 		class LIGHTNINGGE_FOUNDATION_API GeneralFileSystem : public IFileSystem
 		{
@@ -92,7 +92,7 @@ namespace LightningGE
 			FileSize m_size;
 			boost::filesystem::path m_path;
 			bool m_sizeDirty;
-			std::fstream* m_file;
+			std::unique_ptr<std::fstream> m_file;
 			FileAccess m_access;
 		};
 

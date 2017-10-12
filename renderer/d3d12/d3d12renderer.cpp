@@ -35,7 +35,7 @@ namespace LightningGE
 			REPORT_LIVE_OBJECTS;
 		}
 
-		D3D12Renderer::D3D12Renderer(const WindowPtr& pWindow, const FileSystemPtr& fs) : Renderer(fs)
+		D3D12Renderer::D3D12Renderer(const WindowPtr& pWindow, const SharedFileSystemPtr& fs) : Renderer(fs)
 			,m_clearColor(0.5f, 0.5f, 0.5f, 1.0f)
 		{
 #ifndef NDEBUG

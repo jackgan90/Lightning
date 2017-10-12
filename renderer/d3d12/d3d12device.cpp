@@ -22,7 +22,7 @@ namespace LightningGE
 		using Foundation::logger;
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
-		D3D12Device::D3D12Device(ComPtr<ID3D12Device> pDevice, const FileSystemPtr& fs):m_fs(fs)
+		D3D12Device::D3D12Device(ComPtr<ID3D12Device> pDevice, const SharedFileSystemPtr& fs):m_fs(fs)
 		{
 			m_device = pDevice;
 			D3D12_COMMAND_QUEUE_DESC desc = {};

@@ -6,11 +6,11 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		using Foundation::FileSystemPtr;
+		using Foundation::SharedFileSystemPtr;
 		class LIGHTNINGGE_RENDERER_API Renderer : public IRenderer
 		{
 		public:
-			Renderer(const FileSystemPtr& fs);
+			Renderer(const SharedFileSystemPtr& fs);
 			//entry point of render system
 			void Render()override;
 			//return the current frame index
@@ -20,7 +20,7 @@ namespace LightningGE
 			virtual void DoRender() = 0;
 			virtual void EndRender() = 0;
 			unsigned int m_frameIndex;
-			FileSystemPtr m_fs;
+			SharedFileSystemPtr m_fs;
 		};
 	}
 }

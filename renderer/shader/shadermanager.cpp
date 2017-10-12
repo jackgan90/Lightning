@@ -16,7 +16,7 @@ namespace LightningGE
 		using Foundation::logger;
 		using Foundation::LogLevel;
 
-		ShaderManager::ShaderManager(const FileSystemPtr& fs)
+		ShaderManager::ShaderManager(const SharedFileSystemPtr& fs)
 		{
 			m_fs = fs;
 		}

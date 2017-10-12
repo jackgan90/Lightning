@@ -20,10 +20,6 @@ namespace LightningGE
 			Win32Application();
 			~Win32Application()override;
 			int Run()override;
-			WindowManager* GetWindowManager()const override
-			{
-				return m_windowMgr;
-			}
 		protected:
 			WindowPtr CreateMainWindow()override;
 			IRenderer* CreateRenderer()override;

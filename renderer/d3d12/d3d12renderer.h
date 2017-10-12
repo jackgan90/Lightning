@@ -28,7 +28,7 @@ namespace LightningGE
 		{
 		public:
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-			D3D12Renderer(const WindowPtr& pContext, const FileSystemPtr& fs);
+			D3D12Renderer(const WindowPtr& pContext, const SharedFileSystemPtr& fs);
 			~D3D12Renderer()override;
 			IDevice* GetDevice()override;
 			ISwapChain* GetSwapChain()override;

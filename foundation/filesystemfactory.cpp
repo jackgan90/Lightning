@@ -5,9 +5,9 @@ namespace LightningGE
 {
 	namespace Foundation
 	{
-		FileSystemPtr FileSystemFactory::CreateFileSystem()
+		SharedFileSystemPtr FileSystemFactory::CreateFileSystem()
 		{
-			return std::make_shared<GeneralFileSystem>();
+			return std::make_unique<GeneralFileSystem>();
 		}
 	}
 }
