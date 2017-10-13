@@ -16,6 +16,6 @@ namespace LightningGE
 			virtual RenderTargetID GetID()const = 0;
 			virtual ~IRenderTarget() = default;
 		};
-		typedef std::shared_ptr<IRenderTarget> RenderTargetPtr;
+		typedef std::shared_ptr<IRenderTarget> SharedRenderTargetPtr;
 	}
 }

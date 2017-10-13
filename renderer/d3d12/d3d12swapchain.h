@@ -22,7 +22,7 @@ namespace LightningGE
 			~D3D12SwapChain()override;
 			bool Present()override;
 			unsigned int GetBufferCount() const override{ return m_bufferCount; }
-			RenderTargetPtr GetBufferRenderTarget(unsigned int bufferIndex)override;
+			SharedRenderTargetPtr GetBufferRenderTarget(unsigned int bufferIndex)override;
 		private:
 			void BindRenderTargets();
 			unsigned int m_bufferCount;

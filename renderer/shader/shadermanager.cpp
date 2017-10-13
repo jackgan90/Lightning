@@ -11,7 +11,7 @@ namespace LightningGE
 	namespace Renderer
 	{
 		using Foundation::FileSystemFactory;
-		using Foundation::FilePtr;
+		using Foundation::SharedFilePtr;
 		using Foundation::FileAccess;
 		using Foundation::logger;
 		using Foundation::LogLevel;
@@ -27,7 +27,7 @@ namespace LightningGE
 			auto it = m_shaders.find(hash);
 			if (it != m_shaders.end())
 				return it->second;
-			FilePtr shaderFile = m_fs->FindFile(shaderName, FileAccess::ACCESS_READ);
+			SharedFilePtr shaderFile = m_fs->FindFile(shaderName, FileAccess::ACCESS_READ);
 			if (!shaderFile)
 				return nullptr;
 			SharedShaderPtr pShader = CreateConcreteShader(type);

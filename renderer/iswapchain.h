@@ -16,7 +16,7 @@ namespace LightningGE
 			//get swapchain back buffer count
 			virtual unsigned int GetBufferCount()const = 0;
 			//get corresponding render target
-			virtual RenderTargetPtr GetBufferRenderTarget(unsigned int bufferIndex) = 0;
+			virtual SharedRenderTargetPtr GetBufferRenderTarget(unsigned int bufferIndex) = 0;
 		};
 		typedef std::shared_ptr<ISwapChain> SharedSwapChainPtr;
 	}

@@ -26,7 +26,7 @@ namespace LightningGE
 			virtual ShaderType GetType()const = 0;
 			virtual void DefineMacros(const ShaderDefine& define) = 0;
 			virtual const ShaderDefine GetMacros()const = 0;
-			virtual bool Compile(const Foundation::FilePtr& file, const ShaderDefine& define) = 0;
+			virtual bool Compile(const Foundation::SharedFilePtr& file, const ShaderDefine& define) = 0;
 			virtual const std::string GetCompileErrorLog()const = 0;
 			virtual std::string GetName()const = 0;
 #ifndef NDEBUG

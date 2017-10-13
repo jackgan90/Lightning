@@ -41,7 +41,7 @@ namespace LightningGE
 			return m_macros;
 		}
 
-		bool D3D12Shader::Compile(const Foundation::FilePtr& file, const ShaderDefine& define)
+		bool D3D12Shader::Compile(const Foundation::SharedFilePtr& file, const ShaderDefine& define)
 		{
 			m_compileError = "";
 			if (!file)

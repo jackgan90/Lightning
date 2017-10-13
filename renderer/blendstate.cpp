@@ -11,14 +11,14 @@ namespace LightningGE
 
 		}
 
-		const BlendConfiguration* BlendState::GetConfiguration(const RenderTargetPtr& renderTarget)
+		const BlendConfiguration* BlendState::GetConfiguration(const SharedRenderTargetPtr& renderTarget)
 		{
 			auto perTargetConf = InternalGetPerTargetConfig(renderTarget);
 			BlendState::_PerTargetConfig* pConfig = std::get<0>(perTargetConf);
 			return pConfig ? &pConfig->config : nullptr;
 		}
 
-		BlendState::InternalConfigResult BlendState::InternalGetPerTargetConfig(const RenderTargetPtr& renderTarget)
+		BlendState::InternalConfigResult BlendState::InternalGetPerTargetConfig(const SharedRenderTargetPtr& renderTarget)
 		{
 			if (renderTarget)
 			{
@@ -30,7 +30,7 @@ namespace LightningGE
 			return std::make_tuple(nullptr, m_config.end());
 		}
 
-		bool BlendState::SetConfiguration(const RenderTargetPtr& renderTarget, const BlendConfiguration& configuration)
+		bool BlendState::SetConfiguration(const SharedRenderTargetPtr& renderTarget, const BlendConfiguration& configuration)
 		{
 			if (!renderTarget)
 				return false;
@@ -50,7 +50,7 @@ namespace LightningGE
 			return true;
 		}
 
-		bool BlendState::RemoveConfiguration(const RenderTargetPtr& renderTarget)
+		bool BlendState::RemoveConfiguration(const SharedRenderTargetPtr& renderTarget)
 		{
 			if (renderTarget)
 			{
@@ -73,7 +73,7 @@ namespace LightningGE
 			return false;
 		}
 
-		bool BlendState::Enable(const RenderTargetPtr& renderTarget, bool enable)
+		bool BlendState::Enable(const SharedRenderTargetPtr& renderTarget, bool enable)
 		{
 			if (!renderTarget)
 				return false;
@@ -97,7 +97,7 @@ namespace LightningGE
 			return true;
 		}
 
-		bool BlendState::SetFactors(const RenderTargetPtr& renderTarget, BlendFactor srcColor, BlendFactor srcAlpha, BlendFactor destColor, BlendFactor destAlpha)
+		bool BlendState::SetFactors(const SharedRenderTargetPtr& renderTarget, BlendFactor srcColor, BlendFactor srcAlpha, BlendFactor destColor, BlendFactor destAlpha)
 		{
 			if (!renderTarget)
 				return false;

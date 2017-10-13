@@ -55,7 +55,7 @@ namespace LightningGE
 		{
 		}
 
-		void D3D12Device::ClearRenderTarget(const RenderTargetPtr& rt, const ColorF& color, const RectI* pRects, const int rectCount)
+		void D3D12Device::ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectI* pRects, const int rectCount)
 		{
 			D3D12RenderTarget *pTarget = static_cast<D3D12RenderTarget*>(rt.get());
 			ComPtr<ID3D12Resource> nativeRenderTarget = pTarget->GetNative();
@@ -92,26 +92,26 @@ namespace LightningGE
 
 		}
 
-		BlendStatePtr D3D12Device::CreateBlendState()
+		SharedBlendStatePtr D3D12Device::CreateBlendState()
 		{
-			return BlendStatePtr(new D3D12BlendState());
+			return SharedBlendStatePtr(new D3D12BlendState());
 		}
 
-		DepthStencilStatePtr D3D12Device::CreateDepthStencilState()
+		SharedDepthStencilStatePtr D3D12Device::CreateDepthStencilState()
 		{
-			return DepthStencilStatePtr(new D3D12DepthStencilState());
+			return SharedDepthStencilStatePtr(new D3D12DepthStencilState());
 		}
 
 
-		PipelineStateObjectPtr D3D12Device::CreatePipelineStateObject()
+		SharedPipelineStateObjectPtr D3D12Device::CreatePipelineStateObject()
 		{
-			return PipelineStateObjectPtr(new D3D12PipelineStateObject());
+			return SharedPipelineStateObjectPtr(new D3D12PipelineStateObject());
 		}
 
-		VertexBufferPtr D3D12Device::CreateVertexBuffer()
+		SharedVertexBufferPtr D3D12Device::CreateVertexBuffer()
 		{
 			//TODO : replace with d3d12 vertex buffer
-			return VertexBufferPtr();
+			return SharedVertexBufferPtr();
 		}
 
 		SharedShaderPtr D3D12Device::CreateShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)
@@ -119,9 +119,9 @@ namespace LightningGE
 			return m_shaderMgr->GetShader(type, shaderName, defineMap);
 		}
 
-		RasterizerStatePtr D3D12Device::CreateRasterizerState()
+		SharedRasterizerStatePtr D3D12Device::CreateRasterizerState()
 		{
-			return RasterizerStatePtr(new D3D12RasterizerState());
+			return SharedRasterizerStatePtr(new D3D12RasterizerState());
 		}
 
 

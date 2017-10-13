@@ -42,13 +42,13 @@ namespace LightningGE
 			virtual const std::string GetPath()const = 0;
 			virtual const std::string GetName()const = 0;
 		};
-		typedef std::shared_ptr<IFile> FilePtr;
+		typedef std::shared_ptr<IFile> SharedFilePtr;
 
 		class LIGHTNINGGE_FOUNDATION_API IFileSystem
 		{
 		public:
 			virtual ~IFileSystem() = default;
-			virtual FilePtr FindFile(const std::string& filename, FileAccess bitmask) = 0;
+			virtual SharedFilePtr FindFile(const std::string& filename, FileAccess bitmask) = 0;
 			virtual bool SetRoot(std::string root_path) = 0;
 			virtual const std::string GetRoot() const = 0;
 		};
@@ -59,12 +59,12 @@ namespace LightningGE
 		public:
 			GeneralFileSystem();
 			~GeneralFileSystem()override;
-			FilePtr FindFile(const std::string& filename, FileAccess bitmask)override;
+			SharedFilePtr FindFile(const std::string& filename, FileAccess bitmask)override;
 			bool SetRoot(std::string root_path)override;
 			const std::string GetRoot() const { return m_root.string(); }
 		protected:
 			boost::filesystem::path m_root;
-			std::unordered_map<std::string, FilePtr> m_cachedFiles;
+			std::unordered_map<std::string, SharedFilePtr> m_cachedFiles;
 		};
 
 		class GeneralFile : public IFile

@@ -16,7 +16,7 @@ namespace LightningGE
 			std::string GetEntryPoint()const override; 
 			ShaderType GetType()const override;
 			const ShaderDefine GetMacros()const override;
-			bool Compile(const Foundation::FilePtr& file, const ShaderDefine& define)override;
+			bool Compile(const Foundation::SharedFilePtr& file, const ShaderDefine& define)override;
 			const std::string GetCompileErrorLog()const override;
 			std::string GetName()const override;
 #ifndef NDEBUG

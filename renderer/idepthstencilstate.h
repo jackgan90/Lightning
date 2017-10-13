@@ -75,7 +75,7 @@ namespace LightningGE
 			virtual bool SetStencilRef(const unsigned char ref) = 0;
 			//TODO basically there's still lots of methods need to add here,when it's necessary I will put them
 		};
-		typedef std::shared_ptr<IDepthStencilState> DepthStencilStatePtr;
+		typedef std::shared_ptr<IDepthStencilState> SharedDepthStencilStatePtr;
 
 		class DepthStencilState : public IDepthStencilState
 		{

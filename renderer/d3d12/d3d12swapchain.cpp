@@ -72,11 +72,11 @@ namespace LightningGE
 			delete []swapChainTargets;
 		}
 
-		RenderTargetPtr D3D12SwapChain::GetBufferRenderTarget(unsigned int bufferIndex)
+		SharedRenderTargetPtr D3D12SwapChain::GetBufferRenderTarget(unsigned int bufferIndex)
 		{
 			auto it = m_renderTargets.find(bufferIndex);
 			if (it == m_renderTargets.end())
-				return RenderTargetPtr();
+				return SharedRenderTargetPtr();
 			return static_cast<D3D12RenderTargetManager*>(m_renderer->GetRenderTargetManager())->GetRenderTarget(it->second);
 		}
 	}

@@ -33,7 +33,7 @@ namespace LightningGE
 			IDevice* GetDevice()override;
 			IRenderTargetManager* GetRenderTargetManager()override;
 			void SetClearColor(const ColorF& color)override;
-			void ApplyPipelineStateObject(const PipelineStateObjectPtr& pso)override;
+			void ApplyPipelineStateObject(const SharedPipelineStateObjectPtr& pso)override;
 			D3D12DescriptorHeapManager* GetDescriptorHeapManager()const noexcept
 			{
 				return m_descriptorMgr.get();

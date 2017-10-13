@@ -40,7 +40,7 @@ namespace LightningGE
 			//get the current frame index
 			virtual unsigned long GetCurrentFrameIndex()const = 0;
 			//apply the pipeline state object
-			virtual void ApplyPipelineStateObject(const PipelineStateObjectPtr& pso) = 0;
+			virtual void ApplyPipelineStateObject(const SharedPipelineStateObjectPtr& pso) = 0;
 		};
 		typedef std::unique_ptr<IRenderer> UniqueRendererPtr;
 	}

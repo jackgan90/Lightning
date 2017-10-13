@@ -19,7 +19,7 @@ namespace LightningGE
 			m_desc.IndependentBlendEnable = m_config.size() > 1;
 		}
 
-		bool D3D12BlendState::SetConfiguration(const RenderTargetPtr& renderTarget, const BlendConfiguration& configuration)
+		bool D3D12BlendState::SetConfiguration(const SharedRenderTargetPtr& renderTarget, const BlendConfiguration& configuration)
 		{
 			if (!BlendState::SetConfiguration(renderTarget, configuration))
 				return false;
@@ -36,7 +36,7 @@ namespace LightningGE
 			return true;
 		}
 
-		bool D3D12BlendState::RemoveConfiguration(const RenderTargetPtr& renderTarget)
+		bool D3D12BlendState::RemoveConfiguration(const SharedRenderTargetPtr& renderTarget)
 		{
 			auto oldTargetConfig = InternalGetPerTargetConfig(renderTarget);
 			size_t oldSize = m_config.size();
@@ -52,7 +52,7 @@ namespace LightningGE
 		}
 
 
-		bool D3D12BlendState::Enable(const RenderTargetPtr& renderTarget, bool enable)
+		bool D3D12BlendState::Enable(const SharedRenderTargetPtr& renderTarget, bool enable)
 		{
 			if (!BlendState::Enable(renderTarget, enable))
 				return false;
@@ -63,7 +63,7 @@ namespace LightningGE
 			return true;
 		}
 
-		bool D3D12BlendState::SetFactors(const RenderTargetPtr& renderTarget, BlendFactor srcColor, BlendFactor srcAlpha, BlendFactor destColor, BlendFactor destAlpha)
+		bool D3D12BlendState::SetFactors(const SharedRenderTargetPtr& renderTarget, BlendFactor srcColor, BlendFactor srcAlpha, BlendFactor destColor, BlendFactor destAlpha)
 		{
 			if (!BlendState::SetFactors(renderTarget, srcColor, srcAlpha, destColor, destAlpha))
 				return false;

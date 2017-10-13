@@ -157,7 +157,7 @@ namespace LightningGE
 
 		}
 
-		FilePtr GeneralFileSystem::FindFile(const std::string& filename, FileAccess bitmask)
+		SharedFilePtr GeneralFileSystem::FindFile(const std::string& filename, FileAccess bitmask)
 		{
 			//TODO : multithreaded access must be resolved
 			auto cachedFile = m_cachedFiles.find(filename);
@@ -172,7 +172,7 @@ namespace LightningGE
 				});
 				if (it != end)
 				{
-					m_cachedFiles.insert(std::make_pair(filename, FilePtr(new GeneralFile(it->path().string(), bitmask))));
+					m_cachedFiles.insert(std::make_pair(filename, SharedFilePtr(new GeneralFile(it->path().string(), bitmask))));
 					return m_cachedFiles[filename];
 				}
 			}
@@ -180,7 +180,7 @@ namespace LightningGE
 			{
 				logger.Log(LogLevel::Error, e.what());
 			}
-			return FilePtr();
+			return SharedFilePtr();
 		}
 
 		bool GeneralFileSystem::SetRoot(std::string root_path)

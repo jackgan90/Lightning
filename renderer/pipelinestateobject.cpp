@@ -5,7 +5,7 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		bool PipelineStateObject::ApplyBlendState(const BlendStatePtr & blendState)
+		bool PipelineStateObject::ApplyBlendState(const SharedBlendStatePtr & blendState)
 		{
 			auto oldState = m_blendState;
 			m_blendState = blendState;
@@ -15,7 +15,7 @@ namespace LightningGE
 			return true;
 		}
 
-		bool PipelineStateObject::ApplyDepthStencilState(const DepthStencilStatePtr & dsState)
+		bool PipelineStateObject::ApplyDepthStencilState(const SharedDepthStencilStatePtr & dsState)
 		{
 			auto oldState = m_depthStencilState;
 			m_depthStencilState = dsState;
@@ -25,7 +25,7 @@ namespace LightningGE
 			return true;
 		}
 
-		bool PipelineStateObject::ApplyRasterizerState(const RasterizerStatePtr & rasterizerState)
+		bool PipelineStateObject::ApplyRasterizerState(const SharedRasterizerStatePtr & rasterizerState)
 		{
 			auto oldState = m_rasterizerState;
 			m_rasterizerState = rasterizerState;
@@ -45,17 +45,17 @@ namespace LightningGE
 			return true;
 		}
 
-		BlendStatePtr PipelineStateObject::GetBlendState() const
+		SharedBlendStatePtr PipelineStateObject::GetBlendState() const
 		{
 			return m_blendState;
 		}
 
-		DepthStencilStatePtr PipelineStateObject::GetDepthStencilState() const
+		SharedDepthStencilStatePtr PipelineStateObject::GetDepthStencilState() const
 		{
 			return m_depthStencilState;
 		}
 
-		RasterizerStatePtr PipelineStateObject::GetRasterizerState() const
+		SharedRasterizerStatePtr PipelineStateObject::GetRasterizerState() const
 		{
 			return m_rasterizerState;
 		}

@@ -4,12 +4,12 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		RenderTargetPtr RenderTargetManager::GetRenderTarget(const RenderTargetID& targetID)
+		SharedRenderTargetPtr RenderTargetManager::GetRenderTarget(const RenderTargetID& targetID)
 		{
 			auto it = m_renderTargets.find(targetID);
 			if (it == m_renderTargets.end())
 			{
-				return RenderTargetPtr();
+				return SharedRenderTargetPtr();
 			}
 			return it->second;
 		}

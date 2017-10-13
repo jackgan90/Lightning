@@ -276,7 +276,7 @@ namespace LightningGE
 			m_clearColor = color;
 		}
 
-		void D3D12Renderer::ApplyPipelineStateObject(const PipelineStateObjectPtr& pso)
+		void D3D12Renderer::ApplyPipelineStateObject(const SharedPipelineStateObjectPtr& pso)
 		{
 			//TODO : maybe call d3d12 method to really apply the pipeline state?
 		}

@@ -19,13 +19,13 @@ namespace LightningGE
 			friend class D3D12Renderer;
 			D3D12Device(ComPtr<ID3D12Device> pDevice, const SharedFileSystemPtr& fs);
 			~D3D12Device()override;
-			void ClearRenderTarget(const RenderTargetPtr& rt, const ColorF& color, const RectI* pRects = nullptr, const int rectCount = 0)override;
-			BlendStatePtr CreateBlendState()override;
-			DepthStencilStatePtr CreateDepthStencilState()override;
-			PipelineStateObjectPtr CreatePipelineStateObject()override;
-			VertexBufferPtr CreateVertexBuffer()override;
+			void ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectI* pRects = nullptr, const int rectCount = 0)override;
+			SharedBlendStatePtr CreateBlendState()override;
+			SharedDepthStencilStatePtr CreateDepthStencilState()override;
+			SharedPipelineStateObjectPtr CreatePipelineStateObject()override;
+			SharedVertexBufferPtr CreateVertexBuffer()override;
 			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)override;
-			RasterizerStatePtr CreateRasterizerState()override;
+			SharedRasterizerStatePtr CreateRasterizerState()override;
 			ComPtr<ID3D12Device> GetNativeDevice()const { return m_device; }
 		private:
 			SharedFileSystemPtr m_fs;
