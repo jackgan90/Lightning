@@ -32,7 +32,7 @@ namespace LightningGE
 			return 0;
 		}
 
-		WindowPtr Win32Application::CreateMainWindow()
+		SharedWindowPtr Win32Application::CreateMainWindow()
 		{
 			return m_windowMgr->MakeWindow();
 		}

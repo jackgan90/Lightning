@@ -24,7 +24,7 @@ namespace LightningGE
 			DepthStencilStatePtr CreateDepthStencilState()override;
 			PipelineStateObjectPtr CreatePipelineStateObject()override;
 			VertexBufferPtr CreateVertexBuffer()override;
-			ShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)override;
+			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)override;
 			RasterizerStatePtr CreateRasterizerState()override;
 			ComPtr<ID3D12Device> GetNativeDevice()const { return m_device; }
 		private:

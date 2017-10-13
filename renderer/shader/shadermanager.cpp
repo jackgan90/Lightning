@@ -21,7 +21,7 @@ namespace LightningGE
 			m_fs = fs;
 		}
 
-		ShaderPtr ShaderManager::GetShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)
+		SharedShaderPtr ShaderManager::GetShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)
 		{
 			std::size_t hash = Shader::Hash(type, shaderName, defineMap);
 			auto it = m_shaders.find(hash);
@@ -30,7 +30,7 @@ namespace LightningGE
 			FilePtr shaderFile = m_fs->FindFile(shaderName, FileAccess::ACCESS_READ);
 			if (!shaderFile)
 				return nullptr;
-			ShaderPtr pShader = CreateConcreteShader(type);
+			SharedShaderPtr pShader = CreateConcreteShader(type);
 			bool success = pShader->Compile(shaderFile, defineMap);
 			if (!success)
 			{

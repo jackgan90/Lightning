@@ -12,7 +12,7 @@ namespace LightningGE
 	{
 		using Foundation::SharedFileSystemPtr;
 		using WindowSystem::WindowManager;
-		using WindowSystem::WindowPtr;
+		using WindowSystem::SharedWindowPtr;
 		using Renderer::UniqueRendererPtr;
 		class LIGHTNINGGE_PLATFORM_API IApplication
 		{
@@ -30,14 +30,14 @@ namespace LightningGE
 			void Start()override;
 		protected:
 			virtual void OnWindowIdle(const WindowSystem::WindowIdleParam& param);
-			virtual WindowPtr CreateMainWindow() = 0;
+			virtual SharedWindowPtr CreateMainWindow() = 0;
 			virtual UniqueRendererPtr CreateRenderer() = 0;
 			virtual void RegisterWindowHandlers();
-			WindowSystem::WindowPtr GetMainWindow() const { return m_window; }
+			WindowSystem::SharedWindowPtr GetMainWindow() const { return m_window; }
 			SharedFileSystemPtr m_fs;
 			UniqueRendererPtr m_renderer;
 			std::unique_ptr<WindowManager> m_windowMgr;
-			WindowPtr m_window;
+			SharedWindowPtr m_window;
 		};
 
 	}

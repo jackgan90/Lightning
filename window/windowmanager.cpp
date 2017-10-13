@@ -12,18 +12,18 @@ namespace LightningGE
 			
 		}
 
-		WindowPtr WindowManager::MakeWindow()
+		SharedWindowPtr WindowManager::MakeWindow()
 		{
 		#ifdef LIGHTNINGGE_WIN32
-			m_windows.insert(std::make_pair(m_currentID++, WindowPtr(new WinWindow())));
+			m_windows.insert(std::make_pair(m_currentID++, SharedWindowPtr(new WinWindow())));
 			return m_windows[m_currentID-1];
 		#endif
-			return WindowPtr();
+			return SharedWindowPtr();
 		}
 
-		std::vector<WindowPtr> WindowManager::GetAllWindows()const
+		std::vector<SharedWindowPtr> WindowManager::GetAllWindows()const
 		{
-			std::vector<WindowPtr> windows;
+			std::vector<SharedWindowPtr> windows;
 			for (auto w : m_windows)
 				windows.push_back(w.second);
 			return windows;

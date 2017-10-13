@@ -11,7 +11,7 @@ namespace LightningGE
 {
 	namespace App
 	{
-		using WindowSystem::WindowPtr;
+		using WindowSystem::SharedWindowPtr;
 		using WindowSystem::WindowManager;
 		using Renderer::UniqueRendererPtr;
 		class LIGHTNINGGE_PLATFORM_API Win32Application : public Application
@@ -21,7 +21,7 @@ namespace LightningGE
 			~Win32Application()override;
 			int Run()override;
 		protected:
-			WindowPtr CreateMainWindow()override;
+			SharedWindowPtr CreateMainWindow()override;
 			UniqueRendererPtr CreateRenderer()override;
 		};
 	}

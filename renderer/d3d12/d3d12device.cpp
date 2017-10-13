@@ -114,7 +114,7 @@ namespace LightningGE
 			return VertexBufferPtr();
 		}
 
-		ShaderPtr D3D12Device::CreateShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)
+		SharedShaderPtr D3D12Device::CreateShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)
 		{
 			return m_shaderMgr->GetShader(type, shaderName, defineMap);
 		}

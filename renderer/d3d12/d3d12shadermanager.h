@@ -10,7 +10,7 @@ namespace LightningGE
 		public:
 			D3D12ShaderManager(const SharedFileSystemPtr& fs);
 		protected:
-			ShaderPtr CreateConcreteShader(ShaderType type)override;
+			SharedShaderPtr CreateConcreteShader(ShaderType type)override;
 		};
 	}
 }

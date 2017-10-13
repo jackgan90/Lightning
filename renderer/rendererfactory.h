@@ -11,12 +11,12 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		using WindowSystem::WindowPtr;
+		using WindowSystem::SharedWindowPtr;
 		using Foundation::SharedFileSystemPtr;
 		class LIGHTNINGGE_RENDERER_API RendererFactory : public Foundation::Singleton<RendererFactory>
 		{
 		public:
-			UniqueRendererPtr CreateRenderer(const WindowPtr& pWindow, const SharedFileSystemPtr& fs)const;
+			UniqueRendererPtr CreateRenderer(const SharedWindowPtr& pWindow, const SharedFileSystemPtr& fs)const;
 		};
 	}
 }

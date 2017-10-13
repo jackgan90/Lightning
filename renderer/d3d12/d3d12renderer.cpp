@@ -35,7 +35,7 @@ namespace LightningGE
 			REPORT_LIVE_OBJECTS;
 		}
 
-		D3D12Renderer::D3D12Renderer(const WindowPtr& pWindow, const SharedFileSystemPtr& fs) : Renderer(fs)
+		D3D12Renderer::D3D12Renderer(const SharedWindowPtr& pWindow, const SharedFileSystemPtr& fs) : Renderer(fs)
 			,m_clearColor(0.5f, 0.5f, 0.5f, 1.0f)
 		{
 #ifndef NDEBUG
@@ -117,7 +117,7 @@ namespace LightningGE
 			m_device = std::make_unique<D3D12Device>(pDevice, m_fs);
 		}
 
-		void D3D12Renderer::InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, const WindowPtr& pWindow)
+		void D3D12Renderer::InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, const SharedWindowPtr& pWindow)
 		{
 			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
 			UINT sampleCount = 1;

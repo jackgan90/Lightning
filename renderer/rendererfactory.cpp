@@ -7,7 +7,7 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		UniqueRendererPtr RendererFactory::CreateRenderer(const WindowPtr& pWindow, const SharedFileSystemPtr& fs)const
+		UniqueRendererPtr RendererFactory::CreateRenderer(const SharedWindowPtr& pWindow, const SharedFileSystemPtr& fs)const
 		{
 #ifdef LIGHTNINGGE_USE_D3D12
 			//return std::make_shared<D3D12Renderer>(pWindow);

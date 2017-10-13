@@ -25,7 +25,7 @@ namespace LightningGE
 			virtual DepthStencilStatePtr CreateDepthStencilState() = 0;
 			virtual PipelineStateObjectPtr CreatePipelineStateObject() = 0;
 			virtual VertexBufferPtr CreateVertexBuffer() = 0;
-			virtual ShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap) = 0;
+			virtual SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap) = 0;
 			virtual RasterizerStatePtr CreateRasterizerState() = 0;
 		};
 		typedef std::shared_ptr<IDevice> SharedDevicePtr;

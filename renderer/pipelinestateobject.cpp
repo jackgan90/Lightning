@@ -35,7 +35,7 @@ namespace LightningGE
 			return true;
 		}
 
-		bool PipelineStateObject::ApplyShader(ShaderType shaderType, const ShaderPtr & shader)
+		bool PipelineStateObject::ApplyShader(ShaderType shaderType, const SharedShaderPtr & shader)
 		{
 			auto oldShaderIt = m_shaders.find(shaderType);
 			m_shaders[shaderType] = shader;
@@ -60,7 +60,7 @@ namespace LightningGE
 			return m_rasterizerState;
 		}
 
-		ShaderPtr PipelineStateObject::GetShader(ShaderType type) const
+		SharedShaderPtr PipelineStateObject::GetShader(ShaderType type) const
 		{
 			auto it = m_shaders.find(type);
 			return it == m_shaders.end() ? nullptr : it->second;

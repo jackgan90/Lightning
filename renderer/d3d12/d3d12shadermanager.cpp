@@ -10,9 +10,9 @@ namespace LightningGE
 
 		}
 
-		ShaderPtr D3D12ShaderManager::CreateConcreteShader(ShaderType type)
+		SharedShaderPtr D3D12ShaderManager::CreateConcreteShader(ShaderType type)
 		{
-			return ShaderPtr(new D3D12Shader(type));
+			return SharedShaderPtr(new D3D12Shader(type));
 		}
 
 	}

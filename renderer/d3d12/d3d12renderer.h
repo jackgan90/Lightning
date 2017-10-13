@@ -22,13 +22,13 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		using WindowSystem::WindowPtr;
+		using WindowSystem::SharedWindowPtr;
 		using Microsoft::WRL::ComPtr;
 		class LIGHTNINGGE_RENDERER_API D3D12Renderer : public Renderer
 		{
 		public:
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-			D3D12Renderer(const WindowPtr& pContext, const SharedFileSystemPtr& fs);
+			D3D12Renderer(const SharedWindowPtr& pContext, const SharedFileSystemPtr& fs);
 			~D3D12Renderer()override;
 			IDevice* GetDevice()override;
 			IRenderTargetManager* GetRenderTargetManager()override;
@@ -45,7 +45,7 @@ namespace LightningGE
 		private:
 			void WaitForPreviousFrame();
 			void InitDevice(ComPtr<IDXGIFactory4> dxgiFactory);
-			void InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, const WindowPtr& pWindow);
+			void InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, const SharedWindowPtr& pWindow);
 			void CreateFences();
 			std::unique_ptr<D3D12Device> m_device;
 			std::unique_ptr<D3D12SwapChain> m_swapChain;

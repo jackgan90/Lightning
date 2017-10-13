@@ -15,10 +15,10 @@ namespace LightningGE
 		public:
 			WindowManager();
 			~WindowManager();
-			WindowPtr MakeWindow();
-			std::vector<WindowPtr> GetAllWindows()const;
+			SharedWindowPtr MakeWindow();
+			std::vector<SharedWindowPtr> GetAllWindows()const;
 		private:
-			std::unordered_map<WINDOWID, WindowPtr> m_windows;
+			std::unordered_map<WINDOWID, SharedWindowPtr> m_windows;
 			WINDOWID m_currentID;
 		};
 	}

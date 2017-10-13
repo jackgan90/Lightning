@@ -34,6 +34,6 @@ namespace LightningGE
 		protected:
 			IWindow() {};
 		};
-		typedef std::shared_ptr<IWindow> WindowPtr;
+		typedef std::shared_ptr<IWindow> SharedWindowPtr;
 	}
 }
