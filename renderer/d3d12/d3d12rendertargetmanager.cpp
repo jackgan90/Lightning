@@ -5,7 +5,7 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		D3D12RenderTargetManager::D3D12RenderTargetManager(std::shared_ptr<D3D12Device> pDevice) :m_pDevice(pDevice)
+		D3D12RenderTargetManager::D3D12RenderTargetManager(D3D12Device* pDevice) :m_pDevice(pDevice)
 			,m_currentID(1)
 		{
 
@@ -13,7 +13,7 @@ namespace LightningGE
 
 		D3D12RenderTargetManager::~D3D12RenderTargetManager()
 		{
-
+			m_pDevice = nullptr;
 		}
 
 

@@ -39,7 +39,7 @@ namespace LightningGE
 		void D3D12SwapChain::BindRenderTargets()
 		{
 			HRESULT hr;
-			auto d3ddevice = std::static_pointer_cast<D3D12Device>(m_renderer->GetDevice());
+			auto d3ddevice = static_cast<D3D12Device*>(m_renderer->GetDevice());
 			auto nativeDevice = d3ddevice->GetNativeDevice();
 			D3D12_DESCRIPTOR_HEAP_DESC desc{};
 			int renderTargetCount = GetBufferCount();
@@ -55,7 +55,7 @@ namespace LightningGE
 			CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(pHeapInfo->cpuHeapStart);
 
 			ComPtr<ID3D12Resource>* swapChainTargets = new ComPtr<ID3D12Resource>[renderTargetCount];
-			auto rtMgr = std::static_pointer_cast<D3D12RenderTargetManager>(m_renderer->GetRenderTargetManager());
+			auto rtMgr = static_cast<D3D12RenderTargetManager*>(m_renderer->GetRenderTargetManager());
 			for (int i = 0; i < renderTargetCount; i++)
 			{
 				hr = m_swapChain->GetBuffer(i, IID_PPV_ARGS(&swapChainTargets[i]));
@@ -77,7 +77,7 @@ namespace LightningGE
 			auto it = m_renderTargets.find(bufferIndex);
 			if (it == m_renderTargets.end())
 				return RenderTargetPtr();
-			return std::static_pointer_cast<D3D12RenderTargetManager>(m_renderer->GetRenderTargetManager())->GetRenderTarget(it->second);
+			return static_cast<D3D12RenderTargetManager*>(m_renderer->GetRenderTargetManager())->GetRenderTarget(it->second);
 		}
 	}
 }

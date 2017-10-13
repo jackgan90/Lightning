@@ -30,9 +30,8 @@ namespace LightningGE
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 			D3D12Renderer(const WindowPtr& pContext, const SharedFileSystemPtr& fs);
 			~D3D12Renderer()override;
-			SharedDevicePtr GetDevice()override;
-			SharedSwapChainPtr GetSwapChain()override;
-			SharedRenderTargetManagerPtr GetRenderTargetManager()override;
+			IDevice* GetDevice()override;
+			IRenderTargetManager* GetRenderTargetManager()override;
 			void SetClearColor(const ColorF& color)override;
 			void ApplyPipelineStateObject(const PipelineStateObjectPtr& pso)override;
 			D3D12DescriptorHeapManager* GetDescriptorHeapManager()const noexcept
@@ -48,9 +47,9 @@ namespace LightningGE
 			void InitDevice(ComPtr<IDXGIFactory4> dxgiFactory);
 			void InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, const WindowPtr& pWindow);
 			void CreateFences();
-			std::shared_ptr<D3D12Device> m_device;
-			std::shared_ptr<D3D12SwapChain> m_swapChain;
-			std::shared_ptr<D3D12RenderTargetManager> m_rtMgr;
+			std::unique_ptr<D3D12Device> m_device;
+			std::unique_ptr<D3D12SwapChain> m_swapChain;
+			std::unique_ptr<D3D12RenderTargetManager> m_rtMgr;
 			std::vector<ComPtr<ID3D12Fence>> m_fences;
 			std::vector<UINT64> m_fenceValues;
 			std::unique_ptr<D3D12DescriptorHeapManager> m_descriptorMgr;

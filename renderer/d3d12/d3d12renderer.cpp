@@ -49,7 +49,7 @@ namespace LightningGE
 			}
 			InitDevice(dxgiFactory);
 			m_descriptorMgr = std::make_unique<D3D12DescriptorHeapManager>(m_device->m_device);
-			m_rtMgr = std::make_shared<D3D12RenderTargetManager>(m_device);
+			m_rtMgr = std::make_unique<D3D12RenderTargetManager>(m_device.get());
 			InitSwapChain(dxgiFactory, pWindow);
 			
 			CreateFences();
@@ -114,7 +114,7 @@ namespace LightningGE
 			{
 				throw DeviceInitException("Failed to create d3d12 device!");
 			}
-			m_device = std::make_shared<D3D12Device>(pDevice, m_fs);
+			m_device = std::make_unique<D3D12Device>(pDevice, m_fs);
 		}
 
 		void D3D12Renderer::InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, const WindowPtr& pWindow)
@@ -161,7 +161,7 @@ namespace LightningGE
 				&swapChainDesc, &tempSwapChain);
 			ComPtr<IDXGISwapChain3> swapChain;
 			tempSwapChain.As(&swapChain);
-			m_swapChain = std::make_shared<D3D12SwapChain>(swapChain, this);
+			m_swapChain = std::make_unique<D3D12SwapChain>(swapChain, this);
 		}
 
 		void D3D12Renderer::CreateFences()
@@ -242,19 +242,14 @@ namespace LightningGE
 
 		}
 
-		SharedDevicePtr D3D12Renderer::GetDevice()
+		IDevice* D3D12Renderer::GetDevice()
 		{
-			return m_device;
+			return m_device.get();
 		}
 
-		SharedSwapChainPtr D3D12Renderer::GetSwapChain()
+		IRenderTargetManager* D3D12Renderer::GetRenderTargetManager()
 		{
-			return m_swapChain;
-		}
-
-		SharedRenderTargetManagerPtr D3D12Renderer::GetRenderTargetManager()
-		{
-			return m_rtMgr;
+			return m_rtMgr.get();
 		}
 
 
