@@ -16,6 +16,8 @@ namespace LightningGE
 		{
 		public:
 			friend class D3D12Renderer;
+			//we have to use raw pointer,because at the time the swap chain is created, D3D12Renderer is not constructed successfully yet
+			//so there's actually no shared pointer pointed to it.Passing a smart pointer here will cause error
 			D3D12SwapChain(ComPtr<IDXGISwapChain3> pSwapChain, D3D12Renderer* pRenderer);
 			~D3D12SwapChain()override;
 			bool Present()override;

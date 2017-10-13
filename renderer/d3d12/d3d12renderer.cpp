@@ -28,10 +28,10 @@ namespace LightningGE
 			m_fenceEvent = nullptr;
 			//Note:we should release resources in advance to make REPORT_LIVE_OBJECTS work correctly because if we let the share pointer
 			//destructor run out of the scope,we cannot trace the objects 
-			SAFE_DELETE(m_descriptorMgr);
-			SAFE_DELETE(m_rtMgr);
-			SAFE_DELETE(m_swapChain);
-			SAFE_DELETE(m_device);
+			m_descriptorMgr.reset();
+			m_rtMgr.reset();
+			m_swapChain.reset();
+			m_device.reset();
 			REPORT_LIVE_OBJECTS;
 		}
 
@@ -48,8 +48,8 @@ namespace LightningGE
 				throw DeviceInitException("Failed to create DXGI factory!");
 			}
 			InitDevice(dxgiFactory);
-			m_descriptorMgr = new D3D12DescriptorHeapManager(m_device->m_device);
-			m_rtMgr = new D3D12RenderTargetManager(m_device);
+			m_descriptorMgr = std::make_unique<D3D12DescriptorHeapManager>(m_device->m_device);
+			m_rtMgr = std::make_shared<D3D12RenderTargetManager>(m_device);
 			InitSwapChain(dxgiFactory, pWindow);
 			
 			CreateFences();
@@ -114,7 +114,7 @@ namespace LightningGE
 			{
 				throw DeviceInitException("Failed to create d3d12 device!");
 			}
-			m_device = new D3D12Device(pDevice, m_fs);
+			m_device = std::make_shared<D3D12Device>(pDevice, m_fs);
 		}
 
 		void D3D12Renderer::InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, const WindowPtr& pWindow)
@@ -161,7 +161,7 @@ namespace LightningGE
 				&swapChainDesc, &tempSwapChain);
 			ComPtr<IDXGISwapChain3> swapChain;
 			tempSwapChain.As(&swapChain);
-			m_swapChain = new D3D12SwapChain(swapChain, this);
+			m_swapChain = std::make_shared<D3D12SwapChain>(swapChain, this);
 		}
 
 		void D3D12Renderer::CreateFences()
@@ -242,17 +242,17 @@ namespace LightningGE
 
 		}
 
-		IDevice* D3D12Renderer::GetDevice()
+		SharedDevicePtr D3D12Renderer::GetDevice()
 		{
 			return m_device;
 		}
 
-		ISwapChain* D3D12Renderer::GetSwapChain()
+		SharedSwapChainPtr D3D12Renderer::GetSwapChain()
 		{
 			return m_swapChain;
 		}
 
-		IRenderTargetManager* D3D12Renderer::GetRenderTargetManager()
+		SharedRenderTargetManagerPtr D3D12Renderer::GetRenderTargetManager()
 		{
 			return m_rtMgr;
 		}

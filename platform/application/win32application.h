@@ -13,7 +13,7 @@ namespace LightningGE
 	{
 		using WindowSystem::WindowPtr;
 		using WindowSystem::WindowManager;
-		using Renderer::IRenderer;
+		using Renderer::UniqueRendererPtr;
 		class LIGHTNINGGE_PLATFORM_API Win32Application : public Application
 		{
 		public:
@@ -22,7 +22,7 @@ namespace LightningGE
 			int Run()override;
 		protected:
 			WindowPtr CreateMainWindow()override;
-			IRenderer* CreateRenderer()override;
+			UniqueRendererPtr CreateRenderer()override;
 		};
 	}
 }

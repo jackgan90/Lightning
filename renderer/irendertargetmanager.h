@@ -18,6 +18,7 @@ namespace LightningGE
 
 			virtual ~IRenderTargetManager() = default;
 		};
+		typedef std::shared_ptr<IRenderTargetManager> SharedRenderTargetManagerPtr;
 
 		typedef std::unordered_map<RenderTargetID, RenderTargetPtr> RenderTargetMap;
 		class LIGHTNINGGE_RENDERER_API RenderTargetManager : public IRenderTargetManager

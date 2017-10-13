@@ -16,7 +16,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API RendererFactory : public Foundation::Singleton<RendererFactory>
 		{
 		public:
-			IRenderer* CreateRenderer(const WindowPtr& pWindow, const SharedFileSystemPtr& fs)const;
+			UniqueRendererPtr CreateRenderer(const WindowPtr& pWindow, const SharedFileSystemPtr& fs)const;
 		};
 	}
 }

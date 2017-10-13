@@ -37,7 +37,7 @@ namespace LightningGE
 			return m_windowMgr->MakeWindow();
 		}
 
-		IRenderer* Win32Application::CreateRenderer()
+		UniqueRendererPtr Win32Application::CreateRenderer()
 		{
 			return RendererFactory::Instance()->CreateRenderer(m_window, m_fs);
 		}

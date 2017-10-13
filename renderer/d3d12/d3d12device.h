@@ -29,7 +29,7 @@ namespace LightningGE
 			ComPtr<ID3D12Device> GetNativeDevice()const { return m_device; }
 		private:
 			SharedFileSystemPtr m_fs;
-			D3D12ShaderManager* m_shaderMgr;
+			std::unique_ptr<D3D12ShaderManager> m_shaderMgr;
 			ComPtr<ID3D12Device> m_device;
 			ComPtr<ID3D12CommandQueue> m_commandQueue;
 			std::vector<ComPtr<ID3D12CommandAllocator>> m_commandAllocators;

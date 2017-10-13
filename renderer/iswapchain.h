@@ -18,6 +18,6 @@ namespace LightningGE
 			//get corresponding render target
 			virtual RenderTargetPtr GetBufferRenderTarget(unsigned int bufferIndex) = 0;
 		};
-		typedef std::shared_ptr<ISwapChain> SwapChainPtr;
+		typedef std::shared_ptr<ISwapChain> SharedSwapChainPtr;
 	}
 }
