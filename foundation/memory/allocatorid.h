@@ -1,9 +1,12 @@
 #pragma once
 
-namespace memory
+namespace LightningGE
 {
-	enum AllocatorID
+	namespace Foundation
 	{
-		ALLOCATOR_ID_BASE,
-	};
+		enum AllocatorID
+		{
+			ALLOCATOR_ID_BASE,
+		};
+	}
 }

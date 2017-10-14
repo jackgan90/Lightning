@@ -1,6 +1,8 @@
 #pragma once
+#include <memory>
 #include "filesystem.h"
 #include "ishadermanager.h"
+#include "stackallocator.h"
 
 namespace LightningGE
 {
@@ -14,10 +16,12 @@ namespace LightningGE
 		public:
 			ShaderManager(const SharedFileSystemPtr& fs);
 			SharedShaderPtr GetShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)override;
+			IMemoryAllocator* GetCompileAllocator()const override{ return m_compileAllocator.get();}
 		protected:
 			virtual SharedShaderPtr CreateConcreteShader(ShaderType type) = 0;
 			ShaderMap m_shaders;
 			SharedFileSystemPtr m_fs;
+			std::unique_ptr<IMemoryAllocator> m_compileAllocator;
 		};
 	}
 }

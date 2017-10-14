@@ -22,8 +22,10 @@ namespace LightningGE
 		using Foundation::logger;
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
+		using Foundation::StackAllocator;
 		D3D12Device::D3D12Device(ComPtr<ID3D12Device> pDevice, const SharedFileSystemPtr& fs):m_fs(fs)
 		{
+			m_smallObjAllocator = std::make_unique<StackAllocator>();
 			m_device = pDevice;
 			D3D12_COMMAND_QUEUE_DESC desc = {};
 			HRESULT hr = m_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&m_commandQueue));
@@ -69,8 +71,7 @@ namespace LightningGE
 			m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 			if (pRects && rectCount)
 			{
-				//TODO here may new a few small objects ,consider use memory allocator to boost performance
-				D3D12_RECT* d3dRect = new D3D12_RECT[rectCount];
+				D3D12_RECT* d3dRect = static_cast<D3D12_RECT*>(ALLOC(m_smallObjAllocator, sizeof(D3D12_RECT) * rectCount));
 				for (int i = 0; i < rectCount; i++)
 				{
 					d3dRect[i].left = pRects[i].left();
@@ -79,7 +80,7 @@ namespace LightningGE
 					d3dRect[i].bottom = pRects[i].bottom();
 				}
 				m_commandList->ClearRenderTargetView(rtvHandle, clearColor, rectCount, d3dRect);
-				delete[] d3dRect;
+				DEALLOC(m_smallObjAllocator, d3dRect);
 			}
 			else
 			{

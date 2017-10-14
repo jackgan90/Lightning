@@ -7,17 +7,20 @@
 
 #define DECLARE_ALLOCATOR_INSTANCE_MEMBER(className) className m_Instance##className;
 
-namespace memory
+namespace LightningGE
 {
-	class MEMORY_API AllocatorManager : public LightningGE::Foundation::Singleton<AllocatorManager>
+	namespace Foundation
 	{
-	public:
-		friend class LightningGE::Foundation::Singleton<AllocatorManager>;
-		IMemoryAllocator* GetAllocator(const AllocatorID allocatorId);
-		~AllocatorManager(){}
-	private:
-		AllocatorManager(){}
-		typedef std::unordered_map<AllocatorID, IMemoryAllocator*> AllocatorMap;
-	};	
+		class MEMORY_API AllocatorManager : public LightningGE::Foundation::Singleton<AllocatorManager>
+		{
+		public:
+			friend class LightningGE::Foundation::Singleton<AllocatorManager>;
+			IMemoryAllocator* GetAllocator(const AllocatorID allocatorId);
+			~AllocatorManager(){}
+		private:
+			AllocatorManager(){}
+			typedef std::unordered_map<AllocatorID, IMemoryAllocator*> AllocatorMap;
+		};	
+	}
 
 }

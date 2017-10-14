@@ -10,6 +10,7 @@ namespace LightningGE
 	namespace Renderer
 	{
 		using Utility::HashableObject;
+		class IShaderManager;
 		enum ShaderType
 		{
 			SHADER_TYPE_VERTEX,
@@ -41,13 +42,15 @@ namespace LightningGE
 		{
 		public:
 			static size_t Hash(const ShaderType& type, const std::string& shaderName, const ShaderDefine& defineMap);
-			Shader();
+			Shader(IShaderManager* manager);
+			~Shader()override;
 			void SetEntryPoint(const std::string& entryPoint)override;
 			void DefineMacros(const ShaderDefine& define)override;
 		protected:
 			size_t CalculateHashInternal()override;
 			std::string m_entryPoint;
 			ShaderDefine m_macros;
+			IShaderManager* m_shaderMgr;
 		};
 	}
 }

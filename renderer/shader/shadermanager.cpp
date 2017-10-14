@@ -15,10 +15,11 @@ namespace LightningGE
 		using Foundation::FileAccess;
 		using Foundation::logger;
 		using Foundation::LogLevel;
-
+		using Foundation::StackAllocator;
 		ShaderManager::ShaderManager(const SharedFileSystemPtr& fs)
 		{
 			m_fs = fs;
+			m_compileAllocator = std::make_unique<StackAllocator>();
 		}
 
 		SharedShaderPtr ShaderManager::GetShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)

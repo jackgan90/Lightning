@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include "idevice.h"
+#include "stackallocator.h"
 #include "filesystem.h"
 #include "d3d12shadermanager.h"
 
@@ -34,6 +35,7 @@ namespace LightningGE
 			ComPtr<ID3D12CommandQueue> m_commandQueue;
 			std::vector<ComPtr<ID3D12CommandAllocator>> m_commandAllocators;
 			ComPtr<ID3D12GraphicsCommandList> m_commandList;
+			std::unique_ptr<IMemoryAllocator> m_smallObjAllocator;
 		};
 	}
 }

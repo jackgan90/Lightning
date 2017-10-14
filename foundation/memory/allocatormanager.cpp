@@ -1,10 +1,13 @@
 #include "allocatormanager.h"
 
 
-namespace memory
+namespace LightningGE
 {
-	IMemoryAllocator * AllocatorManager::GetAllocator(const AllocatorID allocatorId)
+	namespace Foundation
 	{
-		return nullptr;
+		IMemoryAllocator * AllocatorManager::GetAllocator(const AllocatorID allocatorId)
+		{
+			return nullptr;
+		}
 	}
 }

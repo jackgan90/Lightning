@@ -9,7 +9,9 @@ set(MEMORY_HEADERS	memory/memoryexportdef.h
 					memory/memorysystem.h
 					memory/leakfreeobject.h
 					memory/allocatorid.h
-					memory/poolallocator.h)
+					memory/poolallocator.h
+					memory/stackallocator.h
+					memory/stackallocator.cpp)
 
 set(MEMORY_SOURCES	memory/basememoryallocator.cpp
 					memory/allocatormanager.cpp

@@ -13,11 +13,15 @@ namespace LightningGE
 			return hash;
 		}
 
-		Shader::Shader():m_entryPoint("main")
+		Shader::Shader(IShaderManager* manager):m_entryPoint("main"), m_shaderMgr(manager)
 		{
 
 		}
 
+		Shader::~Shader()
+		{
+			m_shaderMgr = nullptr;
+		}
 
 		size_t Shader::CalculateHashInternal()
 		{

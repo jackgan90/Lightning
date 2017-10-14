@@ -3,17 +3,22 @@
 #include "allocatorid.h"
 #include "imemoryallocator.h"
 
-namespace memory
+namespace LightningGE
 {
-	//just a simple wrapper of system allocator,mainly design for hook allocation process
-	class MEMORY_API BaseMemoryAllocator : public IMemoryAllocator
+	namespace Foundation
 	{
-	public:
-		static const AllocatorID ClassID = AllocatorID::ALLOCATOR_ID_BASE;
-		BaseMemoryAllocator();
-		void* Allocate(size_t size, const char* fileName, const char* className, size_t line)override;
-		void Deallocate(void*)override;
-		void* AllocateArray(size_t size, const char* fileName, const char* className, size_t line)override;
-		void DeallocateArray(void*)override;
-	};
+		//just a simple wrapper of system allocator,mainly design for hook allocation process
+		class MEMORY_API BaseMemoryAllocator : public IMemoryAllocator
+		{
+		public:
+			static const AllocatorID ClassID = AllocatorID::ALLOCATOR_ID_BASE;
+			BaseMemoryAllocator();
+			void* Allocate(size_t size, const char* fileName, const char* className, size_t line)override;
+			void Deallocate(void*)override;
+		private:
+			typedef std::unordered_map<void*, MemoryInfo> AllocationMap;
+			AllocationMap m_allocationMap;
+
+		};
+	}
 }

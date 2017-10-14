@@ -1,6 +1,7 @@
 #pragma once
 #include <d3d12.h>
 #include <wrl/client.h>
+#include "d3d12shadermanager.h"
 #include "ishader.h"
 
 namespace LightningGE
@@ -11,7 +12,7 @@ namespace LightningGE
 		class D3D12Shader : public Shader
 		{
 		public:
-			D3D12Shader(ShaderType type);
+			D3D12Shader(ShaderType type, D3D12ShaderManager* manager);
 			~D3D12Shader()override;
 			std::string GetEntryPoint()const override; 
 			ShaderType GetType()const override;

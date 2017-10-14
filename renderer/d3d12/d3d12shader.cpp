@@ -11,7 +11,7 @@ namespace LightningGE
 		using Foundation::FilePointerType;
 		using Foundation::FileAnchor;
 
-		D3D12Shader::D3D12Shader(ShaderType type):Shader(), m_type(type)
+		D3D12Shader::D3D12Shader(ShaderType type, D3D12ShaderManager* manager):Shader(manager), m_type(type)
 			,m_name(""), m_compileError(""), m_smMajorVersion(5), m_smMinorVersion(0)
 #ifndef NDEBUG
 			,m_source("")
@@ -58,15 +58,16 @@ namespace LightningGE
 				m_compileError = ss.str();
 				return false;
 			}
+			auto memoryAllocator = m_shaderMgr->GetCompileAllocator();
 			file->SetFilePointer(FilePointerType::Read, FileAnchor::Begin, 0);
-			char* buffer = new char[static_cast<std::uint32_t>(size + 1)];
+			char* buffer = static_cast<char*>(ALLOC(memoryAllocator, size+1));
 			FileSize readSize = file->Read(buffer, size);
 			if (readSize < size)
 			{
 				std::stringstream ss;
 				ss << "Failed to read shader file.Shader name:" << file->GetPath() << ",file size:" << size << ",read size:" << readSize;
 				m_compileError = ss.str();
-				delete[] buffer;
+				DEALLOC(memoryAllocator, buffer);
 				return false;
 			}
 			buffer[size] = 0;
@@ -74,17 +75,18 @@ namespace LightningGE
 			size_t macroCount = define.GetMacroCount();
 			if (macroCount)
 			{
-				pMacros = new D3D_SHADER_MACRO[macroCount + 1];
+				size_t allocSize = sizeof(D3D_SHADER_MACRO) * (macroCount + 1);
+				pMacros = static_cast<D3D_SHADER_MACRO*>(ALLOC(memoryAllocator, allocSize));
 				std::memset(&pMacros[macroCount], 0, sizeof(D3D_SHADER_MACRO));
 				DefineMap defineMap = define.GetAllDefine();
 				size_t idx = 0;
 				for (auto it = defineMap.begin(); it != defineMap.end(); ++it,++idx)
 				{
 					const char* name = it->first.c_str();
-					pMacros[idx].Name = new char[std::strlen(name) + 1];
+					pMacros[idx].Name = static_cast<LPCSTR>(ALLOC(memoryAllocator, std::strlen(name)+1));
 					std::strcpy(const_cast<char*>(pMacros[idx].Name), name);
 					const char* definition = it->second.c_str();
-					pMacros[idx].Definition = new char[std::strlen(definition) + 1];
+					pMacros[idx].Definition = static_cast<LPCSTR>(ALLOC(memoryAllocator, std::strlen(definition)+1));
 					std::strcpy(const_cast<char*>(pMacros[idx].Definition), definition);
 				}
 			}
@@ -103,7 +105,7 @@ namespace LightningGE
 				shaderModel, flags1, flags2, &m_byteCode, &errorLog);
 			if (FAILED(hr))
 			{
-				delete[] buffer;
+				DEALLOC(memoryAllocator, buffer);
 				std::stringstream ss;
 				ss << "Compile shader " << file->GetPath() << " failed!";
 				if (macroCount)
@@ -112,22 +114,22 @@ namespace LightningGE
 					for (size_t i = 0; i < macroCount; i++)
 					{
 						ss << pMacros[i].Name << ":" << pMacros[i].Definition << std::endl;
-						delete[] pMacros[i].Name;
-						delete[] pMacros[i].Definition;
+						DEALLOC(memoryAllocator, static_cast<void*>(const_cast<char*>(pMacros[i].Name)));
+						DEALLOC(memoryAllocator, static_cast<void*>(const_cast<char*>(pMacros[i].Definition)));
 					}
 				}
 				if (pMacros)
 				{
-					delete[] pMacros;
+					DEALLOC(memoryAllocator, pMacros);
 				}
 				ss << "Detailed info:" << std::endl;
 				size_t compileErrorBufferSize = errorLog->GetBufferSize();
-				char* compileErrorBuffer = new char[compileErrorBufferSize + 1];
+				char* compileErrorBuffer = static_cast<char*>(ALLOC(memoryAllocator, compileErrorBufferSize));
 				std::memcpy(compileErrorBuffer, errorLog->GetBufferPointer(), compileErrorBufferSize);
 				compileErrorBuffer[compileErrorBufferSize] = 0;
 				ss << compileErrorBuffer;
 				m_compileError = ss.str();
-				delete[] compileErrorBuffer;
+				DEALLOC(memoryAllocator, compileErrorBuffer);
 				return false;
 			}
 
@@ -135,15 +137,15 @@ namespace LightningGE
 			m_source = buffer;
 #endif
 			m_name = file->GetName();
-			delete[] buffer;
+			memoryAllocator->Deallocate(buffer);
 			if (pMacros)
 			{
 				for (size_t i = 0; i < macroCount; i++)
 				{
-					delete[] pMacros[i].Name;
-					delete[] pMacros[i].Definition;
+					memoryAllocator->Deallocate(static_cast<void*>(const_cast<char*>(pMacros[i].Name)));
+					memoryAllocator->Deallocate(static_cast<void*>(const_cast<char*>(pMacros[i].Definition)));
 				}
-				delete[] pMacros;
+				memoryAllocator->Deallocate(pMacros);
 			}
 			return true;
 		}
