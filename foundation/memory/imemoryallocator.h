@@ -4,8 +4,10 @@
 #include "memoryexportdef.h"
 #include "memorymacros.h"
 
-#define ALLOC(allocator, size) \
-	(allocator)->Allocate((size), __FILE__, __FUNCTION__, __LINE__)
+#define ALLOC(allocator, size, type) \
+	static_cast<type*>((allocator)->Allocate((size), __FILE__, __FUNCTION__, __LINE__))
+
+#define ALLOC_ARRAY(allocator, arraySize, type) ALLOC(allocator, (arraySize)*sizeof(type), type)
 
 #define DEALLOC(allocator, pointer) \
 	(allocator)->Deallocate((pointer))
@@ -16,11 +18,13 @@ namespace LightningGE
 	{
 		struct MEMORY_API MemoryInfo
 		{
-			const char* className;
 			void* address;
 			size_t size;
+#ifndef NDEBUG
+			const char* className;
 			const char* fileName;
 			size_t line;
+#endif
 		};
 		class MEMORY_API IMemoryAllocator
 		{

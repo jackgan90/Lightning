@@ -71,7 +71,7 @@ namespace LightningGE
 			m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 			if (pRects && rectCount)
 			{
-				D3D12_RECT* d3dRect = static_cast<D3D12_RECT*>(ALLOC(m_smallObjAllocator, sizeof(D3D12_RECT) * rectCount));
+				D3D12_RECT* d3dRect = ALLOC_ARRAY(m_smallObjAllocator, rectCount, D3D12_RECT);
 				for (int i = 0; i < rectCount; i++)
 				{
 					d3dRect[i].left = pRects[i].left();

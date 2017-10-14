@@ -60,7 +60,7 @@ namespace LightningGE
 			}
 			auto memoryAllocator = m_shaderMgr->GetCompileAllocator();
 			file->SetFilePointer(FilePointerType::Read, FileAnchor::Begin, 0);
-			char* buffer = static_cast<char*>(ALLOC(memoryAllocator, size+1));
+			char* buffer = ALLOC_ARRAY(memoryAllocator, size+1, char);
 			FileSize readSize = file->Read(buffer, size);
 			if (readSize < size)
 			{
@@ -75,18 +75,17 @@ namespace LightningGE
 			size_t macroCount = define.GetMacroCount();
 			if (macroCount)
 			{
-				size_t allocSize = sizeof(D3D_SHADER_MACRO) * (macroCount + 1);
-				pMacros = static_cast<D3D_SHADER_MACRO*>(ALLOC(memoryAllocator, allocSize));
+				pMacros = ALLOC_ARRAY(memoryAllocator, macroCount + 1, D3D_SHADER_MACRO);
 				std::memset(&pMacros[macroCount], 0, sizeof(D3D_SHADER_MACRO));
 				DefineMap defineMap = define.GetAllDefine();
 				size_t idx = 0;
 				for (auto it = defineMap.begin(); it != defineMap.end(); ++it,++idx)
 				{
 					const char* name = it->first.c_str();
-					pMacros[idx].Name = static_cast<LPCSTR>(ALLOC(memoryAllocator, std::strlen(name)+1));
+					pMacros[idx].Name = ALLOC_ARRAY(memoryAllocator, std::strlen(name)+1, const char);
 					std::strcpy(const_cast<char*>(pMacros[idx].Name), name);
 					const char* definition = it->second.c_str();
-					pMacros[idx].Definition = static_cast<LPCSTR>(ALLOC(memoryAllocator, std::strlen(definition)+1));
+					pMacros[idx].Definition = ALLOC_ARRAY(memoryAllocator, std::strlen(definition)+1, const char);
 					std::strcpy(const_cast<char*>(pMacros[idx].Definition), definition);
 				}
 			}
@@ -114,8 +113,8 @@ namespace LightningGE
 					for (size_t i = 0; i < macroCount; i++)
 					{
 						ss << pMacros[i].Name << ":" << pMacros[i].Definition << std::endl;
-						DEALLOC(memoryAllocator, static_cast<void*>(const_cast<char*>(pMacros[i].Name)));
-						DEALLOC(memoryAllocator, static_cast<void*>(const_cast<char*>(pMacros[i].Definition)));
+						DEALLOC(memoryAllocator, const_cast<char*>(pMacros[i].Name));
+						DEALLOC(memoryAllocator, const_cast<char*>(pMacros[i].Definition));
 					}
 				}
 				if (pMacros)
@@ -124,7 +123,7 @@ namespace LightningGE
 				}
 				ss << "Detailed info:" << std::endl;
 				size_t compileErrorBufferSize = errorLog->GetBufferSize();
-				char* compileErrorBuffer = static_cast<char*>(ALLOC(memoryAllocator, compileErrorBufferSize));
+				char* compileErrorBuffer = ALLOC(memoryAllocator, compileErrorBufferSize, char);
 				std::memcpy(compileErrorBuffer, errorLog->GetBufferPointer(), compileErrorBufferSize);
 				compileErrorBuffer[compileErrorBufferSize] = 0;
 				ss << compileErrorBuffer;

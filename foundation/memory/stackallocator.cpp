@@ -73,10 +73,12 @@ namespace LightningGE
 				}
 				MemoryNode* node = new (reinterpret_cast<void*>(reinterpret_cast<size_t>(ret) + size)) MemoryNode;
 				node->basicInfo.address = ret;
+				node->basicInfo.size = size;
+#ifndef NDEBUG
 				node->basicInfo.className = className;
 				node->basicInfo.fileName = fileName;
 				node->basicInfo.line = line;
-				node->basicInfo.size = size;
+#endif
 				node->memoryStorePtr = pMemStore;
 				node->prevNode = top;
 				node->used = true;
@@ -143,8 +145,18 @@ namespace LightningGE
 			void StackAllocator::LogMemory(const char* const logName, const MemoryNode* pNode)
 			{
 				std::string typeStr;
-				logger.Log(LogLevel::Debug, "%s memory at %s class : %s, line:%d, size = %d.", logName,
-					pNode->basicInfo.fileName, pNode->basicInfo.className, pNode->basicInfo.line, pNode->basicInfo.size);
+#ifndef NDEBUG
+				const char* format = "%s memory at 0x%x, size = %d. file:%s, function : %s, line:%d.";
+#else
+				const char* format = "%s memory at 0x%x, size = %d.";
+#endif
+				logger.Log(LogLevel::Debug, format, logName, reinterpret_cast<size_t>(pNode->basicInfo.address), pNode->basicInfo.size
+#ifndef NDEBUG
+					, pNode->basicInfo.fileName, pNode->basicInfo.className, pNode->basicInfo.line);
+#else
+					);
+#endif
+
 			}
 
 			void StackAllocator::LogBlockUsage()const

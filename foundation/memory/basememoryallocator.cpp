@@ -14,11 +14,14 @@ namespace LightningGE
 		void* BaseMemoryAllocator::Allocate(size_t size, const char* fileName, const char* className, size_t line)
 		{
 			void* address = ::operator new(size);
-			MemoryInfo memoryInfo{	className,
-									address,
+			MemoryInfo memoryInfo{	address,
 									size,
+#ifndef NDEBUG
+									className,
 									fileName,
-									line};
+									line
+#endif
+			};
 
 			m_allocationMap[address] = memoryInfo;
 			m_allocatedSize += size;
