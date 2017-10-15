@@ -14,6 +14,10 @@ namespace LightningGE
 			~StackAllocator()override;
 			void* Allocate(size_t size, const char* fileName, const char* className, size_t line)override;
 			void Deallocate(void*)override;
+			size_t GetNonEmptyBlockCount()const;
+			bool IsAlignedAlloc()const { return m_alignAlloc; }
+			const size_t GetAlignment()const { return m_alignment; }
+			const size_t GetBlockSize()const { return m_blockSize; }
 #ifdef ENABLE_MEMORY_LOG
 			void LogBlockUsage()const;
 #endif

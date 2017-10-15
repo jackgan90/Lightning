@@ -15,7 +15,10 @@ namespace LightningGE
 			StackAllocator::StackAllocator(bool alignAlloc, size_t alignment, size_t blockSize):IMemoryAllocator()
 				,m_blockSize(blockSize), m_alignment(alignment), m_alignAlloc(alignAlloc)
 			{
-				//TODO add assertion
+				//alignment should be a power of 2
+				assert(alignment > 0 && (alignment & (alignment - 1)) == 0);
+				//if blockSize + alignment is less then sizeof(MemoryNode),then it's not possible to allocate any byte from a memory store
+				assert(blockSize > sizeof(MemoryNode));
 				MakeNewMemoryStore();
 			}
 
@@ -116,6 +119,17 @@ namespace LightningGE
 					m_memoryStore[storePtr] = memoryNode;
 				}
 			}
+
+			size_t StackAllocator::GetNonEmptyBlockCount() const
+			{
+				size_t count = 0;
+				for (auto it = m_memoryStore.cbegin(); it != m_memoryStore.cend(); ++it)
+				{
+					count += it->second == nullptr ? 0 : 1;
+				}
+				return count;
+			}
+
 			inline void * StackAllocator::MakeAlign(void * ptr)
 			{
 				return reinterpret_cast<void*>((reinterpret_cast<size_t>(ptr) & ~m_alignment) + m_alignment);

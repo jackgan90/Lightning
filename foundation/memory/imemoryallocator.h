@@ -32,6 +32,7 @@ namespace LightningGE
 			IMemoryAllocator(const IMemoryAllocator&) = delete;
 			IMemoryAllocator& operator=(const IMemoryAllocator&) = delete;
 			size_t GetAllocatedSize()const { return m_allocatedSize; };
+			size_t GetAllocatedCount()const { return m_allocatedCount; }
 			virtual ~IMemoryAllocator() 
 			{ 
 				assert(m_allocatedSize == 0 && m_allocatedCount == 0);
