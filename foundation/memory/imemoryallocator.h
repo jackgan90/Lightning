@@ -1,8 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <cassert>
-#include "memoryexportdef.h"
-#include "memorymacros.h"
+#include "foundationexportdef.h"
 
 #define ALLOC(allocator, size, type) \
 	static_cast<type*>((allocator)->Allocate((size), __FILE__, __FUNCTION__, __LINE__))
@@ -16,7 +15,7 @@ namespace LightningGE
 {
 	namespace Foundation
 	{
-		struct MEMORY_API MemoryInfo
+		struct LIGHTNINGGE_FOUNDATION_API MemoryInfo
 		{
 			void* address;
 			size_t size;
@@ -26,7 +25,7 @@ namespace LightningGE
 			size_t line;
 #endif
 		};
-		class MEMORY_API IMemoryAllocator
+		class LIGHTNINGGE_FOUNDATION_API IMemoryAllocator
 		{
 		public:
 			IMemoryAllocator() :m_allocatedSize(0), m_allocatedCount(0){}

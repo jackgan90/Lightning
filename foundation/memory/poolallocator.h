@@ -1,11 +1,12 @@
 #pragma once
+#include "foundationexportdef.h"
 #include "imemoryallocator.h"
 
 namespace LightningGE
 {
 	namespace Foundation
 	{
-		class MEMORY_API PoolAllocator : public IMemoryAllocator
+		class LIGHTNINGGE_FOUNDATION_API PoolAllocator : public IMemoryAllocator
 		{
 		public:	
 			PoolAllocator(const size_t size);

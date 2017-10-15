@@ -1,9 +1,7 @@
 project(foundation)
 message(STATUS "Configuring project foundation")
 
-set(MEMORY_HEADERS	memory/memoryexportdef.h
-					memory/memorymacros.h
-					memory/imemoryallocator.h
+set(MEMORY_HEADERS	memory/imemoryallocator.h
 					memory/basememoryallocator.h
 					memory/allocatormanager.h
 					memory/memorysystem.h
@@ -42,14 +40,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 if (WIN32)
-	add_definitions(-DLIGHTNINGGE_WIN32 
-					-DMEMORY_PLATFORM_WIN32)
+	add_definitions(-DLIGHTNINGGE_WIN32)
 endif()
 if(LIGHTNINGGE_USE_D3D12)
 	add_definitions(-DLIGHTNINGGE_USE_D3D12)
 endif()
 add_definitions(-DLIGHTNINGGE_INTERNAL_LOGGER
-				-DMEMORY_EXPORT
 				-DBOOST_FILESYSTEM_NO_DEPRECATED)
 
 define_dll_export_macro(FOUNDATION)

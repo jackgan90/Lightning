@@ -7,7 +7,7 @@ namespace LightningGE
 	namespace Foundation
 	{
 		//The memory layout of the memory store is like this:user mem0, memoryNode, user mem1, memoryNode, user mem2, memoryNode ...
-		class MEMORY_API StackAllocator : public IMemoryAllocator
+		class LIGHTNINGGE_FOUNDATION_API StackAllocator : public IMemoryAllocator
 		{
 		public:
 			StackAllocator(bool alignAlloc = true, size_t alignment = 16, size_t blockSize = 4096);

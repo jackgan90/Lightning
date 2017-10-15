@@ -8,7 +8,7 @@ namespace LightningGE
 	namespace Foundation
 	{
 		//just a simple wrapper of system allocator,mainly design for hook allocation process
-		class MEMORY_API BaseMemoryAllocator : public IMemoryAllocator
+		class LIGHTNINGGE_FOUNDATION_API BaseMemoryAllocator : public IMemoryAllocator
 		{
 		public:
 			static const AllocatorID ClassID = AllocatorID::ALLOCATOR_ID_BASE;
