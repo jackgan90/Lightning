@@ -1,20 +1,24 @@
+#include <cstdlib>
 #include <vector>
 #include <random>
 #include <tuple>
 #include <sstream>
+#include <iostream>
+#include <chrono>
 #include "catch.hpp"
 #include "stackallocator.h"
 
-TEST_CASE("Stack allocator allocate test.", "[StackAllocator]") {
+std::tuple<bool, size_t, size_t> params[] = {
+	std::make_tuple(true, 16, 4096),
+	std::make_tuple(true, 128, 4096),
+	std::make_tuple(true, 16, 8192),
+	std::make_tuple(false, 16, 4096),
+	std::make_tuple(false, 128, 4096),
+	std::make_tuple(false, 16, 8192),
+};
+
+TEST_CASE("Stack allocator allocate test.", "[StackAllocator function]") {
 	using LightningGE::Foundation::StackAllocator;
-	std::tuple<bool, size_t, size_t> params[] = {
-		std::make_tuple(true, 16, 4096),
-		std::make_tuple(true, 128, 4096),
-		std::make_tuple(true, 16, 8192),
-		std::make_tuple(false, 16, 4096),
-		std::make_tuple(false, 128, 4096),
-		std::make_tuple(false, 16, 8192),
-	};
 	auto paramCount = sizeof(params) / sizeof(std::tuple<bool, size_t, size_t>);
 	for (auto i = 0; i < paramCount; ++i)
 	{
@@ -23,7 +27,7 @@ TEST_CASE("Stack allocator allocate test.", "[StackAllocator]") {
 		auto blockSize = std::get<2>(params[i]);
 		std::stringstream ss;
 		ss << alignAlloc << alignment << blockSize;
-		auto allocator = new StackAllocator();
+		auto allocator = new StackAllocator(alignAlloc, alignment, blockSize);
 		SECTION("Single allocate and deallocate" + ss.str()) {
 			char* mem = ALLOC(allocator, 3000, char);
 			REQUIRE(allocator->GetAllocatedSize() == 3000);
@@ -108,4 +112,72 @@ TEST_CASE("Stack allocator allocate test.", "[StackAllocator]") {
 		}
 		delete allocator;
 	}
+}
+
+TEST_CASE("Stack allocator performance test", "[StackAllocator performance]") {
+	constexpr const int AllocateCount = 3000;
+	constexpr const int AllocateUnit = 100;
+	std::cout << "====================StackAllocator performance test start========================" << std::endl;
+	std::cout << "Allocate "<< AllocateUnit << " bytes " << AllocateCount << " times" << std::endl;
+	using std::chrono::duration;
+	using std::chrono::duration_cast;
+	void* memArray[AllocateCount];
+	auto paramCount = sizeof(params) / sizeof(std::tuple<bool, size_t, size_t>);
+	for (auto i = 0; i < paramCount; ++i)
+	{
+		auto alignAlloc = std::get<0>(params[i]);
+		auto alignment = std::get<1>(params[i]);
+		auto blockSize = std::get<2>(params[i]);
+		std::stringstream ss;
+		ss << alignAlloc << alignment << blockSize;
+		LightningGE::Foundation::StackAllocator allocator(alignAlloc, alignment, blockSize);
+		SECTION("PerfTest" + ss.str())
+		{
+			std::cout << "alignAlloc:" << std::boolalpha << alignAlloc << ",alignment:" << alignment << ",blockSize:" << blockSize << std::endl;
+			auto malloc_start = std::chrono::high_resolution_clock::now();
+			for (auto i = 0; i < AllocateCount; ++i)
+				memArray[i] = std::malloc(AllocateUnit);
+			auto malloc_end = std::chrono::high_resolution_clock::now();
+
+			std::cout << "[std::malloc allocation time:] " << duration_cast<duration<double>>(malloc_end - malloc_start).count() << std::endl;
+
+			auto free_start = std::chrono::high_resolution_clock::now();
+			for (auto i = 0; i < AllocateCount; ++i)
+				std::free(memArray[i]);
+			auto free_end = std::chrono::high_resolution_clock::now();
+
+			std::cout << "[std::free deallocation time:] " << duration_cast<duration<double>>(free_end - free_start).count() << std::endl;
+
+			auto new_start = std::chrono::high_resolution_clock::now();
+			for (auto i = 0; i < AllocateCount; ++i)
+				memArray[i] = reinterpret_cast<void*>(new char[AllocateUnit]);
+			auto new_end = std::chrono::high_resolution_clock::now();
+
+			std::cout << "[new allocation time:] " << duration_cast<duration<double>>(new_end - new_start).count() << std::endl;
+
+			auto delete_start = std::chrono::high_resolution_clock::now();
+			for (auto i = 0; i < AllocateCount; ++i)
+				delete[] memArray[i];
+			auto delete_end = std::chrono::high_resolution_clock::now();
+			std::cout << "[delete deallocation time:] " << duration_cast<duration<double>>(delete_end - delete_start).count() << std::endl;
+
+			auto allocator_alloc_start = std::chrono::high_resolution_clock::now();
+			for (auto i = 0; i < AllocateCount; ++i)
+				memArray[i] = ALLOC(&allocator, AllocateUnit, void);
+			auto allocator_alloc_end = std::chrono::high_resolution_clock::now();
+
+			std::cout << "[allocator allocation time:] " << duration_cast<duration<double>>(allocator_alloc_end - allocator_alloc_start).count() << std::endl;
+
+			auto allocator_dealloc_start = std::chrono::high_resolution_clock::now();
+			for (auto i = 0; i < AllocateCount; ++i)
+				DEALLOC(&allocator, memArray[i]);
+			auto allocator_dealloc_end = std::chrono::high_resolution_clock::now();
+
+			std::cout << "[allocator deallocation time:] " << duration_cast<duration<double>>(allocator_dealloc_end - allocator_dealloc_start).count() << std::endl;
+
+			std::cout << "====================StackAllocator performance test end==========================" << std::endl;
+		}
+	}
+
+
 }
