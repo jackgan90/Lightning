@@ -29,6 +29,14 @@ TEST_CASE("Stack allocator allocate test.", "[StackAllocator function]") {
 		std::stringstream ss;
 		ss << alignAlloc << alignment << blockSize;
 		auto allocator = new StackAllocator(alignAlloc, alignment, blockSize);
+		SECTION("Alignment test" + ss.str()) {
+			if (alignAlloc)
+			{
+				void* p = ALLOC(allocator, 100, void);
+				REQUIRE(reinterpret_cast<size_t>(p) % alignment == 0);
+				DEALLOC(allocator, p);
+			}
+		}
 		SECTION("Single allocate and deallocate" + ss.str()) {
 			char* mem = ALLOC(allocator, 3000, char);
 			REQUIRE(allocator->GetAllocatedSize() == 3000);
@@ -74,6 +82,10 @@ TEST_CASE("Stack allocator allocate test.", "[StackAllocator function]") {
 					auto blockCount = allocator->GetNonEmptyBlockCount();
 					if (blockCount == usedBlockCount)
 					{
+						CAPTURE(alignAlloc);
+						CAPTURE(alignment);
+						CAPTURE(blockSize);
+						CAPTURE(blockCount);
 						REQUIRE(allocator->GetAllocatedSize() == allocatedSize);
 						REQUIRE(allocator->GetAllocatedCount() == allocatedCount);
 					}

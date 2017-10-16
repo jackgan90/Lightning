@@ -49,7 +49,13 @@ namespace LightningGE
 				stack->bufferEnd = reinterpret_cast<size_t>(stack->buffer) + m_blockSize;
 				stack->allocCount = 0;
 				stack->nodes = new MemoryNode[m_internalMemoryNodeStep];
-				stack->topPointer = reinterpret_cast<size_t>(stack->buffer) + sizeof(size_t);
+				//according to c++ standard,the returned pointer of new always ensures enough space for a pointer decrement,so just
+				//MakeAlign won't cause heap corruption
+				if (m_alignAlloc)
+					stack->basePointer = MakeAlign(reinterpret_cast<size_t>(stack->buffer));
+				else
+					stack->basePointer = reinterpret_cast<size_t>(stack->buffer) + sizeof(MemoryNode**);
+				stack->topPointer = stack->basePointer;
 				stack->index = m_maxStack;
 				m_currentStack = m_maxStack;
 				m_stacks[m_maxStack++] = stack;
@@ -70,14 +76,34 @@ namespace LightningGE
 			{
 				unsigned int stackIndex = m_currentStack;
 				auto stack = m_stacks[stackIndex];
-				while (stackIndex < m_maxStack && (stack->topPointer + size >= stack->bufferEnd || stack->allocCount >= m_internalMemoryNodeStep))
+				size_t anchor;
+				if(!m_alignAlloc)
+					anchor = stack->topPointer;
+				else
+				{
+					if (stack->topPointer == stack->basePointer)
+					{
+						anchor = stack->topPointer;
+					}
+					else
+					{
+						anchor = MakeAlign(stack->topPointer);
+						while (anchor - stack->topPointer < sizeof(MemoryNode**))
+							anchor = MakeAlign(anchor);
+					}
+				}
+				while (stackIndex < m_maxStack && (anchor + size >= stack->bufferEnd || stack->allocCount >= m_internalMemoryNodeStep))
 				{
 					++stackIndex;
+					if (stackIndex >= m_maxStack)
+						break;
 					stack = m_stacks[stackIndex];
+					anchor = m_alignAlloc ? MakeAlign(stack->topPointer) : stack->topPointer;
 				}
 				if (stackIndex >= m_maxStack)
 				{
 					stack = CreateInternalStack();
+					anchor = stack->topPointer;
 				}
 				else
 				{
@@ -86,9 +112,9 @@ namespace LightningGE
 				}
 
 				auto& node = stack->nodes[stack->allocCount];
-				*(reinterpret_cast<MemoryNode**>(stack->topPointer) - 1) = &node;
+				*(reinterpret_cast<MemoryNode**>(anchor) - 1) = &node;
 				
-				void* mem = reinterpret_cast<void*>(stack->topPointer);
+				void* mem = reinterpret_cast<void*>(anchor);
 				node.basicInfo.address = mem;
 				node.basicInfo.size = size;
 #ifndef NDEBUG
@@ -100,7 +126,7 @@ namespace LightningGE
 				node.stackIndex = stack->index;
 				node.nodeIndex = stack->allocCount;
 				++stack->allocCount;
-				stack->topPointer += size + sizeof(size_t);
+				stack->topPointer = anchor + size;
 				m_allocatedSize += size;
 				++m_allocatedCount;
 
@@ -118,7 +144,7 @@ namespace LightningGE
 					--stack->allocCount;
 					--m_allocatedCount;
 					m_allocatedSize -= node->basicInfo.size;
-					stack->topPointer -= node->basicInfo.size + sizeof(size_t);
+					stack->topPointer = reinterpret_cast<size_t>(node->basicInfo.address);
 					if (node->nodeIndex > 0)
 					{
 						node = &stack->nodes[node->nodeIndex - 1];
@@ -133,40 +159,20 @@ namespace LightningGE
 
 			const size_t StackAllocator::GetNonEmptyBlockCount()const
 			{
-				size_t count = 0;
+				size_t count{0};
 				for (unsigned int i = 0; i < m_maxStack; ++i)
 				{
-					count += m_stacks[i]->topPointer == reinterpret_cast<size_t>(m_stacks[i]->buffer) + sizeof(size_t) ? 0 : 1;
+					count += m_stacks[i]->topPointer == m_stacks[i]->basePointer ? 0 : 1;
 				}
 				return count;
 			}
 
 
-			inline void * StackAllocator::MakeAlign(void * ptr)
+			inline size_t StackAllocator::MakeAlign(size_t ptr)const
 			{
-				return reinterpret_cast<void*>((reinterpret_cast<std::size_t>(ptr) & ~std::size_t(m_alignment - 1)) + m_alignment);
+				return (ptr & ~std::size_t(m_alignment - 1)) + m_alignment;
 			}
 
-			void* StackAllocator::FindPosition(void* pMemStore, size_t size)
-			{
-				return nullptr;
-				//auto top = m_memoryStore[pMemStore];
-				//void* anchor = top ? reinterpret_cast<void*>(top) : pMemStore;
-				//size_t anchorSize = top ? sizeof(MemoryNode) : 0;
-				//size_t start, end;
-				//if (m_alignAlloc)
-				//{
-				//	start = reinterpret_cast<size_t>(MakeAlign(reinterpret_cast<void*>(reinterpret_cast<size_t>(anchor) + anchorSize)));
-				//	end = reinterpret_cast<size_t>(pMemStore) + m_blockSize + m_alignment - sizeof(MemoryNode);
-				//}
-				//else
-				//{
-				//	start = reinterpret_cast<size_t>(reinterpret_cast<void*>(reinterpret_cast<size_t>(anchor) + anchorSize));
-				//	end = reinterpret_cast<size_t>(pMemStore) + m_blockSize - sizeof(MemoryNode);
-				//}
-				////assert(start - reinterpret_cast<size_t>(pMemStore) < m_blockSize);
-				//return end > start && size + sizeof(MemoryNode) <= end - start ? reinterpret_cast<void*>(start) : nullptr;
-			}
 
 		#ifdef ENABLE_MEMORY_LOG
 			void StackAllocator::LogMemory(const char* const logName, const MemoryNode* pNode)

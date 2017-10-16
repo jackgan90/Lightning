@@ -30,9 +30,7 @@ namespace LightningGE
 				bool used;
 			};
 			//align address pointed to by ptr to next alignment byte
-			inline void* MakeAlign(void* ptr);
-			//Find a suitable position in pMemStore to allocate size bytes
-			void* FindPosition(void* pMemStore, size_t size);
+			inline size_t MakeAlign(size_t ptr)const;
 			void ReallocStacks();
 	#ifdef ENABLE_MEMORY_LOG
 			void LogMemory(const char* const logName, const MemoryNode* pNode);
@@ -43,6 +41,7 @@ namespace LightningGE
 				MemoryNode* nodes;
 				size_t allocCount;
 				size_t topPointer;
+				size_t basePointer;
 				size_t bufferEnd;
 				size_t index;
 			};
