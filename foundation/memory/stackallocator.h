@@ -1,6 +1,6 @@
 #pragma once
 #include "imemoryallocator.h"
-#define ENABLE_MEMORY_LOG
+//#define ENABLE_MEMORY_LOG
 
 namespace LightningGE
 {

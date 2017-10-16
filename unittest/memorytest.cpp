@@ -5,6 +5,7 @@
 #include <sstream>
 #include <iostream>
 #include <chrono>
+#include <unordered_map>
 #include "catch.hpp"
 #include "stackallocator.h"
 
@@ -20,7 +21,7 @@ std::tuple<bool, size_t, size_t> params[] = {
 TEST_CASE("Stack allocator allocate test.", "[StackAllocator function]") {
 	using LightningGE::Foundation::StackAllocator;
 	auto paramCount = sizeof(params) / sizeof(std::tuple<bool, size_t, size_t>);
-	for (auto i = 0; i < paramCount; ++i)
+	for (unsigned int i = 0; i < paramCount; ++i)
 	{
 		auto alignAlloc = std::get<0>(params[i]);
 		auto alignment = std::get<1>(params[i]);
@@ -62,12 +63,12 @@ TEST_CASE("Stack allocator allocate test.", "[StackAllocator function]") {
 				std::default_random_engine engine;
 				std::uniform_int_distribution<int> dist;
 				std::vector<void*> allocMem;
-				for (auto i = 0; i < 100; i++)
+				for (unsigned int i = 0; i < 100; i++)
 					allocMem.push_back(ALLOC(allocator, dist(engine) % 1000, void));
 				auto allocatedSize = allocator->GetAllocatedSize();
 				auto allocatedCount = allocator->GetAllocatedCount();
 				auto usedBlockCount = allocator->GetNonEmptyBlockCount();
-				for (auto i = 0; i < allocMem.size(); i++)
+				for (unsigned int i = 0; i < allocMem.size(); i++)
 				{
 					DEALLOC(allocator, allocMem[i]);
 					auto blockCount = allocator->GetNonEmptyBlockCount();
@@ -93,7 +94,7 @@ TEST_CASE("Stack allocator allocate test.", "[StackAllocator function]") {
 				std::random_device rd;
 				std::mt19937 g(rd());
 				std::shuffle(allocMem.begin(), allocMem.end(), g);
-				for (auto i = 0; i < allocMem.size(); i++)
+				for (unsigned int i = 0; i < allocMem.size(); i++)
 					DEALLOC(allocator, allocMem[i]);
 				REQUIRE(allocator->GetAllocatedSize() == 0);
 				REQUIRE(allocator->GetAllocatedCount() == 0);
@@ -115,7 +116,7 @@ TEST_CASE("Stack allocator allocate test.", "[StackAllocator function]") {
 }
 
 TEST_CASE("Stack allocator performance test", "[StackAllocator performance]") {
-	constexpr const int AllocateCount = 3000;
+	constexpr const int AllocateCount = 30000;
 	constexpr const int AllocateUnit = 100;
 	std::cout << "====================StackAllocator performance test start========================" << std::endl;
 	std::cout << "Allocate "<< AllocateUnit << " bytes " << AllocateCount << " times" << std::endl;
@@ -123,7 +124,7 @@ TEST_CASE("Stack allocator performance test", "[StackAllocator performance]") {
 	using std::chrono::duration_cast;
 	void* memArray[AllocateCount];
 	auto paramCount = sizeof(params) / sizeof(std::tuple<bool, size_t, size_t>);
-	for (auto i = 0; i < paramCount; ++i)
+	for (unsigned int i = 0; i < paramCount; ++i)
 	{
 		auto alignAlloc = std::get<0>(params[i]);
 		auto alignment = std::get<1>(params[i]);
@@ -180,4 +181,23 @@ TEST_CASE("Stack allocator performance test", "[StackAllocator performance]") {
 	}
 
 
+}
+
+TEST_CASE("Unordered map get performance test") {
+	using LightningGE::Foundation::MemoryInfo;
+	using std::chrono::duration;
+	using std::chrono::duration_cast;
+	std::cout << "Unordered map operator[] performance test" << std::endl;
+	constexpr const int AllocateCount = 10;
+	std::unordered_map<void*, MemoryInfo*> info;
+	for (unsigned int i = 0; i < AllocateCount; ++i)
+		info.insert(std::make_pair(new char, new MemoryInfo));
+	auto map_traverse_start = std::chrono::high_resolution_clock::now();
+	for (auto it = info.begin(); it != info.end(); ++it)
+	{
+		auto val = info[it->first];
+	}
+	auto map_traverse_end = std::chrono::high_resolution_clock::now();
+
+	std::cout << "[map traverse time:] " << duration_cast<duration<double>>(map_traverse_end - map_traverse_start).count() << std::endl;
 }

@@ -1,5 +1,9 @@
 #include <cassert>
 #include <cstdlib>
+//For Debug purpose
+#include <chrono>
+#include <iostream>
+//For Debug purpose
 #include "stackallocator.h"
 #ifdef ENABLE_MEMORY_LOG
 #include "logger.h"
@@ -55,11 +59,10 @@ namespace LightningGE
 				for (auto it = m_memoryStore.begin(); it != m_memoryStore.end(); ++it)
 				{
 					auto pos = FindPosition(it->first, size);
-					if(pos)
+					if (pos)
 						return AllocateInMemoryStore(it->first, pos, size, fileName, className, line);
 				}
-				auto newMemStore = MakeNewMemoryStore();
-				return AllocateInMemoryStore(newMemStore, nullptr, size, fileName, className, line);
+				return AllocateInMemoryStore(MakeNewMemoryStore(), nullptr, size, fileName, className, line);
 			}
 
 			void* StackAllocator::AllocateInMemoryStore(void* pMemStore, void* pos, size_t size, 
