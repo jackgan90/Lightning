@@ -135,7 +135,7 @@ namespace LightningGE
 
 			inline void * StackAllocator::MakeAlign(void * ptr)
 			{
-				return reinterpret_cast<void*>((reinterpret_cast<size_t>(ptr) & ~m_alignment) + m_alignment);
+				return reinterpret_cast<void*>((reinterpret_cast<std::size_t>(ptr) & ~std::size_t(m_alignment - 1)) + m_alignment);
 			}
 
 			void* StackAllocator::FindPosition(void* pMemStore, size_t size)
