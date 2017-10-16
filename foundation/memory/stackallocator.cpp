@@ -21,118 +21,126 @@ namespace LightningGE
 			{
 				//alignment should be a power of 2
 				assert(alignment > 0 && (alignment & (alignment - 1)) == 0);
-				//if blockSize + alignment is less then sizeof(MemoryNode),then it's not possible to allocate any byte from a memory store
-				assert(blockSize > sizeof(MemoryNode));
-				MakeNewMemoryStore();
+				m_stacks = new InternalStack*[m_internalStackAllocStep];
+				m_maxStack = m_currentStack = 0;
+				m_reallocStep = m_internalStackAllocStep;
+				CreateInternalStack();
 			}
 
-			void* StackAllocator::MakeNewMemoryStore()
+			void StackAllocator::ReallocStacks()
 			{
-				void* store = nullptr;
-				if (m_alignAlloc)
-				{
-					store = std::malloc(m_blockSize + m_alignment);
-					m_memoryStore.insert(std::make_pair(store, nullptr));
-				}
-				else
-				{
-					store = std::malloc(m_blockSize);
-					m_memoryStore.insert(std::make_pair(store, nullptr));
-				}
-				return store;
+				auto originalStackSize = m_reallocStep;
+				m_reallocStep *= m_reallocStackFactor;
+				auto newStacks = new InternalStack*[m_reallocStep];
+				std::memcpy(newStacks, m_stacks, originalStackSize * sizeof(InternalStack*));
+				delete[] m_stacks;
+				m_stacks = newStacks;
 			}
 
+			StackAllocator::InternalStack* StackAllocator::CreateInternalStack()
+			{
+				//TODO resolve situation where there's not enough stack
+				if (m_maxStack >= m_reallocStep)
+				{
+					ReallocStacks();
+				}
+				auto stack = new InternalStack;
+				stack->buffer = new char[m_blockSize];
+				stack->bufferEnd = reinterpret_cast<size_t>(stack->buffer) + m_blockSize;
+				stack->allocCount = 0;
+				stack->nodes = new MemoryNode[m_internalMemoryNodeStep];
+				stack->topPointer = reinterpret_cast<size_t>(stack->buffer) + sizeof(size_t);
+				stack->index = m_maxStack;
+				m_currentStack = m_maxStack;
+				m_stacks[m_maxStack++] = stack;
+				return stack;
+			}
 
 			StackAllocator::~StackAllocator()
 			{
-				for (auto it = m_memoryStore.begin();it != m_memoryStore.end();++it)
+				for (unsigned int i = 0;i < m_maxStack;++i)
 				{
-					std::free(it->first);
+					delete[] m_stacks[i]->buffer;
+					delete[] m_stacks[i]->nodes;
 				}
-				m_memoryStore.clear();
-				m_allocationMap.clear();
+				delete[] m_stacks;
 			}
 
 			void* StackAllocator::Allocate(size_t size, const char* fileName, const char* className, size_t line)
 			{
-				assert(size <= m_blockSize - sizeof(MemoryNode));
-				for (auto it = m_memoryStore.begin(); it != m_memoryStore.end(); ++it)
+				unsigned int stackIndex = m_currentStack;
+				auto stack = m_stacks[stackIndex];
+				while (stackIndex < m_maxStack && (stack->topPointer + size >= stack->bufferEnd || stack->allocCount >= m_internalMemoryNodeStep))
 				{
-					auto pos = FindPosition(it->first, size);
-					if (pos)
-						return AllocateInMemoryStore(it->first, pos, size, fileName, className, line);
+					++stackIndex;
+					stack = m_stacks[stackIndex];
 				}
-				return AllocateInMemoryStore(MakeNewMemoryStore(), nullptr, size, fileName, className, line);
-			}
+				if (stackIndex >= m_maxStack)
+				{
+					stack = CreateInternalStack();
+				}
+				else
+				{
+					stack = m_stacks[stackIndex];
+					m_currentStack = stackIndex;
+				}
 
-			void* StackAllocator::AllocateInMemoryStore(void* pMemStore, void* pos, size_t size, 
-				const char* fileName, const char* className, size_t line)
-			{
-				auto top = m_memoryStore[pMemStore];
-				void* ret = pos;
-				if (!ret)	//only when pMemStore is a newly allocated store will pos be nullptr
-				{
-					if (m_alignAlloc)
-						ret = MakeAlign(pMemStore);
-					else
-						ret = pMemStore;
-				}
-				MemoryNode* node = new (reinterpret_cast<void*>(reinterpret_cast<size_t>(ret) + size)) MemoryNode;
-				node->basicInfo.address = ret;
-				node->basicInfo.size = size;
+				auto& node = stack->nodes[stack->allocCount];
+				*(reinterpret_cast<MemoryNode**>(stack->topPointer) - 1) = &node;
+				
+				void* mem = reinterpret_cast<void*>(stack->topPointer);
+				node.basicInfo.address = mem;
+				node.basicInfo.size = size;
 #ifndef NDEBUG
-				node->basicInfo.className = className;
-				node->basicInfo.fileName = fileName;
-				node->basicInfo.line = line;
+				node.basicInfo.fileName = fileName;
+				node.basicInfo.className = className;
+				node.basicInfo.line = line;
 #endif
-				node->memoryStorePtr = pMemStore;
-				node->prevNode = top;
-				node->used = true;
-				m_allocationMap[ret] = node;
-				m_memoryStore[pMemStore] = node;
-		#ifdef ENABLE_MEMORY_LOG
-				LogMemory("Allocate", node);
-		#endif
+				node.used = true;
+				node.stackIndex = stack->index;
+				node.nodeIndex = stack->allocCount;
+				++stack->allocCount;
+				stack->topPointer += size + sizeof(size_t);
 				m_allocatedSize += size;
-				m_allocatedCount++;
-				return ret;
+				++m_allocatedCount;
+
+				return mem;
 			}
 
 
 			void StackAllocator::Deallocate(void* p)
 			{
-				return;
-				auto itMemNode = m_allocationMap.find(p);
-				assert(itMemNode != m_allocationMap.end());
-				auto memoryNode = itMemNode->second;
-				auto storePtr = memoryNode->memoryStorePtr;
-				memoryNode->used = false;
-				auto top = m_memoryStore[storePtr];
-				if(memoryNode == top) //Only when we release the stack top element should we release other nodes
+				auto node = *(reinterpret_cast<MemoryNode**>(p) - 1);
+				node->used = false;
+				auto stack = m_stacks[node->stackIndex];
+				while (node->nodeIndex == stack->allocCount - 1 && !node->used)
 				{
-					while (memoryNode && !memoryNode->used)
+					--stack->allocCount;
+					--m_allocatedCount;
+					m_allocatedSize -= node->basicInfo.size;
+					stack->topPointer -= node->basicInfo.size + sizeof(size_t);
+					if (node->nodeIndex > 0)
 					{
-		#ifdef ENABLE_MEMORY_LOG
-						LogMemory("Deallocate", memoryNode);
-		#endif
-						m_allocatedSize -= memoryNode->basicInfo.size;
-						m_allocatedCount--;
-						m_allocationMap.erase(memoryNode->basicInfo.address);
-						memoryNode = memoryNode->prevNode;
+						node = &stack->nodes[node->nodeIndex - 1];
 					}
-					m_memoryStore[storePtr] = memoryNode;
+					else
+					{
+						m_currentStack = stack->index;
+						break;
+					}
 				}
 			}
 
-			size_t StackAllocator::GetNonEmptyBlockCount() const
+			const size_t StackAllocator::GetNonEmptyBlockCount()const
 			{
 				size_t count = 0;
-				for (auto it = m_memoryStore.cbegin(); it != m_memoryStore.cend(); ++it)
+				for (unsigned int i = 0; i < m_maxStack; ++i)
 				{
-					count += it->second == nullptr ? 0 : 1;
+					count += m_stacks[i]->topPointer == reinterpret_cast<size_t>(m_stacks[i]->buffer) + sizeof(size_t) ? 0 : 1;
 				}
 				return count;
 			}
+
 
 			inline void * StackAllocator::MakeAlign(void * ptr)
 			{
@@ -141,22 +149,23 @@ namespace LightningGE
 
 			void* StackAllocator::FindPosition(void* pMemStore, size_t size)
 			{
-				auto top = m_memoryStore[pMemStore];
-				void* anchor = top ? reinterpret_cast<void*>(top) : pMemStore;
-				size_t anchorSize = top ? sizeof(MemoryNode) : 0;
-				size_t start, end;
-				if (m_alignAlloc)
-				{
-					start = reinterpret_cast<size_t>(MakeAlign(reinterpret_cast<void*>(reinterpret_cast<size_t>(anchor) + anchorSize)));
-					end = reinterpret_cast<size_t>(pMemStore) + m_blockSize + m_alignment - sizeof(MemoryNode);
-				}
-				else
-				{
-					start = reinterpret_cast<size_t>(reinterpret_cast<void*>(reinterpret_cast<size_t>(anchor) + anchorSize));
-					end = reinterpret_cast<size_t>(pMemStore) + m_blockSize - sizeof(MemoryNode);
-				}
-				//assert(start - reinterpret_cast<size_t>(pMemStore) < m_blockSize);
-				return end > start && size + sizeof(MemoryNode) <= end - start ? reinterpret_cast<void*>(start) : nullptr;
+				return nullptr;
+				//auto top = m_memoryStore[pMemStore];
+				//void* anchor = top ? reinterpret_cast<void*>(top) : pMemStore;
+				//size_t anchorSize = top ? sizeof(MemoryNode) : 0;
+				//size_t start, end;
+				//if (m_alignAlloc)
+				//{
+				//	start = reinterpret_cast<size_t>(MakeAlign(reinterpret_cast<void*>(reinterpret_cast<size_t>(anchor) + anchorSize)));
+				//	end = reinterpret_cast<size_t>(pMemStore) + m_blockSize + m_alignment - sizeof(MemoryNode);
+				//}
+				//else
+				//{
+				//	start = reinterpret_cast<size_t>(reinterpret_cast<void*>(reinterpret_cast<size_t>(anchor) + anchorSize));
+				//	end = reinterpret_cast<size_t>(pMemStore) + m_blockSize - sizeof(MemoryNode);
+				//}
+				////assert(start - reinterpret_cast<size_t>(pMemStore) < m_blockSize);
+				//return end > start && size + sizeof(MemoryNode) <= end - start ? reinterpret_cast<void*>(start) : nullptr;
 			}
 
 		#ifdef ENABLE_MEMORY_LOG
