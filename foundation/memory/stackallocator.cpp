@@ -101,6 +101,7 @@ namespace LightningGE
 
 			void StackAllocator::Deallocate(void* p)
 			{
+				return;
 				auto itMemNode = m_allocationMap.find(p);
 				assert(itMemNode != m_allocationMap.end());
 				auto memoryNode = itMemNode->second;

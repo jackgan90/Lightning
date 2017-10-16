@@ -9,11 +9,13 @@ set(MEMORY_HEADERS	memory/imemoryallocator.h
 					memory/allocatorid.h
 					memory/poolallocator.h
 					memory/stackallocator.h
-					memory/stackallocator.cpp)
+					memory/stackallocator1.h)
 
 set(MEMORY_SOURCES	memory/basememoryallocator.cpp
 					memory/allocatormanager.cpp
-					memory/poolallocator.cpp)
+					memory/poolallocator.cpp
+					memory/stackallocator.cpp
+					memory/stackallocator1.cpp)
 
 set(HEADERS	common.h
 			timesystem.h
