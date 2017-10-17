@@ -136,6 +136,9 @@ namespace LightningGE
 				stack->topPointer = anchor + size + sizeof(MemoryNode**);
 				m_allocatedSize += size;
 				++m_allocatedCount;
+#ifdef ENABLE_MEMORY_LOG
+				LogMemory("Allocate", &node);
+#endif
 
 				return mem;
 			}
@@ -152,6 +155,9 @@ namespace LightningGE
 					--m_allocatedCount;
 					m_allocatedSize -= node->basicInfo.size;
 					stack->topPointer = reinterpret_cast<size_t>(node->basicInfo.address);
+#ifdef ENABLE_MEMORY_LOG
+					LogMemory("Deallocate", node);
+#endif
 					if (node->nodeIndex > 0)
 					{
 						node = &stack->nodes[node->nodeIndex - 1];
@@ -202,16 +208,13 @@ namespace LightningGE
 
 			void StackAllocator::LogBlockUsage()const
 			{
-				for (const auto it : m_memoryStore)
+				for (unsigned int i = 0;i < m_maxStack;++i)
 				{
-					size_t usedBytes = 0;
-					if (it.second)
-					{
-						usedBytes = reinterpret_cast<size_t>(it.second) + sizeof(MemoryNode) - reinterpret_cast<size_t>(it.first);
-					}
+					size_t usedBytes = m_stacks[i]->topPointer - m_stacks[i]->basePointer;
 
-					logger.Log(LogLevel::Debug, "Block %x use %d bytes.", reinterpret_cast<size_t>(it.first), usedBytes);
+					logger.Log(LogLevel::Debug, "Block 0x%x use %d bytes.", reinterpret_cast<size_t>(m_stacks[i]->buffer), usedBytes);
 				}
+				logger.Log(LogLevel::Debug, "Total block count:%d", m_maxStack);
 			}
 		#endif
 

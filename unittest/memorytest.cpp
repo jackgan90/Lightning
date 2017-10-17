@@ -155,7 +155,7 @@ TEST_CASE("Stack allocator allocate test.", "[StackAllocator function]") {
 		delete allocator;
 	}
 }
-
+//
 TEST_CASE("Stack allocator performance test", "[StackAllocator performance]") {
 	constexpr const int AllocateCount = 30000;
 	constexpr const int AllocateUnit = 100;
@@ -251,7 +251,6 @@ TEST_CASE("StackAllocator overflow test") {
 				mems[mems.size() - 1][arr_size - 1] = 12345678;
 				mems[mems.size() - 1][0] = 12345678;
 			}
-
 			for (auto it = mems.cbegin(); it != mems.cend(); ++it)
 			{
 				DEALLOC(&allocator, *it);
