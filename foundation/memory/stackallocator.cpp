@@ -68,6 +68,7 @@ namespace LightningGE
 				{
 					delete[] m_stacks[i]->buffer;
 					delete[] m_stacks[i]->nodes;
+					delete m_stacks[i];
 				}
 				delete[] m_stacks;
 			}
