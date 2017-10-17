@@ -75,6 +75,7 @@ namespace LightningGE
 
 			void* StackAllocator::Allocate(size_t size, const char* fileName, const char* className, size_t line)
 			{
+				assert(size <= m_blockSize - m_alignment && "StackAllocator is not able to allocate memory which size is bigger than m_blockSize - m_alignment");
 				unsigned int stackIndex = m_currentStack;
 				auto stack = m_stacks[stackIndex];
 				size_t anchor;
@@ -119,6 +120,7 @@ namespace LightningGE
 					m_currentStack = stackIndex;
 				}
 
+				assert(anchor + size < stack->bufferEnd && "Can't allocate memory of size size due to low block size!You should specify a bigger block size!");
 				auto& node = stack->nodes[stack->allocCount];
 				*(reinterpret_cast<MemoryNode**>(anchor) - 1) = &node;
 				

@@ -15,7 +15,7 @@ std::tuple<bool, size_t, size_t> params[] = {
 	std::make_tuple(true, 16, 8192),
 	std::make_tuple(false, 16, 4096),
 	std::make_tuple(false, 128, 4096),
-	std::make_tuple(false, 16, 65536 * 1024),
+	std::make_tuple(false, 16, 65536),
 };
 
 TEST_CASE("Stack allocator allocate test.", "[StackAllocator function]") {
@@ -28,22 +28,22 @@ TEST_CASE("Stack allocator allocate test.", "[StackAllocator function]") {
 		auto blockSize = std::get<2>(params[i]);
 		std::stringstream ss;
 		ss << alignAlloc << alignment << blockSize;
-		auto allocator = new StackAllocator(alignAlloc, alignment, blockSize);
+		StackAllocator allocator(alignAlloc, alignment, blockSize);
 		SECTION("Alignment test" + ss.str()) {
 			if (alignAlloc)
 			{
-				void* p = ALLOC(allocator, 100, void);
+				void* p = ALLOC(&allocator, 100, void);
 				REQUIRE(reinterpret_cast<size_t>(p) % alignment == 0);
-				DEALLOC(allocator, p);
+				DEALLOC(&allocator, p);
 			}
 		}
 		SECTION("Single allocate and deallocate" + ss.str()) {
-			char* mem = ALLOC(allocator, 3000, char);
-			REQUIRE(allocator->GetAllocatedSize() == 3000);
-			REQUIRE(allocator->GetAllocatedCount() == 1);
-			DEALLOC(allocator, mem);
-			REQUIRE(allocator->GetAllocatedSize() == 0);
-			REQUIRE(allocator->GetAllocatedCount() == 0);
+			char* mem = ALLOC(&allocator, 3000, char);
+			REQUIRE(allocator.GetAllocatedSize() == 3000);
+			REQUIRE(allocator.GetAllocatedCount() == 1);
+			DEALLOC(&allocator, mem);
+			REQUIRE(allocator.GetAllocatedSize() == 0);
+			REQUIRE(allocator.GetAllocatedCount() == 0);
 
 			struct TestStruct 
 			{
@@ -51,111 +51,110 @@ TEST_CASE("Stack allocator allocate test.", "[StackAllocator function]") {
 				std::uint8_t field1;
 				std::uint32_t field2;
 			};
-			TestStruct* ts = ALLOC_ARRAY(allocator, 100, TestStruct);
-			REQUIRE(allocator->GetAllocatedSize() == sizeof(TestStruct) * 100);
-			DEALLOC(allocator, ts);
-			REQUIRE(allocator->GetAllocatedCount() == 0);
-			REQUIRE(allocator->GetAllocatedSize() == 0);
+			TestStruct* ts = ALLOC_ARRAY(&allocator, 100, TestStruct);
+			REQUIRE(allocator.GetAllocatedSize() == sizeof(TestStruct) * 100);
+			DEALLOC(&allocator, ts);
+			REQUIRE(allocator.GetAllocatedCount() == 0);
+			REQUIRE(allocator.GetAllocatedSize() == 0);
 		}
 		SECTION("Deallocation order" + ss.str()) {
 			SECTION("Multiple allocation test") {
-				int* mem0 = ALLOC(allocator, sizeof(int) * 200, int);
-				char* mem1 = ALLOC(allocator, sizeof(char) * 150, char);
-				DEALLOC(allocator, mem0);
-				REQUIRE(allocator->GetAllocatedCount() == 2 );
-				REQUIRE(allocator->GetAllocatedSize() == (sizeof(int) * 200 + sizeof(char) * 150));
-				DEALLOC(allocator, mem1);
-				REQUIRE(allocator->GetAllocatedCount() == 0 );
-				REQUIRE(allocator->GetAllocatedSize() == 0);
+				int* mem0 = ALLOC(&allocator, sizeof(int) * 200, int);
+				char* mem1 = ALLOC(&allocator, sizeof(char) * 150, char);
+				DEALLOC(&allocator, mem0);
+				REQUIRE(allocator.GetAllocatedCount() == 2 );
+				REQUIRE(allocator.GetAllocatedSize() == (sizeof(int) * 200 + sizeof(char) * 150));
+				DEALLOC(&allocator, mem1);
+				REQUIRE(allocator.GetAllocatedCount() == 0 );
+				REQUIRE(allocator.GetAllocatedSize() == 0);
 
 				std::default_random_engine engine;
 				std::uniform_int_distribution<int> dist;
 				std::vector<void*> allocMem;
 				for (unsigned int i = 0; i < 100; i++)
-					allocMem.push_back(ALLOC(allocator, dist(engine) % 1000, void));
-				auto allocatedSize = allocator->GetAllocatedSize();
-				auto allocatedCount = allocator->GetAllocatedCount();
-				auto usedBlockCount = allocator->GetNonEmptyBlockCount();
+					allocMem.push_back(ALLOC(&allocator, dist(engine) % 1000, void));
+				auto allocatedSize = allocator.GetAllocatedSize();
+				auto allocatedCount = allocator.GetAllocatedCount();
+				auto usedBlockCount = allocator.GetNonEmptyBlockCount();
 				for (unsigned int i = 0; i < allocMem.size(); i++)
 				{
-					DEALLOC(allocator, allocMem[i]);
-					auto blockCount = allocator->GetNonEmptyBlockCount();
+					DEALLOC(&allocator, allocMem[i]);
+					auto blockCount = allocator.GetNonEmptyBlockCount();
 					if (blockCount == usedBlockCount)
 					{
 						CAPTURE(alignAlloc);
 						CAPTURE(alignment);
 						CAPTURE(blockSize);
 						CAPTURE(blockCount);
-						REQUIRE(allocator->GetAllocatedSize() == allocatedSize);
-						REQUIRE(allocator->GetAllocatedCount() == allocatedCount);
+						REQUIRE(allocator.GetAllocatedSize() == allocatedSize);
+						REQUIRE(allocator.GetAllocatedCount() == allocatedCount);
 					}
 					else
 					{
 						usedBlockCount = blockCount;
-						allocatedCount = allocator->GetAllocatedCount();
-						allocatedSize = allocator->GetAllocatedSize();
+						allocatedCount = allocator.GetAllocatedCount();
+						allocatedSize = allocator.GetAllocatedSize();
 					}
 				}
 				allocMem.clear();
-				REQUIRE(allocator->GetAllocatedSize() == 0);
-				REQUIRE(allocator->GetAllocatedCount() == 0);
+				REQUIRE(allocator.GetAllocatedSize() == 0);
+				REQUIRE(allocator.GetAllocatedCount() == 0);
 
 				for (auto i = 0; i < 100; i++)
-					allocMem.push_back(ALLOC(allocator, dist(engine) % 1000, void));
+					allocMem.push_back(ALLOC(&allocator, dist(engine) % 1000, void));
 
 				std::random_device rd;
 				std::mt19937 g(rd());
 				std::shuffle(allocMem.begin(), allocMem.end(), g);
 				for (unsigned int i = 0; i < allocMem.size(); i++)
-					DEALLOC(allocator, allocMem[i]);
-				REQUIRE(allocator->GetAllocatedSize() == 0);
-				REQUIRE(allocator->GetAllocatedCount() == 0);
+					DEALLOC(&allocator, allocMem[i]);
+				REQUIRE(allocator.GetAllocatedSize() == 0);
+				REQUIRE(allocator.GetAllocatedCount() == 0);
 				allocMem.clear();
 
 				//alloc then dealloc , alloc then dealloc
 				for (unsigned int i = 0; i < 100; ++i)
-					allocMem.push_back(ALLOC(allocator, dist(engine) % 333, void));
+					allocMem.push_back(ALLOC(&allocator, dist(engine) % 333, void));
 
 				for (unsigned int i = 0; i < 50; ++i)
 				{
-					DEALLOC(allocator, allocMem[i]);
-					allocMem[i] = ALLOC(allocator, dist(engine) % 666, void);
+					DEALLOC(&allocator, allocMem[i]);
+					allocMem[i] = ALLOC(&allocator, dist(engine) % 666, void);
 				}
 
 				for (unsigned int i = 0; i < 50; ++i)
 				{
-					DEALLOC(allocator, allocMem[i]);
+					DEALLOC(&allocator, allocMem[i]);
 				}
 
 				for (unsigned int i = 0; i < 50; ++i)
 				{
-					allocMem[i] = ALLOC(allocator, dist(engine) % 444, void);
+					allocMem[i] = ALLOC(&allocator, dist(engine) % 444, void);
 				}
 
 				for (size_t i = 0; i < allocMem.size(); ++i)
 				{
-					DEALLOC(allocator, allocMem[i]);
+					DEALLOC(&allocator, allocMem[i]);
 				}
-				REQUIRE(allocator->GetAllocatedSize() == 0);
-				REQUIRE(allocator->GetAllocatedCount() == 0);
+				REQUIRE(allocator.GetAllocatedSize() == 0);
+				REQUIRE(allocator.GetAllocatedCount() == 0);
 				allocMem.clear();
 			}
 		}
 		SECTION("New block allocation test" + ss.str()) {
-			auto blockSize = allocator->GetBlockSize();
-			char* mem0 = ALLOC(allocator, static_cast<size_t>(2.0 * blockSize / 3), char);
-			REQUIRE(allocator->GetNonEmptyBlockCount() == 1);
-			char* mem1 = ALLOC(allocator, static_cast<size_t>(blockSize / 2), char);
-			REQUIRE(allocator->GetNonEmptyBlockCount() == 2);
-			DEALLOC(allocator, mem0);
-			REQUIRE(allocator->GetNonEmptyBlockCount() == 1);
-			DEALLOC(allocator, mem1);
-			REQUIRE(allocator->GetNonEmptyBlockCount() == 0);
+			auto blockSize = allocator.GetBlockSize();
+			char* mem0 = ALLOC(&allocator, static_cast<size_t>(2.0 * blockSize / 3), char);
+			REQUIRE(allocator.GetNonEmptyBlockCount() == 1);
+			char* mem1 = ALLOC(&allocator, static_cast<size_t>(blockSize / 2), char);
+			REQUIRE(allocator.GetNonEmptyBlockCount() == 2);
+			DEALLOC(&allocator, mem0);
+			REQUIRE(allocator.GetNonEmptyBlockCount() == 1);
+			DEALLOC(&allocator, mem1);
+			REQUIRE(allocator.GetNonEmptyBlockCount() == 0);
 		}
-		delete allocator;
 	}
 }
-//
+
 TEST_CASE("Stack allocator performance test", "[StackAllocator performance]") {
 	constexpr const int AllocateCount = 30000;
 	constexpr const int AllocateUnit = 100;
@@ -215,6 +214,8 @@ TEST_CASE("Stack allocator performance test", "[StackAllocator performance]") {
 			for (auto i = 0; i < AllocateCount; ++i)
 				DEALLOC(&allocator, memArray[i]);
 			auto allocator_dealloc_end = std::chrono::high_resolution_clock::now();
+			REQUIRE(allocator.GetAllocatedCount() == 0);
+			REQUIRE(allocator.GetAllocatedSize() == 0);
 
 			std::cout << "[allocator deallocation time:] " << duration_cast<duration<double>>(allocator_dealloc_end - allocator_dealloc_start).count() << std::endl;
 
@@ -244,12 +245,11 @@ TEST_CASE("StackAllocator overflow test") {
 			std::vector<int*> mems;
 			std::default_random_engine engine;
 			std::uniform_int_distribution<int> dist;
-			for (unsigned int i = 0; i < 100; i++)
+			for (unsigned int j = 0; j < 100; j++)
 			{
-				size_t arr_size = dist(engine) % 1000 + 1; 
+				size_t arr_size = dist(engine) % 500 + 1;
 				mems.push_back(ALLOC_ARRAY(&allocator, arr_size, int));
-				mems[mems.size() - 1][arr_size - 1] = 12345678;
-				mems[mems.size() - 1][0] = 12345678;
+				std::memset(mems[mems.size() - 1], 0, sizeof(int) * arr_size);
 			}
 			for (auto it = mems.cbegin(); it != mems.cend(); ++it)
 			{
