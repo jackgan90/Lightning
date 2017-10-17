@@ -1,9 +1,4 @@
 #include <cassert>
-#include <cstdlib>
-//For Debug purpose
-#include <chrono>
-#include <iostream>
-//For Debug purpose
 #include "stackallocator.h"
 #ifdef ENABLE_MEMORY_LOG
 #include "logger.h"
