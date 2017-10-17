@@ -98,7 +98,14 @@ namespace LightningGE
 					if (stackIndex >= m_maxStack)
 						break;
 					stack = m_stacks[stackIndex];
-					anchor = m_alignAlloc ? MakeAlign(stack->topPointer) : stack->topPointer;
+					if (m_alignAlloc)
+					{
+						anchor = stack->topPointer == stack->basePointer ? stack->topPointer : MakeAlign(stack->topPointer);
+					}
+					else
+					{
+						anchor = stack->topPointer;
+					}
 				}
 				if (stackIndex >= m_maxStack)
 				{
@@ -126,7 +133,7 @@ namespace LightningGE
 				node.stackIndex = stack->index;
 				node.nodeIndex = stack->allocCount;
 				++stack->allocCount;
-				stack->topPointer = anchor + size;
+				stack->topPointer = anchor + size + sizeof(MemoryNode**);
 				m_allocatedSize += size;
 				++m_allocatedCount;
 
@@ -151,6 +158,7 @@ namespace LightningGE
 					}
 					else
 					{
+						assert(stack->topPointer == stack->basePointer);
 						m_currentStack = stack->index;
 						break;
 					}

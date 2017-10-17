@@ -225,21 +225,40 @@ TEST_CASE("Stack allocator performance test", "[StackAllocator performance]") {
 
 }
 
-TEST_CASE("Unordered map get performance test") {
-	using LightningGE::Foundation::MemoryInfo;
-	using std::chrono::duration;
-	using std::chrono::duration_cast;
-	std::cout << "Unordered map operator[] performance test" << std::endl;
-	constexpr const int AllocateCount = 1000;
-	std::unordered_map<void*, MemoryInfo*> info;
-	for (unsigned int i = 0; i < AllocateCount; ++i)
-		info.insert(std::make_pair(new char, new MemoryInfo));
-	auto map_traverse_start = std::chrono::high_resolution_clock::now();
-	for (auto it = info.begin(); it != info.end(); ++it)
+TEST_CASE("StackAllocator overflow test") {
+	auto paramCount = sizeof(params) / sizeof(std::tuple<bool, size_t, size_t>);
+	for (unsigned int i = 0; i < paramCount; ++i)
 	{
-		auto val = info[it->first];
-	}
-	auto map_traverse_end = std::chrono::high_resolution_clock::now();
+		auto alignAlloc = std::get<0>(params[i]);
+		auto alignment = std::get<1>(params[i]);
+		auto blockSize = std::get<2>(params[i]);
+		std::stringstream ss;
+		ss << alignAlloc << alignment << blockSize;
+		LightningGE::Foundation::StackAllocator allocator(alignAlloc, alignment, blockSize);
+		
+		SECTION("Test write to the edge of allocated memory will not cause error" + ss.str()) {
+			int* mem = ALLOC_ARRAY(&allocator, 100, int);
+			mem[99] = 9999999;
+			mem[0] = 9999999;
+			DEALLOC(&allocator, mem);
+			std::vector<int*> mems;
+			std::default_random_engine engine;
+			std::uniform_int_distribution<int> dist;
+			for (unsigned int i = 0; i < 100; i++)
+			{
+				size_t arr_size = dist(engine) % 1000 + 1; 
+				mems.push_back(ALLOC_ARRAY(&allocator, arr_size, int));
+				mems[mems.size() - 1][arr_size - 1] = 12345678;
+				mems[mems.size() - 1][0] = 12345678;
+			}
 
-	std::cout << "[map traverse time:] " << duration_cast<duration<double>>(map_traverse_end - map_traverse_start).count() << std::endl;
+			for (auto it = mems.cbegin(); it != mems.cend(); ++it)
+			{
+				DEALLOC(&allocator, *it);
+			}
+			mems.clear();
+			REQUIRE(allocator.GetAllocatedSize() == 0);
+			REQUIRE(allocator.GetAllocatedCount() == 0);
+		}
+	}
 }
