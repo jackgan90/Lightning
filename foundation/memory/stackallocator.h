@@ -30,7 +30,7 @@ namespace LightningGE
 				bool used;
 			};
 			//align address pointed to by ptr to next alignment byte
-			inline size_t MakeAlign(size_t ptr)const;
+			inline size_t MakeAlign(size_t ptr)const {return (ptr & ~std::size_t(m_alignment - 1)) + m_alignment;}
 			void ReallocStacks();
 	#ifdef ENABLE_MEMORY_LOG
 			void LogMemory(const char* const logName, const MemoryNode* pNode);

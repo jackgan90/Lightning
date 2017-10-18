@@ -179,13 +179,6 @@ namespace LightningGE
 				return count;
 			}
 
-
-			inline size_t StackAllocator::MakeAlign(size_t ptr)const
-			{
-				return (ptr & ~std::size_t(m_alignment - 1)) + m_alignment;
-			}
-
-
 		#ifdef ENABLE_MEMORY_LOG
 			void StackAllocator::LogMemory(const char* const logName, const MemoryNode* pNode)
 			{
