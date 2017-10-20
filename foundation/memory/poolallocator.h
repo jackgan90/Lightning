@@ -145,7 +145,7 @@ namespace LightningGE
 		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
 		void PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::ReleaseObject(T* p)
 		{
-			T->~T();
+			p->~T();
 			Deallocate(p);
 		}
 
