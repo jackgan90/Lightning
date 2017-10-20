@@ -1,4 +1,5 @@
 #include <cassert>
+#include <algorithm>
 #include "stackallocator.h"
 #ifdef ENABLE_MEMORY_LOG
 #include "logger.h"
@@ -11,8 +12,9 @@ namespace LightningGE
 		#ifdef ENABLE_MEMORY_LOG
 			extern Logger logger;
 		#endif
-			StackAllocator::StackAllocator(bool alignAlloc, size_t alignment, size_t blockSize):IMemoryAllocator()
+			StackAllocator::StackAllocator(bool alignAlloc, size_t alignment, size_t blockSize, size_t blockAllocCount):IMemoryAllocator()
 				,m_blockSize(blockSize), m_alignment(alignment), m_alignAlloc(alignAlloc)
+				,m_internalMemoryNodeStep(blockAllocCount > 0 ? std::min(blockSize, blockAllocCount) : blockSize)
 			{
 				//alignment should be a power of 2
 				assert(alignment > 0 && (alignment & (alignment - 1)) == 0);
@@ -70,6 +72,7 @@ namespace LightningGE
 
 			void* StackAllocator::Allocate(size_t size, const char* fileName, const char* className, size_t line)
 			{
+				assert(size > 0);
 				assert(size <= m_blockSize - m_alignment && "StackAllocator is not able to allocate memory which size is bigger than m_blockSize - m_alignment");
 				unsigned int stackIndex = m_currentStack;
 				auto stack = m_stacks[stackIndex];

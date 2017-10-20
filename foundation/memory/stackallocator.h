@@ -10,7 +10,7 @@ namespace LightningGE
 		class LIGHTNINGGE_FOUNDATION_API StackAllocator : public IMemoryAllocator
 		{
 		public:
-			StackAllocator(bool alignAlloc = true, size_t alignment = 16, size_t blockSize = 4096);
+			StackAllocator(bool alignAlloc = true, size_t alignment = 16, size_t blockSize = 4096, size_t blockAllocCount=0);
 			~StackAllocator()override;
 			void* Allocate(size_t size, const char* fileName, const char* className, size_t line)override;
 			void Deallocate(void*)override;
@@ -49,12 +49,12 @@ namespace LightningGE
 			const bool m_alignAlloc;
 			const size_t m_alignment;
 			const size_t m_blockSize;
+			const size_t m_internalMemoryNodeStep;
 			InternalStack** m_stacks;
 			size_t m_currentStack;
 			size_t m_maxStack;
 			size_t m_reallocStep;
 			const size_t m_internalStackAllocStep = 100;
-			const size_t m_internalMemoryNodeStep = 40000;
 			const size_t m_reallocStackFactor = 2;
 		};
 	}
