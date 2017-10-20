@@ -16,7 +16,8 @@ namespace LightningGE
 			~PoolAllocator()override;
 			void* Allocate(size_t size, const char* fileName, const char* className, size_t line)override;
 			void Deallocate(void*)override;
-			T* GetObject();
+			template<typename... Args>
+			T* GetObject(Args&&... args);
 			void ReleaseObject(T* pObj);
 		private:
 			struct PoolObject
@@ -131,11 +132,12 @@ namespace LightningGE
 		}
 
 		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
-		T* PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::GetObject()
+		template<typename... Args>
+		T* PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::GetObject(Args&&... args)
 		{
 			T* obj = Allocate(0, nullptr, nullptr, 0);
 			if (obj)
-				obj->T();
+				obj->T(std::forward<Args>(args)...);
 			return obj;
 		}
 
