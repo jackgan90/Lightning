@@ -23,18 +23,7 @@ namespace LightningGE
 			{
 				PoolObject* next;
 			};
-			template<bool _Aligned>
-			typename std::enable_if<_Aligned, char*>::type AllocInternalBuffer();
-			template<bool _Aligned>
-			typename std::enable_if<!_Aligned, char*>::type AllocInternalBuffer();
-			template<bool _Aligned>
-			typename std::enable_if<_Aligned>::type InitLinkList();
-			template<bool _Aligned>
-			typename std::enable_if<!_Aligned>::type InitLinkList();
-			template<typename _T, typename... Args>
-			typename std::enable_if<std::is_class<_T>::value>::type InvokeConstructor(_T* obj, Args&&... args);
-			template<typename _T, typename... Args>
-			typename std::enable_if<!std::is_class<_T>::value>::type InvokeConstructor(_T* obj, Args&&... args);
+			void InitLinkList();
 			template<typename _T>
 			typename std::enable_if<std::is_class<_T>::value>::type InvokeDestructor(_T* obj);
 			template<typename _T>
@@ -46,8 +35,16 @@ namespace LightningGE
 		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
 		PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::PoolAllocator():m_buffer(nullptr),m_head(nullptr)
 		{
-			m_buffer = AllocInternalBuffer<AlignedAlloc>();
-			InitLinkList<AlignedAlloc>();
+			if (AlignedAlloc)
+			{
+				size_t objSize = std::max(sizeof(T), sizeof(PoolObject));
+				m_buffer = objSize % Alignment ? new char[(objSize + Alignment) * ObjectCount] : new char[objSize * ObjectCount];
+			}
+			else
+			{
+				m_buffer = new char[std::max(sizeof(T), sizeof(PoolObject)) * ObjectCount];
+			}
+			InitLinkList();
 		}
 
 		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
@@ -57,54 +54,27 @@ namespace LightningGE
 		}
 
 		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
-		template<bool _Aligned>
-		typename std::enable_if<_Aligned, char*>::type
-		PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::AllocInternalBuffer()		//aligned alloc version
-		{
-			size_t objSize = std::max(sizeof(T), sizeof(PoolObject));
-			return objSize % Alignment ? new char[(objSize + Alignment) * ObjectCount] : new char[objSize * ObjectCount];
-		}
-
-		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
-		template<bool _Aligned>
-		typename std::enable_if<!_Aligned, char*>::type
-		PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::AllocInternalBuffer() //normal version
-		{
-			return new char[std::max(sizeof(T), sizeof(PoolObject)) * ObjectCount];
-		}
-
-		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
-		template<bool _Aligned>
-		typename std::enable_if<_Aligned>::type
-		PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::InitLinkList() //aligned linklist version
+		void PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::InitLinkList() //aligned linklist version
 		{
 			size_t current = reinterpret_cast<size_t>(m_buffer);
 			size_t objSize = std::max(sizeof(T), sizeof(PoolObject));
 			for (size_t i = 0; i < ObjectCount; ++i)
 			{
-				current = current % Alignment ? MakeAlign(current, Alignment) : current;
+				size_t nextAddr;
+				if(AlignedAlloc)
+				{
+					current = current % Alignment ? MakeAlign(current, Alignment) : current;
+					nextAddr = current + objSize;
+					nextAddr = nextAddr % Alignment ? MakeAlign(nextAddr, Alignment) : nextAddr;
+				}
+				else
+				{
+					nextAddr = current + objSize;
+				}
 				PoolObject* pObj = reinterpret_cast<PoolObject*>(current);
 				if (!m_head)
 					m_head = pObj;
-				pObj->next = i == ObjectCount - 1 ? nullptr : reinterpret_cast<PoolObject*>(
-					(current+objSize) % Alignment ? (MakeAlign(current+objSize, Alignment)) : (current + objSize));
-				current += objSize;
-			}
-		}
-
-		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
-		template<bool _Aligned>
-		typename std::enable_if<!_Aligned>::type
-		PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::InitLinkList() //normal linklist version
-		{
-			size_t current = reinterpret_cast<size_t>(m_buffer);
-			size_t objSize = std::max(sizeof(T), sizeof(PoolObject));
-			for (size_t i = 0; i < ObjectCount; ++i)
-			{
-				PoolObject* pObj = reinterpret_cast<PoolObject*>(current);
-				if (!m_head)
-					m_head = pObj;
-				pObj->next = i == ObjectCount - 1 ? nullptr : reinterpret_cast<PoolObject*>(current + objSize);
+				pObj->next = i == ObjectCount - 1 ? nullptr : reinterpret_cast<PoolObject*>(nextAddr);
 				current += objSize;
 			}
 		}
@@ -145,7 +115,7 @@ namespace LightningGE
 		{
 			T* obj = reinterpret_cast<T*>(Allocate(0, nullptr, nullptr, 0));
 			if (obj)
-				InvokeConstructor<T>(obj, std::forward<Args>(args)...);
+				new (obj) T(std::forward<Args>(args)...);
 			return obj;
 		}
 
@@ -154,22 +124,6 @@ namespace LightningGE
 		{
 			InvokeDestructor<T>(p);
 			Deallocate(p);
-		}
-
-		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
-		template<typename _T, typename... Args>
-		typename std::enable_if<std::is_class<_T>::value>::type 
-		PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::InvokeConstructor(_T* obj, Args&&... args)
-		{
-			new (obj) _T(std::forward<Args>(args)...);
-		}
-
-		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
-		template<typename _T, typename... Args>
-		typename std::enable_if<!std::is_class<_T>::value>::type 
-		PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::InvokeConstructor(_T* obj, Args&&... args)
-		{
-			*obj = _T{ std::forward<Args>(args)... };
 		}
 
 		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
