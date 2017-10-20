@@ -12,7 +12,6 @@ set(MEMORY_HEADERS	memory/imemoryallocator.h
 
 set(MEMORY_SOURCES	memory/basememoryallocator.cpp
 					memory/allocatormanager.cpp
-					memory/poolallocator.cpp
 					memory/stackallocator.cpp)
 
 set(HEADERS	common.h

@@ -1,7 +1,6 @@
 #pragma once
 #include <algorithm>
 #include <type_traits>
-#include "foundationexportdef.h"
 #include "imemoryallocator.h"
 
 namespace LightningGE
@@ -9,7 +8,7 @@ namespace LightningGE
 	namespace Foundation
 	{
 		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
-		class LIGHTNINGGE_FOUNDATION_API PoolAllocator : public IMemoryAllocator
+		class PoolAllocator : public IMemoryAllocator
 		{
 		public:	
 			PoolAllocator();
@@ -32,6 +31,14 @@ namespace LightningGE
 			typename std::enable_if<_Aligned>::type InitLinkList();
 			template<bool _Aligned>
 			typename std::enable_if<!_Aligned>::type InitLinkList();
+			template<typename _T, typename... Args>
+			typename std::enable_if<std::is_class<_T>::value>::type InvokeConstructor(_T* obj, Args&&... args);
+			template<typename _T, typename... Args>
+			typename std::enable_if<!std::is_class<_T>::value>::type InvokeConstructor(_T* obj, Args&&... args);
+			template<typename _T>
+			typename std::enable_if<std::is_class<_T>::value>::type InvokeDestructor(_T* obj);
+			template<typename _T>
+			typename std::enable_if<!std::is_class<_T>::value>::type InvokeDestructor(_T* obj);
 			char* m_buffer;
 			PoolObject* m_head;
 		};
@@ -55,7 +62,7 @@ namespace LightningGE
 		PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::AllocInternalBuffer()		//aligned alloc version
 		{
 			size_t objSize = std::max(sizeof(T), sizeof(PoolObject));
-			return objSize % Alignment ? new char[(objSize + Alignment) * ObjectCount] : new char[objSize * ObjectCount]
+			return objSize % Alignment ? new char[(objSize + Alignment) * ObjectCount] : new char[objSize * ObjectCount];
 		}
 
 		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
@@ -136,17 +143,49 @@ namespace LightningGE
 		template<typename... Args>
 		T* PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::GetObject(Args&&... args)
 		{
-			T* obj = Allocate(0, nullptr, nullptr, 0);
+			T* obj = reinterpret_cast<T*>(Allocate(0, nullptr, nullptr, 0));
 			if (obj)
-				obj->T(std::forward<Args>(args)...);
+				InvokeConstructor<T>(obj, std::forward<Args>(args)...);
 			return obj;
 		}
 
 		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
 		void PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::ReleaseObject(T* p)
 		{
-			T->~T();
+			InvokeDestructor<T>(p);
 			Deallocate(p);
+		}
+
+		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
+		template<typename _T, typename... Args>
+		typename std::enable_if<std::is_class<_T>::value>::type 
+		PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::InvokeConstructor(_T* obj, Args&&... args)
+		{
+			new (obj) _T(std::forward<Args>(args)...);
+		}
+
+		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
+		template<typename _T, typename... Args>
+		typename std::enable_if<!std::is_class<_T>::value>::type 
+		PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::InvokeConstructor(_T* obj, Args&&... args)
+		{
+			*obj = _T{ std::forward<Args>(args)... };
+		}
+
+		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
+		template<typename _T>
+		typename std::enable_if<std::is_class<_T>::value>::type 
+		PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::InvokeDestructor(_T* obj)
+		{
+			obj->~T();
+		}
+
+		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
+		template<typename _T>
+		typename std::enable_if<!std::is_class<_T>::value>::type 
+		PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::InvokeDestructor(_T* obj)
+		{
+
 		}
 
 	}

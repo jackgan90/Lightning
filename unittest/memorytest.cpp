@@ -8,6 +8,11 @@
 #include <unordered_map>
 #include "catch.hpp"
 #include "stackallocator.h"
+#include "poolallocator.h"
+
+using LightningGE::Foundation::IMemoryAllocator;
+using LightningGE::Foundation::PoolAllocator;
+using LightningGE::Foundation::StackAllocator;
 
 std::tuple<bool, size_t, size_t> params[] = {
 	std::make_tuple(true, 16, 4096),
@@ -19,7 +24,6 @@ std::tuple<bool, size_t, size_t> params[] = {
 };
 
 TEST_CASE("Stack allocator allocate test.", "[StackAllocator function]") {
-	using LightningGE::Foundation::StackAllocator;
 	auto paramCount = sizeof(params) / sizeof(std::tuple<bool, size_t, size_t>);
 	for (unsigned int i = 0; i < paramCount; ++i)
 	{
@@ -101,7 +105,7 @@ TEST_CASE("Stack allocator allocate test.", "[StackAllocator function]") {
 				REQUIRE(allocator.GetAllocatedCount() == 0);
 
 				for (auto i = 0; i < 100; i++)
-					allocMem.push_back(ALLOC(&allocator, dist(engine) % 1000, void));
+					allocMem.push_back(ALLOC(&allocator, dist(engine) % 1000 + 1, void));
 
 				std::random_device rd;
 				std::mt19937 g(rd());
@@ -171,7 +175,7 @@ TEST_CASE("Stack allocator performance test", "[StackAllocator performance]") {
 		auto blockSize = std::get<2>(params[i]);
 		std::stringstream ss;
 		ss << alignAlloc << alignment << blockSize;
-		LightningGE::Foundation::StackAllocator allocator(alignAlloc, alignment, blockSize);
+		StackAllocator allocator(alignAlloc, alignment, blockSize);
 		SECTION("PerfTest" + ss.str())
 		{
 			std::cout << "alignAlloc:" << std::boolalpha << alignAlloc << ",alignment:" << alignment << ",blockSize:" << blockSize << std::endl;
@@ -235,7 +239,7 @@ TEST_CASE("StackAllocator overflow test") {
 		auto blockSize = std::get<2>(params[i]);
 		std::stringstream ss;
 		ss << alignAlloc << alignment << blockSize;
-		LightningGE::Foundation::StackAllocator allocator(alignAlloc, alignment, blockSize);
+		StackAllocator allocator(alignAlloc, alignment, blockSize);
 		
 		SECTION("Test write to the edge of allocated memory will not cause error" + ss.str()) {
 			int* mem = ALLOC_ARRAY(&allocator, 100, int);
@@ -260,4 +264,94 @@ TEST_CASE("StackAllocator overflow test") {
 			REQUIRE(allocator.GetAllocatedCount() == 0);
 		}
 	}
+}
+
+struct PoolTestObject
+{
+	PoolTestObject() :a(0), b(0), c(0.0f), d(0.0) {}
+	PoolTestObject(const int a, const char b)
+	{
+		this->a = a;
+		this->b = b;
+	}
+	int a;
+	char b;
+	float c;
+	double d;
+	char e[10];
+	PoolTestObject& operator=(const int param)
+	{
+		a = 0;
+		b = 0;
+		c = 0.0f;
+		d = 0.0;
+		std::memset(e, 0, sizeof(e));
+		return *this;
+	}
+};
+
+template<typename T, const int ObjectCount, bool AlignAlloc, const int Alignment>
+void TestPoolAllocator(PoolAllocator<T, ObjectCount, AlignAlloc, Alignment>& allocator)
+{
+	std::vector<T*> mems;
+	for (size_t i = 0; i < ObjectCount+1; ++i)
+	{
+		auto p = allocator.GetObject();
+		if (AlignAlloc)
+		{
+			REQUIRE(reinterpret_cast<size_t>(p) % Alignment == 0);
+		}
+		if (p)
+		{
+			*p = 0;
+		}
+		mems.push_back(p);
+		if (i < ObjectCount)
+		{
+			CAPTURE(i);
+			REQUIRE(mems.back() != nullptr);
+		}
+		else
+		{
+			REQUIRE(mems.back() == nullptr);
+		}
+	}
+	for (size_t i = 0; i < ObjectCount; ++i)
+		allocator.ReleaseObject(mems[i]);
+	mems.clear();
+	REQUIRE(allocator.GetAllocatedCount() == 0);
+	REQUIRE(allocator.GetAllocatedSize() == 0);
+}
+
+TEST_CASE("PoolAllocator size test") {
+	PoolAllocator<char, 100, false, 0> char_100_unaligned_allocator;
+	PoolAllocator<char, 100, true, 16> char_100_aligned_16_allocator;
+	PoolAllocator<char, 100, true, 64> char_100_aligned_64_allocator;
+	char* a = char_100_aligned_16_allocator.GetObject('c');
+	REQUIRE(reinterpret_cast<size_t>(a) % 16 == 0);
+	REQUIRE(*a == 'c');
+	char_100_aligned_16_allocator.ReleaseObject(a);
+	a = char_100_unaligned_allocator.GetObject();
+	REQUIRE(a != nullptr);
+	REQUIRE(char_100_unaligned_allocator.GetAllocatedCount() == 1);
+	REQUIRE(char_100_unaligned_allocator.GetAllocatedSize() == sizeof(char));
+	char_100_unaligned_allocator.ReleaseObject(a);
+	REQUIRE(char_100_unaligned_allocator.GetAllocatedCount() == 0);
+	REQUIRE(char_100_unaligned_allocator.GetAllocatedSize() == 0);
+
+	TestPoolAllocator(char_100_unaligned_allocator);
+	TestPoolAllocator(char_100_aligned_16_allocator);
+	TestPoolAllocator(char_100_aligned_64_allocator);
+
+	PoolAllocator<PoolTestObject, 900, false, 0> obj_900_unaligned_allocator;
+	PoolAllocator<PoolTestObject, 900, true, 128> obj_900_aligned_128_allocator;
+	PoolTestObject* obj = obj_900_unaligned_allocator.GetObject();
+	REQUIRE(obj != nullptr);
+	REQUIRE(obj->a == 0);
+	REQUIRE(obj->b == 0);
+	REQUIRE(obj->c == 0.0f);
+	REQUIRE(obj->d == 0.0);
+	obj_900_unaligned_allocator.ReleaseObject(obj);
+	TestPoolAllocator(obj_900_unaligned_allocator);
+	TestPoolAllocator(obj_900_aligned_128_allocator);
 }
