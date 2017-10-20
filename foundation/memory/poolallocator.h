@@ -75,11 +75,12 @@ namespace LightningGE
 			size_t objSize = std::max(sizeof(T), sizeof(PoolObject));
 			for (size_t i = 0; i < ObjectCount; ++i)
 			{
-				current = MakeAlign(current, Alignment);
+				current = current % Alignment ? MakeAlign(current, Alignment) : current;
 				PoolObject* pObj = reinterpret_cast<PoolObject*>(current);
 				if (!m_head)
 					m_head = pObj;
-				pObj->next = i == ObjectCount - 1 ? nullptr : reinterpret_cast<PoolObject*>(MakeAlign(current+objSize, Alignment));
+				pObj->next = i == ObjectCount - 1 ? nullptr : reinterpret_cast<PoolObject*>(
+					(current+objSize) % Alignment ? (MakeAlign(current+objSize, Alignment)) : (current + objSize));
 				current += objSize;
 			}
 		}
