@@ -40,6 +40,8 @@ namespace LightningGE
 			virtual void* Allocate(size_t size, const char* fileName, const char* className, size_t line) = 0;
 			virtual void Deallocate(void*) = 0;
 		protected:
+			//align address pointed to by ptr to next alignment byte
+			inline size_t MakeAlign(size_t ptr, size_t alignment)const {return (ptr & ~std::size_t(alignment - 1)) + alignment;}
 			size_t m_allocatedSize;
 			size_t m_allocatedCount;
 		};

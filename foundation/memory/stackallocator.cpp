@@ -49,7 +49,7 @@ namespace LightningGE
 				//according to c++ standard,the returned pointer of new always ensures enough space for a pointer decrement,so just
 				//MakeAlign won't cause heap corruption
 				if (m_alignAlloc)
-					stack->basePointer = MakeAlign(reinterpret_cast<size_t>(stack->buffer));
+					stack->basePointer = MakeAlign(reinterpret_cast<size_t>(stack->buffer), m_alignment);
 				else
 					stack->basePointer = reinterpret_cast<size_t>(stack->buffer) + sizeof(MemoryNode**);
 				stack->topPointer = stack->basePointer;
@@ -87,9 +87,9 @@ namespace LightningGE
 					}
 					else
 					{
-						anchor = MakeAlign(stack->topPointer);
+						anchor = MakeAlign(stack->topPointer, m_alignment);
 						while (anchor - stack->topPointer < sizeof(MemoryNode**))
-							anchor = MakeAlign(anchor);
+							anchor = MakeAlign(anchor, m_alignment);
 					}
 				}
 				while (stackIndex < m_maxStack && (anchor + size >= stack->bufferEnd || stack->allocCount >= m_internalMemoryNodeStep))
@@ -100,7 +100,7 @@ namespace LightningGE
 					stack = m_stacks[stackIndex];
 					if (m_alignAlloc)
 					{
-						anchor = stack->topPointer == stack->basePointer ? stack->topPointer : MakeAlign(stack->topPointer);
+						anchor = stack->topPointer == stack->basePointer ? stack->topPointer : MakeAlign(stack->topPointer, m_alignment);
 					}
 					else
 					{
