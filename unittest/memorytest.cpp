@@ -361,7 +361,9 @@ namespace
 
 		for (size_t i = 0; i < ObjectCount; ++i)
 		{
-			mems.push_back(allocator.GetObject());
+			auto p = allocator.GetObject();
+			*p = 0;
+			mems.push_back(p);
 		}
 		REQUIRE(allocator.GetAllocatedSize() == ObjectCount * sizeof(T));
 		std::random_device rd;

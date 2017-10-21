@@ -38,7 +38,8 @@ namespace LightningGE
 			if (AlignedAlloc)
 			{
 				size_t objSize = std::max(sizeof(T), sizeof(PoolObject));
-				m_buffer = objSize % Alignment ? new char[(objSize + Alignment) * ObjectCount] : new char[objSize * ObjectCount];
+				m_buffer = objSize % Alignment ? new char[(objSize + Alignment) * ObjectCount] : new char[objSize * ObjectCount + Alignment];
+				//m_buffer = new char[(objSize + Alignment) * ObjectCount];
 			}
 			else
 			{
