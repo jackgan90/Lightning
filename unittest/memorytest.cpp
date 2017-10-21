@@ -290,7 +290,16 @@ struct PoolTestObject
 	}
 };
 
-template<typename T, const int ObjectCount, bool AlignAlloc, const int Alignment>
+struct PoolObjOfSize16
+{
+	int a;
+	int b;
+	int c;
+	int d;
+	PoolObjOfSize16& operator=(const int param) { return *this; }
+};
+
+template<typename T, const size_t ObjectCount, bool AlignAlloc, const size_t Alignment>
 void TestPoolAllocator(PoolAllocator<T, ObjectCount, AlignAlloc, Alignment>& allocator)
 {
 	std::vector<T*> mems;
@@ -319,6 +328,18 @@ void TestPoolAllocator(PoolAllocator<T, ObjectCount, AlignAlloc, Alignment>& all
 	for (size_t i = 0; i < ObjectCount; ++i)
 		allocator.ReleaseObject(mems[i]);
 	mems.clear();
+
+	for (size_t i = 0; i < ObjectCount; ++i)
+	{
+		mems.push_back(allocator.GetObject());
+	}
+	REQUIRE(allocator.GetAllocatedSize() == ObjectCount * sizeof(T));
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::shuffle(mems.begin(), mems.end(), g);
+	for (size_t i = 0; i < ObjectCount; ++i)
+		allocator.ReleaseObject(mems[i]);
+
 	REQUIRE(allocator.GetAllocatedCount() == 0);
 	REQUIRE(allocator.GetAllocatedSize() == 0);
 }
@@ -354,4 +375,7 @@ TEST_CASE("PoolAllocator size test") {
 	obj_900_unaligned_allocator.ReleaseObject(obj);
 	TestPoolAllocator(obj_900_unaligned_allocator);
 	TestPoolAllocator(obj_900_aligned_128_allocator);
+
+	PoolAllocator<PoolObjOfSize16, 100, true, sizeof(PoolObjOfSize16)> obj_100_aligned_specified_allocator;
+	TestPoolAllocator(obj_100_aligned_specified_allocator);
 }
