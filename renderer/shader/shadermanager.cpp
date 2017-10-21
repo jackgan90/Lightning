@@ -19,7 +19,7 @@ namespace LightningGE
 		ShaderManager::ShaderManager(const SharedFileSystemPtr& fs)
 		{
 			m_fs = fs;
-			m_compileAllocator = std::make_unique<StackAllocator>();
+			m_compileAllocator = std::make_unique<StackAllocator<true, 16, 8192>>();
 		}
 
 		SharedShaderPtr ShaderManager::GetShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)

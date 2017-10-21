@@ -11,8 +11,7 @@ set(MEMORY_HEADERS	memory/imemoryallocator.h
 					memory/stackallocator.h)
 
 set(MEMORY_SOURCES	memory/basememoryallocator.cpp
-					memory/allocatormanager.cpp
-					memory/stackallocator.cpp)
+					memory/allocatormanager.cpp)
 
 set(HEADERS	common.h
 			timesystem.h
