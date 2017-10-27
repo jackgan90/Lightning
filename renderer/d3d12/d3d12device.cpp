@@ -25,7 +25,7 @@ namespace LightningGE
 		using Foundation::StackAllocator;
 		D3D12Device::D3D12Device(ComPtr<ID3D12Device> pDevice, const SharedFileSystemPtr& fs):m_fs(fs)
 		{
-			m_smallObjAllocator = std::make_unique<StackAllocator>();
+			m_smallObjAllocator = std::make_unique<StackAllocator<true, 16, 8192>>();
 			m_device = pDevice;
 			D3D12_COMMAND_QUEUE_DESC desc = {};
 			HRESULT hr = m_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&m_commandQueue));
