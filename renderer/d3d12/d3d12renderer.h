@@ -30,8 +30,7 @@ namespace LightningGE
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 			D3D12Renderer(const SharedWindowPtr& pContext, const SharedFileSystemPtr& fs);
 			~D3D12Renderer()override;
-			IDevice* GetDevice()override;
-			IRenderTargetManager* GetRenderTargetManager()override;
+			D3D12RenderTargetManager* GetRenderTargetManager();
 			void SetClearColor(const ColorF& color)override;
 			D3D12DescriptorHeapManager* GetDescriptorHeapManager()const noexcept
 			{
@@ -46,7 +45,6 @@ namespace LightningGE
 			void InitDevice(ComPtr<IDXGIFactory4> dxgiFactory);
 			void InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, const SharedWindowPtr& pWindow);
 			void CreateFences();
-			std::unique_ptr<D3D12Device> m_device;
 			std::unique_ptr<D3D12SwapChain> m_swapChain;
 			std::unique_ptr<D3D12RenderTargetManager> m_rtMgr;
 			std::vector<ComPtr<ID3D12Fence>> m_fences;

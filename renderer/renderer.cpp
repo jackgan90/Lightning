@@ -20,5 +20,11 @@ namespace LightningGE
 		{
 			return m_frameIndex;
 		}
+
+		IDevice* Renderer::GetDevice()
+		{
+			return m_device.get();
+		}
+
 	}
 }

@@ -54,9 +54,9 @@ namespace LightningGE
 		{
 		}
 
-		void D3D12Device::ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectI* pRects, const int rectCount)
+		void D3D12Device::ClearRenderTarget(IRenderTarget* rt, const ColorF& color, const RectI* pRects, const int rectCount)
 		{
-			D3D12RenderTarget *pTarget = static_cast<D3D12RenderTarget*>(rt.get());
+			D3D12RenderTarget *pTarget = static_cast<D3D12RenderTarget*>(rt);
 			ComPtr<ID3D12Resource> nativeRenderTarget = pTarget->GetNative();
 			if (rt->IsSwapChainRenderTarget())
 				m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget.Get(),
@@ -95,11 +95,6 @@ namespace LightningGE
 		{
 			//TODO : replace with d3d12 vertex buffer
 			return SharedVertexBufferPtr();
-		}
-
-		SharedShaderPtr D3D12Device::CreateShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)
-		{
-			return m_shaderMgr->GetShader(type, shaderName, defineMap);
 		}
 
 		void D3D12Device::ApplyRasterizerState(const RasterizerState& state)

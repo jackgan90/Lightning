@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include "irenderer.h"
 #include "filesystem.h"
 
@@ -13,6 +14,7 @@ namespace LightningGE
 			Renderer(const SharedFileSystemPtr& fs);
 			//entry point of render system
 			void Render()override;
+			IDevice* GetDevice()override;
 			//return the current frame index
 			unsigned long GetCurrentFrameIndex()const override;
 		protected:
@@ -21,6 +23,7 @@ namespace LightningGE
 			virtual void EndRender() = 0;
 			unsigned int m_frameIndex;
 			SharedFileSystemPtr m_fs;
+			std::unique_ptr<IDevice> m_device;
 		};
 	}
 }

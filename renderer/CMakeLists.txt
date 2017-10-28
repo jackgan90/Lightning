@@ -4,6 +4,7 @@ message(STATUS "Configuring project renderer")
 
 set(HEADERS rendererexportdef.h
 			idevice.h
+			device.h
 			iswapchain.h
 			irendertarget.h
 			irendertargetmanager.h
@@ -17,6 +18,7 @@ set(HEADERS rendererexportdef.h
 			renderexception.h
 			rendererfactory.h)
 set(SOURCES renderer.cpp
+			device.cpp
 			vertexbuffer.cpp
 			rendererhelper.cpp
 			rendererfactory.cpp

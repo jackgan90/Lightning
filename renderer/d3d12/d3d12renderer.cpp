@@ -47,8 +47,8 @@ namespace LightningGE
 				throw DeviceInitException("Failed to create DXGI factory!");
 			}
 			InitDevice(dxgiFactory);
-			m_descriptorMgr = std::make_unique<D3D12DescriptorHeapManager>(m_device->m_device);
-			m_rtMgr = std::make_unique<D3D12RenderTargetManager>(m_device.get());
+			m_descriptorMgr = std::make_unique<D3D12DescriptorHeapManager>(static_cast<D3D12Device*>(m_device.get())->m_device);
+			m_rtMgr = std::make_unique<D3D12RenderTargetManager>(static_cast<D3D12Device*>(m_device.get()));
 			InitSwapChain(dxgiFactory, pWindow);
 			
 			CreateFences();
@@ -122,6 +122,7 @@ namespace LightningGE
 			UINT sampleCount = 1;
 			bool msaaEnabled = false;
 			UINT qualityLevels = 0;
+			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
 			if (config.MSAAEnabled)
 			{
 				D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels;
@@ -129,7 +130,7 @@ namespace LightningGE
 				msQualityLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
 				msQualityLevels.SampleCount = config.MSAASampleCount > 0 ? config.MSAASampleCount : 1;
 				msQualityLevels.NumQualityLevels = 0;
-				m_device->m_device->CheckFeatureSupport(
+				pD3D12Device->m_device->CheckFeatureSupport(
 					D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msQualityLevels, sizeof(msQualityLevels));
 				qualityLevels = msQualityLevels.NumQualityLevels;
 				sampleCount = msQualityLevels.SampleCount;
@@ -156,7 +157,7 @@ namespace LightningGE
 
 			ComPtr<IDXGISwapChain> tempSwapChain;
 
-			dxgiFactory->CreateSwapChain(m_device->m_commandQueue.Get(),
+			dxgiFactory->CreateSwapChain(pD3D12Device->m_commandQueue.Get(),
 				&swapChainDesc, &tempSwapChain);
 			ComPtr<IDXGISwapChain3> swapChain;
 			tempSwapChain.As(&swapChain);
@@ -167,7 +168,8 @@ namespace LightningGE
 		{
 			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
 			HRESULT hr;
-			ComPtr<ID3D12Device> nativeDevice = m_device->m_device;
+			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
+			ComPtr<ID3D12Device> nativeDevice = pD3D12Device->m_device;
 			for (size_t i = 0; i < config.SwapChainBufferCount; i++)
 			{
 				m_fenceValues.push_back(0);
@@ -219,17 +221,18 @@ namespace LightningGE
 
 		void D3D12Renderer::DoRender()
 		{
+			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
 			WaitForPreviousFrame();
 			m_swapChain->Present();
-			auto commandAllocator = m_device->m_commandAllocators[m_currentBackBufferIndex];
-			auto commandList = m_device->m_commandList;
-			auto commandQueue = m_device->m_commandQueue;
+			auto commandAllocator = pD3D12Device->m_commandAllocators[m_currentBackBufferIndex];
+			auto commandList = pD3D12Device->m_commandList;
+			auto commandQueue = pD3D12Device->m_commandQueue;
 			commandAllocator->Reset();
 			commandList->Reset(commandAllocator.Get(), nullptr);
 			m_currentBackBufferIndex = m_swapChain->m_swapChain->GetCurrentBackBufferIndex();
 			//here goes rendering commands
 			auto currentSwapChainRT = m_swapChain->GetBufferRenderTarget(m_currentBackBufferIndex);
-			m_device->ClearRenderTarget(currentSwapChainRT, m_clearColor);
+			m_device->ClearRenderTarget(currentSwapChainRT.get(), m_clearColor);
 			commandList->Close();
 			ID3D12CommandList* commandListArray[] = { commandList.Get() };
 			commandQueue->ExecuteCommandLists(_countof(commandListArray), commandListArray);
@@ -241,12 +244,7 @@ namespace LightningGE
 
 		}
 
-		IDevice* D3D12Renderer::GetDevice()
-		{
-			return m_device.get();
-		}
-
-		IRenderTargetManager* D3D12Renderer::GetRenderTargetManager()
+		D3D12RenderTargetManager* D3D12Renderer::GetRenderTargetManager()
 		{
 			return m_rtMgr.get();
 		}
