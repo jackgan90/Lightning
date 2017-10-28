@@ -20,6 +20,7 @@ add_subdirectory(platform)
 add_subdirectory(window)
 add_subdirectory(renderer)
 add_subdirectory(unittest)
+add_subdirectory(serialization)
 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
