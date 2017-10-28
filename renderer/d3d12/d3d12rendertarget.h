@@ -15,6 +15,7 @@ namespace LightningGE
 			D3D12RenderTarget(ComPtr<ID3D12Resource> pRenderTarget, bool isSwapChainTarget, const RenderTargetID& rtID);
 			~D3D12RenderTarget()override;
 			bool IsSwapChainRenderTarget()const override;
+			int GetBoundIndex()const override { return m_boundIndex; }
 			RenderTargetID GetID() const override { return m_ID; }
 			ComPtr<ID3D12Resource> GetNative()const { return m_nativeRenderTarget; }
 			const D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return m_cpuHandle; }
@@ -23,6 +24,7 @@ namespace LightningGE
 			ComPtr<ID3D12Resource> m_nativeRenderTarget;
 			bool m_isSwapChainTarget;
 			RenderTargetID m_ID;
+			int m_boundIndex;
 			D3D12_CPU_DESCRIPTOR_HANDLE m_cpuHandle;
 			D3D12_GPU_DESCRIPTOR_HANDLE m_gpuHandle;
 		};

@@ -2,7 +2,6 @@
 #include "d3d12renderer.h"
 #include "d3d12swapchain.h"
 #include "d3d12device.h"
-#include "d3d12pipelinestateobject.h"
 #include "d3d12descriptorheapmanager.h"
 #include "winwindow.h"
 #include "configmanager.h"
@@ -274,11 +273,6 @@ namespace LightningGE
 		void D3D12Renderer::SetClearColor(const ColorF& color)
 		{
 			m_clearColor = color;
-		}
-
-		void D3D12Renderer::ApplyPipelineStateObject(const SharedPipelineStateObjectPtr& pso)
-		{
-			//TODO : maybe call d3d12 method to really apply the pipeline state?
 		}
 
 	}

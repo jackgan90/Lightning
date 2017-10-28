@@ -1,8 +1,6 @@
 #pragma once
 #include <d3d12.h>
-#include "iblendstate.h"
-#include "idepthstencilstate.h"
-#include "irasterizerstate.h"
+#include "renderstates.h"
 
 namespace LightningGE
 {

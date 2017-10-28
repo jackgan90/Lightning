@@ -21,13 +21,13 @@ namespace LightningGE
 			D3D12Device(ComPtr<ID3D12Device> pDevice, const SharedFileSystemPtr& fs);
 			~D3D12Device()override;
 			void ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectI* pRects = nullptr, const int rectCount = 0)override;
-			SharedBlendStatePtr CreateBlendState()override;
-			SharedDepthStencilStatePtr CreateDepthStencilState()override;
-			SharedPipelineStateObjectPtr CreatePipelineStateObject()override;
 			SharedVertexBufferPtr CreateVertexBuffer()override;
 			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)override;
-			SharedRasterizerStatePtr CreateRasterizerState()override;
 			ComPtr<ID3D12Device> GetNativeDevice()const { return m_device; }
+			void ApplyRasterizerState(const RasterizerState& state)override;
+			void ApplyBlendState(const BlendState& state)override;
+			void ApplyDepthStencilState(const DepthStencilState& state)override;
+			void ApplyPipelineState(const PipelineState& state)override;
 		private:
 			SharedFileSystemPtr m_fs;
 			std::unique_ptr<D3D12ShaderManager> m_shaderMgr;
@@ -36,6 +36,7 @@ namespace LightningGE
 			std::vector<ComPtr<ID3D12CommandAllocator>> m_commandAllocators;
 			ComPtr<ID3D12GraphicsCommandList> m_commandList;
 			std::unique_ptr<IMemoryAllocator> m_smallObjAllocator;
+			D3D12_GRAPHICS_PIPELINE_STATE_DESC m_pipelineDesc;
 		};
 	}
 }

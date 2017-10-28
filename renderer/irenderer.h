@@ -6,7 +6,6 @@
 #include "idevice.h"
 #include "iswapchain.h"
 #include "irendertargetmanager.h"
-#include "ipipelinestateobject.h"
 #include "color.h"
 
 namespace LightningGE
@@ -39,8 +38,6 @@ namespace LightningGE
 			virtual void SetClearColor(const ColorF& color) = 0;
 			//get the current frame index
 			virtual unsigned long GetCurrentFrameIndex()const = 0;
-			//apply the pipeline state object
-			virtual void ApplyPipelineStateObject(const SharedPipelineStateObjectPtr& pso) = 0;
 		};
 		typedef std::unique_ptr<IRenderer> UniqueRendererPtr;
 	}
