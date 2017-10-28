@@ -22,13 +22,13 @@ namespace LightningGE
 			m_compileAllocator = std::make_unique<StackAllocator<true, 16, 8192>>();
 		}
 
-		SharedShaderPtr ShaderManager::GetShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)
+		SharedShaderPtr ShaderManager::GetShader(ShaderType type, const std::string& shaderFileName, const ShaderDefine& defineMap)
 		{
-			std::size_t hash = Shader::Hash(type, shaderName, defineMap);
+			std::size_t hash = Shader::Hash(type, shaderFileName, defineMap);
 			auto it = m_shaders.find(hash);
 			if (it != m_shaders.end())
 				return it->second;
-			SharedFilePtr shaderFile = m_fs->FindFile(shaderName, FileAccess::ACCESS_READ);
+			SharedFilePtr shaderFile = m_fs->FindFile(shaderFileName, FileAccess::ACCESS_READ);
 			if (!shaderFile)
 				return nullptr;
 			SharedShaderPtr pShader = CreateConcreteShader(type);

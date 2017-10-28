@@ -15,7 +15,7 @@ namespace LightningGE
 		{
 		public:
 			ShaderManager(const SharedFileSystemPtr& fs);
-			SharedShaderPtr GetShader(ShaderType type, const std::string& shaderName, const ShaderDefine& defineMap)override;
+			SharedShaderPtr GetShader(ShaderType type, const std::string& shaderFileName, const ShaderDefine& defineMap)override;
 			IMemoryAllocator* GetCompileAllocator()const override{ return m_compileAllocator.get();}
 		protected:
 			virtual SharedShaderPtr CreateConcreteShader(ShaderType type) = 0;

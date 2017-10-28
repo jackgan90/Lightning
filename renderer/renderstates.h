@@ -1,5 +1,8 @@
 #pragma once
+#include <functional>
+#include <boost/functional/hash.hpp>
 #include "irendertarget.h"
+#include "types/rect.h"
 
 namespace LightningGE
 {
@@ -34,6 +37,7 @@ namespace LightningGE
 			BlendState():enable(false), colorOp(BLEND_ADD) ,alphaOp(BLEND_ADD)
 				, srcColorFactor(BLEND_SRC_ALPHA) ,srcAlphaFactor(BLEND_SRC_ALPHA)
 				, destColorFactor(BLEND_INV_SRC_ALPHA), destAlphaFactor(BLEND_INV_SRC_ALPHA)
+				, renderTarget(nullptr)
 			{
 			}
 			bool enable;
@@ -138,5 +142,85 @@ namespace LightningGE
 			BlendState blendState;
 			DepthStencilState depthStencilState;
 		};
+
+		struct Viewport
+		{
+			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+			RectF viewport;
+		};
+
+		struct ScissorRect
+		{
+			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+			RectF scissorRect;
+		};
 	}
+}
+
+namespace std
+{
+	template<> struct hash<LightningGE::Renderer::RasterizerState>
+	{
+		std::size_t operator()(const LightningGE::Renderer::RasterizerState& state)const noexcept
+		{
+			std::size_t seed = 0;
+			boost::hash_combine(seed, state.cullMode);
+			boost::hash_combine(seed, state.fillMode);
+			boost::hash_combine(seed, state.frontFaceWindingOrder);
+			return seed;
+		}
+	};
+
+	template<> struct hash<LightningGE::Renderer::BlendState>
+	{
+		std::size_t operator()(const LightningGE::Renderer::BlendState& state)const noexcept
+		{
+			std::size_t seed = 0;
+			boost::hash_combine(seed, state.alphaOp);
+			boost::hash_combine(seed, state.colorOp);
+			boost::hash_combine(seed, state.destAlphaFactor);
+			boost::hash_combine(seed, state.destColorFactor);
+			boost::hash_combine(seed, state.enable);
+			boost::hash_combine(seed, state.renderTarget? state.renderTarget->GetID() : 0);
+			boost::hash_combine(seed, state.srcAlphaFactor);
+			boost::hash_combine(seed, state.srcColorFactor);
+			return seed;
+		}
+	};
+
+	template<> struct hash<LightningGE::Renderer::DepthStencilState>
+	{
+		std::size_t operator()(const LightningGE::Renderer::DepthStencilState& state)const noexcept
+		{
+			std::size_t seed = 0;
+			boost::hash_combine(seed, state.backFace.cmpFunc);
+			boost::hash_combine(seed, state.backFace.depthFailOp);
+			boost::hash_combine(seed, state.backFace.failOp);
+			boost::hash_combine(seed, state.backFace.passOp);
+			boost::hash_combine(seed, state.depthCmpFunc);
+			boost::hash_combine(seed, state.depthTestEnable);
+			boost::hash_combine(seed, state.depthWriteEnable);
+			boost::hash_combine(seed, state.frontFace.cmpFunc);
+			boost::hash_combine(seed, state.frontFace.depthFailOp);
+			boost::hash_combine(seed, state.frontFace.failOp);
+			boost::hash_combine(seed, state.frontFace.passOp);
+			boost::hash_combine(seed, state.stencilEnable);
+			boost::hash_combine(seed, state.stencilReadMask);
+			boost::hash_combine(seed, state.stencilRef);
+			boost::hash_combine(seed, state.stencilWriteMask);
+			return seed;
+		}
+	};
+
+	template<> struct hash<LightningGE::Renderer::PipelineState>
+	{
+		std::size_t operator()(const LightningGE::Renderer::PipelineState& state)const noexcept
+		{
+			std::size_t seed = 0;
+			boost::hash_combine(seed, std::hash<LightningGE::Renderer::RasterizerState>{}(state.rasterizerState));
+			boost::hash_combine(seed, std::hash<LightningGE::Renderer::BlendState>{}(state.blendState));
+			boost::hash_combine(seed, std::hash<LightningGE::Renderer::DepthStencilState>{}(state.depthStencilState));
+			return seed;
+		}
+	};
 }
