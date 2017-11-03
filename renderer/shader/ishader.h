@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <exception>
 #include "rendererexportdef.h"
 #include "shaderdefine.h"
 #include "filesystem.h"
@@ -27,11 +28,11 @@ namespace LightningGE
 			virtual ShaderType GetType()const = 0;
 			virtual void DefineMacros(const ShaderDefine& define) = 0;
 			virtual const ShaderDefine GetMacros()const = 0;
-			virtual bool Compile(const Foundation::SharedFilePtr& file, const ShaderDefine& define) = 0;
-			virtual const std::string GetCompileErrorLog()const = 0;
+			//virtual bool Compile(const Foundation::SharedFilePtr& file, const ShaderDefine& define) = 0;
+			//virtual const std::string GetCompileErrorLog()const = 0;
 			virtual std::string GetName()const = 0;
 #ifndef NDEBUG
-			virtual std::string GetSource()const = 0;
+			virtual const char* const GetSource()const = 0;
 #endif
 			virtual void GetShaderModelVersion(int& major, int& minor) = 0;
 		};
@@ -42,7 +43,7 @@ namespace LightningGE
 		{
 		public:
 			static size_t Hash(const ShaderType& type, const std::string& shaderName, const ShaderDefine& defineMap);
-			Shader(IShaderManager* manager);
+			Shader();
 			~Shader()override;
 			void SetEntryPoint(const std::string& entryPoint)override;
 			void DefineMacros(const ShaderDefine& define)override;
@@ -50,7 +51,6 @@ namespace LightningGE
 			size_t CalculateHashInternal()override;
 			std::string m_entryPoint;
 			ShaderDefine m_macros;
-			IShaderManager* m_shaderMgr;
 		};
 	}
 }

@@ -14,7 +14,8 @@ namespace LightningGE
 		{
 		public:
 			//return a compiled shader ptr if the specified shader can be created successfully
-			virtual SharedShaderPtr GetShader(ShaderType type, const std::string& shaderFileName, const ShaderDefine& defineMap) = 0;
+			virtual SharedShaderPtr GetShader(size_t shaderHash) = 0;
+			virtual SharedShaderPtr CreateShaderFromFile(ShaderType type, const std::string& fileName, const ShaderDefine& defineMap) = 0;
 			virtual IMemoryAllocator* GetCompileAllocator()const = 0;
 		protected:
 			IShaderManager(){}

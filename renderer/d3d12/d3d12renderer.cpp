@@ -216,7 +216,6 @@ namespace LightningGE
 		void D3D12Renderer::BeginRender()
 		{
 			m_frameIndex++;
-			m_device->CreateShader(SHADER_TYPE_VERTEX, "default.vs", ShaderDefine());
 		}
 
 		void D3D12Renderer::DoRender()

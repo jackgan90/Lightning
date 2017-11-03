@@ -16,12 +16,14 @@ set(HEADERS rendererexportdef.h
 			vertexbuffer.h
 			rendererhelper.h
 			renderexception.h
-			rendererfactory.h)
+			rendererfactory.h
+			renderconstants.h)
 set(SOURCES renderer.cpp
 			device.cpp
 			vertexbuffer.cpp
 			rendererhelper.cpp
 			rendererfactory.cpp
+			renderconstants.cpp
 			rendertargetmanager.cpp)
 
 set(TYPES_HEADERS	types/color.h

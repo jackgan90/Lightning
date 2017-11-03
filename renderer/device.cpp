@@ -10,12 +10,6 @@ namespace LightningGE
 
 		}
 
-		SharedShaderPtr Device::CreateShader(ShaderType type, const std::string& shaderFileName, const ShaderDefine& defineMap)
-		{
-			assert(m_shaderMgr != nullptr && "You must create IShaderManager instance in derived class!");
-			return m_shaderMgr->GetShader(type, shaderFileName, defineMap);
-		}
-
 		void Device::ApplyRasterizerState(const RasterizerState& state)
 		{
 			m_currentPipelineState.rasterizerState = state;

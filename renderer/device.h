@@ -11,7 +11,6 @@ namespace LightningGE
 		{
 		public:
 			Device();
-			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderFileName, const ShaderDefine& defineMap)override;
 			void ApplyRasterizerState(const RasterizerState& state)override;
 			void ApplyBlendState(const BlendState& state)override;
 			void ApplyDepthStencilState(const DepthStencilState& state)override;

@@ -24,6 +24,7 @@ namespace LightningGE
 			void ClearRenderTarget(IRenderTarget* rt, const ColorF& color, const RenderIRects* rects=nullptr)override;
 			SharedVertexBufferPtr CreateVertexBuffer()override;
 			ComPtr<ID3D12Device> GetNativeDevice()const { return m_device; }
+			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)override;
 			void ApplyRasterizerState(const RasterizerState& state)override;
 			void ApplyBlendState(const BlendState& state)override;
 			void ApplyDepthStencilState(const DepthStencilState& state)override;
