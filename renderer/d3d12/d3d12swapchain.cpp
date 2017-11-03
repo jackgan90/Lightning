@@ -15,7 +15,7 @@ namespace LightningGE
 	{
 		using Foundation::logger;
 		using Foundation::LogLevel;
-		D3D12SwapChain::D3D12SwapChain(ComPtr<IDXGISwapChain3> pSwapChain, D3D12Renderer* pRenderer):m_renderer(pRenderer)
+		D3D12SwapChain::D3D12SwapChain(const ComPtr<IDXGISwapChain3>& pSwapChain, D3D12Renderer* pRenderer):m_renderer(pRenderer)
 		{
 			m_swapChain = pSwapChain;
 			DXGI_SWAP_CHAIN_DESC desc;

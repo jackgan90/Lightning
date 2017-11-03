@@ -22,7 +22,7 @@ namespace LightningGE
 			return SharedRenderTargetPtr();
 		}
 
-		SharedRenderTargetPtr D3D12RenderTargetManager::CreateSwapChainRenderTarget(ComPtr<ID3D12Resource> swapChainRT, const D3D12_CPU_DESCRIPTOR_HANDLE& handle)
+		SharedRenderTargetPtr D3D12RenderTargetManager::CreateSwapChainRenderTarget(const ComPtr<ID3D12Resource>& swapChainRT, const D3D12_CPU_DESCRIPTOR_HANDLE& handle)
 		{
 			RenderTargetID rtID = m_currentID;
 			D3D12RenderTarget *pRenderTarget = new D3D12RenderTarget(swapChainRT, true, rtID);

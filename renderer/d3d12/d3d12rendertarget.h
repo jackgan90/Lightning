@@ -12,7 +12,7 @@ namespace LightningGE
 		{
 		public:
 			friend class D3D12RenderTargetManager;
-			D3D12RenderTarget(ComPtr<ID3D12Resource> pRenderTarget, bool isSwapChainTarget, const RenderTargetID& rtID);
+			D3D12RenderTarget(const ComPtr<ID3D12Resource>& pRenderTarget, bool isSwapChainTarget, const RenderTargetID& rtID);
 			~D3D12RenderTarget()override;
 			bool IsSwapChainRenderTarget()const override;
 			int GetBoundIndex()const override { return m_boundIndex; }

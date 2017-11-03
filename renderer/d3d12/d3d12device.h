@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
+#include "stackallocator.h"
 #include "device.h"
 #include "stackallocator.h"
 #include "filesystem.h"
@@ -15,11 +16,12 @@ namespace LightningGE
 	{
 		using Microsoft::WRL::ComPtr;
 		using Foundation::SharedFileSystemPtr;
+		using Foundation::StackAllocator;
 		class LIGHTNINGGE_RENDERER_API D3D12Device : public Device
 		{
 		public:
 			friend class D3D12Renderer;
-			D3D12Device(ComPtr<ID3D12Device> pDevice, const SharedFileSystemPtr& fs);
+			D3D12Device(const ComPtr<ID3D12Device>& pDevice, const SharedFileSystemPtr& fs);
 			~D3D12Device()override;
 			void ClearRenderTarget(IRenderTarget* rt, const ColorF& color, const RenderIRects* rects=nullptr)override;
 			SharedVertexBufferPtr CreateVertexBuffer()override;
@@ -33,20 +35,24 @@ namespace LightningGE
 			void ApplyScissorRects(const RenderScissorRects& scissorRects)override;
 		private:
 			//if parameter pState is nullptr,this method will create a default pipeline state
-			void SetUpDefaultPipelineState();
+			using PipelineCacheMap = std::unordered_map<std::size_t, ComPtr<ID3D12PipelineState>>;
+			using RootSignatureMap = std::unordered_map<std::size_t, ComPtr<ID3D12RootSignature>>;
+			void ApplyShader(IShader* pShader);
+			void SetUpDefaultPipelineStates();
+			ComPtr<ID3D12RootSignature> GetRootSignature(const std::vector<IShader*>& shaders);
 			ComPtr<ID3D12PipelineState> CreateAndCachePipelineState(const PipelineState& pState, std::size_t hashValue);
 			SharedFileSystemPtr m_fs;
 			ComPtr<ID3D12Device> m_device;
 			ComPtr<ID3D12CommandQueue> m_commandQueue;
 			std::vector<ComPtr<ID3D12CommandAllocator>> m_commandAllocators;
-			D3D12_INPUT_ELEMENT_DESC* m_inputElements;
 			size_t m_inputElementCount;
 			ComPtr<ID3D12GraphicsCommandList> m_commandList;
 			ComPtr<ID3D12PipelineState> m_pipelineState;
 			D3D12_VIEWPORT m_viewport;
 			std::unique_ptr<IMemoryAllocator> m_smallObjAllocator;
 			D3D12_GRAPHICS_PIPELINE_STATE_DESC m_pipelineDesc;
-			std::unordered_map<std::size_t, ComPtr<ID3D12PipelineState>> m_pipelineCache;
+			PipelineCacheMap m_pipelineCache;
+			RootSignatureMap m_rootSignatures;
 		};
 	}
 }

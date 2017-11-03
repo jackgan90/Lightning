@@ -13,7 +13,7 @@ namespace LightningGE
 			return hash;
 		}
 
-		Shader::Shader():m_entryPoint("main")
+		Shader::Shader(const std::string& entryPoint):m_entryPoint(entryPoint)
 		{
 
 		}
@@ -30,6 +30,7 @@ namespace LightningGE
 
 		void Shader::SetEntryPoint(const std::string& entryPoint)
 		{
+			//TODO recompile
 			bool changed = m_entryPoint != entryPoint;
 			m_entryPoint = entryPoint;
 			if (changed)

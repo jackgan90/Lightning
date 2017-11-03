@@ -78,7 +78,7 @@ namespace LightningGE
 #endif
 
 
-		void D3D12Renderer::InitDevice(ComPtr<IDXGIFactory4> dxgiFactory)
+		void D3D12Renderer::InitDevice(const ComPtr<IDXGIFactory4>& dxgiFactory)
 		{
 			ComPtr<IDXGIAdapter1> adaptor;
 			int adaptorIndex = 0;
@@ -116,7 +116,7 @@ namespace LightningGE
 			m_device = std::make_unique<D3D12Device>(pDevice, m_fs);
 		}
 
-		void D3D12Renderer::InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, const SharedWindowPtr& pWindow)
+		void D3D12Renderer::InitSwapChain(const ComPtr<IDXGIFactory4>& dxgiFactory, const SharedWindowPtr& pWindow)
 		{
 			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
 			UINT sampleCount = 1;

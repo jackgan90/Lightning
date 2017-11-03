@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include <boost/functional/hash.hpp>
+#include "ishader.h"
 #include "irendertarget.h"
 #include "types/rect.h"
 
@@ -141,6 +142,11 @@ namespace LightningGE
 			RasterizerState rasterizerState;
 			BlendState blendState;
 			DepthStencilState depthStencilState;
+			IShader* vs;
+			IShader* fs;
+			IShader* gs;
+			IShader* hs;
+			IShader* ds;
 		};
 
 		struct Viewport
@@ -220,6 +226,31 @@ namespace std
 			boost::hash_combine(seed, std::hash<LightningGE::Renderer::RasterizerState>{}(state.rasterizerState));
 			boost::hash_combine(seed, std::hash<LightningGE::Renderer::BlendState>{}(state.blendState));
 			boost::hash_combine(seed, std::hash<LightningGE::Renderer::DepthStencilState>{}(state.depthStencilState));
+			if (state.vs)
+			{
+				boost::hash_combine(seed, 0x01);
+				boost::hash_combine(seed, LightningGE::Renderer::Shader::Hash(state.vs->GetType(), state.vs->GetName(), state.vs->GetMacros()));
+			}
+			if (state.fs)
+			{
+				boost::hash_combine(seed, 0x02);
+				boost::hash_combine(seed, LightningGE::Renderer::Shader::Hash(state.fs->GetType(), state.fs->GetName(), state.fs->GetMacros()));
+			}
+			if (state.gs)
+			{
+				boost::hash_combine(seed, 0x04);
+				boost::hash_combine(seed, LightningGE::Renderer::Shader::Hash(state.gs->GetType(), state.gs->GetName(), state.gs->GetMacros()));
+			}
+			if (state.hs)
+			{
+				boost::hash_combine(seed, 0x10);
+				boost::hash_combine(seed, LightningGE::Renderer::Shader::Hash(state.hs->GetType(), state.hs->GetName(), state.hs->GetMacros()));
+			}
+			if (state.ds)
+			{
+				boost::hash_combine(seed, 0x20);
+				boost::hash_combine(seed, LightningGE::Renderer::Shader::Hash(state.ds->GetType(), state.ds->GetName(), state.ds->GetMacros()));
+			}
 			return seed;
 		}
 	};

@@ -43,10 +43,11 @@ namespace LightningGE
 		{
 		public:
 			static size_t Hash(const ShaderType& type, const std::string& shaderName, const ShaderDefine& defineMap);
-			Shader();
+			Shader(const std::string& entryPoint);
 			~Shader()override;
 			void SetEntryPoint(const std::string& entryPoint)override;
 			void DefineMacros(const ShaderDefine& define)override;
+			std::string GetEntryPoint()const override { return m_entryPoint; }
 		protected:
 			size_t CalculateHashInternal()override;
 			std::string m_entryPoint;

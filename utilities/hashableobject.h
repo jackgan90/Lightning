@@ -8,7 +8,7 @@ namespace LightningGE
 		class HashableObject
 		{
 		public:
-			explicit HashableObject() : m_hashDirty(true), m_hashValue(0){}
+			HashableObject() : m_hashDirty(true), m_hashValue(0){}
 			virtual ~HashableObject() = default;
 			size_t GetHashValue() { UpdateHash(); return m_hashValue; }
 		protected:

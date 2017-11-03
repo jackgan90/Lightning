@@ -24,7 +24,11 @@ namespace LightningGE
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
 		using Foundation::StackAllocator;
-		D3D12Device::D3D12Device(ComPtr<ID3D12Device> pDevice, const SharedFileSystemPtr& fs)
+		const char* const DEFAULT_VS_SOURCE = "float4 main(float4 position:POSITION):SV_POSITION\n"
+			"{\n"
+				"return position;\n"
+			"}\n";
+		D3D12Device::D3D12Device(const ComPtr<ID3D12Device>& pDevice, const SharedFileSystemPtr& fs)
 			:Device(), m_fs(fs), m_pipelineDesc{}
 		{
 			m_smallObjAllocator = std::make_unique<StackAllocator<true, 16, 8192>>();
@@ -51,11 +55,11 @@ namespace LightningGE
 			{
 				throw DeviceInitException("Failed to create command list!");
 			}
-			m_commandList->Close();
 			m_shaderMgr = std::make_unique<D3D12ShaderManager>(this, fs);
 			//should create first default pipeline state
-			//SetUpDefaultPipelineState();
-			m_shaderMgr->CreateShaderFromFile(SHADER_TYPE_VERTEX, "default.vs", ShaderDefine());
+			SetUpDefaultPipelineStates();
+			m_commandList->Close();
+			//m_shaderMgr->CreateShaderFromFile(SHADER_TYPE_VERTEX, "default.vs", ShaderDefine());
 		}
 
 		D3D12Device::~D3D12Device()
@@ -185,6 +189,24 @@ namespace LightningGE
 			ApplyRasterizerState(state.rasterizerState);
 			ApplyBlendState(state.blendState);
 			ApplyDepthStencilState(state.depthStencilState);
+			std::vector<IShader*> shaders;
+			ApplyShader(state.vs);
+			ApplyShader(state.fs);
+			ApplyShader(state.gs);
+			ApplyShader(state.hs);
+			ApplyShader(state.ds);
+			if (state.vs)
+				shaders.push_back(state.vs);
+			if (state.fs)
+				shaders.push_back(state.fs);
+			if (state.gs)
+				shaders.push_back(state.gs);
+			if (state.hs)
+				shaders.push_back(state.hs);
+			if (state.ds)
+				shaders.push_back(state.ds);
+			auto rootSignature = GetRootSignature(shaders);
+			m_pipelineDesc.pRootSignature = rootSignature.Get();
 			auto hr = m_device->CreateGraphicsPipelineState(&m_pipelineDesc, IID_PPV_ARGS(&pipelineState));
 			if (FAILED(hr))
 			{
@@ -195,9 +217,24 @@ namespace LightningGE
 			return pipelineState;
 		}
 
-		void D3D12Device::SetUpDefaultPipelineState()
+		void D3D12Device::SetUpDefaultPipelineStates()
 		{
-			CreateAndCachePipelineState(m_currentPipelineState, std::hash<PipelineState>{}(m_currentPipelineState));
+			auto defaultShader = CreateShader(SHADER_TYPE_VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
+			m_currentPipelineState.vs = defaultShader.get();
+			D3D12_INPUT_ELEMENT_DESC inputLayout[] =
+			{
+				{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
+			};
+
+			// fill out an input layout description structure
+			D3D12_INPUT_LAYOUT_DESC inputLayoutDesc = {};
+
+			// we can get the number of elements in an array by "sizeof(array) / sizeof(arrayElementType)"
+			inputLayoutDesc.NumElements = sizeof(inputLayout) / sizeof(D3D12_INPUT_ELEMENT_DESC);
+			inputLayoutDesc.pInputElementDescs = inputLayout;
+			m_pipelineDesc.InputLayout = inputLayoutDesc;
+			m_pipelineDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+			ApplyPipelineState(m_currentPipelineState);
 		}
 
 		SharedShaderPtr D3D12Device::CreateShader(ShaderType type, const std::string& shaderName, 
@@ -276,6 +313,49 @@ namespace LightningGE
 			}
 			return std::make_shared<D3D12Shader>(type, shaderName, shaderSource, byteCode, 
 				DEFAULT_SHADER_MODEL_MAJOR_VERSION, DEFAULT_SHADER_MODEL_MINOR_VERSION, DEFAULT_SHADER_ENTRY);
+		}
+
+		void D3D12Device::ApplyShader(IShader* pShader)
+		{
+			if (pShader)
+			{
+				auto d3d12shader = static_cast<D3D12Shader*>(pShader);
+				m_pipelineDesc.VS.pShaderBytecode = d3d12shader->GetByteCodeBuffer();
+				m_pipelineDesc.VS.BytecodeLength = d3d12shader->GetByteCodeBufferSize();
+			}
+		}
+
+		ComPtr<ID3D12RootSignature> D3D12Device::GetRootSignature(const std::vector<IShader*>& shaders)
+		{	
+			size_t seed = 0;
+			boost::hash_combine(seed, shaders.size());
+			for (const auto& s : shaders)
+			{
+				boost::hash_combine(seed, s->GetHashValue());
+			}
+			auto it = m_rootSignatures.find(seed);
+			if (it != m_rootSignatures.end())
+				return it->second;
+
+			//TODO :create root signature based on shader parameters
+			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
+			rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+
+			ID3DBlob* signature;
+			auto hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, nullptr);
+			if (FAILED(hr))
+			{
+				return ComPtr<ID3D12RootSignature>();
+			}
+
+			ComPtr<ID3D12RootSignature> rootSignature;
+			hr = m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&rootSignature));
+			if (FAILED(hr))
+			{
+				return ComPtr<ID3D12RootSignature>();
+			}
+			m_rootSignatures[seed] = rootSignature;
+			return rootSignature;
 		}
 
 	}

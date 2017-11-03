@@ -42,8 +42,8 @@ namespace LightningGE
 			void EndRender();
 		private:
 			void WaitForPreviousFrame();
-			void InitDevice(ComPtr<IDXGIFactory4> dxgiFactory);
-			void InitSwapChain(ComPtr<IDXGIFactory4> dxgiFactory, const SharedWindowPtr& pWindow);
+			void InitDevice(const ComPtr<IDXGIFactory4>& dxgiFactory);
+			void InitSwapChain(const ComPtr<IDXGIFactory4>& dxgiFactory, const SharedWindowPtr& pWindow);
 			void CreateFences();
 			std::unique_ptr<D3D12SwapChain> m_swapChain;
 			std::unique_ptr<D3D12RenderTargetManager> m_rtMgr;

@@ -25,7 +25,7 @@ namespace LightningGE
 		{
 		public:
 			friend class D3D12Renderer;
-			D3D12DescriptorHeapManager(ComPtr<ID3D12Device> pdevice);
+			D3D12DescriptorHeapManager(const ComPtr<ID3D12Device>& pdevice);
 			~D3D12DescriptorHeapManager();
 			const HeapAllocationInfo* Create(const D3D12_DESCRIPTOR_HEAP_DESC& desc);
 			void Destroy(UINT heapID);

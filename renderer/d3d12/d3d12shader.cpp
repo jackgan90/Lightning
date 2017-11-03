@@ -1,4 +1,7 @@
 #include <sstream>
+#include <d3dx12.h>
+#include "d3d12device.h"
+#include "renderer.h"
 #include "shadermanager.h"
 #include "d3d12shader.h"
 
@@ -10,12 +13,11 @@ namespace LightningGE
 		using Foundation::FilePointerType;
 		using Foundation::FileAnchor;
 
-		D3D12Shader::D3D12Shader(ShaderType type, const std::string& name, const char* const shaderSource, const ComPtr<ID3D10Blob> byteCode,
+		D3D12Shader::D3D12Shader(ShaderType type, const std::string& name, const char* const shaderSource, const ComPtr<ID3D10Blob>& byteCode,
 			int smMajor, int smMinor, const std::string& entry):
-			Shader(), m_type(type)
+			Shader(entry), m_type(type)
 			,m_name(name), m_byteCode(byteCode)
 			,m_smMajorVersion(smMajor), m_smMinorVersion(smMinor)
-			,m_entry(entry)
 #ifndef NDEBUG
 			,m_source(shaderSource)
 #endif
@@ -26,12 +28,6 @@ namespace LightningGE
 		D3D12Shader::~D3D12Shader()
 		{
 
-		}
-
-
-		std::string D3D12Shader::GetEntryPoint()const
-		{
-			return m_entry;
 		}
 
 		ShaderType D3D12Shader::GetType()const
@@ -66,7 +62,7 @@ namespace LightningGE
 		{
 			if (m_byteCode)
 			{
-				m_byteCode->GetBufferPointer();
+				return m_byteCode->GetBufferPointer();
 			}
 			return nullptr;
 		}
@@ -75,7 +71,7 @@ namespace LightningGE
 		{
 			if (m_byteCode)
 			{
-				m_byteCode->GetBufferSize();
+				return m_byteCode->GetBufferSize();
 			}
 			return 0;
 		}

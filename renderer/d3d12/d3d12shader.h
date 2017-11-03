@@ -14,10 +14,9 @@ namespace LightningGE
 		public:
 			friend class D3D12Device;
 			friend class D3D12ShaderManager;
-			D3D12Shader(ShaderType type, const std::string& name, const char* const shaderSource, const ComPtr<ID3D10Blob> byteCode,
+			D3D12Shader(ShaderType type, const std::string& name, const char* const shaderSource, const ComPtr<ID3D10Blob>& byteCode,
 				int smMajor, int smMinor, const std::string& entry);
 			~D3D12Shader()override;
-			std::string GetEntryPoint()const override; 
 			ShaderType GetType()const override;
 			const ShaderDefine GetMacros()const override;
 			//bool Compile(const Foundation::SharedFilePtr& file, const ShaderDefine& define)override;
@@ -39,6 +38,7 @@ namespace LightningGE
 			int m_smMajorVersion;
 			int m_smMinorVersion;
 			ComPtr<ID3D10Blob> m_byteCode;
+			ComPtr<ID3D12RootSignature> m_rootSignature;
 		};
 	}
 }

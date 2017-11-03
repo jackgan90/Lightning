@@ -7,7 +7,7 @@ namespace LightningGE
 	{
 		using Foundation::logger;
 		using Foundation::LogLevel;
-		D3D12DescriptorHeapManager::D3D12DescriptorHeapManager(ComPtr<ID3D12Device> pdevice)
+		D3D12DescriptorHeapManager::D3D12DescriptorHeapManager(const ComPtr<ID3D12Device>& pdevice)
 			:m_device(pdevice),m_currentID(0)
 		{
 

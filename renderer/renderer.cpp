@@ -1,12 +1,21 @@
+#include <cassert>
 #include "renderer.h"
 
 namespace LightningGE
 {
 	namespace Renderer
 	{
+		Renderer* Renderer::s_instance = nullptr;
 		Renderer::Renderer(const SharedFileSystemPtr& fs) :m_frameIndex(0), m_fs(fs)
 		{
+			assert(s_instance == nullptr);
+			s_instance = this;
+		}
 
+		Renderer::~Renderer()
+		{
+			assert(s_instance != nullptr);
+			s_instance = nullptr;
 		}
 
 		void Renderer::Render()
