@@ -1,6 +1,8 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include <functional>
+#include <boost/functional/hash.hpp>
 #include "rendererexportdef.h"
 #include "semantics.h"
 
@@ -51,4 +53,22 @@ namespace LightningGE
 		};
 		typedef std::shared_ptr<IVertexBuffer> SharedVertexBufferPtr;
 	}
+}
+
+namespace std
+{
+	template<> struct hash<LightningGE::Renderer::VertexAttribute>
+	{
+		size_t operator()(const LightningGE::Renderer::VertexAttribute& attribute)
+		{
+			size_t seed = 0;
+			boost::hash_combine(seed, attribute.format);
+			boost::hash_combine(seed, attribute.instanceStepRate);
+			boost::hash_combine(seed, attribute.isInstance);
+			boost::hash_combine(seed, attribute.offset);
+			boost::hash_combine(seed, attribute.semanticIndex);
+			boost::hash_combine(seed, attribute.semanticItem.semantic);
+			return seed;
+		}
+	};
 }

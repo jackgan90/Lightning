@@ -1,8 +1,10 @@
 #pragma once
 #include <functional>
+#include <vector>
 #include <boost/functional/hash.hpp>
 #include "ishader.h"
 #include "irendertarget.h"
+#include "ivertexbuffer.h"
 #include "types/rect.h"
 
 namespace LightningGE
@@ -147,6 +149,7 @@ namespace LightningGE
 			IShader* gs;
 			IShader* hs;
 			IShader* ds;
+			std::vector<VertexAttribute> vertexAttributes;
 		};
 
 		struct Viewport
@@ -250,6 +253,10 @@ namespace std
 			{
 				boost::hash_combine(seed, 0x20);
 				boost::hash_combine(seed, LightningGE::Renderer::Shader::Hash(state.ds->GetType(), state.ds->GetName(), state.ds->GetMacros()));
+			}
+			for (size_t i = 0; i < state.vertexAttributes.size(); ++i)
+			{
+				boost::hash_combine(seed, std::hash<LightningGE::Renderer::VertexAttribute>{}(state.vertexAttributes[i]));
 			}
 			return seed;
 		}
