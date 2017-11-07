@@ -29,7 +29,7 @@ namespace LightningGE
 				"return position;\n"
 			"}\n";
 		D3D12Device::D3D12Device(const ComPtr<ID3D12Device>& pDevice, const SharedFileSystemPtr& fs)
-			:Device(), m_fs(fs), m_pipelineDesc{}
+			:Device(), m_fs(fs), m_pipelineDesc{}, m_pInputElementDesc(nullptr)
 		{
 			m_smallObjAllocator = std::make_unique<StackAllocator<true, 16, 8192>>();
 			m_device = pDevice;
@@ -56,6 +56,7 @@ namespace LightningGE
 				throw DeviceInitException("Failed to create command list!");
 			}
 			m_shaderMgr = std::make_unique<D3D12ShaderManager>(this, fs);
+			m_pipelineDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 			//should create first default pipeline state
 			SetUpDefaultPipelineStates();
 			m_commandList->Close();
@@ -64,6 +65,10 @@ namespace LightningGE
 
 		D3D12Device::~D3D12Device()
 		{
+			if (m_pInputElementDesc)
+			{
+				DEALLOC(m_smallObjAllocator, m_pInputElementDesc);
+			}
 		}
 
 		void D3D12Device::ClearRenderTarget(IRenderTarget* rt, const ColorF& color, const RenderIRects* rects)
@@ -81,7 +86,7 @@ namespace LightningGE
 			if (rects && !rects->empty())
 			{
 				D3D12_RECT* d3dRect = ALLOC_ARRAY(m_smallObjAllocator, rects->size(), D3D12_RECT);
-				for (int i = 0; i < rects->size(); i++)
+				for (size_t i = 0; i < rects->size(); i++)
 				{
 					d3dRect[i].left = (*rects)[i].left();
 					d3dRect[i].right = (*rects)[i].right();
@@ -205,6 +210,7 @@ namespace LightningGE
 				shaders.push_back(state.hs);
 			if (state.ds)
 				shaders.push_back(state.ds);
+			UpdatePSOInputLayout(state.vertexAttributes);
 			auto rootSignature = GetRootSignature(shaders);
 			m_pipelineDesc.pRootSignature = rootSignature.Get();
 			auto hr = m_device->CreateGraphicsPipelineState(&m_pipelineDesc, IID_PPV_ARGS(&pipelineState));
@@ -221,19 +227,8 @@ namespace LightningGE
 		{
 			auto defaultShader = CreateShader(SHADER_TYPE_VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
 			m_currentPipelineState.vs = defaultShader.get();
-			D3D12_INPUT_ELEMENT_DESC inputLayout[] =
-			{
-				{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
-			};
-
-			// fill out an input layout description structure
-			D3D12_INPUT_LAYOUT_DESC inputLayoutDesc = {};
-
-			// we can get the number of elements in an array by "sizeof(array) / sizeof(arrayElementType)"
-			inputLayoutDesc.NumElements = sizeof(inputLayout) / sizeof(D3D12_INPUT_ELEMENT_DESC);
-			inputLayoutDesc.pInputElementDescs = inputLayout;
-			m_pipelineDesc.InputLayout = inputLayoutDesc;
-			m_pipelineDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+			VertexAttribute defaultAttribute{ EngineSemantics[0], 0, VERTEX_FORMAT_R32G32B32_FLOAT, 0, false, 0, 0 };
+			m_currentPipelineState.vertexAttributes.push_back(defaultAttribute);
 			ApplyPipelineState(m_currentPipelineState);
 		}
 
@@ -323,6 +318,32 @@ namespace LightningGE
 				m_pipelineDesc.VS.pShaderBytecode = d3d12shader->GetByteCodeBuffer();
 				m_pipelineDesc.VS.BytecodeLength = d3d12shader->GetByteCodeBufferSize();
 			}
+		}
+
+		void D3D12Device::UpdatePSOInputLayout(const std::vector<VertexAttribute>& attributes)
+		{
+			if (attributes.empty())
+				return;
+			if (m_pInputElementDesc)
+				DEALLOC(m_smallObjAllocator, m_pInputElementDesc);
+			m_pInputElementDesc = ALLOC_ARRAY(m_smallObjAllocator, attributes.size(), D3D12_INPUT_ELEMENT_DESC);
+			for (size_t i = 0; i < attributes.size(); ++i)
+			{
+				const auto& attr = attributes[i];
+				m_pInputElementDesc[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+				m_pInputElementDesc[i].Format = D3D12TypeMapper::MapVertexFormat(attr.format);
+				m_pInputElementDesc[i].InputSlot = attr.bindIndex;
+				m_pInputElementDesc[i].InputSlotClass = attr.isInstance ? \
+					D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA : D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+				m_pInputElementDesc[i].InstanceDataStepRate = attr.instanceStepRate;
+				m_pInputElementDesc[i].SemanticIndex = attr.semanticIndex;
+				m_pInputElementDesc[i].SemanticName = attr.semanticItem.name;
+			}
+			D3D12_INPUT_LAYOUT_DESC& inputLayoutDesc = m_pipelineDesc.InputLayout;
+
+			// we can get the number of elements in an array by "sizeof(array) / sizeof(arrayElementType)"
+			inputLayoutDesc.NumElements = attributes.size();
+			inputLayoutDesc.pInputElementDescs = m_pInputElementDesc;
 		}
 
 		ComPtr<ID3D12RootSignature> D3D12Device::GetRootSignature(const std::vector<IShader*>& shaders)

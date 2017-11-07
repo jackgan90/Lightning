@@ -134,6 +134,17 @@ namespace LightningGE
 					return D3D12_CULL_MODE_BACK;
 				}
 			}
+
+			static DXGI_FORMAT MapVertexFormat(VertexFormat format)
+			{
+				switch (format)
+				{
+				case VERTEX_FORMAT_R32G32B32_FLOAT:
+					return DXGI_FORMAT_R32G32B32_FLOAT;
+				default:
+					return DXGI_FORMAT_R32G32B32_FLOAT;
+				}
+			}
 		};
 	}
 }

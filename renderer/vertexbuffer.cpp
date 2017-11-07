@@ -49,17 +49,28 @@ namespace LightningGE
 
 		void VertexBuffer::SetBuffer(const std::vector<VertexAttribute>& attributes, unsigned char* buffer, unsigned int bufferSize)
 		{
+			assert(!attributes.empty() && "attributes mustn't be empty!");
+			assert(buffer && "buffer can't be nullptr!");
+#ifndef NDEBUG
+			auto firstBindIndex = attributes[0].bindIndex;
+			for (const auto& attr : attributes)
+			{
+				assert(attr.bindIndex == firstBindIndex);
+			}
+#endif
 			m_attributes = attributes;
 			m_buffer = buffer;
 			m_bufferSize = bufferSize;
 			m_vertexCountDirty = true;
 			m_vertexSizeDirty = true;
+			m_bindingLocation = attributes[0].bindIndex;
 		}
 
 
 		void VertexBuffer::SetBindingLocation(int loc)
 		{
 			m_bindingLocation = loc;
+			std::for_each(m_attributes.begin(), m_attributes.end(), [=](VertexAttribute& attr) {attr.bindIndex = loc; });
 		}
 
 		int VertexBuffer::GetBindingLocation()const
@@ -81,7 +92,7 @@ namespace LightningGE
 		{
 			if (m_vertexSizeDirty)
 			{
-				auto attribute = std::max_element(m_attributes.begin(), m_attributes.end(),
+				auto attribute = std::max_element(m_attributes.cbegin(), m_attributes.cend(),
 					[](const VertexAttribute& a0, const VertexAttribute& a1) {return a0.offset < a1.offset; });
 				m_vertexSize = attribute->offset + GetVertexFormatSize(attribute->format);
 				m_vertexSizeDirty = false;

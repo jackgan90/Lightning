@@ -27,6 +27,8 @@ namespace LightningGE
 			bool isInstance;
 			//if this attribute is an instance attribute,specify after drawing how many instances should the attribute move to next value
 			unsigned int instanceStepRate;
+			//corresponding vertex buffer binding index
+			unsigned int bindIndex;
 		};
 
 		//note:IVertexBuffer assume tightly packed vertex data.

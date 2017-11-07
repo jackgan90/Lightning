@@ -38,6 +38,7 @@ namespace LightningGE
 			using PipelineCacheMap = std::unordered_map<std::size_t, ComPtr<ID3D12PipelineState>>;
 			using RootSignatureMap = std::unordered_map<std::size_t, ComPtr<ID3D12RootSignature>>;
 			void ApplyShader(IShader* pShader);
+			void UpdatePSOInputLayout(const std::vector<VertexAttribute>& attributes);
 			void SetUpDefaultPipelineStates();
 			ComPtr<ID3D12RootSignature> GetRootSignature(const std::vector<IShader*>& shaders);
 			ComPtr<ID3D12PipelineState> CreateAndCachePipelineState(const PipelineState& pState, std::size_t hashValue);
@@ -53,6 +54,7 @@ namespace LightningGE
 			D3D12_GRAPHICS_PIPELINE_STATE_DESC m_pipelineDesc;
 			PipelineCacheMap m_pipelineCache;
 			RootSignatureMap m_rootSignatures;
+			D3D12_INPUT_ELEMENT_DESC* m_pInputElementDesc;
 		};
 	}
 }
