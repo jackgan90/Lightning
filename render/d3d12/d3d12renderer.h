@@ -37,9 +37,9 @@ namespace LightningGE
 				return m_descriptorMgr.get();
 			}
 		protected:
-			void BeginRender();
-			void DoRender();
-			void EndRender();
+			void BeginFrame()override;
+			void DoFrame()override;
+			void EndFrame()override;
 		private:
 			void WaitForPreviousFrame(bool waitAll);
 			void InitDevice(const ComPtr<IDXGIFactory4>& dxgiFactory);

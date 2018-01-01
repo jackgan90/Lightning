@@ -213,7 +213,7 @@ namespace LightningGE
 		}
 #endif
 
-		void D3D12Renderer::BeginRender()
+		void D3D12Renderer::BeginFrame()
 		{
 			WaitForPreviousFrame(false);
 			m_frameIndex++;
@@ -225,14 +225,14 @@ namespace LightningGE
 			commandList->Reset(commandAllocator.Get(), nullptr);
 		}
 
-		void D3D12Renderer::DoRender()
+		void D3D12Renderer::DoFrame()
 		{
 			//here goes rendering commands
 			auto currentSwapChainRT = m_swapChain->GetBufferRenderTarget(m_currentBackBufferIndex);
 			m_device->ClearRenderTarget(currentSwapChainRT.get(), m_clearColor);
 		}
 
-		void D3D12Renderer::EndRender()
+		void D3D12Renderer::EndFrame()
 		{
 			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
 			auto commandList = pD3D12Device->m_commandList;

@@ -20,9 +20,9 @@ namespace LightningGE
 			unsigned long GetCurrentFrameIndex()const override;
 			static Renderer* Instance() { return s_instance; }
 		protected:
-			virtual void BeginRender() = 0;
-			virtual void DoRender() = 0;
-			virtual void EndRender() = 0;
+			virtual void BeginFrame() = 0;
+			virtual void DoFrame() = 0;
+			virtual void EndFrame() = 0;
 			unsigned int m_frameIndex;
 			SharedFileSystemPtr m_fs;
 			std::unique_ptr<IDevice> m_device;

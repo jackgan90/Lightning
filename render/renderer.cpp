@@ -20,9 +20,9 @@ namespace LightningGE
 
 		void Renderer::Render()
 		{
-			BeginRender();
-			DoRender();
-			EndRender();
+			BeginFrame();
+			DoFrame();
+			EndFrame();
 		}
 
 		unsigned long Renderer::GetCurrentFrameIndex()const
