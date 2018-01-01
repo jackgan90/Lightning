@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
-#include <vector>
+#include <unordered_map>
+#include <cstdint>
 #include <boost/functional/hash.hpp>
 #include "ishader.h"
 #include "irendertarget.h"
@@ -51,6 +52,51 @@ namespace LightningGE
 			BlendFactor destColorFactor;
 			BlendFactor destAlphaFactor;
 			IRenderTarget* renderTarget;
+
+			bool operator==(const BlendState& state)const noexcept
+			{
+				if (colorOp != state.colorOp)
+				{
+					return false;
+				}
+
+				if (alphaOp != state.alphaOp)
+				{
+					return false;
+				}
+
+				if (srcColorFactor != state.srcColorFactor)
+				{
+					return false;
+				}
+
+				if (srcAlphaFactor != state.srcAlphaFactor)
+				{
+					return false;
+				}
+
+				if (destColorFactor != state.destColorFactor)
+				{
+					return false;
+				}
+
+				if (destAlphaFactor != state.destAlphaFactor)
+				{
+					return false;
+				}
+				
+				if (renderTarget != state.renderTarget)
+				{
+					return false;
+				}
+
+				return true;
+			}
+
+			bool operator!=(const BlendState& state)const noexcept
+			{
+				return !(*this == state);
+			}
 		};
 
 		enum FillMode
@@ -81,6 +127,31 @@ namespace LightningGE
 			FillMode fillMode;
 			CullMode cullMode;
 			FrontFaceWindingOrder frontFaceWindingOrder;
+
+			bool operator==(const RasterizerState& state)const noexcept
+			{
+				if (fillMode != state.fillMode)
+				{
+					return false;
+				}
+
+				if (cullMode != state.cullMode)
+				{
+					return false;
+				}
+
+				if (frontFaceWindingOrder != state.frontFaceWindingOrder)
+				{
+					return false;
+				}
+
+				return true;
+			}
+
+			bool operator!=(const RasterizerState& state)const noexcept
+			{
+				return !(*this == state);
+			}
 		};
 
 		enum CmpFunc
@@ -116,6 +187,36 @@ namespace LightningGE
 			StencilOp passOp;
 			StencilOp failOp;
 			StencilOp depthFailOp;
+
+			bool operator==(const StencilFace& face)const noexcept
+			{
+				if (cmpFunc != face.cmpFunc)
+				{
+					return false;
+				}
+
+				if (passOp != face.passOp)
+				{
+					return false;
+				}
+
+				if (failOp != face.failOp)
+				{
+					return false;
+				}
+
+				if (depthFailOp != face.depthFailOp)
+				{
+					return false;
+				}
+
+				return true;
+			}
+
+			bool operator!=(const StencilFace& face)const noexcept
+			{
+				return !(*this == face);
+			}
 		};
 
 		struct DepthStencilState
@@ -137,8 +238,64 @@ namespace LightningGE
 			unsigned char stencilWriteMask;
 			StencilFace frontFace;
 			StencilFace backFace;
+
+			bool operator==(const DepthStencilState& state)const noexcept
+			{
+				if (depthTestEnable != state.depthTestEnable)
+				{
+					return false;
+				}
+
+				if (depthWriteEnable != state.depthWriteEnable)
+				{
+					return false;
+				}
+
+				if (depthCmpFunc != state.depthCmpFunc)
+				{
+					return false;
+				}
+
+				if (stencilEnable != state.stencilEnable)
+				{
+					return false;
+				}
+
+				if (stencilRef != state.stencilRef)
+				{
+					return false;
+				}
+
+				if (stencilReadMask != state.stencilReadMask)
+				{
+					return false;
+				}
+
+				if (stencilWriteMask != state.stencilWriteMask)
+				{
+					return false;
+				}
+
+				if (frontFace != state.frontFace)
+				{
+					return false;
+				}
+
+				if (backFace != state.backFace)
+				{
+					return false;
+				}
+
+				return true;
+			}
+
+			bool operator!=(const DepthStencilState& state)const noexcept
+			{
+				return !(*this == state);
+			}
 		};
 
+		using VertexComponentBoundMap = std::unordered_map<VertexComponent, std::uint16_t>;
 		struct PipelineState
 		{
 			RasterizerState rasterizerState;
@@ -149,7 +306,75 @@ namespace LightningGE
 			IShader* gs;
 			IShader* hs;
 			IShader* ds;
-			std::vector<VertexAttribute> vertexAttributes;
+			VertexComponentBoundMap vertexComponents;
+
+			bool operator==(const PipelineState& state)const noexcept
+			{
+				if (rasterizerState != state.rasterizerState)
+				{
+					return false;
+				}
+
+				if (blendState != state.blendState)
+				{
+					return false;
+				}
+
+				if (depthStencilState != state.depthStencilState)
+				{
+					return false;
+				}
+				
+				if (vs != state.vs)
+				{
+					return false;
+				}
+
+				if (fs != state.fs)
+				{
+					return false;
+				}
+
+				if (gs != state.gs)
+				{
+					return false;
+				}
+
+				if (hs != state.hs)
+				{
+					return false;
+				}
+
+				if (ds != state.ds)
+				{
+					return false;
+				}
+
+				if (vertexComponents.size() != state.vertexComponents.size())
+				{
+					return false;
+				}
+
+				for (auto it=vertexComponents.cbegin();it != vertexComponents.cend();++it)
+				{
+					auto slot = state.vertexComponents.find(it->first);
+					if (slot == state.vertexComponents.end())
+					{
+						return false;
+					}
+					if (it->second != slot->second)
+					{
+						return false;
+					}
+				}
+
+				return true;
+			}
+
+			bool operator!=(const PipelineState& state)const noexcept
+			{
+				return !(*this == state);
+			}
 		};
 
 		struct Viewport
@@ -254,9 +479,11 @@ namespace std
 				boost::hash_combine(seed, 0x20);
 				boost::hash_combine(seed, LightningGE::Renderer::Shader::Hash(state.ds->GetType(), state.ds->GetName(), state.ds->GetMacros()));
 			}
-			for (size_t i = 0; i < state.vertexAttributes.size(); ++i)
+			for (auto it = state.vertexComponents.cbegin();it != state.vertexComponents.cend();++it)
 			{
-				boost::hash_combine(seed, std::hash<LightningGE::Renderer::VertexAttribute>{}(state.vertexAttributes[i]));
+				const auto& component = it->first;
+				boost::hash_combine(seed, std::hash<LightningGE::Renderer::VertexComponent>{}(component));
+				boost::hash_combine(seed, it->second);
 			}
 			return seed;
 		}

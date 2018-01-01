@@ -210,7 +210,7 @@ namespace LightningGE
 				shaders.push_back(state.hs);
 			if (state.ds)
 				shaders.push_back(state.ds);
-			UpdatePSOInputLayout(state.vertexAttributes);
+			UpdatePSOInputLayout(state.vertexComponents);
 			auto rootSignature = GetRootSignature(shaders);
 			m_pipelineDesc.pRootSignature = rootSignature.Get();
 			auto hr = m_device->CreateGraphicsPipelineState(&m_pipelineDesc, IID_PPV_ARGS(&pipelineState));
@@ -227,8 +227,8 @@ namespace LightningGE
 		{
 			auto defaultShader = CreateShader(SHADER_TYPE_VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
 			m_currentPipelineState.vs = defaultShader.get();
-			VertexAttribute defaultAttribute{ EngineSemantics[0], 0, VERTEX_FORMAT_R32G32B32_FLOAT, 0, false, 0, 0 };
-			m_currentPipelineState.vertexAttributes.push_back(defaultAttribute);
+			VertexComponent defaultComponent{ EngineSemantics[0], 0, VERTEX_FORMAT_R32G32B32_FLOAT, 0, false, 0};
+			m_currentPipelineState.vertexComponents[defaultComponent] = 0;
 			ApplyPipelineState(m_currentPipelineState);
 		}
 
@@ -320,29 +320,31 @@ namespace LightningGE
 			}
 		}
 
-		void D3D12Device::UpdatePSOInputLayout(const std::vector<VertexAttribute>& attributes)
+		void D3D12Device::UpdatePSOInputLayout(const VertexComponentBoundMap& components)
 		{
-			if (attributes.empty())
+			if (components.empty())
 				return;
 			if (m_pInputElementDesc)
 				DEALLOC(m_smallObjAllocator, m_pInputElementDesc);
-			m_pInputElementDesc = ALLOC_ARRAY(m_smallObjAllocator, attributes.size(), D3D12_INPUT_ELEMENT_DESC);
-			for (size_t i = 0; i < attributes.size(); ++i)
+			m_pInputElementDesc = ALLOC_ARRAY(m_smallObjAllocator, components.size(), D3D12_INPUT_ELEMENT_DESC);
+			std::size_t i = 0;
+			for (auto it = components.cbegin();it != components.cend();++it)
 			{
-				const auto& attr = attributes[i];
+				const auto& component = it->first;
 				m_pInputElementDesc[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-				m_pInputElementDesc[i].Format = D3D12TypeMapper::MapVertexFormat(attr.format);
-				m_pInputElementDesc[i].InputSlot = attr.bindIndex;
-				m_pInputElementDesc[i].InputSlotClass = attr.isInstance ? \
+				m_pInputElementDesc[i].Format = D3D12TypeMapper::MapVertexFormat(component.format);
+				m_pInputElementDesc[i].InputSlot = it->second;
+				m_pInputElementDesc[i].InputSlotClass = component.isInstance ? \
 					D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA : D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-				m_pInputElementDesc[i].InstanceDataStepRate = attr.instanceStepRate;
-				m_pInputElementDesc[i].SemanticIndex = attr.semanticIndex;
-				m_pInputElementDesc[i].SemanticName = attr.semanticItem.name;
+				m_pInputElementDesc[i].InstanceDataStepRate = component.instanceStepRate;
+				m_pInputElementDesc[i].SemanticIndex = component.semanticIndex;
+				m_pInputElementDesc[i].SemanticName = component.semanticItem.name;
+				++i;
 			}
 			D3D12_INPUT_LAYOUT_DESC& inputLayoutDesc = m_pipelineDesc.InputLayout;
 
 			// we can get the number of elements in an array by "sizeof(array) / sizeof(arrayElementType)"
-			inputLayoutDesc.NumElements = attributes.size();
+			inputLayoutDesc.NumElements = components.size();
 			inputLayoutDesc.pInputElementDescs = m_pInputElementDesc;
 		}
 

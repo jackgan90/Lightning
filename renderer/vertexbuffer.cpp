@@ -7,75 +7,65 @@ namespace LightningGE
 {
 	namespace Renderer
 	{
-		VertexBuffer::VertexBuffer():m_buffer(nullptr), m_bufferSize(0), m_bindingLocation(-1)
+		VertexBuffer::VertexBuffer(const std::vector<VertexComponent>& components):
+			m_components(components), m_buffer(nullptr), m_bufferSize(0), m_GPUBindSlot(0xffff)
 			,m_vertexSize(0), m_vertexCount(0), m_vertexCountDirty(true), m_vertexSizeDirty(true)
 		{
 
 		}
 
-		const VertexAttribute& VertexBuffer::GetAttributeInfo(size_t attributeIndex)
+		const VertexComponent& VertexBuffer::GetComponentInfo(size_t componentIndex)
 		{
-			assert(attributeIndex < m_attributes.size());
-			return m_attributes[attributeIndex];
+			assert(componentIndex < m_components.size());
+			return m_components[componentIndex];
 		}
 
-		unsigned int VertexBuffer::GetAttributeCount()
+		std::uint8_t VertexBuffer::GetComponentCount()
 		{
-			return m_attributes.size();
+			return static_cast<std::uint8_t>(m_components.size());
 		}
 
-		const unsigned char* VertexBuffer::GetBuffer()
+		const std::uint8_t* VertexBuffer::GetBuffer()const
 		{
 			return m_buffer;
 		}
 
-		unsigned long VertexBuffer::GetBufferSize()
+		std::uint32_t VertexBuffer::GetBufferSize()
 		{
 			return m_bufferSize;
 		}
 
-		unsigned long VertexBuffer::GetVertexCount()
+		std::uint32_t VertexBuffer::GetVertexCount()
 		{
 			CalculateVertexCount();
 			return m_vertexCount;
 		}
 
-		unsigned int VertexBuffer::GetVertexSize()
+		std::uint32_t VertexBuffer::GetVertexSize()
 		{
 			CalculateVertexSize();
 			return m_vertexSize;
 		}
 
 
-		void VertexBuffer::SetBuffer(const std::vector<VertexAttribute>& attributes, unsigned char* buffer, unsigned int bufferSize)
+		void VertexBuffer::SetBuffer(std::uint8_t* buffer, std::uint32_t bufferSize)
 		{
-			assert(!attributes.empty() && "attributes mustn't be empty!");
 			assert(buffer && "buffer can't be nullptr!");
-#ifndef NDEBUG
-			auto firstBindIndex = attributes[0].bindIndex;
-			for (const auto& attr : attributes)
-			{
-				assert(attr.bindIndex == firstBindIndex);
-			}
-#endif
-			m_attributes = attributes;
 			m_buffer = buffer;
 			m_bufferSize = bufferSize;
 			m_vertexCountDirty = true;
 			m_vertexSizeDirty = true;
-			m_bindingLocation = attributes[0].bindIndex;
 		}
 
 
-		void VertexBuffer::SetBindingLocation(int loc)
+		void VertexBuffer::SetGPUBindSlot(std::uint16_t loc)
 		{
-			m_bindingLocation = loc;
-			std::for_each(m_attributes.begin(), m_attributes.end(), [=](VertexAttribute& attr) {attr.bindIndex = loc; });
+			m_GPUBindSlot = loc;
 		}
 
-		int VertexBuffer::GetBindingLocation()const
+		std::uint16_t VertexBuffer::GetGPUBindSlot()const
 		{
-			return m_bindingLocation;
+			return m_GPUBindSlot;
 		}
 
 		void VertexBuffer::CalculateVertexCount()
@@ -92,8 +82,8 @@ namespace LightningGE
 		{
 			if (m_vertexSizeDirty)
 			{
-				auto attribute = std::max_element(m_attributes.cbegin(), m_attributes.cend(),
-					[](const VertexAttribute& a0, const VertexAttribute& a1) {return a0.offset < a1.offset; });
+				auto attribute = std::max_element(m_components.cbegin(), m_components.cend(),
+					[](const VertexComponent& a0, const VertexComponent& a1) {return a0.offset < a1.offset; });
 				m_vertexSize = attribute->offset + GetVertexFormatSize(attribute->format);
 				m_vertexSizeDirty = false;
 			}

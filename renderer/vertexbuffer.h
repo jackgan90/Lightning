@@ -8,33 +8,33 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDERER_API VertexBuffer : public IVertexBuffer
 		{
 		public:
-			VertexBuffer();
-			const VertexAttribute& GetAttributeInfo(size_t attributeIndex)override;
+			VertexBuffer(const std::vector<VertexComponent>& components);
+			const VertexComponent& GetComponentInfo(size_t attributeIndex)override;
 			//get vertex attribute count associate with this vertex buffer
-			unsigned int GetAttributeCount()override;
+			std::uint8_t GetComponentCount()override;
 			//get internal data
-			const unsigned char* GetBuffer()override;
+			const std::uint8_t* GetBuffer()const override;
 			//get internal buffer size in bytes
-			unsigned long GetBufferSize()override;
+			std::uint32_t GetBufferSize()override;
 			//get vertices count contained within this vertex buffer
-			unsigned long GetVertexCount()override;
+			std::uint32_t GetVertexCount()override;
 			//get vertex size in bytes
-			unsigned int GetVertexSize()override;
+			std::uint32_t GetVertexSize()override;
 			//set internal buffer,no copy
-			void SetBuffer(const std::vector<VertexAttribute>& attributes, unsigned char* buffer, unsigned int bufferSize)override;
+			void SetBuffer(std::uint8_t* buffer, std::uint32_t bufferSize)override;
 			//set binding location for this vertex buffer.The buffer will be bound to loc-th slot when issue draw call
-			void SetBindingLocation(int loc)override;
+			void SetGPUBindSlot(std::uint16_t loc)override;
 			//get binding location.Typically invoked by device to bind the buffer
-			int GetBindingLocation()const override;
+			std::uint16_t GetGPUBindSlot()const override;
 		protected:
 			void CalculateVertexCount();
 			void CalculateVertexSize();
-			std::vector<VertexAttribute> m_attributes;
-			unsigned char* m_buffer;
-			unsigned long m_bufferSize;
-			unsigned int m_bindingLocation;
-			unsigned int m_vertexCount;
-			unsigned int m_vertexSize;
+			std::vector<VertexComponent> m_components;
+			std::uint8_t* m_buffer;
+			std::uint32_t m_bufferSize;
+			std::uint16_t m_GPUBindSlot;
+			std::uint32_t m_vertexCount;
+			std::uint32_t m_vertexSize;
 		private:
 			bool m_vertexCountDirty;
 			bool m_vertexSizeDirty;
