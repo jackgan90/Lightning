@@ -13,7 +13,7 @@ namespace LightningGE
 	{
 		using WindowSystem::SharedWindowPtr;
 		using WindowSystem::WindowManager;
-		using Renderer::UniqueRendererPtr;
+		using Render::UniqueRendererPtr;
 		class LIGHTNINGGE_PLATFORM_API Win32Application : public Application
 		{
 		public:

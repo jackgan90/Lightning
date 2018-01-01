@@ -21,7 +21,7 @@ if(WIN32)
 endif()
 if(LIGHTNINGGE_USE_D3D12)
 	add_definitions(-DLIGHTNINGGE_USE_D3D12)
-	include_directories(${CMAKE_SOURCE_DIR}/renderer/d3d12)
+	include_directories(${CMAKE_SOURCE_DIR}/render/d3d12)
 endif()
 
 source_group("application" FILES 
@@ -39,16 +39,16 @@ set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/foundation/memory
 					${CMAKE_CURRENT_SOURCE_DIR} 
-					${CMAKE_SOURCE_DIR}/renderer
-					${CMAKE_SOURCE_DIR}/renderer/types
-					${CMAKE_SOURCE_DIR}/renderer/shader
+					${CMAKE_SOURCE_DIR}/render
+					${CMAKE_SOURCE_DIR}/render/types
+					${CMAKE_SOURCE_DIR}/render/shader
 					${CMAKE_SOURCE_DIR}/window
 					${CMAKE_SOURCE_DIR}/utilities
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost)
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
-add_dependencies(${PROJECT_NAME} foundation window renderer)
+add_dependencies(${PROJECT_NAME} foundation window render)
 
 if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /wd4251 /wd4275 /EHsc /MDd")
@@ -57,5 +57,5 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
-target_link_libraries(${PROJECT_NAME} foundation window renderer)
+target_link_libraries(${PROJECT_NAME} foundation window render)
 

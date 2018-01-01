@@ -13,7 +13,7 @@ namespace LightningGE
 		using Foundation::SharedFileSystemPtr;
 		using WindowSystem::WindowManager;
 		using WindowSystem::SharedWindowPtr;
-		using Renderer::UniqueRendererPtr;
+		using Render::UniqueRendererPtr;
 		class LIGHTNINGGE_PLATFORM_API IApplication
 		{
 		public:

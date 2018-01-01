@@ -10,7 +10,7 @@ namespace LightningGE
 	{
 		using Foundation::LogLevel;
 		using Foundation::logger;
-		using Renderer::RendererFactory;
+		using Render::RendererFactory;
 		Win32Application::Win32Application():Application()
 		{
 		}
