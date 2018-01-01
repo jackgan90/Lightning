@@ -76,8 +76,11 @@ namespace LightningGE
 			D3D12RenderTarget *pTarget = static_cast<D3D12RenderTarget*>(rt);
 			ComPtr<ID3D12Resource> nativeRenderTarget = pTarget->GetNative();
 			if (rt->IsSwapChainRenderTarget())
-				m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget.Get(),
-					D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+			{
+				auto transition = CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget.Get(),
+					D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
+				m_commandList->ResourceBarrier(1, &transition);
+			}
 
 			//TODO : check gpu?
 			const float clearColor[] = { color.r(), color.g(), color.b(), color.a() };
@@ -102,8 +105,11 @@ namespace LightningGE
 			}
 
 			if (rt->IsSwapChainRenderTarget())
-				m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget.Get(),
-					D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+			{
+				auto transition = CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget.Get(),
+					D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
+				m_commandList->ResourceBarrier(1, &transition);
+			}
 
 		}
 

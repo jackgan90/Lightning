@@ -6,6 +6,7 @@
 #include <iostream>
 #include <chrono>
 #include <unordered_map>
+#include <cstdint>
 #include "catch.hpp"
 #include "stackallocator.h"
 #include "poolallocator.h"
@@ -226,13 +227,13 @@ namespace
 		constexpr const int AllocateUnit = 100;
 		std::stringstream ss;
 		ss << AlignedAlloc << Alignment << BlockSize;
-		void* memArray[AllocateCount];
+		std::uint8_t* memArray[AllocateCount];
 		SECTION("PerfTest" + ss.str())
 		{
 			std::cout << "alignAlloc:" << std::boolalpha << AlignedAlloc << ",alignment:" << Alignment << ",blockSize:" << BlockSize << std::endl;
 			auto malloc_start = std::chrono::high_resolution_clock::now();
 			for (auto i = 0; i < AllocateCount; ++i)
-				memArray[i] = std::malloc(AllocateUnit);
+				memArray[i] = reinterpret_cast<std::uint8_t*>(std::malloc(AllocateUnit));
 			auto malloc_end = std::chrono::high_resolution_clock::now();
 
 			std::cout << "[std::malloc allocation time:] " << duration_cast<duration<double>>(malloc_end - malloc_start).count() << std::endl;
@@ -246,7 +247,7 @@ namespace
 
 			auto new_start = std::chrono::high_resolution_clock::now();
 			for (auto i = 0; i < AllocateCount; ++i)
-				memArray[i] = reinterpret_cast<void*>(new char[AllocateUnit]);
+				memArray[i] = new std::uint8_t[AllocateUnit];
 			auto new_end = std::chrono::high_resolution_clock::now();
 
 			std::cout << "[new allocation time:] " << duration_cast<duration<double>>(new_end - new_start).count() << std::endl;
@@ -259,7 +260,7 @@ namespace
 
 			auto allocator_alloc_start = std::chrono::high_resolution_clock::now();
 			for (auto i = 0; i < AllocateCount; ++i)
-				memArray[i] = ALLOC(&allocator, AllocateUnit, void);
+				memArray[i] = ALLOC(&allocator, AllocateUnit, std::uint8_t);
 			auto allocator_alloc_end = std::chrono::high_resolution_clock::now();
 
 			std::cout << "[allocator allocation time:] " << duration_cast<duration<double>>(allocator_alloc_end - allocator_alloc_start).count() << std::endl;

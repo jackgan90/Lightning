@@ -61,7 +61,7 @@ namespace LightningGE
 			~GeneralFileSystem()override;
 			SharedFilePtr FindFile(const std::string& filename, FileAccess bitmask)override;
 			bool SetRoot(std::string root_path)override;
-			const std::string GetRoot() const { return m_root.string(); }
+			const std::string GetRoot() const override{ return m_root.string(); }
 		protected:
 			boost::filesystem::path m_root;
 			std::unordered_map<std::string, SharedFilePtr> m_cachedFiles;
