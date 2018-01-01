@@ -41,7 +41,7 @@ namespace LightningGE
 			void DoRender();
 			void EndRender();
 		private:
-			void WaitForPreviousFrame();
+			void WaitForPreviousFrame(bool waitAll);
 			void InitDevice(const ComPtr<IDXGIFactory4>& dxgiFactory);
 			void InitSwapChain(const ComPtr<IDXGIFactory4>& dxgiFactory, const SharedWindowPtr& pWindow);
 			void CreateFences();

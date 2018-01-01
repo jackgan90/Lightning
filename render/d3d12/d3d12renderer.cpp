@@ -20,7 +20,7 @@ namespace LightningGE
 
 		D3D12Renderer::~D3D12Renderer()
 		{
-			WaitForPreviousFrame();
+			WaitForPreviousFrame(true);
 			logger.Log(LogLevel::Info, "Start to clean up render resources.");
 			m_fences.clear();
 			::CloseHandle(m_fenceEvent);
@@ -215,32 +215,33 @@ namespace LightningGE
 
 		void D3D12Renderer::BeginRender()
 		{
+			WaitForPreviousFrame(false);
 			m_frameIndex++;
+			m_currentBackBufferIndex = m_swapChain->m_swapChain->GetCurrentBackBufferIndex();
+			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
+			auto commandAllocator = pD3D12Device->m_commandAllocators[m_currentBackBufferIndex];
+			auto commandList = pD3D12Device->m_commandList;
+			commandAllocator->Reset();
+			commandList->Reset(commandAllocator.Get(), nullptr);
 		}
 
 		void D3D12Renderer::DoRender()
 		{
-			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
-			WaitForPreviousFrame();
-			m_swapChain->Present();
-			auto commandAllocator = pD3D12Device->m_commandAllocators[m_currentBackBufferIndex];
-			auto commandList = pD3D12Device->m_commandList;
-			auto commandQueue = pD3D12Device->m_commandQueue;
-			commandAllocator->Reset();
-			commandList->Reset(commandAllocator.Get(), nullptr);
-			m_currentBackBufferIndex = m_swapChain->m_swapChain->GetCurrentBackBufferIndex();
 			//here goes rendering commands
 			auto currentSwapChainRT = m_swapChain->GetBufferRenderTarget(m_currentBackBufferIndex);
 			m_device->ClearRenderTarget(currentSwapChainRT.get(), m_clearColor);
-			commandList->Close();
-			ID3D12CommandList* commandListArray[] = { commandList.Get() };
-			commandQueue->ExecuteCommandLists(_countof(commandListArray), commandListArray);
-			commandQueue->Signal(m_fences[m_currentBackBufferIndex].Get(), m_fenceValues[m_currentBackBufferIndex]);
 		}
 
 		void D3D12Renderer::EndRender()
 		{
-
+			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
+			auto commandList = pD3D12Device->m_commandList;
+			auto commandQueue = pD3D12Device->m_commandQueue;
+			commandList->Close();
+			ID3D12CommandList* commandListArray[] = { commandList.Get() };
+			commandQueue->ExecuteCommandLists(_countof(commandListArray), commandListArray);
+			commandQueue->Signal(m_fences[m_currentBackBufferIndex].Get(), m_fenceValues[m_currentBackBufferIndex]);
+			m_swapChain->Present();
 		}
 
 		D3D12RenderTargetManager* D3D12Renderer::GetRenderTargetManager()
@@ -249,22 +250,39 @@ namespace LightningGE
 		}
 
 
-		void D3D12Renderer::WaitForPreviousFrame()
+		void D3D12Renderer::WaitForPreviousFrame(bool waitAll)
 		{
 			HRESULT hr;
 			ComPtr<IDXGISwapChain3> nativeSwapChain = m_swapChain->m_swapChain;
-			m_currentBackBufferIndex = nativeSwapChain->GetCurrentBackBufferIndex();
-			if (m_fences[m_currentBackBufferIndex]->GetCompletedValue() < m_fenceValues[m_currentBackBufferIndex])
+			std::vector<UINT> bufferIndice;
+			if (!waitAll)
 			{
-				hr = m_fences[m_currentBackBufferIndex]->SetEventOnCompletion(m_fenceValues[m_currentBackBufferIndex], m_fenceEvent);
-				if (FAILED(hr))
-				{
-					logger.Log(LogLevel::Error, "Failed to SetEventOnCompletion, current back buffer index:%d, fence value:%d",
-						m_currentBackBufferIndex, m_fenceValues[m_currentBackBufferIndex]);
-				}
-				::WaitForSingleObject(m_fenceEvent, INFINITE);
+				bufferIndice.push_back(nativeSwapChain->GetCurrentBackBufferIndex());
 			}
-			++m_fenceValues[m_currentBackBufferIndex];
+			else
+			{
+				auto commandQueue = static_cast<D3D12Device*>(m_device.get())->m_commandQueue;
+				for (std::size_t i = 0;i < m_swapChain->GetBufferCount();++i)
+				{
+					bufferIndice.push_back(i);
+					//explicit signal to prevent release assert
+					commandQueue->Signal(m_fences[i].Get(), m_fenceValues[i]);
+				}
+			}
+			for (const auto& bufferIndex : bufferIndice)
+			{
+				if (m_fences[bufferIndex]->GetCompletedValue() < m_fenceValues[bufferIndex])
+				{
+					hr = m_fences[bufferIndex]->SetEventOnCompletion(m_fenceValues[bufferIndex], m_fenceEvent);
+					if (FAILED(hr))
+					{
+						logger.Log(LogLevel::Error, "Failed to SetEventOnCompletion, back buffer index:%d, fence value:%d",
+							bufferIndex, m_fenceValues[bufferIndex]);
+					}
+					::WaitForSingleObject(m_fenceEvent, INFINITE);
+				}
+				++m_fenceValues[bufferIndex];
+			}
 		}
 
 		void D3D12Renderer::SetClearColor(const ColorF& color)

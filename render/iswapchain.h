@@ -14,7 +14,7 @@ namespace LightningGE
 			//preset the current back buffer to display
 			virtual bool Present() = 0;
 			//get swapchain back buffer count
-			virtual unsigned int GetBufferCount()const = 0;
+			virtual std::size_t GetBufferCount()const = 0;
 			//get corresponding render target
 			virtual SharedRenderTargetPtr GetBufferRenderTarget(unsigned int bufferIndex) = 0;
 		};

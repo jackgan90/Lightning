@@ -13,6 +13,7 @@ set(HEADERS rendererexportdef.h
 			renderstates.h
 			semantics.h
 			vertexbuffer.h
+			indexbuffer.h
 			rendererhelper.h
 			renderexception.h
 			rendererfactory.h
@@ -22,6 +23,7 @@ set(HEADERS rendererexportdef.h
 set(SOURCES renderer.cpp
 			device.cpp
 			vertexbuffer.cpp
+			indexbuffer.cpp
 			rendererhelper.cpp
 			rendererfactory.cpp
 			renderconstants.cpp
