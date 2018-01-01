@@ -29,11 +29,6 @@ set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 
 include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen
-					${CMAKE_SOURCE_DIR}/platform
-					${CMAKE_SOURCE_DIR}/platform/application
-					${CMAKE_SOURCE_DIR}/render
-					${CMAKE_SOURCE_DIR}/render/shader
-					${CMAKE_SOURCE_DIR}/render/types
 					${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/utilities
 					${CMAKE_SOURCE_DIR}/foundation/memory)

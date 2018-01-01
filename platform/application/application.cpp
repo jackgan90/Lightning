@@ -2,6 +2,7 @@
 #include "filesystemfactory.h"
 #include "iapplication.h"
 #include "logger.h"
+#include "irenderer.h"
 
 
 namespace LightningGE

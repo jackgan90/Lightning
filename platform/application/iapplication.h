@@ -3,17 +3,19 @@
 #include "platformexportdef.h"
 #include "filesystem.h"
 #include "windowmanager.h"
-#include "irenderer.h"
-
 
 namespace LightningGE
 {
+	namespace Render
+	{
+		class IRenderer;
+	}
 	namespace App
 	{
 		using Foundation::SharedFileSystemPtr;
 		using WindowSystem::WindowManager;
 		using WindowSystem::SharedWindowPtr;
-		using Render::UniqueRendererPtr;
+		using UniqueRendererPtr = std::unique_ptr<Render::IRenderer>;
 		class LIGHTNINGGE_PLATFORM_API IApplication
 		{
 		public:

@@ -13,6 +13,7 @@ namespace LightningGE
 	{
 		using WindowSystem::SharedWindowPtr;
 		using Foundation::SharedFileSystemPtr;
+		using UniqueRendererPtr = std::unique_ptr<IRenderer>;
 		class LIGHTNINGGE_RENDER_API RendererFactory : public Foundation::Singleton<RendererFactory>
 		{
 		public:

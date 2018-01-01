@@ -42,14 +42,11 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/platform/application 
 					${CMAKE_SOURCE_DIR}/window
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
-					${CMAKE_SOURCE_DIR}/render
-					${CMAKE_SOURCE_DIR}/render/types
-					${CMAKE_SOURCE_DIR}/render/shader
 					${CMAKE_SOURCE_DIR}/utilities
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen)
 add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES})
-add_dependencies(${PROJECT_NAME} foundation platform render)
-target_link_libraries(${PROJECT_NAME} platform render)
+add_dependencies(${PROJECT_NAME} foundation platform)
+target_link_libraries(${PROJECT_NAME} platform)
 if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /wd4251 /wd4275 /EHsc /MDd")
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_DEBUG} /wd4251 /wd4275 /EHsc /MD")

@@ -4,7 +4,6 @@
 #include "iwindow.h"
 #include "windowmanager.h"
 #include "filesystem.h"
-#include "irenderer.h"
 #include "memorysystem.h"
 
 namespace LightningGE
@@ -13,7 +12,6 @@ namespace LightningGE
 	{
 		using WindowSystem::SharedWindowPtr;
 		using WindowSystem::WindowManager;
-		using Render::UniqueRendererPtr;
 		class LIGHTNINGGE_PLATFORM_API Win32Application : public Application
 		{
 		public:

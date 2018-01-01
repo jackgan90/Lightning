@@ -37,6 +37,5 @@ namespace LightningGE
 			//get the current frame index
 			virtual unsigned long GetCurrentFrameIndex()const = 0;
 		};
-		typedef std::unique_ptr<IRenderer> UniqueRendererPtr;
 	}
 }

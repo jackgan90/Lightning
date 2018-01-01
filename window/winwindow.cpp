@@ -1,10 +1,8 @@
-#include "win32application.h"
 #include "common.h"
 #include "winwindow.h"
 #include "logger.h"
 #include <vector>
 
-extern LightningGE::App::Win32Application* pApp;
 namespace LightningGE
 {
 	namespace WindowSystem
