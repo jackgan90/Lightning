@@ -59,9 +59,11 @@ namespace LightningGE
 		{
 			if (m_vertexSizeDirty)
 			{
-				auto attribute = std::max_element(m_components.cbegin(), m_components.cend(),
-					[](const VertexComponent& a0, const VertexComponent& a1) {return a0.offset < a1.offset; });
-				m_vertexSize = attribute->offset + GetVertexFormatSize(attribute->format);
+				m_vertexSize = 0;
+				for (const auto& component : m_components)
+				{
+					m_vertexSize += GetVertexFormatSize(component.format);
+				}
 				m_vertexSizeDirty = false;
 			}
 		}
