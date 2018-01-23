@@ -32,7 +32,9 @@ set(SOURCES renderer.cpp
 			bindablebuffer.cpp)
 
 set(TYPES_HEADERS	types/color.h
-					types/rect.h)
+					types/rect.h
+					types/vector.h
+					types/matrix.h)
 
 set(SHADER_HEADERS	shader/ishader.h
 					shader/shaderdefine.h
