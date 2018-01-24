@@ -35,6 +35,7 @@ namespace LightningGE
 		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
 		PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::PoolAllocator():m_buffer(nullptr),m_head(nullptr)
 		{
+			static_assert(!AlignedAlloc || Alignment > 0, "Alignment must be greater than 0 when AlignedAlloc");
 			if (AlignedAlloc)
 			{
 				size_t objSize = std::max(sizeof(T), sizeof(PoolObject));
@@ -57,6 +58,7 @@ namespace LightningGE
 		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
 		void PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::InitLinkList() //aligned linklist version
 		{
+			static_assert(!AlignedAlloc || Alignment > 0, "Alignment must be greater than 0.");
 			size_t current = reinterpret_cast<size_t>(m_buffer);
 			size_t objSize = std::max(sizeof(T), sizeof(PoolObject));
 			for (size_t i = 0; i < ObjectCount; ++i)

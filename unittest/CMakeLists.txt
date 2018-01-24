@@ -3,7 +3,8 @@ message(STATUS "Configuring project test")
 
 set(HEADERS catch.hpp)
 set(SOURCES main.cpp
-			memorytest.cpp)
+			memorytest.cpp
+			mathtest.cpp)
 
 if (WIN32)
 	add_definitions(-DLIGHTNINGGE_WIN32)
@@ -14,9 +15,11 @@ endif()
 
 add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
 
-include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
-					${CMAKE_SOURCE_DIR}/foundation
-					${CMAKE_SOURCE_DIR}/foundation/memory)
+include_directories( ${CMAKE_SOURCE_DIR}/foundation
+					${CMAKE_SOURCE_DIR}/render/types
+					${CMAKE_SOURCE_DIR}/foundation/memory
+					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen
+					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost)
 if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /wd4251 /wd4275 /EHsc /MDd")
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_DEBUG} /wd4251 /wd4275 /EHsc /MD")

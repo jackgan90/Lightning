@@ -280,6 +280,7 @@ namespace
 
 	}
 
+	/*
 	TEST_CASE("Stack allocator performance test", "[StackAllocator performance]") 
 	{
 		StackAllocator<true, 16, 4096> allocator0;
@@ -296,6 +297,7 @@ namespace
 		TestStackAllocatorPerformance(allocator4);
 		TestStackAllocatorPerformance(allocator5);
 	}
+	*/
 
 	struct PoolTestObject
 	{
@@ -333,6 +335,7 @@ namespace
 	template<typename T, const size_t ObjectCount, bool AlignAlloc, const size_t Alignment>
 	void TestPoolAllocator(PoolAllocator<T, ObjectCount, AlignAlloc, Alignment>& allocator)
 	{
+		static_assert(!AlignAlloc || Alignment > 0, "Alignment must be greater than 0!");
 		std::vector<T*> mems;
 		for (size_t i = 0; i < ObjectCount+1; ++i)
 		{

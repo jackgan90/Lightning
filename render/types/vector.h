@@ -8,7 +8,7 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		template<typename T>
+		template<typename T, const int Dimension>
 		class Vector
 		{
 		

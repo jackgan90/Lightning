@@ -88,8 +88,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 define_dll_export_macro(RENDERER)
-include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
-					${CMAKE_CURRENT_SOURCE_DIR}
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_CURRENT_SOURCE_DIR}/types
 					${CMAKE_CURRENT_SOURCE_DIR}/shader
 					${CMAKE_SOURCE_DIR}/foundation
@@ -97,6 +96,7 @@ include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
 					${CMAKE_SOURCE_DIR}/utilities
 					${CMAKE_SOURCE_DIR}/platform 
 					${CMAKE_SOURCE_DIR}/window
+					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen)
 if(LIGHTNINGGE_USE_D3D12)
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/d3d12

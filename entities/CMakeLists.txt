@@ -12,7 +12,10 @@ if (WIN32)
 endif()
 
 define_dll_export_macro(ENTITIES)
-include_directories(${CMAKE_SOURCE_DIR}/render)
+include_directories(${CMAKE_SOURCE_DIR}/render
+					${CMAKE_SOURCE_DIR}/foundation
+					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
+					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen)
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 if(MSVC)
@@ -23,5 +26,5 @@ if(MSVC)
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
 
-add_dependencies(${PROJECT_NAME} render)
-target_link_libraries(${PROJECT_NAME} render)
+add_dependencies(${PROJECT_NAME} foundation render)
+target_link_libraries(${PROJECT_NAME} foundation render)
