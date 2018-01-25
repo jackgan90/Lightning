@@ -1,6 +1,8 @@
 #pragma once
 #include <iterator>
+#include <vector>
 #include <Eigen/Dense>
+#include <Eigen/StdVector>
 
 namespace LightningGE
 {
@@ -74,7 +76,7 @@ namespace LightningGE
 			}
 			template<typename Iterable>
 			void Set(const Iterable& data, bool rowMajor=true);
-			const _Scalar operator()(const int row, const int column) { return m_value(row, column); }
+			_Scalar& operator()(const int row, const int column) { return m_value(row, column); }
 			template<int _Rows = Rows>
 			bool Invertible(typename std::enable_if<(_Rows <= 4), void*>::type = nullptr)const;
 			template<int _Rows = Rows>
@@ -84,7 +86,7 @@ namespace LightningGE
 				static_assert(Rows == Columns, "Only square matrices are invertible!");
 				return Matrix<_Scalar, Rows, Columns>(m_value.inverse());
 			}
-		private:
+		protected:
 			template<typename _Scalar, int _Rows, int _Columns> friend class Matrix;
 			Eigen::Matrix<_Scalar, Rows, Columns> m_value;
 			Matrix(Eigen::Matrix<_Scalar, Rows, Columns>&& v):m_value(std::move(v)){}
@@ -154,5 +156,12 @@ namespace LightningGE
 			Eigen::FullPivLU<Eigen::Matrix<_Scalar, Rows, Columns>> lu(m_value);
 			return lu.isInvertible();
 		}
+
+		using Matrix4x4f = Matrix<float, 4, 4>;
+		using Matrix3x3f = Matrix<float, 3, 3>;
+		using Matrix2x2f = Matrix<float, 2, 2>;
+
+		template<typename _Scalar, int Rows, int Columns>
+		using MatrixList = std::vector<Matrix<_Scalar, Rows, Columns>, Eigen::aligned_allocator<Matrix<_Scalar, Rows, Columns>>>;
 	}
 }

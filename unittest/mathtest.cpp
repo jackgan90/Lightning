@@ -3,10 +3,16 @@
 #include <iostream>
 #include "catch.hpp"
 #include "matrix.h"
+#include "vector.h"
 
 namespace
 {
 	using LightningGE::Render::Matrix;
+	using LightningGE::Render::Matrix4x4f;
+	using LightningGE::Render::VectorList;
+	using LightningGE::Render::Vector4f;
+	using LightningGE::Render::Vector;
+	using LightningGE::Render::MatrixList;
 	template<typename _Scalar, int Rows, int Columns>
 	std::ostream& operator<<(std::ostream& out, Matrix<_Scalar, Rows, Columns>& m)
 	{
@@ -30,9 +36,33 @@ namespace
 		std::cout << "m.Invertible() == " << m.Invertible() << std::endl;
 		//std::cout << m.Inverse() << std::endl;
 		
-		float data[] = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-		m.Set(data, false);
+		MatrixList<float, 4, 4> ml;
+		for (int i = 0; i < 10; ++i)
+		{
+			Matrix4x4f em{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+			ml.push_back(em);
+			std::cout << "push_back a new matrix4x4f to matrix list" << std::endl;
+		}
 
+		VectorList<float, 4> vl;
+		for (int i = 0; i < 5; ++i)
+		{
+			Vector4f v{ 2.0f, 3.0f, 1.0f, 0.0f };
+			vl.push_back(v);
+			std::cout << "push_back a new vector4f to vector list" << std::endl;
+		}
+
+		Vector<float, 4> v{ 1.0, 2.0, 3.0, 4.0 };
+
+		std::cout << "matrix is " << std::endl;
+		std::cout << m << std::endl;
+		std::cout << "vector is " << std::endl;
+		std::cout << v << std::endl;
+
+		std::cout << "matrix multiply vector is " << std::endl;
+		std::cout << m * v << std::endl;
+		system("pause");
+		/*
 		Matrix<float, 4, 4> m1 = m;
 
 		std::cout << "After Set the matrix becomes :" << std::endl;
@@ -46,6 +76,9 @@ namespace
 
 		Matrix<float, 4, 4> m2 = m + m1;
 		std::cout << "m2 is " << std::endl;
+		std::cout << m2 << std::endl;
+		m2(0, 1) = 1024;
+		std::cout << "operator () assignment make m2 to " << std::endl;
 		std::cout << m2 << std::endl;
 
 		m2 = m1;
@@ -104,6 +137,6 @@ namespace
 		std::cout << "After transposeInPlace, the matrix becomes:" << std::endl;
 		std::cout << m << std::endl;
 		system("pause");
-			
+		*/		
 	}
 }
