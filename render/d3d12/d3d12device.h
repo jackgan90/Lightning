@@ -23,7 +23,7 @@ namespace LightningGE
 			friend class D3D12Renderer;
 			D3D12Device(const ComPtr<ID3D12Device>& pDevice, const SharedFileSystemPtr& fs);
 			~D3D12Device()override;
-			void ClearRenderTarget(IRenderTarget* rt, const ColorF& color, const RenderIRects* rects=nullptr)override;
+			void ClearRenderTarget(IRenderTarget* rt, const ColorF& color, const RectIList* rects=nullptr)override;
 			SharedVertexBufferPtr CreateVertexBuffer()override;
 			ComPtr<ID3D12Device> GetNativeDevice()const { return m_device; }
 			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)override;
@@ -31,8 +31,8 @@ namespace LightningGE
 			void ApplyBlendState(const BlendState& state)override;
 			void ApplyDepthStencilState(const DepthStencilState& state)override;
 			void ApplyPipelineState(const PipelineState& state)override;
-			void ApplyViewports(const RenderViewports& vp)override;
-			void ApplyScissorRects(const RenderScissorRects& scissorRects)override;
+			void ApplyViewports(const RectFList& vp)override;
+			void ApplyScissorRects(const RectFList& scissorRects)override;
 		private:
 			//if parameter pState is nullptr,this method will create a default pipeline state
 			using PipelineCacheMap = std::unordered_map<std::size_t, ComPtr<ID3D12PipelineState>>;

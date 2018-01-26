@@ -80,13 +80,15 @@ namespace
 		//std::cout << "left is " << rect.left() << std::endl;
 		//std::cout << "right is " << rect.right() << std::endl;
 		//std::cout << "top is " << rect.top() << std::endl;
+		/*
 		ColorF c(0.2f, 0.3f, 0.4f, 0.5f);
 		std::cout << "r:" << c.r() << std::endl;
 		std::cout << "g:" << c.g() << std::endl;
 		std::cout << "b:" << c.b() << std::endl;
 		std::cout << "a:" << c.a() << std::endl;
 		system("pause");
-		/*
+		*/
+		
 		Matrix<float, 4, 4> m;
 		std::cout << "Original matrix is :" << std::endl;
 		std::cout << m;
@@ -162,7 +164,8 @@ namespace
 		std::cout << "TransposeInPlace mul_m is " << std::endl;
 		mul_m.TransposeInPlace();
 		std::cout << mul_m << std::endl;
-
+		system("pause");
+		/*
 		std::vector<float> v{ 137, 259, 111, 398, 520, 1133 };
 		Matrix<float, 2, 3> m_construct_from_vector(v);
 		Matrix<float, 3, 2> m_construct_from_initializer_list({ 11,22,33,44,55,66 });

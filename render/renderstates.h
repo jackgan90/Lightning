@@ -377,16 +377,13 @@ namespace LightningGE
 			}
 		};
 
-		struct Viewport
+		struct Viewport : public RectF
 		{
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-			RectF viewport;
 		};
 
-		struct ScissorRect
+		struct ScissorRect : public RectF
 		{
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-			RectF scissorRect;
+
 		};
 	}
 }

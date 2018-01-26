@@ -13,6 +13,7 @@ namespace LightningGE
 			Vector(const Iterable& data, typename std::iterator_traits<decltype(std::cbegin(data))>::pointer=nullptr) : Matrix<_Scalar, Dimension, 1>(data, true){}
 			Vector(const std::initializer_list<_Scalar>& data) : Matrix<_Scalar, Dimension, 1>(data, true){}
 			_Scalar& operator[](const int comp) { return Matrix<_Scalar, Dimension, 1>::operator()(comp, 0); }
+			_Scalar operator[](const int comp)const { return Matrix<_Scalar, Dimension, 1>::operator()(comp, 0); }
 			_Scalar Dot(const Vector<_Scalar, Dimension>& v)const { return m_value.dot(v.m_value); }
 			Vector<_Scalar, Dimension> Cross(const Vector<_Scalar, Dimension>& v)const { return Vector(m_value.cross(v.m_value)); }
 		protected:
@@ -26,6 +27,6 @@ namespace LightningGE
 		using Vector3i = Vector<int, 3>;
 		using Vector2i = Vector<int, 2>;
 		template<typename _Scalar, int Dimension>
-		using VectorList = MatrixList<_Scalar, Dimension, 1>;
+		using VectorList = std::vector<Vector<_Scalar, Dimension>, Eigen::aligned_allocator<Vector<_Scalar, Dimension>>>;
 	}
 }

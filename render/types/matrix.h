@@ -83,6 +83,7 @@ namespace LightningGE
 			template<typename Iterable>
 			void Set(const Iterable& data, bool rowMajor=true);
 			_Scalar& operator()(const int row, const int column) { return m_value(row, column); }
+			_Scalar operator()(const int row, const int column)const { return m_value(row, column); }
 			template<int _Rows = Rows>
 			bool Invertible(typename std::enable_if<(_Rows <= 4), void*>::type = nullptr)const;
 			template<int _Rows = Rows>

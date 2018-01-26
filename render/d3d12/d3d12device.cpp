@@ -71,7 +71,7 @@ namespace LightningGE
 			}
 		}
 
-		void D3D12Device::ClearRenderTarget(IRenderTarget* rt, const ColorF& color, const RenderIRects* rects)
+		void D3D12Device::ClearRenderTarget(IRenderTarget* rt, const ColorF& color, const RectIList* rects)
 		{
 			D3D12RenderTarget *pTarget = static_cast<D3D12RenderTarget*>(rt);
 			ComPtr<ID3D12Resource> nativeRenderTarget = pTarget->GetNative();
@@ -184,12 +184,12 @@ namespace LightningGE
 			m_commandList->SetPipelineState(m_pipelineState.Get());
 		}
 
-		void D3D12Device::ApplyViewports(const RenderViewports& vp)
+		void D3D12Device::ApplyViewports(const RectFList& vp)
 		{
 
 		}
 
-		void D3D12Device::ApplyScissorRects(const RenderScissorRects& scissorRects)
+		void D3D12Device::ApplyScissorRects(const RectFList& scissorRects)
 		{
 
 		}
