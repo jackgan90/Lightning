@@ -68,6 +68,12 @@ namespace LightningGE
 				static_assert(Rows == Columns, "Only square matrices can transpose in place!");
 				m_value.transposeInPlace();
 			}
+			template<int SubRows, int SubColumns> 
+			Matrix<_Scalar, SubRows, SubColumns> SubMatrix(const int r, const int c)
+			{
+				static_assert(SubRows <= Rows && SubColumns <= Columns, "submatrix cannot have greater dimension than original matrix.");
+				return Matrix<_Scalar, SubRows, SubColumns>(m_value.block<SubRows, SubColumns>(r, c));
+			}
 			Matrix<_Scalar, Columns, Rows> Transpose()const 
 			{ 
 				Matrix<_Scalar, Columns, Rows> result;
@@ -86,10 +92,15 @@ namespace LightningGE
 				static_assert(Rows == Columns, "Only square matrices are invertible!");
 				return Matrix<_Scalar, Rows, Columns>(m_value.inverse());
 			}
+			static const Matrix<_Scalar, Rows, Columns> Identity()
+			{
+				static_assert(Rows == Columns, "Only square matrices have identity matrix!");
+				return Matrix<_Scalar, Rows, Columns>(Eigen::Matrix<_Scalar, Rows, Columns>::Identity());
+			}
 		protected:
 			template<typename _Scalar, int _Rows, int _Columns> friend class Matrix;
 			Eigen::Matrix<_Scalar, Rows, Columns> m_value;
-			Matrix(Eigen::Matrix<_Scalar, Rows, Columns>&& v):m_value(std::move(v)){}
+			Matrix(Eigen::Matrix<_Scalar, Rows, Columns>&& v):m_value(std::forward<Eigen::Matrix<_Scalar, Rows, Columns>>(v)){}
 		};
 
 		template<typename _Scalar, int Rows, int Columns>

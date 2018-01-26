@@ -1,25 +1,26 @@
 #pragma once
-#include <Eigen/Dense>
+#include <cstdint>
+#include "vector.h"
 
 namespace LightningGE
 {
 	namespace Render
 	{
-		template<typename T>
-		struct Color
+		template<typename _Scalar>
+		class Color : public Vector<_Scalar, 4>
 		{
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-			Color():value(0, 0, 0, 0){}
-			Color(T r, T g, T b, T a):value(r, g, b, a){}
-			Color(const T* components):value(components[0], components[1], components[2], components[3]){}
-			Eigen::Matrix<T, 4, 1> value;
-			const T r()const { return value[0]; }
-			const T g()const { return value[1]; }
-			const T b()const { return value[2]; }
-			const T a()const { return value[3]; }
+		public:
+			Color(const _Scalar r, const _Scalar g, const _Scalar b, const _Scalar a):Vector<_Scalar, 4>({r, g, b, a}){}
+			template<typename Iterable>
+			Color(const Iterable& data, typename std::iterator_traits<decltype(std::cbegin(data))>::pointer=nullptr) : Vector<_Scalar, 4>(data){}
+			Color(const std::initializer_list<_Scalar>& data) : Vector<_Scalar, 4>(data){}
+			_Scalar& r() { return Vector<_Scalar, 4>::operator [](0); }
+			_Scalar& g() { return Vector<_Scalar, 4>::operator [](1); }
+			_Scalar& b() { return Vector<_Scalar, 4>::operator [](2); }
+			_Scalar& a() { return Vector<_Scalar, 4>::operator [](3); }
 		};
 
-		typedef Color<float> ColorF;
-		typedef Color<unsigned int> Color32;
+		using ColorF = Color<float>;
+		using Color32 = Color<std::uint32_t>;
 	}
 }

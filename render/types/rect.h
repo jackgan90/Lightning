@@ -1,27 +1,27 @@
 #pragma once
-#include <Eigen/Dense>
+#include "vector.h"
 
 namespace LightningGE
 {
 	namespace Render
 	{
-		template<typename T>
-		struct Rect
+		template<typename _Scalar>
+		class Rect : public Vector<_Scalar, 4>
 		{
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-			Rect():value(0, 0, 0, 0){}
-			Rect(T left, T top, T width, T height):value(left, top, width, height){}
-			Rect(const T* dimension):value(dimension[0], dimension[1], dimension[2], dimension[3]){}
-			Eigen::Matrix<T, 4, 1> value;
-			const T left()const { return value[0]; }
-			const T top()const { return value[1]; }
-			const T width()const { return value[2]; }
-			const T height()const { return value[3]; }
-			const T right()const { return value[0] + value[2]; }
-			const T bottom()const { return value[1] + value[3]; }
+		public:
+			Rect(const _Scalar left, const _Scalar top, const _Scalar width, const _Scalar height):Vector<_Scalar, 4>({left, top, width, height}){}
+			template<typename Iterable>
+			Rect(const Iterable& data, typename std::iterator_traits<decltype(std::cbegin(data))>::pointer=nullptr) : Vector<_Scalar, 4>(data){}
+			Rect(const std::initializer_list<_Scalar>& data) : Vector<_Scalar, 4>(data){}
+			_Scalar& left() { return Vector<_Scalar, 4>::operator [](0); }
+			_Scalar& top() { return Vector<_Scalar, 4>::operator [](1); }
+			_Scalar& width() { return Vector<_Scalar, 4>::operator [](2); }
+			_Scalar& height() { return Vector<_Scalar, 4>::operator [](3); }
+			const _Scalar right() { return left() + width(); }
+			const _Scalar bottom() { return top() + height(); }
 		};
 
-		typedef Rect<int> RectI;
-		typedef Rect<float> RectF;
+		using RectI = Rect<int>;
+		using RectF = Rect<float>;
 	}
 }

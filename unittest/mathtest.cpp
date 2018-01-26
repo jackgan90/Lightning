@@ -4,6 +4,8 @@
 #include "catch.hpp"
 #include "matrix.h"
 #include "vector.h"
+#include "rect.h"
+#include "color.h"
 
 namespace
 {
@@ -11,7 +13,10 @@ namespace
 	using LightningGE::Render::Matrix4x4f;
 	using LightningGE::Render::VectorList;
 	using LightningGE::Render::Vector4f;
+	using LightningGE::Render::Vector3f;
 	using LightningGE::Render::Vector;
+	using LightningGE::Render::RectF;
+	using LightningGE::Render::ColorF;
 	using LightningGE::Render::MatrixList;
 	template<typename _Scalar, int Rows, int Columns>
 	std::ostream& operator<<(std::ostream& out, Matrix<_Scalar, Rows, Columns>& m)
@@ -26,9 +31,62 @@ namespace
 		}
 		return out;
 	}
+
+	template<typename _Scalar, int Dimension>
+	std::ostream& operator<<(std::ostream& out, Vector<_Scalar, Dimension>& v)
+	{
+		out << "[";
+		for (int i = 0;i < Dimension;++i)
+		{
+			out << v[i];
+			if (i < Dimension - 1)
+			{
+				out << ',';
+			}
+		}
+		out << "]";
+		return out;
+	}
 	TEST_CASE("Matrix function test", "[Matrix Test]")
 	{
-		
+		//Vector3f v1{ 1.0, 2.0, 3.0};
+		//Vector3f v2{ 5.0, 6.0, 7.0};
+		//std::cout << "Dot product of v1 and v2 is " << std::endl;
+		//std::cout << v1.Dot(v2) << std::endl;
+		//std::cout << "vector is " << v << std::endl;
+		//std::cout << "v[0] is " << v[0] << std::endl;
+		//std::cout << "4 rank identity matrix is " << std::endl;
+		//auto m = Matrix4x4f::Identity();
+		//std::cout << m << std::endl;
+		//std::cout << "Inverse matrix of identity matrix is" << std::endl;
+		//std::cout << m.Inverse() << std::endl;
+		//std::cout << "v1.Cross(v2) is " << std::endl;
+		//auto v3 = v1.Cross(v2);
+		//std::cout << "v1 is " << v1 << std::endl;
+		//std::cout << "v2 is " << v2 << std::endl;
+		//std::cout << "The cross product of v1 and v2 (v3) is " << v3 << std::endl;
+		//
+		//std::cout << "v1.Dot(v3) is " << v1.Dot(v3) << std::endl;
+		//std::cout << "v2.Dot(v3) is " << v2.Dot(v3) << std::endl;
+
+
+		//Matrix4x4f m{ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 };
+		//std::cout << "Original matrix is " << std::endl;
+		//std::cout << m << std::endl;
+		//std::cout << "top left 3x3 submatrix is " << std::endl;
+		//std::cout << m.SubMatrix<3, 3>(0, 0) << std::endl;
+
+		//RectF rect(1.0f, 2.0f, 3.0f, 4.0f);
+		//std::cout << "left is " << rect.left() << std::endl;
+		//std::cout << "right is " << rect.right() << std::endl;
+		//std::cout << "top is " << rect.top() << std::endl;
+		ColorF c(0.2f, 0.3f, 0.4f, 0.5f);
+		std::cout << "r:" << c.r() << std::endl;
+		std::cout << "g:" << c.g() << std::endl;
+		std::cout << "b:" << c.b() << std::endl;
+		std::cout << "a:" << c.a() << std::endl;
+		system("pause");
+		/*
 		Matrix<float, 4, 4> m;
 		std::cout << "Original matrix is :" << std::endl;
 		std::cout << m;
@@ -62,7 +120,7 @@ namespace
 		std::cout << "matrix multiply vector is " << std::endl;
 		std::cout << m * v << std::endl;
 		system("pause");
-		/*
+		
 		Matrix<float, 4, 4> m1 = m;
 
 		std::cout << "After Set the matrix becomes :" << std::endl;
