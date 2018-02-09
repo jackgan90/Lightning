@@ -38,13 +38,10 @@ namespace LightningGE
 			Cube(float size);
 			~Cube()override;
 		protected:
-			struct CubeVertex
-			{
-				
-			};
 			float m_size;
 			std::uint8_t* m_vertices;
-			std::uint8_t* m_indices;
+			static float verticeTemplate[24];
+			static std::uint16_t s_indices[36];
 		};
 	}
 }

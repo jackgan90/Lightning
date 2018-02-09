@@ -4,6 +4,8 @@
 #include <Eigen/Dense>
 #include <Eigen/StdVector>
 
+#define LIGHTNINGGE_ALIGNED_OPERATOR_NEW EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+
 namespace LightningGE
 {
 	namespace Render

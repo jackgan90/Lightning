@@ -1,8 +1,8 @@
 project(entities)
 message(STATUS "Configuring project entities")
 
-set(HEADERS entitiesexportdef.h primitive.h)
-set(SOURCES primitive.cpp)
+set(HEADERS entitiesexportdef.h primitive.h camera.h)
+set(SOURCES primitive.cpp camera.cpp)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -13,6 +13,7 @@ endif()
 
 define_dll_export_macro(ENTITIES)
 include_directories(${CMAKE_SOURCE_DIR}/render
+					${CMAKE_SOURCE_DIR}/render/types
 					${CMAKE_SOURCE_DIR}/foundation
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen)
