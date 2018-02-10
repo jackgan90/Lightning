@@ -12,6 +12,11 @@ namespace LightningGE
 			template<typename Iterable>
 			Vector(const Iterable& data, typename std::iterator_traits<decltype(std::cbegin(data))>::pointer=nullptr) : Matrix<_Scalar, Dimension, 1>(data, true){}
 			Vector(const std::initializer_list<_Scalar>& data) : Matrix<_Scalar, Dimension, 1>(data, true){}
+			Vector(const Vector<_Scalar, Dimension>& v) = default;
+			Vector(Vector<_Scalar, Dimension>&& v) = default;
+			Vector& operator=(const Vector<_Scalar, Dimension>& v) = default;
+			Vector& operator=(Vector<_Scalar, Dimension>&& v) = default;
+			~Vector() = default;
 			_Scalar& operator[](const int comp) { return Matrix<_Scalar, Dimension, 1>::operator()(comp, 0); }
 			_Scalar operator[](const int comp)const { return Matrix<_Scalar, Dimension, 1>::operator()(comp, 0); }
 			_Scalar Dot(const Vector<_Scalar, Dimension>& v)const { return m_value.dot(v.m_value); }

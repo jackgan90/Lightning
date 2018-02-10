@@ -94,11 +94,15 @@ namespace
 		Vector4f v1{ 5.0, 6.0, 7.0, 8.0 };
 		Vector4f v2{ 9.0,10.0,11.0,12.0 };
 		Vector4f v3{ 13.0, 14.0, 15.0,16.0 };
+
+		//Matrix<float, 1, 4> v{ 99.0, 100.0, 101.0, 102.0 };
+		//Vector4f va(v);
+		//std::cout << va << std::endl;
 		
 		Matrix4x4f m(v0, v1, v2, v3);
 		//Matrix4x4f m(v0, v1, v2, v3);
 		//m.SetColumns(2, v3, v3);
-		m.SetRows(0, v1, v2);
+		m.SetRows(0, v1, v1);
 		std::cout << "matrix constructed from four vectors" << std::endl;
 		std::cout << m << std::endl;
 		
