@@ -7,6 +7,7 @@
 #include "iswapchain.h"
 #include "irendertargetmanager.h"
 #include "color.h"
+#include "renderpass.h"
 #include "geometry.h"
 #include "material.h"
 
@@ -37,8 +38,8 @@ namespace LightningGE
 			//set default render target clear color.At the beginning of each frame,the back buffer is cleared to this color
 			virtual void SetClearColor(const ColorF& color) = 0;
 			//get the current frame index
-			virtual unsigned long GetCurrentFrameIndex()const = 0;
-
+			virtual std::uint64_t GetCurrentFrameIndex()const = 0;
+			virtual void SetRenderPass(RenderPassType type) = 0;
 			virtual void Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material) = 0;
 		};
 	}

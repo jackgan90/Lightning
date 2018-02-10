@@ -88,7 +88,17 @@ namespace
 		std::cout << "a:" << c.a() << std::endl;
 		system("pause");
 		*/
-		
+		//Vector4f v0{ 1.0, 2.0, 3.0, 4.0 };
+		//Vector4f v1{ 5.0, 6.0, 7.0, 8.0 };
+		//Vector4f v2{ 9.0,10.0,11.0,12.0 };
+		//Vector4f v3{ 13.0, 14.0, 15.0,16.0 };
+		//
+		//Matrix4x4f m(v0, v1, v2, v3);
+		//std::cout << "matrix constructed from four vectors" << std::endl;
+		//std::cout << m << std::endl;
+		//system("pause");
+		return;
+		/*
 		Matrix<float, 4, 4> m;
 		std::cout << "Original matrix is :" << std::endl;
 		std::cout << m;
@@ -199,5 +209,6 @@ namespace
 		std::cout << m << std::endl;
 		system("pause");
 		*/		
+
 	}
 }

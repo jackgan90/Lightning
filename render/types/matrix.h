@@ -1,6 +1,7 @@
 #pragma once
 #include <iterator>
 #include <vector>
+#include <tuple>
 #include <Eigen/Dense>
 #include <Eigen/StdVector>
 
@@ -27,6 +28,7 @@ namespace LightningGE
 				static_assert(Rows > 0 && Columns > 0, "Rows and Columns must be possible integers!");
 				Set(data, rowMajor); 
 			}
+
 			bool operator==(const Matrix<_Scalar, Rows, Columns>& m){return m_value == m.m_value;}
 			bool operator!=(const Matrix<_Scalar, Rows, Columns>& m){return !(*this == m); }
 			Matrix<_Scalar, Rows, Columns>& operator+=(const Matrix<_Scalar, Rows, Columns>& m)
