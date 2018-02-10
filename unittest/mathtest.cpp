@@ -96,6 +96,9 @@ namespace
 		Vector4f v3{ 13.0, 14.0, 15.0,16.0 };
 		
 		Matrix4x4f m(v0, v1, v2, v3);
+		//Matrix4x4f m(v0, v1, v2, v3);
+		//m.SetColumns(2, v3, v3);
+		m.SetRows(0, v1, v2);
 		std::cout << "matrix constructed from four vectors" << std::endl;
 		std::cout << m << std::endl;
 		

@@ -16,6 +16,7 @@ namespace LightningGE
 		{
 		public:
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+			using VectorBaseType = Matrix<_Scalar, Rows, 1>;
 			Matrix();
 			template<typename Iterable>
 			Matrix(const Iterable& data, bool rowMajor=true, typename std::iterator_traits<decltype(std::cbegin(data))>::pointer=nullptr) 
@@ -36,10 +37,19 @@ namespace LightningGE
 			}
 
 			template<typename S, int R, template<typename, int> typename _Vector1, template<typename, int> typename... _Vector2>
-			void SetColumns(int i, const _Vector1<S, R>& col, const _Vector2<S, R>&... columns)
+			typename std::enable_if<std::is_base_of<VectorBaseType, typename std::remove_cv<_Vector1<S, R>>::type>::value, void>::type
+			SetColumns(int i, const _Vector1<S, R>& col, const _Vector2<S, R>&... columns)
 			{
 				m_value.col(i) = col.m_value;
 				SetColumns(i + 1, columns...);
+			}
+
+			template<typename S, int R, template<typename, int> typename _Vector1, template<typename, int> typename... _Vector2>
+			typename std::enable_if<std::is_base_of<VectorBaseType, typename std::remove_cv<_Vector1<S, R>>::type>::value, void>::type
+			SetRows(int i, const _Vector1<S, R>& col, const _Vector2<S, R>&... rows)
+			{
+				m_value.row(i) = col.m_value;
+				SetRows(i + 1, rows...);
 			}
 
 			bool operator==(const Matrix<_Scalar, Rows, Columns>& m){return m_value == m.m_value;}
@@ -121,6 +131,7 @@ namespace LightningGE
 			Matrix(Eigen::Matrix<_Scalar, Rows, Columns>&& v):m_value(std::forward<Eigen::Matrix<_Scalar, Rows, Columns>>(v)){}
 		private:
 			void SetColumns(int i) {} //Only for execute internally
+			void SetRows(int i) {} //Only for execute internally
 		};
 
 		template<typename _Scalar, int Rows, int Columns>
