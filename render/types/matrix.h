@@ -29,6 +29,19 @@ namespace LightningGE
 				Set(data, rowMajor); 
 			}
 
+			template<typename S, int R, template<typename, int> typename... _Vector>
+			Matrix(const _Vector<S, R>&... columns)
+			{
+				SetColumns(0, columns...);
+			}
+
+			template<typename S, int R, template<typename, int> typename _Vector1, template<typename, int> typename... _Vector2>
+			void SetColumns(int i, const _Vector1<S, R>& col, const _Vector2<S, R>&... columns)
+			{
+				m_value.col(i) = col.m_value;
+				SetColumns(i + 1, columns...);
+			}
+
 			bool operator==(const Matrix<_Scalar, Rows, Columns>& m){return m_value == m.m_value;}
 			bool operator!=(const Matrix<_Scalar, Rows, Columns>& m){return !(*this == m); }
 			Matrix<_Scalar, Rows, Columns>& operator+=(const Matrix<_Scalar, Rows, Columns>& m)
@@ -106,6 +119,8 @@ namespace LightningGE
 			template<typename _Scalar, int _Rows, int _Columns> friend class Matrix;
 			Eigen::Matrix<_Scalar, Rows, Columns> m_value;
 			Matrix(Eigen::Matrix<_Scalar, Rows, Columns>&& v):m_value(std::forward<Eigen::Matrix<_Scalar, Rows, Columns>>(v)){}
+		private:
+			void SetColumns(int i) {} //Only for execute internally
 		};
 
 		template<typename _Scalar, int Rows, int Columns>
