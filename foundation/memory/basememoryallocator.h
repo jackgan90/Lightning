@@ -16,7 +16,7 @@ namespace LightningGE
 			void* Allocate(size_t size, const char* fileName, const char* className, size_t line)override;
 			void Deallocate(void*)override;
 		private:
-			typedef std::unordered_map<void*, MemoryInfo> AllocationMap;
+			using AllocationMap = std::unordered_map<void*, MemoryInfo>;
 			AllocationMap m_allocationMap;
 
 		};

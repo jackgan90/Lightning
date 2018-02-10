@@ -7,6 +7,8 @@
 #include "iswapchain.h"
 #include "irendertargetmanager.h"
 #include "color.h"
+#include "geometry.h"
+#include "material.h"
 
 namespace LightningGE
 {
@@ -36,6 +38,8 @@ namespace LightningGE
 			virtual void SetClearColor(const ColorF& color) = 0;
 			//get the current frame index
 			virtual unsigned long GetCurrentFrameIndex()const = 0;
+
+			virtual void Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material) = 0;
 		};
 	}
 }

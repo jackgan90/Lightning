@@ -9,7 +9,7 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		typedef std::unordered_map<std::string, std::string> DefineMap;
+		using DefineMap = std::unordered_map<std::string, std::string>;
 		class LIGHTNINGGE_RENDER_API ShaderDefine
 		{
 		public:

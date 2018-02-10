@@ -13,7 +13,7 @@ namespace LightningGE
 		class ILeakFreeObject
 		{
 		public:
-			typedef AllocatorType allocator_type;
+			using allocator_type = AllocatorType;
 			virtual ~ILeakFreeObject() = default;
 
 			void* operator new(size_t size)

@@ -11,7 +11,7 @@ namespace LightningGE
 {
 	namespace Foundation
 	{
-		typedef std::streamsize FileSize;
+		using FileSize = std::streamsize;
 
 		enum FilePointerType
 		{
@@ -42,7 +42,7 @@ namespace LightningGE
 			virtual const std::string GetPath()const = 0;
 			virtual const std::string GetName()const = 0;
 		};
-		typedef std::shared_ptr<IFile> SharedFilePtr;
+		using SharedFilePtr = std::shared_ptr<IFile>;
 
 		class LIGHTNINGGE_FOUNDATION_API IFileSystem
 		{
@@ -52,7 +52,7 @@ namespace LightningGE
 			virtual bool SetRoot(std::string root_path) = 0;
 			virtual const std::string GetRoot() const = 0;
 		};
-		typedef std::shared_ptr<IFileSystem> SharedFileSystemPtr;
+		using SharedFileSystemPtr = std::shared_ptr<IFileSystem>;
 
 		class LIGHTNINGGE_FOUNDATION_API GeneralFileSystem : public IFileSystem
 		{

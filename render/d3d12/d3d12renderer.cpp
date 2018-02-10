@@ -202,7 +202,7 @@ namespace LightningGE
 			}
 			//the __stdcall declaration is required because windows APIs conform to stdcall convention
 			//omit it will cause stack corruption
-			typedef LRESULT (__stdcall *DXGIGetDebugInterfaceFunc)(REFIID, void**);
+			using DXGIGetDebugInterfaceFunc = LRESULT (__stdcall *)(REFIID, void**);
 			DXGIGetDebugInterfaceFunc pDXGIGetDebugInterface = reinterpret_cast<DXGIGetDebugInterfaceFunc>(::GetProcAddress(dxgiDebugHandle, "DXGIGetDebugInterface"));
 			if (!pDXGIGetDebugInterface)
 			{

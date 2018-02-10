@@ -35,5 +35,9 @@ namespace LightningGE
 			return m_device.get();
 		}
 
+		void Renderer::Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material)
+		{
+
+		}
 	}
 }

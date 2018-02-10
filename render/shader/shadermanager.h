@@ -10,7 +10,7 @@ namespace LightningGE
 	{
 		using Foundation::SharedFileSystemPtr;
 		//we should not only care about the shader name but also its' defined macros since every different macro group needs to compile the shader again
-		typedef std::unordered_map<std::size_t, SharedShaderPtr> ShaderMap;
+		using ShaderMap = std::unordered_map<std::size_t, SharedShaderPtr>;
 		class ShaderManager : public IShaderManager
 		{
 		public:

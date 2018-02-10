@@ -19,7 +19,12 @@ set(HEADERS rendererexportdef.h
 			rendererfactory.h
 			gpubuffer.h
 			bindablebuffer.h
-			renderconstants.h)
+			renderconstants.h
+			geometry.h
+			material.h
+			renderpass.h
+			forwardrenderpass.h
+			deferedrenderpass.h)
 set(SOURCES renderer.cpp
 			device.cpp
 			vertexbuffer.cpp
@@ -29,7 +34,11 @@ set(SOURCES renderer.cpp
 			renderconstants.cpp
 			rendertargetmanager.cpp
 			gpubuffer.cpp
-			bindablebuffer.cpp)
+			bindablebuffer.cpp
+			geometry.cpp
+			material.cpp
+			forwardrenderpass.cpp
+			deferedrenderpass.cpp)
 
 set(TYPES_HEADERS	types/color.h
 					types/rect.h

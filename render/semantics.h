@@ -4,7 +4,7 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		typedef unsigned int SemanticIndex;
+		using SemanticIndex = unsigned int;
 		enum RenderSemantics
 		{
 			POSITION,

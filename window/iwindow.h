@@ -19,21 +19,19 @@ namespace LightningGE
 				Foundation::logger.Log(Foundation::LogLevel::Error, w, args...);
 			}
 		};
-		typedef unsigned int WINDOWWIDTH;
-		typedef unsigned int WINDOWHEIGHT;
 		class LIGHTNINGGE_WINDOW_API IWindow
 		{
 		public:
 			friend class WindowManager;
 			virtual bool Show(bool show) = 0;
 			virtual void RegisterWindowMessageHandler(WindowMessage msg, WindowMessageHandler handler) = 0;
-			virtual WINDOWWIDTH GetWidth()const = 0;
-			virtual WINDOWHEIGHT GetHeight()const = 0;
+			virtual std::uint32_t GetWidth()const = 0;
+			virtual std::uint32_t GetHeight()const = 0;
 			virtual int GetDestroyCode() = 0;
 			virtual ~IWindow() = default;
 		protected:
 			IWindow() {};
 		};
-		typedef std::shared_ptr<IWindow> SharedWindowPtr;
+		using SharedWindowPtr = std::shared_ptr<IWindow>;
 	}
 }

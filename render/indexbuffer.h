@@ -1,4 +1,5 @@
 #pragma once
+#include <memory>
 #include "bindablebuffer.h"
 
 namespace LightningGE
@@ -19,5 +20,6 @@ namespace LightningGE
 		private:
 			IndexType m_type;
 		};
+		using SharedIndexBufferPtr = std::shared_ptr<IndexBuffer>;
 	}
 }

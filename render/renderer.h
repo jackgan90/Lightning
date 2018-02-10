@@ -2,6 +2,7 @@
 #include <memory>
 #include "irenderer.h"
 #include "filesystem.h"
+#include "renderpass.h"
 
 namespace LightningGE
 {
@@ -18,6 +19,7 @@ namespace LightningGE
 			IDevice* GetDevice()override;
 			//return the current frame index
 			unsigned long GetCurrentFrameIndex()const override;
+			void Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material)override;
 			static Renderer* Instance() { return s_instance; }
 		protected:
 			virtual void BeginFrame() = 0;

@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <vector>
+#include <cstdint>
 #include "singleton.h"
 #include "iwindow.h"
 #include "windowexportdef.h"
@@ -9,7 +10,6 @@ namespace LightningGE
 {
 	namespace WindowSystem
 	{
-		typedef unsigned int WINDOWID;
 		class LIGHTNINGGE_WINDOW_API WindowManager
 		{
 		public:
@@ -18,8 +18,8 @@ namespace LightningGE
 			SharedWindowPtr MakeWindow();
 			std::vector<SharedWindowPtr> GetAllWindows()const;
 		private:
-			std::unordered_map<WINDOWID, SharedWindowPtr> m_windows;
-			WINDOWID m_currentID;
+			std::unordered_map<std::uint32_t, SharedWindowPtr> m_windows;
+			std::uint32_t m_currentID;
 		};
 	}
 }

@@ -137,12 +137,12 @@ namespace LightningGE
 			return true;
 		}
 
-		WINDOWWIDTH WinWindow::GetWidth()const
+		std::uint32_t WinWindow::GetWidth()const
 		{
 			return m_width;
 		}
 
-		WINDOWHEIGHT WinWindow::GetHeight()const
+		std::uint32_t WinWindow::GetHeight()const
 		{
 			return m_height;
 		}

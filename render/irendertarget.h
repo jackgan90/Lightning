@@ -6,7 +6,7 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		typedef int RenderTargetID;
+		using RenderTargetID = int;
 		class LIGHTNINGGE_RENDER_API IRenderTarget
 		{
 		public:
@@ -19,6 +19,6 @@ namespace LightningGE
 			virtual RenderTargetID GetID()const = 0;
 			virtual ~IRenderTarget() = default;
 		};
-		typedef std::shared_ptr<IRenderTarget> SharedRenderTargetPtr;
+		using SharedRenderTargetPtr = std::shared_ptr<IRenderTarget>;
 	}
 }

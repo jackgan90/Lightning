@@ -29,6 +29,6 @@ namespace LightningGE
 			virtual void ApplyViewports(const RectFList& vp) = 0;
 			virtual void ApplyScissorRects(const RectFList& scissorRects) = 0;
 		};
-		typedef std::shared_ptr<IDevice> SharedDevicePtr;
+		using SharedDevicePtr = std::shared_ptr<IDevice>;
 	}
 }

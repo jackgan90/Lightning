@@ -40,7 +40,7 @@ namespace LightningGE
 			unsigned int height;
 		};
 
-		typedef std::function<void(WindowMessage, const WindowMessageParam&)> WindowMessageHandler;
+		using WindowMessageHandler = std::function<void(WindowMessage, const WindowMessageParam&)>;
 
 	}
 }

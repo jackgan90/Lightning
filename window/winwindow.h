@@ -13,8 +13,8 @@ namespace LightningGE
 			WinWindow();
 			~WinWindow()override;
 			bool Show(bool show)override;
-			WINDOWWIDTH GetWidth()const override;
-			WINDOWHEIGHT GetHeight()const override;
+			std::uint32_t GetWidth()const override;
+			std::uint32_t GetHeight()const override;
 			int GetDestroyCode()override;
 			HWND GetWindowHandle()const { return m_hWnd; }
 		private:
@@ -22,8 +22,8 @@ namespace LightningGE
 			void RegisterWindowClass(HINSTANCE hInstance);
 			void CreateWindowInternal(HINSTANCE	hInstance);
 			std::string m_Caption;
-			WINDOWWIDTH m_width;
-			WINDOWHEIGHT m_height;
+			std::uint32_t m_width;
+			std::uint32_t m_height;
 			HWND m_hWnd;
 			int m_destroyCode;
 			static char* s_WindowClassName;

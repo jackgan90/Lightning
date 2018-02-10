@@ -18,7 +18,7 @@ namespace LightningGE
 			~AllocatorManager(){}
 		private:
 			AllocatorManager(){}
-			typedef std::unordered_map<AllocatorID, IMemoryAllocator*> AllocatorMap;
+			using AllocatorMap = std::unordered_map<AllocatorID, IMemoryAllocator*>;
 		};	
 	}
 
