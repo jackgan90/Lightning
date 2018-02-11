@@ -36,7 +36,7 @@ namespace LightningGE
 			}
 
 			template<typename S, int R, template<typename, int> typename _Vector1, template<typename, int> typename... _Vector2>
-			typename std::enable_if<std::is_base_of<VectorBaseType, typename std::remove_cv<_Vector1<S, R>>::type>::value, void>::type
+			typename std::enable_if<std::is_base_of<VectorBaseType, typename std::decay<_Vector1<S, R>>::type>::value, void>::type
 			SetColumns(int i, const _Vector1<S, R>& col, const _Vector2<S, R>&... columns)
 			{
 				m_value.col(i) = col.m_value;
@@ -44,7 +44,7 @@ namespace LightningGE
 			}
 
 			template<typename S, int R, template<typename, int> typename _Vector1, template<typename, int> typename... _Vector2>
-			typename std::enable_if<std::is_base_of<VectorBaseType, typename std::remove_cv<_Vector1<S, R>>::type>::value, void>::type
+			typename std::enable_if<std::is_base_of<VectorBaseType, typename std::decay<_Vector1<S, R>>::type>::value, void>::type
 			SetRows(int i, const _Vector1<S, R>& col, const _Vector2<S, R>&... rows)
 			{
 				m_value.row(i) = col.m_value;
