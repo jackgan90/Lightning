@@ -2,6 +2,7 @@
 #include <iterator>
 #include <vector>
 #include <tuple>
+#include <array>
 #include <Eigen/Dense>
 #include <Eigen/StdVector>
 
@@ -18,22 +19,20 @@ namespace LightningGE
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 			using VectorBaseType = Matrix<_Scalar, Rows, 1>;
 			Matrix();
-			template<typename Iterable>
-			Matrix(const Iterable& data, bool rowMajor=true, typename std::iterator_traits<decltype(std::cbegin(data))>::pointer=nullptr) 
+			Matrix(const std::initializer_list<_Scalar>& data) 
 			{ 
 				static_assert(Rows > 0 && Columns > 0, "Rows and Columns must be possible integers!");
-				Set(data, rowMajor); 
-			}
-			Matrix(const std::initializer_list<_Scalar>& data, bool rowMajor=true) 
-			{ 
-				static_assert(Rows > 0 && Columns > 0, "Rows and Columns must be possible integers!");
-				Set(data, rowMajor); 
+				Set(data); 
 			}
 
-			template<typename S, int R, template<typename, int> typename... _Vector>
-			Matrix(const _Vector<S, R>&... columns)
+			template<typename Derived>
+			Matrix(const std::array<Derived, Columns>& arr)
 			{
-				SetColumns(0, columns...);
+				static_assert(std::is_base_of<VectorBaseType, Derived>::value, "Only derived classes of Matrix(vector etc> can be used to init");
+				for (std::size_t i = 0;i < arr.size();++i)
+				{
+					SetColumns(i, arr[i]);
+				}
 			}
 
 			template<typename S, int R, template<typename, int> typename _Vector1, template<typename, int> typename... _Vector2>
@@ -52,7 +51,7 @@ namespace LightningGE
 				SetRows(i + 1, rows...);
 			}
 
-			bool operator==(const Matrix<_Scalar, Rows, Columns>& m){return m_value == m.m_value;}
+			bool operator==(const Matrix<_Scalar, Rows, Columns>& m){return m_value.isApprox(m.m_value);}
 			bool operator!=(const Matrix<_Scalar, Rows, Columns>& m){return !(*this == m); }
 			Matrix<_Scalar, Rows, Columns>& operator+=(const Matrix<_Scalar, Rows, Columns>& m)
 			{
@@ -108,7 +107,19 @@ namespace LightningGE
 				return result;
 			}
 			template<typename Iterable>
-			void Set(const Iterable& data, bool rowMajor=true);
+			auto Set(const Iterable& data) ->
+				typename std::enable_if<std::is_same<typename std::decay<decltype(*std::cbegin(data))>::type, typename std::decay<_Scalar>::type>::value, void>::type
+			{
+				auto it = std::cbegin(data);
+				for (int i = 0; i < Columns; ++i)
+				{
+					for (int j = 0; j < Rows; ++j)
+					{
+						m_value(j, i) = *it++;
+					}
+				}
+
+			}
 			_Scalar& operator()(const int row, const int column) { return m_value(row, column); }
 			_Scalar operator()(const int row, const int column)const { return m_value(row, column); }
 			template<int _Rows = Rows>
@@ -123,12 +134,14 @@ namespace LightningGE
 			static const Matrix<_Scalar, Rows, Columns> Identity()
 			{
 				static_assert(Rows == Columns, "Only square matrices have identity matrix!");
-				return Matrix<_Scalar, Rows, Columns>(Eigen::Matrix<_Scalar, Rows, Columns>::Identity());
+				static const Matrix<_Scalar, Rows, Columns> m(Eigen::Matrix<_Scalar, Rows, Columns>::Identity());
+				return m;
 			}
 		protected:
 			template<typename _Scalar, int _Rows, int _Columns> friend class Matrix;
 			Eigen::Matrix<_Scalar, Rows, Columns> m_value;
-			Matrix(Eigen::Matrix<_Scalar, Rows, Columns>&& v):m_value(std::forward<Eigen::Matrix<_Scalar, Rows, Columns>>(v)){}
+			Matrix(const Eigen::Matrix<_Scalar, Rows, Columns>& m):m_value(m){}
+			Matrix(Eigen::Matrix<_Scalar, Rows, Columns>&& m):m_value(std::move(m)){}
 		private:
 			void SetColumns(int i) {} //Only for execute internally
 			void SetRows(int i) {} //Only for execute internally
@@ -143,33 +156,6 @@ namespace LightningGE
 				for (std::size_t j = 0; j < Columns; ++j)
 				{
 					m_value(i, j) = 0;
-				}
-			}
-		}
-
-		template<typename _Scalar, int Rows, int Columns>
-		template<typename Iterable>
-		void Matrix<_Scalar, Rows, Columns>::Set(const Iterable& data, bool rowMajor)
-		{
-			auto it = std::cbegin(data);
-			if (rowMajor)
-			{
-				for (int i = 0;i < Rows;++i)
-				{
-					for (int j = 0;j < Columns;++j)
-					{
-						m_value(i, j) = *it++;
-					}
-				}
-			}
-			else
-			{
-				for (int i = 0; i < Columns; ++i)
-				{
-					for (int j = 0;j < Rows;++j)
-					{
-						m_value(j, i) = *it++;
-					}
 				}
 			}
 		}
@@ -200,8 +186,11 @@ namespace LightningGE
 		}
 
 		using Matrix4x4f = Matrix<float, 4, 4>;
+		using Matrix4x4i = Matrix<int, 4, 4>;
 		using Matrix3x3f = Matrix<float, 3, 3>;
+		using Matrix3x3i = Matrix<int, 3, 3>;
 		using Matrix2x2f = Matrix<float, 2, 2>;
+		using Matrix2x2i = Matrix<int, 2, 2>;
 
 		template<typename _Scalar, int Rows, int Columns>
 		using MatrixList = std::vector<Matrix<_Scalar, Rows, Columns>, Eigen::aligned_allocator<Matrix<_Scalar, Rows, Columns>>>;

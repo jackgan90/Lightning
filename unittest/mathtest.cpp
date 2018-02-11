@@ -3,6 +3,7 @@
 #include <iostream>
 #include "catch.hpp"
 #include "matrix.h"
+#include "helperstubs.h"
 #include "vector.h"
 #include "rect.h"
 #include "color.h"
@@ -11,8 +12,14 @@ namespace
 {
 	using LightningGE::Render::Matrix;
 	using LightningGE::Render::Matrix4x4f;
+	using LightningGE::Render::Matrix3x3f;
+	using LightningGE::Render::Matrix2x2f;
+	using LightningGE::Render::Matrix4x4i;
+	using LightningGE::Render::Matrix3x3i;
+	using LightningGE::Render::Matrix2x2i;
 	using LightningGE::Render::VectorList;
 	using LightningGE::Render::Vector4f;
+	using LightningGE::Render::Vector4i;
 	using LightningGE::Render::Vector3f;
 	using LightningGE::Render::Vector;
 	using LightningGE::Render::RectF;
@@ -48,177 +55,223 @@ namespace
 		return out;
 	}
 
-	TEST_CASE("Matrix function test", "[Matrix Test]")
+	TEST_CASE("Vector test", "[Vector test]")
 	{
-		//Vector3f v1{ 1.0, 2.0, 3.0};
-		//Vector3f v2{ 5.0, 6.0, 7.0};
-		//std::cout << "Dot product of v1 and v2 is " << std::endl;
-		//std::cout << v1.Dot(v2) << std::endl;
-		//std::cout << "vector is " << v << std::endl;
-		//std::cout << "v[0] is " << v[0] << std::endl;
-		//std::cout << "4 rank identity matrix is " << std::endl;
-		//auto m = Matrix4x4f::Identity();
-		//std::cout << m << std::endl;
-		//std::cout << "Inverse matrix of identity matrix is" << std::endl;
-		//std::cout << m.Inverse() << std::endl;
-		//std::cout << "v1.Cross(v2) is " << std::endl;
-		//auto v3 = v1.Cross(v2);
-		//std::cout << "v1 is " << v1 << std::endl;
-		//std::cout << "v2 is " << v2 << std::endl;
-		//std::cout << "The cross product of v1 and v2 (v3) is " << v3 << std::endl;
-		//
-		//std::cout << "v1.Dot(v3) is " << v1.Dot(v3) << std::endl;
-		//std::cout << "v2.Dot(v3) is " << v2.Dot(v3) << std::endl;
+		Vector3f v1{ 1.0, 2.0, 3.0};
+		Vector3f v2{ 5.0, 6.0, 7.0};
+		auto dotProduct = v1.Dot(v2);
+		REQUIRE(dotProduct == Approx(38.0));
+		auto v3 = v1.Cross(v2);
+		REQUIRE(v3[0] == Approx(-4.0));
+		REQUIRE(v3[1] == Approx(8.0));
+		REQUIRE(v3[2] == Approx(-4.0));
 
+		Vector3f zero = Vector3f::Zero();
+		Vector3f zero1{ 0.0f, 0.0f, 0.0f };
+		REQUIRE(zero == zero1);
 
-		//Matrix4x4f m{ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 };
-		//std::cout << "Original matrix is " << std::endl;
-		//std::cout << m << std::endl;
-		//std::cout << "top left 3x3 submatrix is " << std::endl;
-		//std::cout << m.SubMatrix<3, 3>(0, 0) << std::endl;
+		REQUIRE(zero.Length() == Approx(0.0f));
 
-		//RectF rect(1.0f, 2.0f, 3.0f, 4.0f);
-		//std::cout << "left is " << rect.left() << std::endl;
-		//std::cout << "right is " << rect.right() << std::endl;
-		//std::cout << "top is " << rect.top() << std::endl;
-		/*
-		ColorF c(0.2f, 0.3f, 0.4f, 0.5f);
-		std::cout << "r:" << c.r() << std::endl;
-		std::cout << "g:" << c.g() << std::endl;
-		std::cout << "b:" << c.b() << std::endl;
-		std::cout << "a:" << c.a() << std::endl;
-		system("pause");
-		*/
-		
-		Vector4f v0{ 1.0, 2.0, 3.0, 4.0 };
-		Vector4f v1{ 5.0, 6.0, 7.0, 8.0 };
-		Vector4f v2{ 9.0,10.0,11.0,12.0 };
-		Vector4f v3{ 13.0, 14.0, 15.0,16.0 };
+		Vector3f v4{0.0f, 3.0f, 4.0f};
+		REQUIRE(v4.Length() == Approx(5.0f));
 
-		//Matrix<float, 1, 4> v{ 99.0, 100.0, 101.0, 102.0 };
-		//Vector4f va(v);
-		//std::cout << va << std::endl;
-		
-		Matrix4x4f m(v0, v1, v2, v3);
-		//Matrix4x4f m(v0, v1, v2, v3);
-		//m.SetColumns(2, v3, v3);
-		m.SetRows(0, v1, v1);
-		std::cout << "matrix constructed from four vectors" << std::endl;
-		std::cout << m << std::endl;
-		
-		system("pause");
-		return;
-		/*
-		Matrix<float, 4, 4> m;
-		std::cout << "Original matrix is :" << std::endl;
-		std::cout << m;
+		v4.Normalize();
+		REQUIRE(v4.Length() == Approx(1.0f));
 
-		std::cout << "m.Invertible() == " << m.Invertible() << std::endl;
-		//std::cout << m.Inverse() << std::endl;
-		
-		MatrixList<float, 4, 4> ml;
-		for (int i = 0; i < 10; ++i)
-		{
-			Matrix4x4f em{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
-			ml.push_back(em);
-			std::cout << "push_back a new matrix4x4f to matrix list" << std::endl;
-		}
-
-		VectorList<float, 4> vl;
-		for (int i = 0; i < 5; ++i)
-		{
-			Vector4f v{ 2.0f, 3.0f, 1.0f, 0.0f };
-			vl.push_back(v);
-			std::cout << "push_back a new vector4f to vector list" << std::endl;
-		}
-
-		Vector<float, 4> v{ 1.0, 2.0, 3.0, 4.0 };
-
-		std::cout << "matrix is " << std::endl;
-		std::cout << m << std::endl;
-		std::cout << "vector is " << std::endl;
-		std::cout << v << std::endl;
-
-		std::cout << "matrix multiply vector is " << std::endl;
-		std::cout << m * v << std::endl;
-		system("pause");
-		
-		Matrix<float, 4, 4> m1 = m;
-
-		std::cout << "After Set the matrix becomes :" << std::endl;
-		std::cout << m << std::endl;
-
-		std::cout << "Constructed from copy constructor:" << std::endl;
-		std::cout << m1 << std::endl;
-
-		std::cout << "m == m1:" << (m == m1) << std::endl;
-		std::cout << "m != m1:" << (m != m1) << std::endl;
-
-		Matrix<float, 4, 4> m2 = m + m1;
-		std::cout << "m2 is " << std::endl;
-		std::cout << m2 << std::endl;
-		m2(0, 1) = 1024;
-		std::cout << "operator () assignment make m2 to " << std::endl;
-		std::cout << m2 << std::endl;
-
-		m2 = m1;
-		std::cout << "After assignment m2 is " << std::endl;
-		std::cout << m2 << std::endl;
-
-		std::cout << "m1 += m2" << std::endl;
-		m1 += m2;
-		std::cout << m1 << std::endl;
-
-		auto m3 = m2 - m1;
-		std::cout << "m3 = m2 - m1" << std::endl;
-		std::cout << m3 << std::endl;
-
-		std::cout << "m1 is " << std::endl;
-		std::cout << m1 << std::endl;
-		std::cout << "m2 is " << std::endl;
-		std::cout << m2 << std::endl;
-		std::cout << "m1 * m2(mul_m) is " << std::endl;
-		auto mul_m = m1 * m2;
-		std::cout << mul_m << std::endl;
-
-		std::cout << "TransposeInPlace mul_m is " << std::endl;
-		mul_m.TransposeInPlace();
-		std::cout << mul_m << std::endl;
-		system("pause");
-		/*
-		std::vector<float> v{ 137, 259, 111, 398, 520, 1133 };
-		Matrix<float, 2, 3> m_construct_from_vector(v);
-		Matrix<float, 3, 2> m_construct_from_initializer_list({ 11,22,33,44,55,66 });
-
-		std::cout << "matrix constructed from vector:" << std::endl;
-		std::cout << m_construct_from_vector << std::endl;
-
-		std::cout << "matrix constructed from initializer list:" << std::endl;
-		std::cout << m_construct_from_initializer_list << std::endl;
-
-		std::cout << "Transposed matrix of matrix_constructed_from_vector is " << std::endl;
-		std::cout << m_construct_from_vector.Transpose() << std::endl;
-
-
-		Matrix<float, 4, 4> translationMatrix;
-		const float tdata[] = {1, 0, 0, 1, 0, 1, 0, 3, 0, 0, 1, 4, 0, 0, 0, 1};
-		translationMatrix.Set(tdata);
-		Matrix<float, 4, 1> pos;
-		const float pdata[] = { 10.0f, 20.0f, 30.0f, 1.0f };
-		pos.Set(pdata);
-		std::cout << "translation matrix is " << std::endl;
-		std::cout << translationMatrix << std::endl;
-		std::cout << "position is " << std::endl;
-		std::cout << pos << std::endl;
-
-		std::cout << "The transformed pos is " << std::endl;
-		std::cout << translationMatrix * pos << std::endl;
-
-
-		std::cout << "After transposeInPlace, the matrix becomes:" << std::endl;
-		std::cout << m << std::endl;
-		system("pause");
-		*/		
-
+		Vector3f v5{ 1.0f, 2.0f, 3.0f };
+		auto v6 = v5.Normalized();
+		REQUIRE(v6.Length() == Approx(1.0f));
+		REQUIRE(v6.Cross(v5).Length() == Approx(0.0f));
 	}
+
+	TEST_CASE("Matrix test", "[Matrix test]")
+	{
+		auto m = Matrix4x4f::Identity();
+		REQUIRE(m(0, 0) == 1);
+		REQUIRE(m(0, 0) == m(1, 1));
+		REQUIRE(m(1, 1) == m(2, 2));
+		REQUIRE(m(2, 2) == m(3, 3));
+		for (std::size_t i = 0;i < 4;++i)
+		{
+			for (std::size_t j = 0; j < 4; ++j)
+			{
+				if (i == j)
+					continue;
+				REQUIRE(m(i, j) == 0);
+			}
+		}
+		m(3, 3) = 10.0;
+		REQUIRE(m(3, 3) == Approx(10.0));
+		Matrix4x4f m1{ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 };
+		auto subm1 = m1.SubMatrix<2, 2>(1, 1);
+		auto subm1_type_correct = std::is_same<decltype(subm1), Matrix<float, 2, 2>>::value;
+		REQUIRE(subm1_type_correct);
+		REQUIRE(m1(0, 0) == Approx(1.0));
+		REQUIRE(m1(1, 0) == Approx(2.0));
+		REQUIRE(m1(0, 1) == Approx(5.0));
+		REQUIRE(m1(3, 2) == Approx(12.0));
+		REQUIRE(subm1(0, 0) == Approx(6.0));
+		REQUIRE(subm1(0, 1) == Approx(10.0));
+		REQUIRE(subm1(1, 0) == Approx(7.0));
+		REQUIRE(subm1(1, 1) == Approx(11.0));
+		
+		Vector4i col0{ 2, 3, 4, 5 };
+		Vector4i col1{ 1, 3, 5, 7 };
+		Vector4i col2{ 10, 20, 30, 40 };
+		Vector4i col3{ -1, -2, -3, -4 };
+		
+		
+		Matrix4x4i m2(helper::make_array(col0, col1, col2, col3));
+		REQUIRE(m2(0, 0) == 2);
+		REQUIRE(m2(1, 0) == 3);
+		REQUIRE(m2(2, 0) == 4);
+		REQUIRE(m2(3, 0) == 5);
+		REQUIRE(m2(0, 1) == 1);
+		REQUIRE(m2(1, 1) == 3);
+		REQUIRE(m2(2, 1) == 5);
+		REQUIRE(m2(3, 1) == 7);
+		REQUIRE(m2(0, 2) == 10);
+		REQUIRE(m2(1, 2) == 20);
+		REQUIRE(m2(2, 2) == 30);
+		REQUIRE(m2(3, 2) == 40);
+		REQUIRE(m2(0, 3) == -1);
+		REQUIRE(m2(1, 3) == -2);
+		REQUIRE(m2(2, 3) == -3);
+		REQUIRE(m2(3, 3) == -4);
+		
+		Matrix4x4i opm1 = { 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31 };
+		Matrix4x4i opm2 = { 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32 };
+
+		auto add_m = opm1 + opm2;
+		auto minus_m = opm1 - opm2;
+		auto mul_m = opm1 * opm2;
+
+		REQUIRE(add_m(0, 0) == 3);
+		REQUIRE(add_m(1, 0) == 7);
+		REQUIRE(add_m(2, 0) == 11);
+		REQUIRE(add_m(3, 0) == 15);
+		REQUIRE(add_m(0, 1) == 19);
+		REQUIRE(add_m(1, 1) == 23);
+		REQUIRE(add_m(2, 1) == 27);
+		REQUIRE(add_m(3, 1) == 31);
+		REQUIRE(add_m(0, 2) == 35);
+		REQUIRE(add_m(1, 2) == 39);
+		REQUIRE(add_m(2, 2) == 43);
+		REQUIRE(add_m(3, 2) == 47);
+		REQUIRE(add_m(0, 3) == 51);
+		REQUIRE(add_m(1, 3) == 55);
+		REQUIRE(add_m(2, 3) == 59);
+		REQUIRE(add_m(3, 3) == 63);
+
+		REQUIRE(minus_m(0, 0) == -1);
+		REQUIRE(minus_m(1, 0) == -1);
+		REQUIRE(minus_m(2, 0) == -1);
+		REQUIRE(minus_m(3, 0) == -1);
+		REQUIRE(minus_m(0, 1) == -1);
+		REQUIRE(minus_m(1, 1) == -1);
+		REQUIRE(minus_m(2, 1) == -1);
+		REQUIRE(minus_m(3, 1) == -1);
+		REQUIRE(minus_m(0, 2) == -1);
+		REQUIRE(minus_m(1, 2) == -1);
+		REQUIRE(minus_m(2, 2) == -1);
+		REQUIRE(minus_m(3, 2) == -1);
+		REQUIRE(minus_m(0, 3) == -1);
+		REQUIRE(minus_m(1, 3) == -1);
+		REQUIRE(minus_m(2, 3) == -1);
+		REQUIRE(minus_m(3, 3) == -1);
+
+		REQUIRE(mul_m(0, 0) == 340);
+		REQUIRE(mul_m(1, 0) == 380);
+		REQUIRE(mul_m(2, 0) == 420);
+		REQUIRE(mul_m(3, 0) == 460);
+		REQUIRE(mul_m(0, 1) == 756);
+		REQUIRE(mul_m(1, 1) == 860);
+		REQUIRE(mul_m(2, 1) == 964);
+		REQUIRE(mul_m(3, 1) == 1068);
+		REQUIRE(mul_m(0, 2) == 1172);
+		REQUIRE(mul_m(1, 2) == 1340);
+		REQUIRE(mul_m(2, 2) == 1508);
+		REQUIRE(mul_m(3, 2) == 1676);
+		REQUIRE(mul_m(0, 3) == 1588);
+		REQUIRE(mul_m(1, 3) == 1820);
+		REQUIRE(mul_m(2, 3) == 2052);
+		REQUIRE(mul_m(3, 3) == 2284);
+
+		auto opm3(opm1);
+		REQUIRE(opm1 == opm3);
+		REQUIRE(opm1 != opm2);
+
+		Vector4i row0{ 7, 7, 7, 7 };
+		Vector4i row1{ 8, 8, 8, 8 };
+		auto updatedRows = helper::make_array(row0, row1);
+		auto opm4(opm3);
+		opm3.SetRows(1, row0, row1);
+		for (std::size_t i = 1;i < 3;++i)
+		{
+			for (std::size_t j = 0;j < 4;++j)
+			{
+				opm4(i, j) = updatedRows[i - 1][j];
+			}
+		}
+		REQUIRE(opm3 == opm4);
+
+		auto opm5(opm4);
+		opm4.SetColumns(0, col0, col1);
+		auto updatedColumns = helper::make_array(col0, col1);
+		for (std::size_t i = 0;i < 2;++i)
+		{
+			for (std::size_t j = 0; j < 4; ++j)
+			{
+				opm5(j, i) = updatedColumns[i][j];
+			}
+		}
+		REQUIRE(opm4 == opm5);
+
+		Matrix2x2f fm2{ 7, -6, -4, 3 };
+		REQUIRE(fm2.Invertible());
+
+		Matrix3x3f fm3{ 1, 2, -2, -1, 1, -2, 3, 2, 1 };
+		REQUIRE(fm3.Invertible());
+
+		Matrix4x4f fm4{ 5, 0, -1, 1, 4, 1, -1, 1, 2, -1, 3, -1, 1, -1, 0, 2 };
+		REQUIRE(fm4.Invertible());
+
+		auto inv_fm2 = fm2.Inverse();
+		REQUIRE(inv_fm2 * fm2 == Matrix2x2f::Identity());
+
+		auto inv_fm3 = fm3.Inverse();
+		REQUIRE(inv_fm3 * fm3 == Matrix3x3f::Identity());
+
+		auto inv_fm4 = fm4.Inverse();
+		REQUIRE(inv_fm4 * fm4 == Matrix4x4f::Identity());
+
+		auto transposed_m(m2.Transpose());
+		for (std::size_t i = 0;i < 4;++i)
+		{
+			for (std::size_t j = 0;j < 4;++j)
+			{
+				REQUIRE(m2(i, j) == transposed_m(j, i));
+			}
+		}
+		REQUIRE(m2 != transposed_m);
+		m2.TransposeInPlace();
+		REQUIRE(m2 == transposed_m);
+		
+		VectorList<float, 4> vl;
+		Vector<float, 4> reference_v{ 2,3,4,5 };
+		for (std::size_t i = 0;i < 10;++i)
+		{
+			vl.emplace_back(std::initializer_list<float>{ 2, 3, 4, 5 });
+			REQUIRE(vl.back() == reference_v);
+		}
+
+		MatrixList<float, 4, 4> ml;
+		Matrix<float, 4, 4> reference_m{ 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597 };
+		for (std::size_t i = 0;i < 10;++i)
+		{
+			ml.emplace_back(std::initializer_list<float>{ 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597 });
+			REQUIRE(ml.back() == reference_m);
+		}
+	}
+
 }

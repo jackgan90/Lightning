@@ -6,7 +6,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(HEADERS utilitiesexportdef.h
 			enginealgo.h
-			hashableobject.h)
+			hashableobject.h
+			helperstubs.h)
 set(SOURCES enginealgo.cpp)
 
 

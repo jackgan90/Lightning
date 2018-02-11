@@ -4,7 +4,8 @@ message(STATUS "Configuring project test")
 set(HEADERS catch.hpp)
 set(SOURCES main.cpp
 			memorytest.cpp
-			mathtest.cpp)
+			mathtest.cpp
+			helperstubtest.cpp)
 
 if (WIN32)
 	add_definitions(-DLIGHTNINGGE_WIN32)
@@ -17,6 +18,7 @@ add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
 
 include_directories( ${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/render/types
+					${CMAKE_SOURCE_DIR}/utilities
 					${CMAKE_SOURCE_DIR}/foundation/memory
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost)
