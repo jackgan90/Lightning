@@ -21,7 +21,7 @@ namespace LightningGE
 			Matrix();
 			Matrix(const std::initializer_list<_Scalar>& data) 
 			{ 
-				static_assert(Rows > 0 && Columns > 0, "Rows and Columns must be possible integers!");
+				static_assert(Rows > 0 && Columns > 0, "Rows and Columns must be positive integers!");
 				Set(data); 
 			}
 
@@ -36,7 +36,7 @@ namespace LightningGE
 			}
 
 			template<typename S, int R, template<typename, int> typename _Vector1, template<typename, int> typename... _Vector2>
-			typename std::enable_if<std::is_base_of<VectorBaseType, typename std::decay<_Vector1<S, R>>::type>::value, void>::type
+			typename std::enable_if<std::is_base_of<VectorBaseType, typename std::decay<_Vector1<S, R>>::type>::value>::type
 			SetColumns(int i, const _Vector1<S, R>& col, const _Vector2<S, R>&... columns)
 			{
 				m_value.col(i) = col.m_value;
@@ -44,7 +44,7 @@ namespace LightningGE
 			}
 
 			template<typename S, int R, template<typename, int> typename _Vector1, template<typename, int> typename... _Vector2>
-			typename std::enable_if<std::is_base_of<VectorBaseType, typename std::decay<_Vector1<S, R>>::type>::value, void>::type
+			typename std::enable_if<std::is_base_of<VectorBaseType, typename std::decay<_Vector1<S, R>>::type>::value>::type
 			SetRows(int i, const _Vector1<S, R>& col, const _Vector2<S, R>&... rows)
 			{
 				m_value.row(i) = col.m_value;
@@ -108,17 +108,15 @@ namespace LightningGE
 			}
 			template<typename Iterable>
 			auto Set(const Iterable& data) ->
-				typename std::enable_if<std::is_same<typename std::decay<decltype(*std::cbegin(data))>::type, typename std::decay<_Scalar>::type>::value, void>::type
+				typename std::enable_if<std::is_same<typename std::decay<decltype(*std::cbegin(data))>::type, typename std::decay<_Scalar>::type>::value
+				&& std::is_same<typename std::decay<decltype(*std::cend(data))>::type, typename std::decay<_Scalar>::type>::value>::type
 			{
-				auto it = std::cbegin(data);
-				for (int i = 0; i < Columns; ++i)
+				int idx = 0;
+				for (auto it = std::cbegin(data); it != std::cend(data);++it)
 				{
-					for (int j = 0; j < Rows; ++j)
-					{
-						m_value(j, i) = *it++;
-					}
+					m_value(idx % Rows, idx / Rows) = *it;
+					++idx;
 				}
-
 			}
 			_Scalar& operator()(const int row, const int column) { return m_value(row, column); }
 			_Scalar operator()(const int row, const int column)const { return m_value(row, column); }

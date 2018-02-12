@@ -1,5 +1,8 @@
 #include <cstdlib>
 #include <vector>
+#include <list>
+#include <set>
+#include <array>
 #include <iostream>
 #include "catch.hpp"
 #include "matrix.h"
@@ -272,6 +275,55 @@ namespace
 			ml.emplace_back(std::initializer_list<float>{ 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597 });
 			REQUIRE(ml.back() == reference_m);
 		}
+
+		Matrix4x4f fm5;
+		std::vector<float> v_ctr{ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f };
+		fm5.Set(v_ctr);
+		REQUIRE(fm5(0, 0) == Approx(1.0f));
+		REQUIRE(fm5(1, 0) == Approx(2.0f));
+		REQUIRE(fm5(2, 0) == Approx(3.0f));
+		REQUIRE(fm5(3, 0) == Approx(4.0f));
+		REQUIRE(fm5(0, 1) == Approx(5.0f));
+
+		std::list<float> l_ctr{ 6.0f, 7.0f, 8.0f, 9.0f, 10.0f };
+		fm5.Set(l_ctr);
+		REQUIRE(fm5(0, 0) == Approx(6.0f));
+		REQUIRE(fm5(1, 0) == Approx(7.0f));
+		REQUIRE(fm5(2, 0) == Approx(8.0f));
+		REQUIRE(fm5(3, 0) == Approx(9.0f));
+		REQUIRE(fm5(0, 1) == Approx(10.0f));
+
+		std::set<float> s_ctr{ 11.0f, 12.0f, 13.0f, 14.0f, 15.0f };
+		fm5.Set(s_ctr);
+		REQUIRE(fm5(0, 0) == Approx(11.0f));
+		REQUIRE(fm5(1, 0) == Approx(12.0f));
+		REQUIRE(fm5(2, 0) == Approx(13.0f));
+		REQUIRE(fm5(3, 0) == Approx(14.0f));
+		REQUIRE(fm5(0, 1) == Approx(15.0f));
+
+		std::multiset<float> ms_ctr{ 16.0f, 17.0f, 18.0f, 19.0f, 20.0f };
+		fm5.Set(ms_ctr);
+		REQUIRE(fm5(0, 0) == Approx(16.0f));
+		REQUIRE(fm5(1, 0) == Approx(17.0f));
+		REQUIRE(fm5(2, 0) == Approx(18.0f));
+		REQUIRE(fm5(3, 0) == Approx(19.0f));
+		REQUIRE(fm5(0, 1) == Approx(20.0f));
+
+		const float a_ctr[] = { 21.0f, 22.0f, 23.0f, 24.0f, 25.0f };
+		fm5.Set(a_ctr);
+		REQUIRE(fm5(0, 0) == Approx(21.0f));
+		REQUIRE(fm5(1, 0) == Approx(22.0f));
+		REQUIRE(fm5(2, 0) == Approx(23.0f));
+		REQUIRE(fm5(3, 0) == Approx(24.0f));
+		REQUIRE(fm5(0, 1) == Approx(25.0f));
+
+		std::array<float, 5> std_a_ctr = { 26.0f, 27.0f, 28.0f, 29.0f, 30.0f };
+		fm5.Set(std_a_ctr);
+		REQUIRE(fm5(0, 0) == Approx(26.0f));
+		REQUIRE(fm5(1, 0) == Approx(27.0f));
+		REQUIRE(fm5(2, 0) == Approx(28.0f));
+		REQUIRE(fm5(3, 0) == Approx(29.0f));
+		REQUIRE(fm5(0, 1) == Approx(30.0f));
 	}
 
 }

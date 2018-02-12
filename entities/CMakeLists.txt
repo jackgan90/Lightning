@@ -14,7 +14,9 @@ endif()
 define_dll_export_macro(ENTITIES)
 include_directories(${CMAKE_SOURCE_DIR}/render
 					${CMAKE_SOURCE_DIR}/render/types
+					${CMAKE_SOURCE_DIR}/render/shader
 					${CMAKE_SOURCE_DIR}/foundation
+					${CMAKE_SOURCE_DIR}/utilities
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen)
 
@@ -27,5 +29,5 @@ if(MSVC)
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
 
-add_dependencies(${PROJECT_NAME} foundation render)
-target_link_libraries(${PROJECT_NAME} foundation render)
+add_dependencies(${PROJECT_NAME} foundation utilities render)
+target_link_libraries(${PROJECT_NAME} foundation utilities render)
