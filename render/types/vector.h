@@ -11,11 +11,34 @@ namespace LightningGE
 		public:
 			Vector() : Matrix < _Scalar, Dimension, 1>({0, 0, 0}) {}
 			Vector(const std::initializer_list<_Scalar>& data) : Matrix<_Scalar, Dimension, 1>(data){}
-			Vector(const Vector<_Scalar, Dimension>& v) = default;
-			Vector(Vector<_Scalar, Dimension>&& v) = default;
-			Vector& operator=(const Vector<_Scalar, Dimension>& v) = default;
-			Vector& operator=(Vector<_Scalar, Dimension>&& v) = default;
-			~Vector() = default;
+			Vector(const Matrix<_Scalar, 1, Dimension>& m): Matrix<_Scalar, Dimension, 1>(m.m_value){}
+			Vector(Matrix<_Scalar, 1, Dimension>&& m): Matrix<_Scalar, Dimension, 1>(std::move(m.m_value)){}
+			Vector<_Scalar, Dimension>& operator=(const Matrix<_Scalar, 1, Dimension>& m)
+			{
+				m_value = m.m_value;
+				return *this;
+			}
+			Vector<_Scalar, Dimension>& operator=(Matrix<_Scalar, 1, Dimension>&& m)
+			{
+				m_value = std::move(m.m_value);
+				return *this;
+			}
+			bool operator==(const Matrix<_Scalar, 1, Dimension>& mv)const
+			{
+				return m_value.isApprox(mv.m_value);
+			}
+			bool operator!=(const Matrix<_Scalar, 1, Dimension>& mv)const
+			{
+				return !(*this == mv);
+			}
+			bool operator==(const Vector<_Scalar, Dimension>& v)const
+			{
+				return m_value.isApprox(v.m_value);
+			}
+			bool operator!=(const Vector<_Scalar, Dimension>& v)const
+			{
+				return !(*this == mv);
+			}
 			_Scalar& operator[](const int comp) { return Matrix<_Scalar, Dimension, 1>::operator()(comp, 0); }
 			_Scalar operator[](const int comp)const { return Matrix<_Scalar, Dimension, 1>::operator()(comp, 0); }
 			_Scalar Dot(const Vector<_Scalar, Dimension>& v)const { return m_value.dot(v.m_value); }

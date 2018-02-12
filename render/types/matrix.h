@@ -18,6 +18,8 @@ namespace LightningGE
 			static_assert(Rows > 0 && Columns > 0, "Rows and Columns must be positive integers!");
 		public:
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+			//Don't declare any of the five member control methods here,just let the compiler auto generated them.since this class is highly unlikely has many
+			//child classes and even if there's child class of Matrix,subclasses shouldn't add too complex structures
 			using VectorBaseType = Matrix<_Scalar, Rows, 1>;
 			Matrix():m_value(Eigen::Matrix<_Scalar, Rows, Columns>::Identity()){}
 			//construct with an initializer list
@@ -150,6 +152,7 @@ namespace LightningGE
 			}
 		protected:
 			template<typename _Scalar, int _Rows, int _Columns> friend class Matrix;
+			template<typename _Scalar, int Dimension> friend class Vector;
 			Eigen::Matrix<_Scalar, Rows, Columns> m_value;
 			Matrix(const Eigen::Matrix<_Scalar, Rows, Columns>& m):m_value(m){}
 			Matrix(Eigen::Matrix<_Scalar, Rows, Columns>&& m):m_value(std::move(m)){}

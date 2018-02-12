@@ -85,6 +85,33 @@ namespace
 		auto v6 = v5.Normalized();
 		REQUIRE(v6.Length() == Approx(1.0f));
 		REQUIRE(v6.Cross(v5).Length() == Approx(0.0f));
+
+		Vector3f v7(v5);
+		REQUIRE(v7 == v5);
+
+		Matrix<float, 1, 3> m0{ 1.0f, 2.0f, 3.0f };
+
+		Vector3f v8(m0);
+		REQUIRE(v8[0] == Approx(1.0f));
+		REQUIRE(v8[1] == Approx(2.0f));
+		REQUIRE(v8[2] == Approx(3.0f));
+
+		Vector3f v9(Matrix<float, 1, 3>({ 1.0f, 2.0f, 3.0f }));
+		REQUIRE(v9[0] == Approx(1.0f));
+		REQUIRE(v9[1] == Approx(2.0f));
+		REQUIRE(v9[2] == Approx(3.0f));
+
+		Vector3f v10;
+		v10 = m0;
+		REQUIRE(v10[0] == Approx(1.0f));
+		REQUIRE(v10[1] == Approx(2.0f));
+		REQUIRE(v10[2] == Approx(3.0f));
+
+		Vector3f v11;
+		v11 = Matrix<float, 1, 3>{ 1.0f, 2.0f, 3.0f };
+		REQUIRE(v11[0] == Approx(1.0f));
+		REQUIRE(v11[1] == Approx(2.0f));
+		REQUIRE(v11[2] == Approx(3.0f));
 	}
 
 	TEST_CASE("Matrix test", "[Matrix test]")
