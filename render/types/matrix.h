@@ -19,12 +19,12 @@ namespace LightningGE
 			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 			using VectorBaseType = Matrix<_Scalar, Rows, 1>;
 			Matrix();
+			//construct with an initializer list
 			Matrix(const std::initializer_list<_Scalar>& data) 
 			{ 
 				static_assert(Rows > 0 && Columns > 0, "Rows and Columns must be positive integers!");
 				Set(data); 
 			}
-
 			template<typename Derived>
 			Matrix(const std::array<Derived, Columns>& arr)
 			{
@@ -115,6 +115,15 @@ namespace LightningGE
 				for (auto it = std::cbegin(data); it != std::cend(data);++it)
 				{
 					m_value(idx % Rows, idx / Rows) = *it;
+					++idx;
+				}
+			}
+			void Set(const _Scalar* arr, std::size_t size)
+			{
+				int idx = 0;
+				for (std::size_t i = 0;i < size;++i)
+				{
+					m_value(idx % Rows, idx / Rows) = arr[i];
 					++idx;
 				}
 			}

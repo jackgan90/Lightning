@@ -285,45 +285,72 @@ namespace
 		REQUIRE(fm5(3, 0) == Approx(4.0f));
 		REQUIRE(fm5(0, 1) == Approx(5.0f));
 
+		Matrix4x4f fm6;
 		std::list<float> l_ctr{ 6.0f, 7.0f, 8.0f, 9.0f, 10.0f };
-		fm5.Set(l_ctr);
-		REQUIRE(fm5(0, 0) == Approx(6.0f));
-		REQUIRE(fm5(1, 0) == Approx(7.0f));
-		REQUIRE(fm5(2, 0) == Approx(8.0f));
-		REQUIRE(fm5(3, 0) == Approx(9.0f));
-		REQUIRE(fm5(0, 1) == Approx(10.0f));
+		fm6.Set(l_ctr);
+		REQUIRE(fm6(0, 0) == Approx(6.0f));
+		REQUIRE(fm6(1, 0) == Approx(7.0f));
+		REQUIRE(fm6(2, 0) == Approx(8.0f));
+		REQUIRE(fm6(3, 0) == Approx(9.0f));
+		REQUIRE(fm6(0, 1) == Approx(10.0f));
 
+		Matrix4x4f fm7;
 		std::set<float> s_ctr{ 11.0f, 12.0f, 13.0f, 14.0f, 15.0f };
-		fm5.Set(s_ctr);
-		REQUIRE(fm5(0, 0) == Approx(11.0f));
-		REQUIRE(fm5(1, 0) == Approx(12.0f));
-		REQUIRE(fm5(2, 0) == Approx(13.0f));
-		REQUIRE(fm5(3, 0) == Approx(14.0f));
-		REQUIRE(fm5(0, 1) == Approx(15.0f));
+		fm7.Set(s_ctr);
+		REQUIRE(fm7(0, 0) == Approx(11.0f));
+		REQUIRE(fm7(1, 0) == Approx(12.0f));
+		REQUIRE(fm7(2, 0) == Approx(13.0f));
+		REQUIRE(fm7(3, 0) == Approx(14.0f));
+		REQUIRE(fm7(0, 1) == Approx(15.0f));
 
+		Matrix4x4f fm8;
 		std::multiset<float> ms_ctr{ 16.0f, 17.0f, 18.0f, 19.0f, 20.0f };
-		fm5.Set(ms_ctr);
-		REQUIRE(fm5(0, 0) == Approx(16.0f));
-		REQUIRE(fm5(1, 0) == Approx(17.0f));
-		REQUIRE(fm5(2, 0) == Approx(18.0f));
-		REQUIRE(fm5(3, 0) == Approx(19.0f));
-		REQUIRE(fm5(0, 1) == Approx(20.0f));
+		fm8.Set(ms_ctr);
+		REQUIRE(fm8(0, 0) == Approx(16.0f));
+		REQUIRE(fm8(1, 0) == Approx(17.0f));
+		REQUIRE(fm8(2, 0) == Approx(18.0f));
+		REQUIRE(fm8(3, 0) == Approx(19.0f));
+		REQUIRE(fm8(0, 1) == Approx(20.0f));
 
+		Matrix4x4f fm9;
 		const float a_ctr[] = { 21.0f, 22.0f, 23.0f, 24.0f, 25.0f };
-		fm5.Set(a_ctr);
-		REQUIRE(fm5(0, 0) == Approx(21.0f));
-		REQUIRE(fm5(1, 0) == Approx(22.0f));
-		REQUIRE(fm5(2, 0) == Approx(23.0f));
-		REQUIRE(fm5(3, 0) == Approx(24.0f));
-		REQUIRE(fm5(0, 1) == Approx(25.0f));
+		fm9.Set(a_ctr);
+		REQUIRE(fm9(0, 0) == Approx(21.0f));
+		REQUIRE(fm9(1, 0) == Approx(22.0f));
+		REQUIRE(fm9(2, 0) == Approx(23.0f));
+		REQUIRE(fm9(3, 0) == Approx(24.0f));
+		REQUIRE(fm9(0, 1) == Approx(25.0f));
 
+		Matrix4x4f fm10;
 		std::array<float, 5> std_a_ctr = { 26.0f, 27.0f, 28.0f, 29.0f, 30.0f };
-		fm5.Set(std_a_ctr);
-		REQUIRE(fm5(0, 0) == Approx(26.0f));
-		REQUIRE(fm5(1, 0) == Approx(27.0f));
-		REQUIRE(fm5(2, 0) == Approx(28.0f));
-		REQUIRE(fm5(3, 0) == Approx(29.0f));
-		REQUIRE(fm5(0, 1) == Approx(30.0f));
+		fm10.Set(std_a_ctr);
+		REQUIRE(fm10(0, 0) == Approx(26.0f));
+		REQUIRE(fm10(1, 0) == Approx(27.0f));
+		REQUIRE(fm10(2, 0) == Approx(28.0f));
+		REQUIRE(fm10(3, 0) == Approx(29.0f));
+		REQUIRE(fm10(0, 1) == Approx(30.0f));
+
+		Matrix4x4f fm11;
+		float* na_ctr = new float[5];
+		na_ctr[0] = 31.0f;
+		na_ctr[1] = 32.0f;
+		na_ctr[2] = 33.0f;
+		na_ctr[3] = 34.0f;
+		na_ctr[4] = 35.0f;
+		fm11.Set(na_ctr, 5);
+		REQUIRE(fm11(0, 0) == Approx(31.0f));
+		REQUIRE(fm11(1, 0) == Approx(32.0f));
+		REQUIRE(fm11(2, 0) == Approx(33.0f));
+		REQUIRE(fm11(3, 0) == Approx(34.0f));
+		REQUIRE(fm11(0, 1) == Approx(35.0f));
+
+		//Matrix4x4f fm12(v_ctr);
+		//REQUIRE(fm12(0, 0) == fm5(0, 0));
+		//REQUIRE(fm12(1, 0) == fm5(1, 0));
+		//REQUIRE(fm12(2, 0) == fm5(2, 0));
+		//REQUIRE(fm12(3, 0) == fm5(3, 0));
+		//REQUIRE(fm12(0, 1) == fm5(0, 1));
+
 	}
 
 }
