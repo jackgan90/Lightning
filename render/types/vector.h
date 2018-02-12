@@ -9,7 +9,7 @@ namespace LightningGE
 		class Vector : public Matrix<_Scalar, Dimension, 1>
 		{
 		public:
-			Vector() : Matrix < _Scalar, Dimension, 1>(){}
+			Vector() : Matrix < _Scalar, Dimension, 1>({0, 0, 0}) {}
 			Vector(const std::initializer_list<_Scalar>& data) : Matrix<_Scalar, Dimension, 1>(data){}
 			Vector(const Vector<_Scalar, Dimension>& v) = default;
 			Vector(Vector<_Scalar, Dimension>&& v) = default;

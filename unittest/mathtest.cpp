@@ -344,13 +344,24 @@ namespace
 		REQUIRE(fm11(3, 0) == Approx(34.0f));
 		REQUIRE(fm11(0, 1) == Approx(35.0f));
 
+		Matrix4x4f fm12(na_ctr, 5);
+		REQUIRE(fm12(0, 0) == Approx(31.0f));
+		REQUIRE(fm12(1, 0) == Approx(32.0f));
+		REQUIRE(fm12(2, 0) == Approx(33.0f));
+		REQUIRE(fm12(3, 0) == Approx(34.0f));
+		REQUIRE(fm12(0, 1) == Approx(35.0f));
+
+		delete[] na_ctr;
+
+		//float a{ 1.0f }, b{ 2.0f }, c{ 3.0f }, d{ 4.0f };
+		//Matrix4x4f fm13(1.0f, 2.0f, 3.0f, 4.0f, 5.0f);
+		//Matrix4x4f fm13(a, b, c, d);
 		//Matrix4x4f fm12(v_ctr);
 		//REQUIRE(fm12(0, 0) == fm5(0, 0));
 		//REQUIRE(fm12(1, 0) == fm5(1, 0));
 		//REQUIRE(fm12(2, 0) == fm5(2, 0));
 		//REQUIRE(fm12(3, 0) == fm5(3, 0));
 		//REQUIRE(fm12(0, 1) == fm5(0, 1));
-
 	}
 
 }
