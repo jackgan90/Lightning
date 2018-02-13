@@ -27,7 +27,14 @@ namespace LightningGE
 			{ 
 				Set(data); 
 			}
-			Matrix(const _Scalar* arr, std::size_t size)
+			template<typename ScalarPointerType, typename SizeType, typename = 
+				typename std::enable_if<std::is_integral<typename std::decay<SizeType>::type>::value	//ensure the second argument is an integral type
+				&& std::is_pointer<typename std::decay<ScalarPointerType>::type>::value	//ensure the first argument is a pointer
+				&& std::is_convertible<typename std::decay<typename std::remove_pointer<ScalarPointerType>::type>::type, //ensure data pointed to by first argument can be converted to _Scalar
+				typename std::decay<_Scalar>::type>::value
+				>::type
+			>
+			Matrix(const ScalarPointerType arr, const SizeType size)
 			{
 				Set(arr, size);
 			}
@@ -121,8 +128,10 @@ namespace LightningGE
 			}
 			template<typename Iterable>
 			auto Set(const Iterable& data) ->
-				typename std::enable_if<std::is_same<typename std::decay<decltype(*std::cbegin(data))>::type, typename std::decay<_Scalar>::type>::value
-				&& std::is_same<typename std::decay<decltype(*std::cend(data))>::type, typename std::decay<_Scalar>::type>::value>::type
+				typename std::enable_if<
+				std::is_convertible<typename std::decay<decltype(*std::cbegin(data))>::type, typename std::decay<_Scalar>::type>::value
+				&& std::is_convertible<typename std::decay<decltype(*std::cend(data))>::type, typename std::decay<_Scalar>::type>::value
+				>::type
 			{
 				int idx = 0;
 				for (auto it = std::cbegin(data); it != std::cend(data);++it)
@@ -131,10 +140,16 @@ namespace LightningGE
 					++idx;
 				}
 			}
-			void Set(const _Scalar* arr, std::size_t size)
+			template<typename ScalarPointerType, typename SizeType>
+			auto Set(const ScalarPointerType arr, const SizeType size) ->
+				typename std::enable_if<std::is_integral<typename std::decay<SizeType>::type>::value	//ensure the second argument is an integral type
+				&& std::is_pointer<typename std::decay<ScalarPointerType>::type>::value	//ensure the first argument is a pointer
+				&& std::is_convertible<typename std::decay<typename std::remove_pointer<ScalarPointerType>::type>::type, //ensure data pointed to by first argument can be converted to _Scalar
+				typename std::decay<_Scalar>::type>::value
+				>::type
 			{
 				int idx = 0;
-				for (std::size_t i = 0;i < size;++i)
+				for (typename std::decay<SizeType>::type i = 0;i < size;++i)
 				{
 					m_value(idx % Rows, idx / Rows) = arr[i];
 					++idx;

@@ -115,6 +115,13 @@ namespace
 		REQUIRE(v11[0] == Approx(1.0f));
 		REQUIRE(v11[1] == Approx(2.0f));
 		REQUIRE(v11[2] == Approx(3.0f));
+
+		float* v_arr = new float[3]{ 1.0f, 2.0f, 3.0f };
+		Vector3f v12(v_arr, 3);
+		REQUIRE(v12[0] == Approx(1.0f));
+		REQUIRE(v12[1] == Approx(2.0f));
+		REQUIRE(v12[2] == Approx(3.0f));
+		delete[]v_arr;
 	}
 
 	TEST_CASE("Matrix test", "[Matrix test]")
@@ -361,12 +368,7 @@ namespace
 		REQUIRE(fm10(0, 1) == Approx(30.0f));
 
 		Matrix4x4f fm11;
-		float* na_ctr = new float[5];
-		na_ctr[0] = 31.0f;
-		na_ctr[1] = 32.0f;
-		na_ctr[2] = 33.0f;
-		na_ctr[3] = 34.0f;
-		na_ctr[4] = 35.0f;
+		float* na_ctr = new float[5]{31.0f, 32.0f, 33.0f, 34.0f, 35.0f};
 		fm11.Set(na_ctr, 5);
 		REQUIRE(fm11(0, 0) == Approx(31.0f));
 		REQUIRE(fm11(1, 0) == Approx(32.0f));
@@ -383,15 +385,15 @@ namespace
 
 		delete[] na_ctr;
 
-		//float a{ 1.0f }, b{ 2.0f }, c{ 3.0f }, d{ 4.0f };
-		//Matrix4x4f fm13(1.0f, 2.0f, 3.0f, 4.0f, 5.0f);
-		//Matrix4x4f fm13(a, b, c, d);
-		//Matrix4x4f fm12(v_ctr);
-		//REQUIRE(fm12(0, 0) == fm5(0, 0));
-		//REQUIRE(fm12(1, 0) == fm5(1, 0));
-		//REQUIRE(fm12(2, 0) == fm5(2, 0));
-		//REQUIRE(fm12(3, 0) == fm5(3, 0));
-		//REQUIRE(fm12(0, 1) == fm5(0, 1));
+		int* ia = new int[5]{36, 37, 38, 39, 40};
+		Matrix4x4f fm13(ia, 5);
+		REQUIRE(fm13(0, 0) == Approx(36.0f));
+		REQUIRE(fm13(1, 0) == Approx(37.0f));
+		REQUIRE(fm13(2, 0) == Approx(38.0f));
+		REQUIRE(fm13(3, 0) == Approx(39.0f));
+		REQUIRE(fm13(0, 1) == Approx(40.0f));
+
+		delete[] ia;
 	}
 
 }
