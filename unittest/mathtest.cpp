@@ -385,8 +385,8 @@ namespace
 
 		delete[] na_ctr;
 
-		int* ia = new int[5]{36, 37, 38, 39, 40};
-		Matrix4x4f fm13(ia, 5);
+		int* ia = new int[16]{36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51};
+		Matrix4x4f fm13(ia, 16);
 		REQUIRE(fm13(0, 0) == Approx(36.0f));
 		REQUIRE(fm13(1, 0) == Approx(37.0f));
 		REQUIRE(fm13(2, 0) == Approx(38.0f));
@@ -394,6 +394,11 @@ namespace
 		REQUIRE(fm13(0, 1) == Approx(40.0f));
 
 		delete[] ia;
+
+		auto r0 = fm13.GetRow(0);
+		REQUIRE(r0 == Vector4f({ 36.0f, 40.0f, 44.0f, 48.0f }));
+		auto c0 = fm13.GetColumn(0);
+		REQUIRE(c0 == Vector4f({ 36.0f, 37.0f, 38.0f, 39.0f }));
 	}
 
 }

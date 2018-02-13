@@ -64,6 +64,9 @@ namespace LightningGE
 				SetRows(i + 1, rows...);
 			}
 
+			Matrix<_Scalar, 1, Columns> GetRow(const int i)const { return Matrix<_Scalar, 1, Columns>(m_value.row(i)); }
+			Matrix<_Scalar, Rows, 1> GetColumn(const int i)const { return Matrix<_Scalar, Rows, 1>(m_value.col(i)); }
+
 			bool operator==(const Matrix<_Scalar, Rows, Columns>& m)const{return m_value.isApprox(m.m_value);}
 			template<int _Rows, int _Columns>
 			bool operator==(const Matrix<_Scalar, _Rows, _Columns>& m)const
