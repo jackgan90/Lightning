@@ -107,6 +107,9 @@ namespace
 		REQUIRE(v10[1] == Approx(2.0f));
 		REQUIRE(v10[2] == Approx(3.0f));
 
+		REQUIRE(v10 == m0);
+		REQUIRE(m0 == v10);
+
 		Vector3f v11;
 		v11 = Matrix<float, 1, 3>{ 1.0f, 2.0f, 3.0f };
 		REQUIRE(v11[0] == Approx(1.0f));

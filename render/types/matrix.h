@@ -57,8 +57,15 @@ namespace LightningGE
 				SetRows(i + 1, rows...);
 			}
 
-			bool operator==(const Matrix<_Scalar, Rows, Columns>& m){return m_value.isApprox(m.m_value);}
-			bool operator!=(const Matrix<_Scalar, Rows, Columns>& m){return !(*this == m); }
+			bool operator==(const Matrix<_Scalar, Rows, Columns>& m)const{return m_value.isApprox(m.m_value);}
+			template<int _Rows, int _Columns>
+			bool operator==(const Matrix<_Scalar, _Rows, _Columns>& m)const
+			{
+				if (Rows != _Columns || Columns != _Rows || (Rows != 1 && Columns != 1))
+					return false;
+				return m_value.isApprox(m.m_value.transpose());
+			}
+			bool operator!=(const Matrix<_Scalar, Rows, Columns>& m)const{return !(*this == m); }
 			Matrix<_Scalar, Rows, Columns>& operator+=(const Matrix<_Scalar, Rows, Columns>& m)
 			{
 				m_value += m.m_value;

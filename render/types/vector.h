@@ -25,7 +25,7 @@ namespace LightningGE
 			}
 			bool operator==(const Matrix<_Scalar, 1, Dimension>& mv)const
 			{
-				return m_value.isApprox(mv.m_value);
+				return m_value.isApprox(mv.m_value.transpose());
 			}
 			bool operator!=(const Matrix<_Scalar, 1, Dimension>& mv)const
 			{
