@@ -98,6 +98,10 @@ namespace LightningGE
 				result -= m;
 				return result;
 			}
+			Matrix<_Scalar, Rows, Columns> operator-()const
+			{
+				return Matrix<_Scalar, Rows, Columns>(-m_value);
+			}
 			template<int Dimension>
 			Matrix<_Scalar, Rows, Dimension>& operator*=(const Matrix<_Scalar, Columns, Dimension>& m)
 			{

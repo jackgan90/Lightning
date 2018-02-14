@@ -70,6 +70,11 @@ namespace
 		REQUIRE(v3[1] == Approx(8.0));
 		REQUIRE(v3[2] == Approx(-4.0));
 
+		Vector3f sum = v1 + v2;
+		REQUIRE(sum[0] == Approx(6.0f));
+		REQUIRE(sum[1] == Approx(8.0f));
+		REQUIRE(sum[2] == Approx(10.0f));
+
 		Vector3f zero = Vector3f::Zero();
 		Vector3f zero1{ 0.0f, 0.0f, 0.0f };
 		REQUIRE(zero == zero1);
@@ -132,6 +137,16 @@ namespace
 		REQUIRE(v15[0] == Approx(3.0f));
 		REQUIRE(v15[1] == Approx(4.0f));
 		REQUIRE(v15[2] == Approx(5.0f));
+
+		Vector3f v16 = -v13;
+		REQUIRE(v16[0] == Approx(-3.0f));
+		REQUIRE(v16[1] == Approx(-4.0f));
+		REQUIRE(v16[2] == Approx(-5.0f));
+
+		Vector3f v17 = -Vector3f{ 1.0f, 2.0f, 3.0f };
+		REQUIRE(v17[0] == Approx(-1.0f));
+		REQUIRE(v17[1] == Approx(-2.0f));
+		REQUIRE(v17[2] == Approx(-3.0f));
 	}
 
 	TEST_CASE("Matrix test", "[Matrix test]")
@@ -438,6 +453,28 @@ namespace
 		Matrix3x3f fm17(Matrix4x4f({ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f }));
 		auto subfm16 = fm16.SubMatrix<3, 3>(0, 0);
 		REQUIRE(subfm16 == fm17);
+
+		auto fm18 = -fm17;
+		REQUIRE(fm18(0, 0) == Approx(-1.0f));
+		REQUIRE(fm18(1, 0) == Approx(-2.0f));
+		REQUIRE(fm18(2, 0) == Approx(-3.0f));
+		REQUIRE(fm18(0, 1) == Approx(-5.0f));
+		REQUIRE(fm18(1, 1) == Approx(-6.0f));
+		REQUIRE(fm18(2, 1) == Approx(-7.0f));
+		REQUIRE(fm18(0, 2) == Approx(-9.0f));
+		REQUIRE(fm18(1, 2) == Approx(-10.0f));
+		REQUIRE(fm18(2, 2) == Approx(-11.0f));
+
+		auto fm19 = -Matrix3x3f{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
+		REQUIRE(fm19(0, 0) == Approx(-1.0f));
+		REQUIRE(fm19(1, 0) == Approx(-2.0f));
+		REQUIRE(fm19(2, 0) == Approx(-3.0f));
+		REQUIRE(fm19(0, 1) == Approx(-4.0f));
+		REQUIRE(fm19(1, 1) == Approx(-5.0f));
+		REQUIRE(fm19(2, 1) == Approx(-6.0f));
+		REQUIRE(fm19(0, 2) == Approx(-7.0f));
+		REQUIRE(fm19(1, 2) == Approx(-8.0f));
+		REQUIRE(fm19(2, 2) == Approx(-9.0f));
 
 	}
 
