@@ -13,6 +13,10 @@ namespace LightningGE
 			Vector(const std::initializer_list<_Scalar>& data) : Matrix<_Scalar, Dimension, 1>(data){}
 			Vector(const Matrix<_Scalar, 1, Dimension>& m): Matrix<_Scalar, Dimension, 1>(m.m_value){}
 			Vector(Matrix<_Scalar, 1, Dimension>&& m): Matrix<_Scalar, Dimension, 1>(std::move(m.m_value)){}
+			template<typename S, int _Dimension>
+			Vector(const Vector<S, _Dimension>& v) : Matrix<_Scalar, Dimension, 1>(v){}
+			template<typename S, int _Dimension>
+			Vector(Vector<S, _Dimension>&& v) : Matrix<_Scalar, Dimension, 1>(std::move(v)){}
 			template<typename ScalarPointerType, typename SizeType, typename = 
 				typename std::enable_if<std::is_integral<typename std::decay<SizeType>::type>::value	//ensure the second argument is an integral type
 				&& std::is_pointer<typename std::decay<ScalarPointerType>::type>::value	//ensure the first argument is a pointer

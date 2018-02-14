@@ -24,6 +24,7 @@ namespace
 	using LightningGE::Render::Vector4f;
 	using LightningGE::Render::Vector4i;
 	using LightningGE::Render::Vector3f;
+	using LightningGE::Render::Vector2f;
 	using LightningGE::Render::Vector;
 	using LightningGE::Render::RectF;
 	using LightningGE::Render::ColorF;
@@ -122,6 +123,15 @@ namespace
 		REQUIRE(v12[1] == Approx(2.0f));
 		REQUIRE(v12[2] == Approx(3.0f));
 		delete[]v_arr;
+
+		Vector3f v13{ 3.0f, 4.0f, 5.0f };
+		Vector2f v14(v13);
+		Vector4f v15(v13);
+		REQUIRE(v14[0] == Approx(3.0f));
+		REQUIRE(v14[1] == Approx(4.0f));
+		REQUIRE(v15[0] == Approx(3.0f));
+		REQUIRE(v15[1] == Approx(4.0f));
+		REQUIRE(v15[2] == Approx(5.0f));
 	}
 
 	TEST_CASE("Matrix test", "[Matrix test]")
@@ -161,7 +171,9 @@ namespace
 		Vector4i col3{ -1, -2, -3, -4 };
 		
 		
-		Matrix4x4i m2(helper::make_array(col0, col1, col2, col3));
+		//Matrix4x4i m2(helper::make_array(col0, col1, col2, col3));
+		Matrix4x4i m2;
+		m2.SetColumns(0, col0, col1, col2, col3);
 		REQUIRE(m2(0, 0) == 2);
 		REQUIRE(m2(1, 0) == 3);
 		REQUIRE(m2(2, 0) == 4);
@@ -399,6 +411,34 @@ namespace
 		REQUIRE(r0 == Vector4f({ 36.0f, 40.0f, 44.0f, 48.0f }));
 		auto c0 = fm13.GetColumn(0);
 		REQUIRE(c0 == Vector4f({ 36.0f, 37.0f, 38.0f, 39.0f }));
+
+		Matrix2x2i im2{ 1, 2, 3, 4 };
+		Matrix3x3i im3(im2);
+		auto subim2 = im3.SubMatrix<2, 2>(0, 0);
+		REQUIRE(subim2 == im2);
+		im3 = im2;
+		subim2 = im3.SubMatrix<2, 2>(0, 0);
+		REQUIRE(subim2 == im2);
+
+		Matrix4x4i im4{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 };
+		Matrix3x3i im5(im4);
+		auto subim4 = im4.SubMatrix<3, 3>(0, 0);
+		REQUIRE(subim4 == im5);
+
+		Matrix2x2f fm15{ 1.0f, 2.0f, 3.0f, 4.0f };
+		Matrix3x3f fm14(Matrix2x2f({ 1, 2, 3, 4 }));
+		auto subfm14 = fm14.SubMatrix<2, 2>(0, 0);
+		REQUIRE(subfm14 == fm15);
+
+		fm15 = Matrix3x3f{ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f };
+		REQUIRE(fm15 == Matrix2x2f({ 1.0f, 2.0f, 4.0f, 5.0f }));
+
+
+		Matrix4x4f fm16{ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f };
+		Matrix3x3f fm17(Matrix4x4f({ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f }));
+		auto subfm16 = fm16.SubMatrix<3, 3>(0, 0);
+		REQUIRE(subfm16 == fm17);
+
 	}
 
 }

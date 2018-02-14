@@ -38,16 +38,16 @@ namespace LightningGE
 			{
 				Set(arr, size);
 			}
-			template<typename Derived>
-			Matrix(const std::array<Derived, Columns>& arr)
+			template<typename S, int _Rows, int _Columns>
+			Matrix(const Matrix<S, _Rows, _Columns>& m)
 			{
-				static_assert(std::is_base_of<VectorBaseType, Derived>::value, "Only derived classes of Matrix(vector etc> can be used to init");
-				for (std::size_t i = 0;i < arr.size();++i)
-				{
-					SetColumns(i, arr[i]);
-				}
+				SetInternal<S, _Rows, _Columns>(m);
 			}
-
+			template<typename S, int _Rows, int _Columns>
+			Matrix(Matrix<S, _Rows, _Columns>&& m)
+			{
+				SetInternal<S, _Rows, _Columns>(std::move(m));
+			}
 			template<typename S, int R, template<typename, int> typename _Vector1, template<typename, int> typename... _Vector2>
 			typename std::enable_if<std::is_base_of<VectorBaseType, typename std::decay<_Vector1<S, R>>::type>::value>::type
 			SetColumns(int i, const _Vector1<S, R>& col, const _Vector2<S, R>&... columns)
@@ -67,7 +67,7 @@ namespace LightningGE
 			Matrix<_Scalar, 1, Columns> GetRow(const int i)const { return Matrix<_Scalar, 1, Columns>(m_value.row(i)); }
 			Matrix<_Scalar, Rows, 1> GetColumn(const int i)const { return Matrix<_Scalar, Rows, 1>(m_value.col(i)); }
 
-			bool operator==(const Matrix<_Scalar, Rows, Columns>& m)const{return m_value.isApprox(m.m_value);}
+			bool operator==(const Matrix<_Scalar, Rows, Columns>& m)const {return m_value.isApprox(m.m_value);}
 			template<int _Rows, int _Columns>
 			bool operator==(const Matrix<_Scalar, _Rows, _Columns>& m)const
 			{
@@ -181,6 +181,52 @@ namespace LightningGE
 			Eigen::Matrix<_Scalar, Rows, Columns> m_value;
 			Matrix(const Eigen::Matrix<_Scalar, Rows, Columns>& m):m_value(m){}
 			Matrix(Eigen::Matrix<_Scalar, Rows, Columns>&& m):m_value(std::move(m)){}
+			template<typename S, int _Rows, int _Columns, typename T>
+			auto SetInternal(T&& m) ->
+				typename std::enable_if<std::is_convertible<
+					typename std::decay<T>::type,
+					Matrix<typename std::decay<S>::type, _Rows, Columns>>::value
+				>::type
+			{
+				SetInternalImpl<S, _Rows, _Columns>(std::forward<T>(m));
+			}
+
+			template<typename S, int _Rows, int _Columns>
+			auto SetInternalImpl(Matrix<S, _Rows, _Columns>&& m) ->
+				typename std::enable_if<!(_Rows == Rows && _Columns == Columns) && (_Rows <= Rows && _Columns <= Columns)>::type
+			{
+				m_value.block<_Rows, _Columns>(0, 0) = std::move(m.m_value);
+			}
+			template<typename S, int _Rows, int _Columns>
+			auto SetInternalImpl(const Matrix<S, _Rows, _Columns>& m) ->
+				typename std::enable_if<!(_Rows == Rows && _Columns == Columns) && (_Rows <= Rows && _Columns <= Columns)>::type
+			{
+				m_value.block<_Rows, _Columns>(0, 0) = m.m_value;
+			}
+			template<typename S, int _Rows, int _Columns>
+			auto SetInternalImpl(Matrix<S, _Rows, _Columns>&& m) ->
+				typename std::enable_if<!(_Rows == Rows && _Columns == Columns) && (_Rows >= Rows && _Columns >= Columns)>::type
+			{
+				m_value = std::move(m.m_value.block<Rows, Columns>(0, 0));
+			}
+			template<typename S, int _Rows, int _Columns>
+			auto SetInternalImpl(const Matrix<S, _Rows, _Columns>& m) ->
+				typename std::enable_if<(!(_Rows == Rows && _Columns == Columns) && _Rows >= Rows && _Columns >= Columns)>::type
+			{
+				m_value = m.m_value.block<Rows, Columns>(0, 0);
+			}
+			template<typename S, int _Rows, int _Columns>
+			auto SetInternalImpl(const Matrix<S, _Rows, _Columns>& m) ->
+				typename std::enable_if<(_Rows == Rows && _Columns == Columns)>::type
+			{
+				m_value = m.m_value;
+			}
+			template<typename S, int _Rows, int _Columns>
+			auto SetInternalImpl(Matrix<S, _Rows, _Columns>&& m) ->
+				typename std::enable_if<(_Rows == Rows && _Columns == Columns)>::type
+			{
+				m_value = std::move(m.m_value);
+			}
 		private:
 			void SetColumns(int i) {} //Only for execute internally
 			void SetRows(int i) {} //Only for execute internally
