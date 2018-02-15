@@ -22,6 +22,7 @@ add_subdirectory(render)
 add_subdirectory(unittest)
 add_subdirectory(serialization)
 add_subdirectory(entities)
+add_subdirectory(scene)
 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

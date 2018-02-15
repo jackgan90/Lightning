@@ -1,8 +1,8 @@
-project(entities)
-message(STATUS "Configuring project entities")
+project(scene)
+message(STATUS "Configuring project scene")
 
-set(HEADERS entitiesexportdef.h drawable.h primitive.h camera.h)
-set(SOURCES primitive.cpp camera.cpp)
+set(HEADERS sceneexportdef.h scene.h scenemanager.h)
+set(SOURCES scene.cpp scenemanager.cpp)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -11,10 +11,11 @@ if (WIN32)
 	add_definitions(-DLIGHTNINGGE_WIN32)
 endif()
 
-define_dll_export_macro(ENTITIES)
+define_dll_export_macro(SCENE)
 include_directories(${CMAKE_SOURCE_DIR}/render
 					${CMAKE_SOURCE_DIR}/render/types
 					${CMAKE_SOURCE_DIR}/render/shader
+					${CMAKE_SOURCE_DIR}/entities
 					${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/utilities
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
@@ -29,5 +30,5 @@ if(MSVC)
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
 
-add_dependencies(${PROJECT_NAME} foundation utilities render)
-target_link_libraries(${PROJECT_NAME} foundation utilities render)
+add_dependencies(${PROJECT_NAME} foundation utilities entities render)
+target_link_libraries(${PROJECT_NAME} foundation utilities entities render)

@@ -17,7 +17,7 @@ namespace LightningGE
 
 		Renderer::~Renderer()
 		{
-			assert(s_instance);
+			assert(s_instance == this);
 			s_instance = nullptr;
 		}
 

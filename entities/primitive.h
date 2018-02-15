@@ -1,8 +1,7 @@
 #pragma once
 #include <memory>
 #include <cstdint>
-#include "entitiesexportdef.h"
-#include "renderer.h"
+#include "drawable.h"
 #include "vertexbuffer.h"
 #include "indexbuffer.h"
 
@@ -19,12 +18,12 @@ namespace LightningGE
 			TRIANGLE_STRIP
 		};
 
-		class LIGHTNINGGE_ENTITIES_API Primitive
+		class LIGHTNINGGE_ENTITIES_API Primitive : public IDrawable
 		{
 		public:
 			Primitive(PrimitiveType topology);
 			virtual ~Primitive();
-			void Draw(Render::Renderer& renderer);
+			void Draw(Render::Renderer& renderer) override;
 			PrimitiveType GetPrimitiveType()const { return m_primType; }
 		protected:
 			std::unique_ptr<Render::VertexBuffer> m_vb;
