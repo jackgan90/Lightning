@@ -5,7 +5,7 @@ namespace LightningGE
 {
 	namespace Entities
 	{
-		Primitive::Primitive(PrimitiveTopology topology) : m_topology(topology)
+		Primitive::Primitive(PrimitiveType topology) : m_primType(topology)
 		{
 
 		}
@@ -45,7 +45,7 @@ namespace LightningGE
 			6, 7, 3, 6, 3, 2
 		};
 		Cube::Cube(float size) : 
-		Primitive(PRIMITIVE_TOPOLOGY_TRIANGLE_LIST),
+		Primitive(TRIANGLE_LIST),
 		m_size(size)
 		{
 			assert(m_size > 0 && "The size of the cube must be greater than 0!");

@@ -10,26 +10,26 @@ namespace LightningGE
 {
 	namespace Entities
 	{
-		enum PrimitiveTopology
+		enum PrimitiveType
 		{
-			PRIMITIVE_TOPOLOGY_POINT_LIST,
-			PRIMITIVE_TOPOLOGY_LINE_LIST,
-			PRIMITIVE_TOPOLOGY_LINE_STRIP,
-			PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-			PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP
+			POINT_LIST,
+			LINE_LIST,
+			LINE_STRIP,
+			TRIANGLE_LIST,
+			TRIANGLE_STRIP
 		};
 
 		class LIGHTNINGGE_ENTITIES_API Primitive
 		{
 		public:
-			Primitive(PrimitiveTopology topology);
+			Primitive(PrimitiveType topology);
 			virtual ~Primitive();
 			void Draw(Render::Renderer& renderer);
-			PrimitiveTopology GetTopology()const { return m_topology; }
+			PrimitiveType GetPrimitiveType()const { return m_primType; }
 		protected:
 			std::unique_ptr<Render::VertexBuffer> m_vb;
 			std::unique_ptr<Render::IndexBuffer> m_ib;
-			PrimitiveTopology m_topology;
+			PrimitiveType m_primType;
 		};
 
 		class LIGHTNINGGE_ENTITIES_API Cube : public Primitive
