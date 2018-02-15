@@ -25,16 +25,6 @@ namespace LightningGE
 				>::type
 			>
 			Vector(const ScalarPointerType arr, const SizeType size):Matrix<_Scalar, Dimension, 1>(arr, size){}
-			Vector<_Scalar, Dimension>& operator=(const Matrix<_Scalar, 1, Dimension>& m)
-			{
-				m_value = m.m_value;
-				return *this;
-			}
-			Vector<_Scalar, Dimension>& operator=(Matrix<_Scalar, 1, Dimension>&& m)
-			{
-				m_value = std::move(m.m_value);
-				return *this;
-			}
 			bool operator==(const Matrix<_Scalar, 1, Dimension>& mv)const
 			{
 				return m_value.isApprox(mv.m_value.transpose());
@@ -50,10 +40,6 @@ namespace LightningGE
 			bool operator!=(const Vector<_Scalar, Dimension>& v)const
 			{
 				return !(*this == mv);
-			}
-			Vector<_Scalar, Dimension> operator-()const
-			{
-				return Vector<_Scalar, Dimension>(-m_value);
 			}
 			_Scalar& operator[](const int comp) { return Matrix<_Scalar, Dimension, 1>::operator()(comp, 0); }
 			_Scalar operator[](const int comp)const { return Matrix<_Scalar, Dimension, 1>::operator()(comp, 0); }

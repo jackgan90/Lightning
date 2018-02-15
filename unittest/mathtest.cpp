@@ -62,7 +62,7 @@ namespace
 	TEST_CASE("Vector test", "[Vector test]")
 	{
 		Vector3f v1{ 1.0, 2.0, 3.0};
-		Vector3f v2{ 5.0, 6.0, 7.0};
+		const Vector3f v2{ 5.0, 6.0, 7.0};
 		auto dotProduct = v1.Dot(v2);
 		REQUIRE(dotProduct == Approx(38.0));
 		auto v3 = v1.Cross(v2);
@@ -74,6 +74,18 @@ namespace
 		REQUIRE(sum[0] == Approx(6.0f));
 		REQUIRE(sum[1] == Approx(8.0f));
 		REQUIRE(sum[2] == Approx(10.0f));
+
+		//constructor
+		Vector3f diff = v1 - v2;
+		REQUIRE(diff[0] == Approx(-4.0f));
+		REQUIRE(diff[1] == Approx(-4.0f));
+		REQUIRE(diff[2] == Approx(-4.0f));
+
+		//operator=
+		diff = v1 - v2;
+		REQUIRE(diff[0] == Approx(-4.0f));
+		REQUIRE(diff[1] == Approx(-4.0f));
+		REQUIRE(diff[2] == Approx(-4.0f));
 
 		Vector3f zero = Vector3f::Zero();
 		Vector3f zero1{ 0.0f, 0.0f, 0.0f };
