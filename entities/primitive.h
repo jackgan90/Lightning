@@ -26,8 +26,7 @@ namespace LightningGE
 			void Draw(Render::Renderer& renderer) override;
 			PrimitiveType GetPrimitiveType()const { return m_primType; }
 		protected:
-			std::unique_ptr<Render::VertexBuffer> m_vb;
-			std::unique_ptr<Render::IndexBuffer> m_ib;
+			Render::SharedGeometryPtr m_geo;
 			PrimitiveType m_primType;
 		};
 

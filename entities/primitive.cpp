@@ -7,7 +7,6 @@ namespace LightningGE
 	{
 		Primitive::Primitive(PrimitiveType topology) : m_primType(topology)
 		{
-
 		}
 
 		Primitive::~Primitive()
@@ -17,7 +16,7 @@ namespace LightningGE
 
 		void Primitive::Draw(Render::Renderer& renderer)
 		{
-
+			renderer.Draw(m_geo, Render::SharedMaterialPtr());
 		}
 
 		float Cube::verticeTemplate[24] = { 0.5f, 0.5f, -0.5f,  //right top front
@@ -49,6 +48,18 @@ namespace LightningGE
 		m_size(size)
 		{
 			assert(m_size > 0 && "The size of the cube must be greater than 0!");
+			Render::VertexComponent comp;
+			comp.format = Render::VERTEX_FORMAT_R32G32B32_FLOAT;
+			comp.instanceStepRate = 1;
+			comp.isInstance = false;
+			comp.offset = 0;
+			comp.semanticIndex = 0;
+			comp.semanticItem = { Render::POSITION, "POSITION" };
+			std::vector<Render::VertexComponent> comps;
+			comps.push_back(comp);
+			m_geo = std::make_shared<Render::Geometry>();
+			m_geo->m_vbs[0] = std::make_unique<Render::VertexBuffer>(comps);
+			m_geo->m_ib = std::make_unique<Render::IndexBuffer>(Render::INDEX_TYPE_UINT16);
 			float* vertices = new float[sizeof(float) * 24];
 			for (std::size_t i = 0;i < 24;++i)
 			{
@@ -56,8 +67,8 @@ namespace LightningGE
 			}
 
 			m_vertices = reinterpret_cast<std::uint8_t*>(vertices);
-			m_vb->SetBuffer(m_vertices, sizeof(float) * 24);
-			m_ib->SetBuffer(reinterpret_cast<std::uint8_t*>(&s_indices), sizeof(s_indices));
+			m_geo->m_vbs[0]->SetBuffer(m_vertices, sizeof(float) * 24);
+			m_geo->m_ib->SetBuffer(reinterpret_cast<std::uint8_t*>(&s_indices), sizeof(s_indices));
 		}
 
 		Cube::~Cube()

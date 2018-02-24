@@ -27,7 +27,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDER_API D3D12Renderer : public Renderer
 		{
 		public:
-			EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+			LIGHTNINGGE_ALIGNED_OPERATOR_NEW
 			D3D12Renderer(const SharedWindowPtr& pContext, const SharedFileSystemPtr& fs);
 			~D3D12Renderer()override;
 			D3D12RenderTargetManager* GetRenderTargetManager();

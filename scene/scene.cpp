@@ -1,4 +1,5 @@
 #include "scene.h"
+#include "renderer.h"
 
 namespace LightningGE
 {
@@ -20,7 +21,10 @@ namespace LightningGE
 
 		void Scene::Update()
 		{
-
+			for (auto& drawable : m_drawables)
+			{
+				drawable->Draw(*Render::Renderer::Instance());
+			}
 		}
 
 		void Scene::AddDrawable(const SharedDrawablePtr& drawable)

@@ -10,9 +10,8 @@ namespace LightningGE
 	namespace Render
 	{
 		//a wrapper class for vb/ib 
-		class LIGHTNINGGE_RENDER_API Geometry
+		struct LIGHTNINGGE_RENDER_API Geometry
 		{
-		private:
 			SharedVertexBufferPtr m_vbs[MAX_GEOMETRY_BUFFER_COUNT];
 			SharedIndexBufferPtr m_ib;
 		};

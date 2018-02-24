@@ -44,11 +44,13 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/render/shader
 					${CMAKE_SOURCE_DIR}/window
 					${CMAKE_SOURCE_DIR}/utilities
+					${CMAKE_SOURCE_DIR}/scene
+					${CMAKE_SOURCE_DIR}/entities
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen
 					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost)
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
-add_dependencies(${PROJECT_NAME} foundation window render)
+add_dependencies(${PROJECT_NAME} foundation window render scene)
 
 if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /wd4251 /wd4275 /EHsc /MDd")
@@ -57,5 +59,5 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
-target_link_libraries(${PROJECT_NAME} foundation window render)
+target_link_libraries(${PROJECT_NAME} foundation window render scene)
 

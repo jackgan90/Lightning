@@ -3,6 +3,9 @@
 #include "iapplication.h"
 #include "logger.h"
 #include "irenderer.h"
+#include "scenemanager.h"
+//include primitives here just for simple scene construction
+#include "primitive.h"
 
 
 namespace LightningGE
@@ -12,6 +15,7 @@ namespace LightningGE
 		using Foundation::logger;
 		using Foundation::LogLevel;
 		using Foundation::FileSystemFactory;
+		using Scene::SceneManager;
 		Application::Application()
 		{
 			m_fs = FileSystemFactory::Instance()->CreateFileSystem();
@@ -31,6 +35,11 @@ namespace LightningGE
 		{
 			m_window = CreateMainWindow();
 			m_renderer = CreateRenderer();
+			//Create a simple scene here just for test
+			auto scene = SceneManager::Instance()->CreateScene();
+			auto cube = std::make_shared<Entities::Cube>(1.0);
+			scene->AddDrawable(cube);
+			//End of scene creation
 			RegisterWindowHandlers();
 		}
 
@@ -47,6 +56,7 @@ namespace LightningGE
 
 		void Application::OnWindowIdle(const WindowSystem::WindowIdleParam& param)
 		{
+			SceneManager::Instance()->Update();
 			if(m_renderer)
 				m_renderer->Render();
 		}

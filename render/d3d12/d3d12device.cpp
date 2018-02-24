@@ -24,9 +24,15 @@ namespace LightningGE
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
 		using Foundation::StackAllocator;
-		const char* const DEFAULT_VS_SOURCE = "float4 main(float4 position:POSITION):SV_POSITION\n"
+		const char* const DEFAULT_VS_SOURCE = 
+			"float4 main(float4 position:POSITION):SV_POSITION\n"
 			"{\n"
 				"return position;\n"
+			"}\n";
+		const char* const DEFAULT_PS_SOURCE =
+			"float4 main(void):COLOR\n"
+			"{\n"
+				"return float4(1.0f, 0.0f, 0.0f, 1.0f);"
 			"}\n";
 		D3D12Device::D3D12Device(const ComPtr<ID3D12Device>& pDevice, const SharedFileSystemPtr& fs)
 			:Device(), m_fs(fs), m_pipelineDesc{}, m_pInputElementDesc(nullptr)
