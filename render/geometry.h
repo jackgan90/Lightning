@@ -12,8 +12,9 @@ namespace LightningGE
 		//a wrapper class for vb/ib 
 		struct LIGHTNINGGE_RENDER_API Geometry
 		{
-			SharedVertexBufferPtr m_vbs[MAX_GEOMETRY_BUFFER_COUNT];
-			SharedIndexBufferPtr m_ib;
+			SharedVertexBufferPtr vbs[MAX_GEOMETRY_BUFFER_COUNT];
+			SharedIndexBufferPtr ib;
+			PrimitiveType primType;
 		};
 		using SharedGeometryPtr = std::shared_ptr<Geometry>;
 	}

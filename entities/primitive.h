@@ -4,20 +4,13 @@
 #include "drawable.h"
 #include "vertexbuffer.h"
 #include "indexbuffer.h"
+#include "renderconstants.h"
 
 namespace LightningGE
 {
 	namespace Entities
 	{
-		enum PrimitiveType
-		{
-			POINT_LIST,
-			LINE_LIST,
-			LINE_STRIP,
-			TRIANGLE_LIST,
-			TRIANGLE_STRIP
-		};
-
+		using Render::PrimitiveType;
 		class LIGHTNINGGE_ENTITIES_API Primitive : public IDrawable
 		{
 		public:

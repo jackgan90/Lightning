@@ -34,6 +34,7 @@ namespace LightningGE
 			void ApplyViewports(const RectFList& vp)override;
 			void ApplyScissorRects(const RectFList& scissorRects)override;
 		private:
+			void BeginFrame(const UINT backBufferIndex);
 			//if parameter pState is nullptr,this method will create a default pipeline state
 			using PipelineCacheMap = std::unordered_map<std::size_t, ComPtr<ID3D12PipelineState>>;
 			using RootSignatureMap = std::unordered_map<std::size_t, ComPtr<ID3D12RootSignature>>;

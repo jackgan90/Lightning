@@ -3,6 +3,7 @@
 #include "d3d12swapchain.h"
 #include "d3d12device.h"
 #include "d3d12descriptorheapmanager.h"
+#include "d3d12rendertarget.h"
 #include "winwindow.h"
 #include "configmanager.h"
 #include "logger.h"
@@ -219,15 +220,11 @@ namespace LightningGE
 			m_frameIndex++;
 			m_currentBackBufferIndex = m_swapChain->m_swapChain->GetCurrentBackBufferIndex();
 			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
-			auto commandAllocator = pD3D12Device->m_commandAllocators[m_currentBackBufferIndex];
-			auto commandList = pD3D12Device->m_commandList;
-			commandAllocator->Reset();
-			commandList->Reset(commandAllocator.Get(), nullptr);
+			pD3D12Device->BeginFrame(m_currentBackBufferIndex);
 		}
 
 		void D3D12Renderer::DoFrame()
 		{
-			//here goes rendering commands
 			auto currentSwapChainRT = m_swapChain->GetBufferRenderTarget(m_currentBackBufferIndex);
 			m_device->ClearRenderTarget(currentSwapChainRT.get(), m_clearColor);
 		}
@@ -236,6 +233,10 @@ namespace LightningGE
 		{
 			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
 			auto commandList = pD3D12Device->m_commandList;
+			auto currentSwapChainRT = m_swapChain->GetBufferRenderTarget(m_currentBackBufferIndex);
+			auto nativeRT = static_cast<D3D12RenderTarget*>(currentSwapChainRT.get());
+			commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRT->GetNative().Get(),
+				D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 			auto commandQueue = pD3D12Device->m_commandQueue;
 			commandList->Close();
 			ID3D12CommandList* commandListArray[] = { commandList.Get() };

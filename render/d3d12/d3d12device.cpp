@@ -24,15 +24,20 @@ namespace LightningGE
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
 		using Foundation::StackAllocator;
-		const char* const DEFAULT_VS_SOURCE = 
+		const char* const DEFAULT_VS_SOURCE =
+			"struct VS_IN\n"
+			"{\n"
+			"	float4x4 wvp;"
+			"};\n"
+			"ConstantBuffer<VS_IN> vs_in : register(b0);\n"
 			"float4 main(float4 position:POSITION):SV_POSITION\n"
 			"{\n"
-				"return position;\n"
+				"return mul(vs_in.wvp, position);\n"
 			"}\n";
 		const char* const DEFAULT_PS_SOURCE =
 			"float4 main(void):COLOR\n"
 			"{\n"
-				"return float4(1.0f, 0.0f, 0.0f, 1.0f);"
+				"return float4(1.0f, 0.0f, 0.0f, 1.0f);\n"
 			"}\n";
 		D3D12Device::D3D12Device(const ComPtr<ID3D12Device>& pDevice, const SharedFileSystemPtr& fs)
 			:Device(), m_fs(fs), m_pipelineDesc{}, m_pInputElementDesc(nullptr)
@@ -81,11 +86,12 @@ namespace LightningGE
 		{
 			D3D12RenderTarget *pTarget = static_cast<D3D12RenderTarget*>(rt);
 			ComPtr<ID3D12Resource> nativeRenderTarget = pTarget->GetNative();
+			//should check the type of the rt to transit it from previous state to render target state
+			//currently just check back buffer render target
 			if (rt->IsSwapChainRenderTarget())
 			{
-				auto transition = CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget.Get(),
-					D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET);
-				m_commandList->ResourceBarrier(1, &transition);
+				m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget.Get(),
+					D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 			}
 
 			//TODO : check gpu?
@@ -109,14 +115,6 @@ namespace LightningGE
 			{
 				m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 			}
-
-			if (rt->IsSwapChainRenderTarget())
-			{
-				auto transition = CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget.Get(),
-					D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT);
-				m_commandList->ResourceBarrier(1, &transition);
-			}
-
 		}
 
 
@@ -374,7 +372,9 @@ namespace LightningGE
 
 			//TODO :create root signature based on shader parameters
 			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-			rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+			CD3DX12_ROOT_PARAMETER cbParameter; 
+			cbParameter.InitAsConstantBufferView(0);
+			rootSignatureDesc.Init(1, &cbParameter, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 			ID3DBlob* signature;
 			auto hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, nullptr);
@@ -391,6 +391,12 @@ namespace LightningGE
 			}
 			m_rootSignatures[seed] = rootSignature;
 			return rootSignature;
+		}
+
+		void D3D12Device::BeginFrame(const UINT backBufferIndex)
+		{
+			m_commandAllocators[backBufferIndex]->Reset();
+			m_commandList->Reset(m_commandAllocators[backBufferIndex].Get(), nullptr);
 		}
 
 	}
