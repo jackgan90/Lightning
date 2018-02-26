@@ -8,7 +8,7 @@ namespace LightningGE
 {
 	namespace Entities
 	{
-		enum CameraType
+		enum class CameraType
 		{
 			Perspective,
 			Orthographic,

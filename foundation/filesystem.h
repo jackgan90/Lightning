@@ -6,6 +6,7 @@
 #include <boost/filesystem.hpp>
 #include "foundationexportdef.h"
 #include "singleton.h"
+#include "enumoperation.h"
 
 namespace LightningGE
 {
@@ -13,24 +14,25 @@ namespace LightningGE
 	{
 		using FileSize = std::streamsize;
 
-		enum FilePointerType
+		enum class FilePointerType
 		{
 			Read,
 			Write
 		};
 
-		enum FileAnchor
+		enum class FileAnchor
 		{
 			Begin,
 			Current,
 			End
 		};
 
-		enum FileAccess
+		enum class FileAccess : unsigned int
 		{
-			ACCESS_READ = 1,
-			ACCESS_WRITE = 2,
+			READ = 0x01,
+			WRITE = 0x02,
 		};
+		ENABLE_ENUM_BITMASK_OPERATORS(FileAccess)
 		class LIGHTNINGGE_FOUNDATION_API IFile
 		{
 		public:

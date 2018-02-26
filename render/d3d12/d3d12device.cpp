@@ -130,7 +130,7 @@ namespace LightningGE
 			D3D12_RASTERIZER_DESC* pDesc = &m_pipelineDesc.RasterizerState;
 			pDesc->FillMode = D3D12TypeMapper::MapFillMode(state.fillMode);
 			pDesc->CullMode = D3D12TypeMapper::MapCullMode(state.cullMode);
-			pDesc->FrontCounterClockwise = state.frontFaceWindingOrder == COUNTER_CLOCKWISE;
+			pDesc->FrontCounterClockwise = state.frontFaceWindingOrder == FrontFaceWindingOrder::COUNTER_CLOCKWISE;
 		}
 
 		void D3D12Device::ApplyBlendState(const BlendState& state)
@@ -235,9 +235,9 @@ namespace LightningGE
 
 		void D3D12Device::SetUpDefaultPipelineStates()
 		{
-			auto defaultShader = CreateShader(SHADER_TYPE_VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
+			auto defaultShader = CreateShader(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
 			m_currentPipelineState.vs = defaultShader.get();
-			VertexComponent defaultComponent{ EngineSemantics[0], 0, VERTEX_FORMAT_R32G32B32_FLOAT, 0, false, 0};
+			VertexComponent defaultComponent{ EngineSemantics[0], 0, VertexFormat::R32G32B32_FLOAT, 0, false, 0};
 			m_currentPipelineState.vertexComponents[defaultComponent] = 0;
 			ApplyPipelineState(m_currentPipelineState);
 		}

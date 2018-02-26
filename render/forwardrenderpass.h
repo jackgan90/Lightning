@@ -9,7 +9,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDER_API ForwardRenderPass : public RenderPass
 		{
 		public:	
-			ForwardRenderPass():RenderPass(RENDERPASS_FORWARD){}
+			ForwardRenderPass():RenderPass(RenderPassType::FORWARD){}
 			void Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material)override;
 			//Apply is called by renderer once per frame.Subclasses should commit render resources to device in this method.
 			void Apply()override;

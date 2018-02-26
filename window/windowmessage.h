@@ -7,12 +7,12 @@ namespace LightningGE
 	namespace WindowSystem
 	{
 		class IWindow;
-		enum WindowMessage
+		enum class WindowMessage
 		{
-			MESSAGE_CREATED,
-			MESSAGE_DESTROYED,
-			MESSAGE_IDLE,
-			MESSAGE_RESIZE,
+			CREATED,
+			DESTROYED,
+			IDLE,
+			RESIZE,
 		};
 
 		struct WindowMessageParam

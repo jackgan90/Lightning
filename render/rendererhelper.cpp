@@ -8,7 +8,7 @@ namespace LightningGE
 		{
 			switch (format)
 			{
-			case VERTEX_FORMAT_R32G32B32_FLOAT:
+			case VertexFormat::R32G32B32_FLOAT:
 				return 12;
 			default:
 				return 0;

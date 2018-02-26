@@ -7,10 +7,10 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		enum RenderPassType
+		enum class RenderPassType
 		{
-			RENDERPASS_FORWARD,
-			RENDERPASS_DEFERED
+			FORWARD,
+			DEFERED
 		};
 
 		class LIGHTNINGGE_RENDER_API RenderPass

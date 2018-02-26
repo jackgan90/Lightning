@@ -9,7 +9,7 @@ namespace LightningGE
 	namespace Foundation
 	{
 		extern Logger logger;
-		GeneralFile::GeneralFile():m_sizeDirty(true), m_file(nullptr), m_access(FileAccess::ACCESS_READ)
+		GeneralFile::GeneralFile():m_sizeDirty(true), m_file(nullptr), m_access(FileAccess::READ)
 		{
 
 		}
@@ -118,9 +118,9 @@ namespace LightningGE
 			if (!m_file)
 			{
 				int mode = 0;
-				if (m_access & FileAccess::ACCESS_READ)
+				if ((m_access & FileAccess::READ) == FileAccess::READ)
 					mode |= std::fstream::in;
-				if (m_access & FileAccess::ACCESS_WRITE)
+				if ((m_access & FileAccess::WRITE) == FileAccess::WRITE)
 					mode |= std::fstream::out;
 				m_file = std::make_unique<boost::filesystem::fstream>(m_path.string(), std::fstream::binary | mode);
 			}

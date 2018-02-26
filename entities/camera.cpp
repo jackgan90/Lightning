@@ -7,7 +7,7 @@ namespace LightningGE
 	{
 		using Render::Matrix3x3f;
 		using Render::Vector4f;
-		Camera::Camera():m_type(Perspective), m_nearPlane(1.0f), m_farPlane(1000.0f), 
+		Camera::Camera():m_type(CameraType::Perspective), m_nearPlane(1.0f), m_farPlane(1000.0f), 
 			m_fov(DegreesToRadians(60.0f)), m_aspectRatio(1.0f),
 			m_worldPosition{0.0f, 0.0f, 0.0f}, 
 			m_xAxis{1.0f, 0.0f, 0.0f}, m_yAxis{0.0f, 0.1f, 0.0f}, m_zAxis{0.0f, 0.0f, -1.0f}
@@ -17,7 +17,7 @@ namespace LightningGE
 		}
 
 		Camera::Camera(const Vector3f& worldPosition, const Vector3f& lookDir, const Vector3f& worldUp):
-			m_type(Perspective), m_nearPlane(1.0f), m_farPlane(1000.0f),
+			m_type(CameraType::Perspective), m_nearPlane(1.0f), m_farPlane(1000.0f),
 			m_fov(DegreesToRadians(60.0f)), m_aspectRatio(1.0f),
 			m_worldPosition(worldPosition), 
 			m_zAxis(-lookDir), m_xAxis(worldUp.Cross(m_zAxis)), m_yAxis(m_zAxis.Cross(m_xAxis))
@@ -30,7 +30,7 @@ namespace LightningGE
 			const Vector3f& worldPosition, 
 			const Vector3f& lookDir,
 			const Vector3f& worldUp):
-			m_type(Perspective), m_nearPlane(1.0f), m_farPlane(1000.0f), 
+			m_type(CameraType::Perspective), m_nearPlane(1.0f), m_farPlane(1000.0f), 
 			m_fov(DegreesToRadians(fov)),m_aspectRatio(aspectRatio),
 			m_worldPosition(worldPosition), 
 			m_zAxis(-lookDir), m_xAxis(worldUp.Cross(m_zAxis)), m_yAxis(m_zAxis.Cross(m_xAxis))
@@ -99,14 +99,14 @@ namespace LightningGE
 		{
 			switch (m_type)
 			{
-			case LightningGE::Entities::Perspective:
+			case CameraType::Perspective:
 				m_projectionMatrix(0, 0) = static_cast<float>(1.0 / (tan(m_fov / 2.0) * m_aspectRatio));
 				m_projectionMatrix(1, 1) = static_cast<float>(1.0 / tan(m_fov / 2.0));
 				m_projectionMatrix(2, 2) = -(m_farPlane + m_nearPlane) / (m_farPlane - m_nearPlane);
 				m_projectionMatrix(2, 3) = -2 * m_nearPlane * m_farPlane / (m_farPlane - m_nearPlane);
 				m_projectionMatrix(3, 2) = -1;
 				break;
-			case LightningGE::Entities::Orthographic:
+			case CameraType::Orthographic:
 				m_projectionMatrix(0, 0) = static_cast<float>(1.0 / (tan(m_fov / 2.0) * m_aspectRatio * m_nearPlane));
 				m_projectionMatrix(1, 1) = static_cast<float>(1.0 / (tan(m_fov / 2.0) * m_nearPlane));
 				m_projectionMatrix(2, 2) = static_cast<float>(-2.0 / (m_farPlane - m_nearPlane));

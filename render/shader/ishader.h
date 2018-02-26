@@ -5,6 +5,7 @@
 #include "shaderdefine.h"
 #include "filesystem.h"
 #include "hashableobject.h"
+#include "types/vector.h"
 
 namespace LightningGE
 {
@@ -12,14 +13,36 @@ namespace LightningGE
 	{
 		using Utility::HashableObject;
 		class IShaderManager;
-		enum ShaderType
+		enum class ShaderType
 		{
-			SHADER_TYPE_VERTEX,
-			SHADER_TYPE_FRAGMENT,
-			SHADER_TYPE_GEOMETRY,
-			SHADER_TYPE_HULL, //tesselation control shader in OpenGL
-			SHADER_TYPE_DOMAIN	//tesselation evaluation shader in OpenGL
+			VERTEX,
+			FRAGMENT,
+			GEOMETRY,
+			TESSELATION_CONTROL, //hull shader
+			TESSELATION_EVALUATION	//domain shader
 		};
+
+		enum class ShaderArgumentType
+		{
+			FLOAT,
+			FLOAT2,
+			FLOAT3,
+			FLOAT4,
+			MATRIX2,
+			MATRIX3,
+			MATRIX4,
+			TEXTURE2D,
+			TEXTURE3D,
+			SAMPLER2D,
+			SAMPLER3D
+		};
+
+		struct LIGHTNINGGE_RENDER_API ShaderArgument
+		{
+			LIGHTNINGGE_ALIGNED_OPERATOR_NEW
+			ShaderArgumentType type;
+		};
+
 		class LIGHTNINGGE_RENDER_API IShader : public HashableObject
 		{
 		public:

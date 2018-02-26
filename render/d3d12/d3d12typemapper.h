@@ -13,15 +13,15 @@ namespace LightningGE
 			{
 				switch (op)
 				{
-				case BLEND_ADD:
+				case BlendOperation::ADD:
 					return D3D12_BLEND_OP_ADD;
-				case BLEND_SUBTRACT:
+				case BlendOperation::SUBTRACT:
 					return D3D12_BLEND_OP_SUBTRACT;
-				case BLEND_REVERSE_SUBTRACT:
+				case BlendOperation::REVERSE_SUBTRACT:
 					return D3D12_BLEND_OP_REV_SUBTRACT;
-				case BLEND_MIN:
+				case BlendOperation::MIN:
 					return D3D12_BLEND_OP_MIN;
-				case BLEND_MAX:
+				case BlendOperation::MAX:
 					return D3D12_BLEND_OP_MAX;
 				default:
 					return D3D12_BLEND_OP_ADD;
@@ -32,25 +32,25 @@ namespace LightningGE
 			{
 				switch (factor)
 				{
-				case BLEND_ZERO:
+				case BlendFactor::ZERO:
 					return D3D12_BLEND_ZERO;
-				case BLEND_ONE:
+				case BlendFactor::ONE:
 					return D3D12_BLEND_ONE;
-				case BLEND_SRC_COLOR:
+				case BlendFactor::SRC_COLOR:
 					return D3D12_BLEND_SRC_COLOR;
-				case BLEND_INV_SRC_COLOR:
+				case BlendFactor::INV_SRC_COLOR:
 					return D3D12_BLEND_INV_SRC_COLOR;
-				case BLEND_SRC_ALPHA:
+				case BlendFactor::SRC_ALPHA:
 					return D3D12_BLEND_SRC_ALPHA;
-				case BLEND_INV_SRC_ALPHA:
+				case BlendFactor::INV_SRC_ALPHA:
 					return D3D12_BLEND_INV_SRC_ALPHA;
-				case BLEND_DEST_COLOR:
+				case BlendFactor::DEST_COLOR:
 					return D3D12_BLEND_DEST_COLOR;
-				case BLEND_INV_DEST_COLOR:
+				case BlendFactor::INV_DEST_COLOR:
 					return D3D12_BLEND_INV_DEST_COLOR;
-				case BLEND_DEST_ALPHA:
+				case BlendFactor::DEST_ALPHA:
 					return D3D12_BLEND_DEST_ALPHA;
-				case BLEND_INV_DEST_ALPHA:
+				case BlendFactor::INV_DEST_ALPHA:
 					return D3D12_BLEND_INV_DEST_ALPHA;
 				default:
 					return D3D12_BLEND_ZERO;
@@ -61,21 +61,21 @@ namespace LightningGE
 			{
 				switch (func)
 				{
-				case NEVER:
+				case CmpFunc::NEVER:
 					return D3D12_COMPARISON_FUNC_NEVER;
-				case LESS:
+				case CmpFunc::LESS:
 					return D3D12_COMPARISON_FUNC_LESS;
-				case EQUAL:
+				case CmpFunc::EQUAL:
 					return D3D12_COMPARISON_FUNC_EQUAL;
-				case LESS_EQUAL:
+				case CmpFunc::LESS_EQUAL:
 					return D3D12_COMPARISON_FUNC_LESS_EQUAL;
-				case GREATER:
+				case CmpFunc::GREATER:
 					return D3D12_COMPARISON_FUNC_GREATER;
-				case NOT_EQUAL:
+				case CmpFunc::NOT_EQUAL:
 					return D3D12_COMPARISON_FUNC_NOT_EQUAL;
-				case GREATER_EQUAL:
+				case CmpFunc::GREATER_EQUAL:
 					return D3D12_COMPARISON_FUNC_GREATER_EQUAL;
-				case ALWAYS:
+				case CmpFunc::ALWAYS:
 					return D3D12_COMPARISON_FUNC_ALWAYS;
 				default:
 					return D3D12_COMPARISON_FUNC_LESS;
@@ -86,21 +86,21 @@ namespace LightningGE
 			{
 				switch (op)
 				{
-				case KEEP:
+				case StencilOp::KEEP:
 					return D3D12_STENCIL_OP_KEEP;
-				case ZERO:
+				case StencilOp::ZERO:
 					return D3D12_STENCIL_OP_ZERO;
-				case REPLACE:
+				case StencilOp::REPLACE:
 					return D3D12_STENCIL_OP_REPLACE;
-				case INCREASE_CLAMP:
+				case StencilOp::INCREASE_CLAMP:
 					return D3D12_STENCIL_OP_INCR_SAT;
-				case DECREASE_CLAMP:
+				case StencilOp::DECREASE_CLAMP:
 					return D3D12_STENCIL_OP_DECR_SAT;
-				case INVERT:
+				case StencilOp::INVERT:
 					return D3D12_STENCIL_OP_INVERT;
-				case INCREASE_WRAP:
+				case StencilOp::INCREASE_WRAP:
 					return D3D12_STENCIL_OP_INCR;
-				case DECREASE_WRAP:
+				case StencilOp::DECREASE_WRAP:
 					return D3D12_STENCIL_OP_DECR;
 				default:
 					return D3D12_STENCIL_OP_KEEP;
@@ -111,9 +111,9 @@ namespace LightningGE
 			{
 				switch (mode)
 				{
-				case FILLMODE_SOLID:
+				case FillMode::SOLID:
 					return D3D12_FILL_MODE_SOLID;
-				case FILLMODE_WIREFRAME:
+				case FillMode::WIREFRAME:
 					return D3D12_FILL_MODE_WIREFRAME;
 				default:
 					return D3D12_FILL_MODE_SOLID;
@@ -124,11 +124,11 @@ namespace LightningGE
 			{
 				switch (mode)
 				{
-				case CULLMODE_NONE:
+				case CullMode::NONE:
 					return D3D12_CULL_MODE_NONE;
-				case CULLMODE_FRONT:
+				case CullMode::FRONT:
 					return D3D12_CULL_MODE_FRONT;
-				case CULLMODE_BACK:
+				case CullMode::BACK:
 					return D3D12_CULL_MODE_BACK;
 				default:
 					return D3D12_CULL_MODE_BACK;
@@ -139,7 +139,7 @@ namespace LightningGE
 			{
 				switch (format)
 				{
-				case VERTEX_FORMAT_R32G32B32_FLOAT:
+				case VertexFormat::R32G32B32_FLOAT:
 					return DXGI_FORMAT_R32G32B32_FLOAT;
 				default:
 					return DXGI_FORMAT_R32G32B32_FLOAT;

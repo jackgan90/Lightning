@@ -4,9 +4,9 @@ namespace LightningGE
 {
 	namespace Foundation
 	{
-		enum AllocatorID
+		enum class AllocatorID
 		{
-			ALLOCATOR_ID_BASE,
+			BASE,
 		};
 	}
 }

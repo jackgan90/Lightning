@@ -44,22 +44,22 @@ namespace LightningGE
 			6, 7, 3, 6, 3, 2
 		};
 		Cube::Cube(float size) : 
-		Primitive(Render::TRIANGLE_LIST),
+		Primitive(Render::PrimitiveType::TRIANGLE_LIST),
 		m_size(size)
 		{
 			assert(m_size > 0 && "The size of the cube must be greater than 0!");
 			Render::VertexComponent comp;
-			comp.format = Render::VERTEX_FORMAT_R32G32B32_FLOAT;
+			comp.format = Render::VertexFormat::R32G32B32_FLOAT;
 			comp.instanceStepRate = 1;
 			comp.isInstance = false;
 			comp.offset = 0;
 			comp.semanticIndex = 0;
-			comp.semanticItem = { Render::POSITION, "POSITION" };
+			comp.semanticItem = { Render::RenderSemantics::POSITION, "POSITION" };
 			std::vector<Render::VertexComponent> comps;
 			comps.push_back(comp);
 			m_geo = std::make_shared<Render::Geometry>();
 			m_geo->vbs[0] = std::make_unique<Render::VertexBuffer>(comps);
-			m_geo->ib = std::make_unique<Render::IndexBuffer>(Render::INDEX_TYPE_UINT16);
+			m_geo->ib = std::make_unique<Render::IndexBuffer>(Render::IndexType::UINT16);
 			float* vertices = new float[sizeof(float) * 24];
 			for (std::size_t i = 0;i < 24;++i)
 			{
@@ -69,7 +69,7 @@ namespace LightningGE
 			m_vertices = reinterpret_cast<std::uint8_t*>(vertices);
 			m_geo->vbs[0]->SetBuffer(m_vertices, sizeof(float) * 24);
 			m_geo->ib->SetBuffer(reinterpret_cast<std::uint8_t*>(&s_indices), sizeof(s_indices));
-			m_geo->primType = Render::TRIANGLE_LIST;
+			m_geo->primType = Render::PrimitiveType::TRIANGLE_LIST;
 		}
 
 		Cube::~Cube()

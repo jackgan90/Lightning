@@ -5,7 +5,7 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		enum PrimitiveType
+		enum class PrimitiveType
 		{
 			POINT_LIST,
 			LINE_LIST,

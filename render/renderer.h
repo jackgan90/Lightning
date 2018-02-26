@@ -22,7 +22,7 @@ namespace LightningGE
 			void SetRenderPass(RenderPassType type)override;
 			static Renderer* Instance() { return s_instance; }
 		protected:
-			Renderer(const SharedFileSystemPtr& fs, RenderPassType renderPassType = RENDERPASS_FORWARD);
+			Renderer(const SharedFileSystemPtr& fs, RenderPassType renderPassType = RenderPassType::FORWARD);
 			virtual void BeginFrame() = 0;
 			virtual void DoFrame() = 0;
 			virtual void EndFrame() = 0;

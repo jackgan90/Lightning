@@ -6,10 +6,10 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		enum IndexType
+		enum class IndexType
 		{
-			INDEX_TYPE_UINT16,
-			INDEX_TYPE_UINT32,
+			UINT16,
+			UINT32,
 		};
 
 		class LIGHTNINGGE_RENDER_API IndexBuffer : public BindableBuffer

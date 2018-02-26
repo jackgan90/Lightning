@@ -21,7 +21,8 @@ set(HEADERS	common.h
 			configmanager.h
 			foundationexportdef.h
 			singleton.h
-			counter.h)
+			counter.h
+			enumoperation.h)
 set(SOURCES common.cpp
 			filesystem.cpp
 			logger.cpp

@@ -12,35 +12,35 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		enum BlendOperation
+		enum class BlendOperation
 		{
-			BLEND_ADD,
-			BLEND_SUBTRACT,
-			BLEND_REVERSE_SUBTRACT,
-			BLEND_MIN,
-			BLEND_MAX
+			ADD,
+			SUBTRACT,
+			REVERSE_SUBTRACT,
+			MIN,
+			MAX
 		};
 
-		enum BlendFactor
+		enum class BlendFactor
 		{
-			BLEND_ZERO,
-			BLEND_ONE,
-			BLEND_SRC_COLOR,	
-			BLEND_INV_SRC_COLOR,
-			BLEND_SRC_ALPHA,
-			BLEND_INV_SRC_ALPHA,
-			BLEND_DEST_COLOR,
-			BLEND_INV_DEST_COLOR,
-			BLEND_DEST_ALPHA,
-			BLEND_INV_DEST_ALPHA,
+			ZERO,
+			ONE,
+			SRC_COLOR,	
+			INV_SRC_COLOR,
+			SRC_ALPHA,
+			INV_SRC_ALPHA,
+			DEST_COLOR,
+			INV_DEST_COLOR,
+			DEST_ALPHA,
+			INV_DEST_ALPHA,
 			//TODO there's more advanced blend factor in recent graphics API ,need to add them in case of use
 		};
 		
 		struct BlendState
 		{
-			BlendState():enable(false), colorOp(BLEND_ADD) ,alphaOp(BLEND_ADD)
-				, srcColorFactor(BLEND_SRC_ALPHA) ,srcAlphaFactor(BLEND_SRC_ALPHA)
-				, destColorFactor(BLEND_INV_SRC_ALPHA), destAlphaFactor(BLEND_INV_SRC_ALPHA)
+			BlendState():enable(false), colorOp(BlendOperation::ADD) ,alphaOp(BlendOperation::ADD)
+				, srcColorFactor(BlendFactor::SRC_ALPHA) ,srcAlphaFactor(BlendFactor::SRC_ALPHA)
+				, destColorFactor(BlendFactor::INV_SRC_ALPHA), destAlphaFactor(BlendFactor::INV_SRC_ALPHA)
 				, renderTarget(nullptr)
 			{
 			}
@@ -99,20 +99,20 @@ namespace LightningGE
 			}
 		};
 
-		enum FillMode
+		enum class FillMode
 		{
-			FILLMODE_WIREFRAME,
-			FILLMODE_SOLID
+			WIREFRAME,
+			SOLID
 		};
 
-		enum CullMode
+		enum class CullMode
 		{
-			CULLMODE_NONE,
-			CULLMODE_FRONT,
-			CULLMODE_BACK
+			NONE,
+			FRONT,
+			BACK
 		};
 
-		enum FrontFaceWindingOrder
+		enum class FrontFaceWindingOrder
 		{
 			COUNTER_CLOCKWISE,
 			CLOCKWISE
@@ -120,7 +120,7 @@ namespace LightningGE
 
 		struct RasterizerState
 		{
-			RasterizerState() :fillMode(FILLMODE_SOLID), cullMode(CULLMODE_BACK), frontFaceWindingOrder(COUNTER_CLOCKWISE)
+			RasterizerState() :fillMode(FillMode::SOLID), cullMode(CullMode::BACK), frontFaceWindingOrder(FrontFaceWindingOrder::COUNTER_CLOCKWISE)
 			{
 
 			}
@@ -154,7 +154,7 @@ namespace LightningGE
 			}
 		};
 
-		enum CmpFunc
+		enum class CmpFunc
 		{
 			NEVER,
 			LESS,
@@ -166,7 +166,7 @@ namespace LightningGE
 			ALWAYS
 		};
 
-		enum StencilOp
+		enum class StencilOp
 		{
 			KEEP,
 			ZERO,
@@ -180,7 +180,7 @@ namespace LightningGE
 
 		struct StencilFace
 		{
-			StencilFace() : cmpFunc(ALWAYS), passOp(KEEP), failOp(KEEP), depthFailOp(KEEP)
+			StencilFace() : cmpFunc(CmpFunc::ALWAYS), passOp(StencilOp::KEEP), failOp(StencilOp::KEEP), depthFailOp(StencilOp::KEEP)
 			{
 			}
 			CmpFunc cmpFunc;
@@ -221,7 +221,7 @@ namespace LightningGE
 
 		struct DepthStencilState
 		{
-			DepthStencilState() : depthTestEnable(true), depthWriteEnable(true), depthCmpFunc(LESS)
+			DepthStencilState() : depthTestEnable(true), depthWriteEnable(true), depthCmpFunc(CmpFunc::LESS)
 				,stencilEnable(false), stencilRef(0), stencilReadMask(0xff), stencilWriteMask(0xff)
 				,frontFace(), backFace()
 			{

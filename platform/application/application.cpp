@@ -48,7 +48,7 @@ namespace LightningGE
 			auto pWin = GetMainWindow();
 			if (pWin)
 			{
-				pWin->RegisterWindowMessageHandler(WindowSystem::MESSAGE_IDLE, 
+				pWin->RegisterWindowMessageHandler(WindowSystem::WindowMessage::IDLE, 
 					[&](WindowSystem::WindowMessage msg, const WindowSystem::WindowMessageParam& param) 
 					{this->OnWindowIdle(reinterpret_cast<const WindowSystem::WindowIdleParam&>(param)); });
 			}

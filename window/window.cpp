@@ -14,9 +14,9 @@ namespace LightningGE
 
 		void Window::OnIdle()
 		{
-			if (m_msgHandlers.find(MESSAGE_IDLE) != m_msgHandlers.end())
+			if (m_msgHandlers.find(WindowMessage::IDLE) != m_msgHandlers.end())
 			{
-				m_msgHandlers[MESSAGE_IDLE](MESSAGE_IDLE, WindowIdleParam(this));
+				m_msgHandlers[WindowMessage::IDLE](WindowMessage::IDLE, WindowIdleParam(this));
 			}
 		}
 	}

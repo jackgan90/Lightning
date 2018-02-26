@@ -30,7 +30,7 @@ namespace LightningGE
 			auto it = m_shaders.find(hash);
 			if (it != m_shaders.end())
 				return it->second;
-			SharedFilePtr shaderFile = m_fs->FindFile(shaderFileName, FileAccess::ACCESS_READ);
+			SharedFilePtr shaderFile = m_fs->FindFile(shaderFileName, FileAccess::READ);
 			if (!shaderFile)
 			{
 				logger.Log(LogLevel::Error, "Shader file is missing!filename:%s", shaderFileName.c_str());

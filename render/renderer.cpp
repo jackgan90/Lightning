@@ -56,10 +56,10 @@ namespace LightningGE
 			m_renderPass.reset();
 			switch (type)
 			{
-			case LightningGE::Render::RENDERPASS_FORWARD:
+			case RenderPassType::FORWARD:
 				m_renderPass = std::make_unique<ForwardRenderPass>();
 				break;
-			case LightningGE::Render::RENDERPASS_DEFERED:
+			case RenderPassType::DEFERED:
 				m_renderPass = std::make_unique<DeferedRenderPass>();
 				break;
 			default:

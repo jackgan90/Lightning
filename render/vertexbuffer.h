@@ -9,9 +9,9 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		enum VertexFormat
+		enum class VertexFormat
 		{
-			VERTEX_FORMAT_R32G32B32_FLOAT,
+			R32G32B32_FLOAT,
 			//TODO : there're more formats to add here...
 		};
 

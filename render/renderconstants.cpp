@@ -11,19 +11,19 @@ namespace LightningGE
 			std::stringstream ss;
 			switch (type)
 			{
-			case SHADER_TYPE_VERTEX:
+			case ShaderType::VERTEX:
 				ss << "vs";
 				break;
-			case SHADER_TYPE_FRAGMENT:
+			case ShaderType::FRAGMENT:
 				ss << "ps";
 				break;
-			case SHADER_TYPE_GEOMETRY:
+			case ShaderType::GEOMETRY:
 				ss << "gs";
 				break;
-			case SHADER_TYPE_HULL:
+			case ShaderType::TESSELATION_CONTROL:
 				ss << "hs";
 				break;
-			case SHADER_TYPE_DOMAIN:
+			case ShaderType::TESSELATION_EVALUATION:
 				ss << "ds";
 				break;
 			}

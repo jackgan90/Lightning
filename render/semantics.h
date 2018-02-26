@@ -5,7 +5,7 @@ namespace LightningGE
 	namespace Render
 	{
 		using SemanticIndex = unsigned int;
-		enum RenderSemantics
+		enum class RenderSemantics
 		{
 			POSITION,
 			NORMAL,
@@ -23,13 +23,13 @@ namespace LightningGE
 		};
 
 		const SemanticItem EngineSemantics[] = {
-			{POSITION, "POSITION"},
-			{NORMAL, "NORMAL"},
-			{TANGENT, "TANGENT"},
-			{CAMERA_POSITION, "CAMERA_POSITION"},
-			{FRAME_COUNT, "FRAME_COUNT"},
-			{FRAME_DELTA_TIME, "FRAME_DELTA_TIME"},
-			{LIGHT_POSITION, "LIGHT_POSITION"},
+			{RenderSemantics::POSITION, "POSITION"},
+			{RenderSemantics::NORMAL, "NORMAL"},
+			{RenderSemantics::TANGENT, "TANGENT"},
+			{RenderSemantics::CAMERA_POSITION, "CAMERA_POSITION"},
+			{RenderSemantics::FRAME_COUNT, "FRAME_COUNT"},
+			{RenderSemantics::FRAME_DELTA_TIME, "FRAME_DELTA_TIME"},
+			{RenderSemantics::LIGHT_POSITION, "LIGHT_POSITION"},
 		};
 	}
 }

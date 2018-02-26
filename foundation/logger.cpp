@@ -21,13 +21,13 @@ namespace LightningGE
 		{
 			switch (level)
 			{
-			case Debug:
+			case LogLevel::Debug:
 				return "[Debug]";
-			case Info:
+			case LogLevel::Info:
 				return "[Info]";
-			case Warning:
+			case LogLevel::Warning:
 				return "[Warning]";
-			case Error:
+			case LogLevel::Error:
 				return "[Error]";
 			default:
 				return "[Unknown]";

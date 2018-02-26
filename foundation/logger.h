@@ -14,7 +14,7 @@ namespace LightningGE
 {
 	namespace Foundation
 	{
-		enum LogLevel
+		enum class LogLevel
 		{
 			Debug,
 			Info,
