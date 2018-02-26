@@ -5,6 +5,6 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		unsigned int GetVertexFormatSize(VertexFormat format);
+		unsigned int GetVertexFormatSize(RenderFormat format);
 	}
 }

@@ -4,22 +4,17 @@
 #include <memory>
 #include "semantics.h"
 #include "bindablebuffer.h"
+#include "renderconstants.h"
 
 namespace LightningGE
 {
 	namespace Render
 	{
-		enum class VertexFormat
-		{
-			R32G32B32_FLOAT,
-			//TODO : there're more formats to add here...
-		};
-
 		struct VertexComponent
 		{
 			SemanticItem semanticItem;
 			SemanticIndex semanticIndex;
-			VertexFormat format;
+			RenderFormat format;
 			//relative to the start of a vertex
 			unsigned int offset;
 			//if this attribute is an instance attribute

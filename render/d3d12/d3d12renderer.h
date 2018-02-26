@@ -11,6 +11,7 @@
 #include "d3d12descriptorheapmanager.h"
 #include "d3d12swapchain.h"
 #include "d3d12rendertargetmanager.h"
+#include "d3d12depthstencilbuffer.h"
 
 #ifndef NDEBUG
 #define REPORT_LIVE_OBJECTS if(m_dxgiDebug) {m_dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);}
@@ -32,10 +33,6 @@ namespace LightningGE
 			~D3D12Renderer()override;
 			D3D12RenderTargetManager* GetRenderTargetManager();
 			void SetClearColor(const ColorF& color)override;
-			D3D12DescriptorHeapManager* GetDescriptorHeapManager()const noexcept
-			{
-				return m_descriptorMgr.get();
-			}
 		protected:
 			void BeginFrame()override;
 			void DoFrame()override;
@@ -49,10 +46,11 @@ namespace LightningGE
 			std::unique_ptr<D3D12RenderTargetManager> m_rtMgr;
 			std::vector<ComPtr<ID3D12Fence>> m_fences;
 			std::vector<UINT64> m_fenceValues;
-			std::unique_ptr<D3D12DescriptorHeapManager> m_descriptorMgr;
 			HANDLE m_fenceEvent;
 			UINT m_currentBackBufferIndex;
 			ColorF m_clearColor;
+			std::unique_ptr<D3D12DepthStencilBuffer> m_depthStencilBuffer;
+			RenderTargetList m_renderTargets;
 #ifndef NDEBUG
 			ComPtr<ID3D12Debug> m_d3d12Debug;
 			ComPtr<IDXGIDebug> m_dxgiDebug;

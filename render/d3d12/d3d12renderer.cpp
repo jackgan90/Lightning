@@ -28,9 +28,10 @@ namespace LightningGE
 			m_fenceEvent = nullptr;
 			//Note:we should release resources in advance to make REPORT_LIVE_OBJECTS work correctly because if we let the share pointer
 			//destructor run out of the scope,we cannot trace the objects 
-			m_descriptorMgr.reset();
 			m_rtMgr.reset();
 			m_swapChain.reset();
+			m_depthStencilBuffer.reset();
+			D3D12DescriptorHeapManager::Instance()->Clear();
 			m_device.reset();
 			REPORT_LIVE_OBJECTS;
 		}
@@ -48,15 +49,16 @@ namespace LightningGE
 				throw DeviceInitException("Failed to create DXGI factory!");
 			}
 			InitDevice(dxgiFactory);
-			m_descriptorMgr = std::make_unique<D3D12DescriptorHeapManager>(static_cast<D3D12Device*>(m_device.get())->m_device);
 			m_rtMgr = std::make_unique<D3D12RenderTargetManager>(static_cast<D3D12Device*>(m_device.get()));
 			InitSwapChain(dxgiFactory, pWindow);
+			m_depthStencilBuffer = std::make_unique<D3D12DepthStencilBuffer>(pWindow->GetWidth(), pWindow->GetHeight());
 			
 			CreateFences();
 			logger.Log(LogLevel::Info, "Initialize D3D12 render context succeeded!");
 			
 			ComPtr<IDXGISwapChain3> nativeSwapChain = m_swapChain->m_swapChain;
 			m_currentBackBufferIndex = nativeSwapChain->GetCurrentBackBufferIndex();
+			m_renderTargets.reserve(8);
 #ifndef NDEBUG
 			InitDXGIDebug();
 #endif
@@ -221,12 +223,15 @@ namespace LightningGE
 			m_currentBackBufferIndex = m_swapChain->m_swapChain->GetCurrentBackBufferIndex();
 			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
 			pD3D12Device->BeginFrame(m_currentBackBufferIndex);
+			m_renderTargets.clear();
 		}
 
 		void D3D12Renderer::DoFrame()
 		{
 			auto currentSwapChainRT = m_swapChain->GetBufferRenderTarget(m_currentBackBufferIndex);
 			m_device->ClearRenderTarget(currentSwapChainRT.get(), m_clearColor);
+			m_renderTargets.push_back(currentSwapChainRT.get());
+			m_device->ApplyRenderTargets(m_renderTargets, m_depthStencilBuffer.get());
 		}
 
 		void D3D12Renderer::EndFrame()

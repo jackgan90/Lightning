@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <vector>
 #include "rendererexportdef.h"
 
 namespace LightningGE
@@ -20,5 +21,6 @@ namespace LightningGE
 			virtual ~IRenderTarget() = default;
 		};
 		using SharedRenderTargetPtr = std::shared_ptr<IRenderTarget>;
+		using RenderTargetList = std::vector<IRenderTarget*>;
 	}
 }

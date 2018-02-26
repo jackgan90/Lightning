@@ -49,7 +49,7 @@ namespace LightningGE
 		{
 			assert(m_size > 0 && "The size of the cube must be greater than 0!");
 			Render::VertexComponent comp;
-			comp.format = Render::VertexFormat::R32G32B32_FLOAT;
+			comp.format = Render::RenderFormat::R32G32B32_FLOAT;
 			comp.instanceStepRate = 1;
 			comp.isInstance = false;
 			comp.offset = 0;

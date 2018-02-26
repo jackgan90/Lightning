@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 #include <wrl\client.h>
+#include "singleton.h"
 #include "d3d12device.h"
 
 namespace LightningGE
@@ -21,21 +22,21 @@ namespace LightningGE
 			UINT heapID;
 		};
 
-		class D3D12DescriptorHeapManager
+		class D3D12DescriptorHeapManager : public Foundation::Singleton<D3D12DescriptorHeapManager>
 		{
 		public:
-			friend class D3D12Renderer;
-			D3D12DescriptorHeapManager(const ComPtr<ID3D12Device>& pdevice);
+			D3D12DescriptorHeapManager();
 			~D3D12DescriptorHeapManager();
 			const HeapAllocationInfo* Create(const D3D12_DESCRIPTOR_HEAP_DESC& desc);
 			void Destroy(UINT heapID);
 			UINT GetIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type);
+			void Clear();
 		private:
+			ComPtr<ID3D12Device> GetNativeDevice();
 			struct _HeapAllocationInfoInternal : HeapAllocationInfo
 			{
 				ComPtr<ID3D12DescriptorHeap> heap;
 			};
-			ComPtr<ID3D12Device> m_device;
 			std::unordered_map<UINT, _HeapAllocationInfoInternal> m_heaps;
 			std::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, UINT> m_incrementSizes;
 			UINT m_currentID;

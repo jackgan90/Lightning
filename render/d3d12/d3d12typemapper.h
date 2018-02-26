@@ -135,12 +135,14 @@ namespace LightningGE
 				}
 			}
 
-			static DXGI_FORMAT MapVertexFormat(VertexFormat format)
+			static DXGI_FORMAT MapRenderFormat(RenderFormat format)
 			{
 				switch (format)
 				{
-				case VertexFormat::R32G32B32_FLOAT:
+				case RenderFormat::R32G32B32_FLOAT:
 					return DXGI_FORMAT_R32G32B32_FLOAT;
+				case RenderFormat::D24_S8:
+					return DXGI_FORMAT_D24_UNORM_S8_UINT;
 				default:
 					return DXGI_FORMAT_R32G32B32_FLOAT;
 				}

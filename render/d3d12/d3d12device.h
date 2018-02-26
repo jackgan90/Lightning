@@ -33,6 +33,7 @@ namespace LightningGE
 			void ApplyPipelineState(const PipelineState& state)override;
 			void ApplyViewports(const RectFList& vp)override;
 			void ApplyScissorRects(const RectFList& scissorRects)override;
+			void ApplyRenderTargets(const RenderTargetList& renderTargets, const IDepthStencilBuffer* dsBuffer)override;
 		private:
 			void BeginFrame(const UINT backBufferIndex);
 			//if parameter pState is nullptr,this method will create a default pipeline state

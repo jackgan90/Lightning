@@ -15,7 +15,7 @@ namespace LightningGE
 		class IShaderManager;
 		enum class ShaderType
 		{
-			VERTEX,
+			VERTEX = 1,
 			FRAGMENT,
 			GEOMETRY,
 			TESSELATION_CONTROL, //hull shader

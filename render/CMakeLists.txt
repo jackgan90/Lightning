@@ -8,6 +8,7 @@ set(HEADERS rendererexportdef.h
 			iswapchain.h
 			irendertarget.h
 			irendertargetmanager.h
+			idepthstencilbuffer.h
 			irenderer.h
 			renderer.h
 			renderstates.h
@@ -74,6 +75,7 @@ if(LIGHTNINGGE_USE_D3D12)
 	set(D3D12_HEADERS	d3d12/d3d12device.h
 						d3d12/d3d12swapchain.h
 						d3d12/d3d12rendertarget.h
+						d3d12/d3d12depthstencilbuffer.h
 						d3d12/d3d12rendertargetmanager.h
 						d3d12/d3d12renderer.h
 						d3d12/d3d12descriptorheapmanager.h
@@ -83,6 +85,7 @@ if(LIGHTNINGGE_USE_D3D12)
 	set(D3D12_SOURCES	d3d12/d3d12device.cpp
 						d3d12/d3d12swapchain.cpp
 						d3d12/d3d12rendertarget.cpp
+						d3d12/d3d12depthstencilbuffer.cpp
 						d3d12/d3d12rendertargetmanager.cpp
 						d3d12/d3d12renderer.cpp
 						d3d12/d3d12descriptorheapmanager.cpp

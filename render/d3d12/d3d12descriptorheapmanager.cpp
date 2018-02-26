@@ -1,4 +1,5 @@
 #include "d3d12descriptorheapmanager.h"
+#include "renderer.h"
 #include "logger.h"
 
 namespace LightningGE
@@ -7,8 +8,7 @@ namespace LightningGE
 	{
 		using Foundation::logger;
 		using Foundation::LogLevel;
-		D3D12DescriptorHeapManager::D3D12DescriptorHeapManager(const ComPtr<ID3D12Device>& pdevice)
-			:m_device(pdevice),m_currentID(0)
+		D3D12DescriptorHeapManager::D3D12DescriptorHeapManager() :m_currentID(0)
 		{
 
 		}
@@ -18,11 +18,16 @@ namespace LightningGE
 			logger.Log(LogLevel::Info, "Descriptor heap manager destruct!");
 		}
 
+		ComPtr<ID3D12Device> D3D12DescriptorHeapManager::GetNativeDevice()
+		{
+			return static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNativeDevice();
+		}
 
 		const HeapAllocationInfo* D3D12DescriptorHeapManager::Create(const D3D12_DESCRIPTOR_HEAP_DESC& desc)
 		{
 			ComPtr<ID3D12DescriptorHeap> heap;
-			HRESULT hr = m_device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&heap));
+			auto nativeDevice = GetNativeDevice();
+			HRESULT hr = nativeDevice->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&heap));
 			if (FAILED(hr))
 			{
 				logger.Log(LogLevel::Error, "Failed to create d3d12 descriptor heap!type:%d, flags:%d, number of descriptors:%d", 
@@ -52,9 +57,16 @@ namespace LightningGE
 		{
 			if (m_incrementSizes.find(type) == m_incrementSizes.end())
 			{
-				m_incrementSizes[type] = m_device->GetDescriptorHandleIncrementSize(type);
+				auto nativeDevice = GetNativeDevice();
+				m_incrementSizes[type] = nativeDevice->GetDescriptorHandleIncrementSize(type);
 			}
 			return m_incrementSizes[type];
 		}
+
+		void D3D12DescriptorHeapManager::Clear()
+		{
+			m_heaps.clear();
+		}
+
 	}
 }

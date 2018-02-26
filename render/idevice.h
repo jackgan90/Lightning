@@ -4,6 +4,7 @@
 #include "Eigen/StdVector"
 #include "rendererexportdef.h"
 #include "irendertarget.h"
+#include "idepthstencilbuffer.h"
 #include "renderstates.h"
 #include "vertexbuffer.h"
 #include "ishader.h"
@@ -28,6 +29,7 @@ namespace LightningGE
 			virtual void ApplyPipelineState(const PipelineState& state) = 0;
 			virtual void ApplyViewports(const RectFList& vp) = 0;
 			virtual void ApplyScissorRects(const RectFList& scissorRects) = 0;
+			virtual void ApplyRenderTargets(const RenderTargetList& renderTargets, const IDepthStencilBuffer* dsBuffer) = 0;
 		};
 		using SharedDevicePtr = std::shared_ptr<IDevice>;
 	}

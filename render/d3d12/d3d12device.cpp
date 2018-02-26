@@ -6,6 +6,7 @@
 #include "irenderer.h"
 #include "d3d12device.h"
 #include "d3d12rendertarget.h"
+#include "d3d12depthstencilbuffer.h"
 #include "d3d12swapchain.h"
 #include "d3d12shader.h"
 #include "d3d12typemapper.h"
@@ -97,7 +98,6 @@ namespace LightningGE
 			//TODO : check gpu?
 			const float clearColor[] = { color.r(), color.g(), color.b(), color.a() };
 			auto rtvHandle = pTarget->GetCPUHandle();
-			m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 			if (rects && !rects->empty())
 			{
 				D3D12_RECT* d3dRect = ALLOC_ARRAY(m_smallObjAllocator, rects->size(), D3D12_RECT);
@@ -237,8 +237,9 @@ namespace LightningGE
 		{
 			auto defaultShader = CreateShader(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
 			m_currentPipelineState.vs = defaultShader.get();
-			VertexComponent defaultComponent{ EngineSemantics[0], 0, VertexFormat::R32G32B32_FLOAT, 0, false, 0};
+			VertexComponent defaultComponent{ EngineSemantics[0], 0, RenderFormat::R32G32B32_FLOAT, 0, false, 0};
 			m_currentPipelineState.vertexComponents[defaultComponent] = 0;
+			m_currentPipelineState.depthStencilState.depthTestEnable = false;
 			ApplyPipelineState(m_currentPipelineState);
 		}
 
@@ -342,7 +343,7 @@ namespace LightningGE
 			{
 				const auto& component = it->first;
 				m_pInputElementDesc[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-				m_pInputElementDesc[i].Format = D3D12TypeMapper::MapVertexFormat(component.format);
+				m_pInputElementDesc[i].Format = D3D12TypeMapper::MapRenderFormat(component.format);
 				m_pInputElementDesc[i].InputSlot = it->second;
 				m_pInputElementDesc[i].InputSlotClass = component.isInstance ? \
 					D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA : D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
@@ -372,11 +373,11 @@ namespace LightningGE
 
 			//TODO :create root signature based on shader parameters
 			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-			CD3DX12_ROOT_PARAMETER cbParameter; 
-			cbParameter.InitAsConstantBufferView(0);
-			rootSignatureDesc.Init(1, &cbParameter, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+			CD3DX12_ROOT_PARAMETER cbParameters[1]; 
+			cbParameters[0].InitAsConstantBufferView(0);
+			rootSignatureDesc.Init(1, cbParameters, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
-			ID3DBlob* signature;
+			ComPtr<ID3DBlob> signature;
 			auto hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, nullptr);
 			if (FAILED(hr))
 			{
@@ -399,5 +400,16 @@ namespace LightningGE
 			m_commandList->Reset(m_commandAllocators[backBufferIndex].Get(), nullptr);
 		}
 
+		void D3D12Device::ApplyRenderTargets(const RenderTargetList& renderTargets, const IDepthStencilBuffer* dsBuffer)
+		{
+			D3D12_CPU_DESCRIPTOR_HANDLE* rtvHandles = ALLOC_ARRAY(m_smallObjAllocator, renderTargets.size(), D3D12_CPU_DESCRIPTOR_HANDLE);
+			for (std::size_t i = 0; i < renderTargets.size();++i)
+			{
+				rtvHandles[i] = static_cast<const D3D12RenderTarget*>(renderTargets[i])->GetCPUHandle();
+			}
+			auto dsHandle = static_cast<const D3D12DepthStencilBuffer*>(dsBuffer)->GetCPUHandle();
+			m_commandList->OMSetRenderTargets(renderTargets.size(), rtvHandles, FALSE, &dsHandle);
+			DEALLOC(m_smallObjAllocator, rtvHandles);
+		}
 	}
 }

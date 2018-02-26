@@ -47,7 +47,7 @@ namespace LightningGE
 			desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 			desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
-			const HeapAllocationInfo* pHeapInfo = m_renderer->GetDescriptorHeapManager()->Create(desc);
+			const HeapAllocationInfo* pHeapInfo = D3D12DescriptorHeapManager::Instance()->Create(desc);
 			if (!pHeapInfo)
 			{
 				throw SwapChainInitException("Failed to allocate RTV descriptor heap!");
