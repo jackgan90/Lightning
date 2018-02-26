@@ -31,7 +31,6 @@ namespace LightningGE
 			LIGHTNINGGE_ALIGNED_OPERATOR_NEW
 			D3D12Renderer(const SharedWindowPtr& pContext, const SharedFileSystemPtr& fs);
 			~D3D12Renderer()override;
-			D3D12RenderTargetManager* GetRenderTargetManager();
 			void SetClearColor(const ColorF& color)override;
 		protected:
 			void BeginFrame()override;

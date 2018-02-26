@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include "rendererexportdef.h"
 #include "irendertarget.h"
+#include "singleton.h"
 
 namespace LightningGE
 {
@@ -21,10 +22,23 @@ namespace LightningGE
 		using SharedRenderTargetManagerPtr = std::shared_ptr<IRenderTargetManager>;
 
 		using RenderTargetMap = std::unordered_map<RenderTargetID, SharedRenderTargetPtr>;
-		class LIGHTNINGGE_RENDER_API RenderTargetManager : public IRenderTargetManager
+		template<typename Derived>
+		class RenderTargetManager : public IRenderTargetManager, public Foundation::Singleton<Derived>
 		{
 		public:
-			SharedRenderTargetPtr GetRenderTarget(const RenderTargetID& targetID) override;
+			SharedRenderTargetPtr GetRenderTarget(const RenderTargetID& targetID) override
+			{
+				auto it = m_renderTargets.find(targetID);
+				if (it == m_renderTargets.end())
+				{
+					return SharedRenderTargetPtr();
+				}
+				return it->second;
+			}
+			void Clear()
+			{
+				m_renderTargets.clear();
+			}
 		protected:
 			RenderTargetMap m_renderTargets;
 		};

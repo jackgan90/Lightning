@@ -5,15 +5,13 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		D3D12RenderTargetManager::D3D12RenderTargetManager(D3D12Device* pDevice) :m_pDevice(pDevice)
-			,m_currentID(1)
+		D3D12RenderTargetManager::D3D12RenderTargetManager() :m_currentID(1)
 		{
 
 		}
 
 		D3D12RenderTargetManager::~D3D12RenderTargetManager()
 		{
-			m_pDevice = nullptr;
 		}
 
 

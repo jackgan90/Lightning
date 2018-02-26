@@ -31,6 +31,7 @@ namespace LightningGE
 			m_rtMgr.reset();
 			m_swapChain.reset();
 			m_depthStencilBuffer.reset();
+			D3D12RenderTargetManager::Instance()->Clear();
 			D3D12DescriptorHeapManager::Instance()->Clear();
 			m_device.reset();
 			REPORT_LIVE_OBJECTS;
@@ -49,7 +50,6 @@ namespace LightningGE
 				throw DeviceInitException("Failed to create DXGI factory!");
 			}
 			InitDevice(dxgiFactory);
-			m_rtMgr = std::make_unique<D3D12RenderTargetManager>(static_cast<D3D12Device*>(m_device.get()));
 			InitSwapChain(dxgiFactory, pWindow);
 			m_depthStencilBuffer = std::make_unique<D3D12DepthStencilBuffer>(pWindow->GetWidth(), pWindow->GetHeight());
 			
@@ -249,12 +249,6 @@ namespace LightningGE
 			commandQueue->Signal(m_fences[m_currentBackBufferIndex].Get(), m_fenceValues[m_currentBackBufferIndex]);
 			m_swapChain->Present();
 		}
-
-		D3D12RenderTargetManager* D3D12Renderer::GetRenderTargetManager()
-		{
-			return m_rtMgr.get();
-		}
-
 
 		void D3D12Renderer::WaitForPreviousFrame(bool waitAll)
 		{
