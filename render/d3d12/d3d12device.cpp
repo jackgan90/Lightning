@@ -435,10 +435,12 @@ namespace LightningGE
 					bufferCommit.vertexBufferView.BufferLocation = bufferCommit.defaultHeap->GetGPUVirtualAddress();
 					bufferCommit.vertexBufferView.SizeInBytes = bufferSize;
 					bufferCommit.vertexBufferView.StrideInBytes = static_cast<VertexBuffer*>(const_cast<GPUBuffer*>(pBuffer))->GetVertexSize();
+					break;
 				case GPUBufferType::INDEX:
 					bufferCommit.indexBufferView.BufferLocation = bufferCommit.defaultHeap->GetGPUVirtualAddress();
 					bufferCommit.indexBufferView.SizeInBytes = bufferSize;
 					bufferCommit.indexBufferView.Format = D3D12TypeMapper::MapIndexType(static_cast<const IndexBuffer*>(pBuffer)->GetIndexType());
+					break;
 				default:
 					logger.Log(LogLevel::Warning, "Unknown GPUBuffer Commit!");
 					break;

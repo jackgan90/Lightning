@@ -69,6 +69,9 @@ namespace LightningGE
 			m_vertices = reinterpret_cast<std::uint8_t*>(vertices);
 			m_geo->vbs[0]->SetBuffer(m_vertices, sizeof(float) * 24);
 			m_geo->ib->SetBuffer(reinterpret_cast<std::uint8_t*>(&s_indices), sizeof(s_indices));
+			std::fill(std::begin(m_geo->vbs_dirty), std::end(m_geo->vbs_dirty), false);
+			m_geo->vbs_dirty[0] = true;
+			m_geo->ib_dirty = true;
 			m_geo->primType = Render::PrimitiveType::TRIANGLE_LIST;
 		}
 

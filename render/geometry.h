@@ -13,7 +13,9 @@ namespace LightningGE
 		struct LIGHTNINGGE_RENDER_API Geometry
 		{
 			SharedVertexBufferPtr vbs[MAX_GEOMETRY_BUFFER_COUNT];
+			bool vbs_dirty[MAX_GEOMETRY_BUFFER_COUNT];
 			SharedIndexBufferPtr ib;
+			bool ib_dirty;
 			PrimitiveType primType;
 		};
 		using SharedGeometryPtr = std::shared_ptr<Geometry>;

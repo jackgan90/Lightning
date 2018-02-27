@@ -4,6 +4,5 @@ namespace LightningGE
 {
 	namespace Render
 	{
-
 	}
 }
