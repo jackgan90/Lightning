@@ -1,6 +1,7 @@
 #pragma once
 #include <d3d12.h>
 #include "renderstates.h"
+#include "indexbuffer.h"
 
 namespace LightningGE
 {
@@ -145,6 +146,19 @@ namespace LightningGE
 					return DXGI_FORMAT_D24_UNORM_S8_UINT;
 				default:
 					return DXGI_FORMAT_R32G32B32_FLOAT;
+				}
+			}
+
+			static DXGI_FORMAT MapIndexType(IndexType type)
+			{
+				switch (type)
+				{
+				case IndexType::UINT16:
+					return DXGI_FORMAT_R16_UINT;
+				case IndexType::UINT32:
+					return DXGI_FORMAT_R32_UINT;
+				default:
+					return DXGI_FORMAT_R16_UINT;
 				}
 			}
 		};

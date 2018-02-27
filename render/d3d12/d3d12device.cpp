@@ -411,5 +411,55 @@ namespace LightningGE
 			m_commandList->OMSetRenderTargets(renderTargets.size(), rtvHandles, FALSE, &dsHandle);
 			DEALLOC(m_smallObjAllocator, rtvHandles);
 		}
+
+		void D3D12Device::CommitGPUBuffer(const GPUBuffer* pBuffer)
+		{
+			auto it = m_bufferCommitMap.find(pBuffer);
+			auto bufferSize = pBuffer->GetBufferSize();
+			GPUBufferCommit bufferCommit;
+			if (it == m_bufferCommitMap.end())
+			{
+				bufferCommit.type = pBuffer->GetType();
+				m_device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+							D3D12_HEAP_FLAG_NONE, &CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
+							D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&bufferCommit.defaultHeap));
+				m_device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+							D3D12_HEAP_FLAG_NONE, &CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
+							D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&bufferCommit.uploadHeap));
+				//should consider dangling pointer,when this buffer is released m_bufferCommitMap still holds a pointer to
+				//the GPUBuffer,but since the buffer is destroyed,there should be no other reference to it so leave it
+				//in m_bufferCommitMap wouldn't cause problems,but still, need to find a good way to resolve such condition
+				switch (bufferCommit.type)
+				{
+				case GPUBufferType::VERTEX:
+					bufferCommit.vertexBufferView.BufferLocation = bufferCommit.defaultHeap->GetGPUVirtualAddress();
+					bufferCommit.vertexBufferView.SizeInBytes = bufferSize;
+					bufferCommit.vertexBufferView.StrideInBytes = static_cast<VertexBuffer*>(const_cast<GPUBuffer*>(pBuffer))->GetVertexSize();
+				case GPUBufferType::INDEX:
+					bufferCommit.indexBufferView.BufferLocation = bufferCommit.defaultHeap->GetGPUVirtualAddress();
+					bufferCommit.indexBufferView.SizeInBytes = bufferSize;
+					bufferCommit.indexBufferView.Format = D3D12TypeMapper::MapIndexType(static_cast<const IndexBuffer*>(pBuffer)->GetIndexType());
+				default:
+					logger.Log(LogLevel::Warning, "Unknown GPUBuffer Commit!");
+					break;
+				}
+				m_bufferCommitMap[pBuffer] = bufferCommit;
+			}
+			else
+			{
+				bufferCommit = it->second;
+				m_commandList->ResourceBarrier(1, 
+					&CD3DX12_RESOURCE_BARRIER::Transition(bufferCommit.defaultHeap.Get(), 
+						D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_COPY_DEST));
+			}
+			D3D12_SUBRESOURCE_DATA subResourceData{};
+			subResourceData.pData = pBuffer->GetBuffer();
+			subResourceData.RowPitch = bufferSize;
+			subResourceData.SlicePitch = bufferSize;
+			UpdateSubresources(m_commandList.Get(), bufferCommit.defaultHeap.Get(), bufferCommit.uploadHeap.Get(), 0, 0, 1, &subResourceData);
+			m_commandList->ResourceBarrier(1, 
+				&CD3DX12_RESOURCE_BARRIER::Transition(bufferCommit.defaultHeap.Get(), 
+					D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
+		}
 	}
 }

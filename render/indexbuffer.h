@@ -17,6 +17,7 @@ namespace LightningGE
 		public:
 			IndexBuffer(IndexType type);
 			IndexType GetIndexType()const { return m_type; }
+			GPUBufferType GetType()const override { return GPUBufferType::INDEX; }
 		private:
 			IndexType m_type;
 		};

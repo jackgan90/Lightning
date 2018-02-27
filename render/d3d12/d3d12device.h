@@ -34,7 +34,19 @@ namespace LightningGE
 			void ApplyViewports(const RectFList& vp)override;
 			void ApplyScissorRects(const RectFList& scissorRects)override;
 			void ApplyRenderTargets(const RenderTargetList& renderTargets, const IDepthStencilBuffer* dsBuffer)override;
+			void CommitGPUBuffer(const GPUBuffer* pBuffer)override;
 		private:
+			struct GPUBufferCommit
+			{
+				ComPtr<ID3D12Resource> uploadHeap;
+				ComPtr<ID3D12Resource> defaultHeap;
+				GPUBufferType type;
+				union
+				{
+					D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
+					D3D12_INDEX_BUFFER_VIEW indexBufferView;
+				};
+			};
 			void BeginFrame(const UINT backBufferIndex);
 			//if parameter pState is nullptr,this method will create a default pipeline state
 			using PipelineCacheMap = std::unordered_map<std::size_t, ComPtr<ID3D12PipelineState>>;
@@ -57,6 +69,7 @@ namespace LightningGE
 			PipelineCacheMap m_pipelineCache;
 			RootSignatureMap m_rootSignatures;
 			D3D12_INPUT_ELEMENT_DESC* m_pInputElementDesc;
+			std::unordered_map<const GPUBuffer*, GPUBufferCommit> m_bufferCommitMap;
 		};
 	}
 }

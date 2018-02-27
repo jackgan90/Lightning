@@ -7,6 +7,7 @@ namespace LightningGE
 	{
 		enum class RenderFormat
 		{
+			UNDEFINED,
 			R32G32B32_FLOAT,
 			D24_S8,		//for depth-stencil buffer
 			//TODO : there're more formats to add here...

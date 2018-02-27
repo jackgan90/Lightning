@@ -76,6 +76,7 @@ namespace LightningGE
 			//get vertex size in bytes
 			std::uint32_t GetVertexSize();
 			void SetBuffer(std::uint8_t* buffer, std::uint32_t bufferSize)override;
+			GPUBufferType GetType()const override { return GPUBufferType::VERTEX; }
 		protected:
 			void CalculateVertexCount();
 			void CalculateVertexSize();

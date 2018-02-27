@@ -6,6 +6,7 @@
 #include "irendertarget.h"
 #include "idepthstencilbuffer.h"
 #include "renderstates.h"
+#include "gpubuffer.h"
 #include "vertexbuffer.h"
 #include "ishader.h"
 #include "rect.h"
@@ -30,6 +31,7 @@ namespace LightningGE
 			virtual void ApplyViewports(const RectFList& vp) = 0;
 			virtual void ApplyScissorRects(const RectFList& scissorRects) = 0;
 			virtual void ApplyRenderTargets(const RenderTargetList& renderTargets, const IDepthStencilBuffer* dsBuffer) = 0;
+			virtual void CommitGPUBuffer(const GPUBuffer* pBuffer) = 0;
 		};
 		using SharedDevicePtr = std::shared_ptr<IDevice>;
 	}
