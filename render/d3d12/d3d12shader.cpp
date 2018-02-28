@@ -22,7 +22,9 @@ namespace LightningGE
 			,m_source(shaderSource)
 #endif
 		{
-
+			D3DReflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), IID_PPV_ARGS(&m_shaderReflect));
+			//UINT constantCount = shaderReflect->GetNumInterfaceSlots();
+			m_shaderReflect->GetDesc(&m_desc);
 		}
 
 		D3D12Shader::~D3D12Shader()
@@ -76,5 +78,9 @@ namespace LightningGE
 			return 0;
 		}
 
+		std::size_t D3D12Shader::GetInputArgumentCount()const
+		{
+			return m_desc.BoundResources;
+		}
 	}
 }

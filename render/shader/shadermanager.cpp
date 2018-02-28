@@ -24,6 +24,18 @@ namespace LightningGE
 			m_compileAllocator = std::make_unique<StackAllocator<true, 16, 8192>>();
 		}
 
+		SharedShaderPtr ShaderManager::CreateShaderFromSource(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)
+		{
+			auto hash = Shader::Hash(type, shaderName, defineMap);
+			SharedShaderPtr pShader = CreateConcreteShader(type, shaderName, shaderSource, defineMap);
+			if(pShader)
+			{
+				logger.Log(LogLevel::Info, "Succeeded in compiling shader:%s", pShader->GetName().c_str());
+				m_shaders[hash] = pShader;
+			}
+			return pShader;
+		}
+
 		SharedShaderPtr ShaderManager::CreateShaderFromFile(ShaderType type, const std::string& shaderFileName, const ShaderDefine& defineMap)
 		{
 			auto hash = Shader::Hash(type, shaderFileName, defineMap);
@@ -52,14 +64,7 @@ namespace LightningGE
 				return SharedShaderPtr();
 			}
 			buffer[size] = 0;
-			SharedShaderPtr pShader = CreateConcreteShader(type, shaderFileName, buffer, defineMap);
-			if(pShader)
-			{
-				logger.Log(LogLevel::Info, "Succeeded in compiling shader:%s", pShader->GetName().c_str());
-				m_shaders[hash] = pShader;
-				return m_shaders[hash];
-			}
-			return pShader;
+			return CreateShaderFromSource(type, shaderFileName, buffer, defineMap);
 		}
 
 		SharedShaderPtr ShaderManager::GetShader(size_t shaderHash)

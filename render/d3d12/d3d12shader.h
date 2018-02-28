@@ -1,6 +1,7 @@
 #pragma once
 #include <d3d12.h>
 #include <wrl/client.h>
+#include <d3dcompiler.h>
 #include "d3d12shadermanager.h"
 #include "ishader.h"
 
@@ -22,6 +23,7 @@ namespace LightningGE
 			//bool Compile(const Foundation::SharedFilePtr& file, const ShaderDefine& define)override;
 			//const std::string GetCompileErrorLog()const override;
 			std::string GetName()const override;
+			std::size_t GetInputArgumentCount()const override;
 #ifndef NDEBUG
 			const char* const GetSource()const override;
 #endif
@@ -39,6 +41,8 @@ namespace LightningGE
 			int m_smMinorVersion;
 			ComPtr<ID3D10Blob> m_byteCode;
 			ComPtr<ID3D12RootSignature> m_rootSignature;
+			ComPtr<ID3D12ShaderReflection> m_shaderReflect;
+			D3D12_SHADER_DESC m_desc;
 		};
 	}
 }

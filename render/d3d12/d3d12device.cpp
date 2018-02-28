@@ -72,7 +72,7 @@ namespace LightningGE
 			//should create first default pipeline state
 			SetUpDefaultPipelineStates();
 			m_commandList->Close();
-			//m_shaderMgr->CreateShaderFromFile(SHADER_TYPE_VERTEX, "default.vs", ShaderDefine());
+			//m_shaderMgr->CreateShaderFromFile(ShaderType::VERTEX, "default.vs", ShaderDefine());
 		}
 
 		D3D12Device::~D3D12Device()
@@ -235,7 +235,7 @@ namespace LightningGE
 
 		void D3D12Device::SetUpDefaultPipelineStates()
 		{
-			auto defaultShader = CreateShader(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
+			auto defaultShader = m_shaderMgr->CreateShaderFromSource(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
 			m_currentPipelineState.vs = defaultShader.get();
 			VertexComponent defaultComponent{ EngineSemantics[0], 0, RenderFormat::R32G32B32_FLOAT, 0, false, 0};
 			m_currentPipelineState.vertexComponents[defaultComponent] = 0;
@@ -375,6 +375,7 @@ namespace LightningGE
 			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
 			CD3DX12_ROOT_PARAMETER cbParameters[1]; 
 			cbParameters[0].InitAsConstantBufferView(0);
+			//TODO : deny other shader stages
 			rootSignatureDesc.Init(1, cbParameters, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 			ComPtr<ID3DBlob> signature;
@@ -462,6 +463,11 @@ namespace LightningGE
 			m_commandList->ResourceBarrier(1, 
 				&CD3DX12_RESOURCE_BARRIER::Transition(bufferCommit.defaultHeap.Get(), 
 					D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
+		}
+
+		void D3D12Device::SetShaderArgument(IShader* pShader, const ShaderArgument& argument)
+		{
+
 		}
 	}
 }
