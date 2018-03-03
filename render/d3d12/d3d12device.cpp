@@ -464,10 +464,5 @@ namespace LightningGE
 				&CD3DX12_RESOURCE_BARRIER::Transition(bufferCommit.defaultHeap.Get(), 
 					D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
 		}
-
-		void D3D12Device::SetShaderArgument(IShader* pShader, const ShaderArgument& argument)
-		{
-
-		}
 	}
 }

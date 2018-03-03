@@ -5,6 +5,7 @@
 #include "shaderdefine.h"
 #include "filesystem.h"
 #include "hashableobject.h"
+#include "semantics.h"
 #include "types/vector.h"
 
 namespace LightningGE
@@ -36,11 +37,16 @@ namespace LightningGE
 			SAMPLER2D,
 			SAMPLER3D
 		};
+		using ShaderArgumentRegister = std::uint8_t;
+		using ShaderArgumentSpace = std::uint8_t;
 
 		struct LIGHTNINGGE_RENDER_API ShaderArgument
 		{
 			LIGHTNINGGE_ALIGNED_OPERATOR_NEW
 			ShaderArgumentType type;
+			ShaderArgumentRegister registerIndex;
+			ShaderArgumentSpace registerSpace;
+			SemanticItem semantic;
 			union
 			{
 				float f;
@@ -82,10 +88,11 @@ namespace LightningGE
 			virtual ShaderType GetType()const = 0;
 			virtual void DefineMacros(const ShaderDefine& define) = 0;
 			virtual const ShaderDefine GetMacros()const = 0;
-			virtual std::size_t GetInputArgumentCount()const = 0;
+			virtual std::size_t GetArgumentCount()const = 0;
 			//virtual bool Compile(const Foundation::SharedFilePtr& file, const ShaderDefine& define) = 0;
 			//virtual const std::string GetCompileErrorLog()const = 0;
 			virtual std::string GetName()const = 0;
+			virtual void SetArgument(const ShaderArgument& argument) = 0;
 #ifndef NDEBUG
 			virtual const char* const GetSource()const = 0;
 #endif

@@ -45,6 +45,12 @@ namespace LightningGE
 			return m_device.get();
 		}
 
+		ISwapChain* Renderer::GetSwapChain()
+		{
+			return m_swapChain.get();
+		}
+
+
 		void Renderer::Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material)
 		{
 			if (m_renderPass)

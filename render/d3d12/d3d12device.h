@@ -35,7 +35,6 @@ namespace LightningGE
 			void ApplyScissorRects(const RectFList& scissorRects)override;
 			void ApplyRenderTargets(const RenderTargetList& renderTargets, const IDepthStencilBuffer* dsBuffer)override;
 			void CommitGPUBuffer(const GPUBuffer* pBuffer)override;
-			void SetShaderArgument(IShader* pShader, const ShaderArgument& argument)override;
 		private:
 			struct GPUBufferCommit
 			{

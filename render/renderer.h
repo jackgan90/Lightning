@@ -16,6 +16,7 @@ namespace LightningGE
 			//entry point of render system
 			void Render()override;
 			IDevice* GetDevice()override;
+			ISwapChain* GetSwapChain()override;
 			//return the current frame index
 			std::uint64_t GetCurrentFrameIndex()const override;
 			void Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material)override;
@@ -30,6 +31,7 @@ namespace LightningGE
 			std::uint64_t m_frameIndex;
 			SharedFileSystemPtr m_fs;
 			std::unique_ptr<IDevice> m_device;
+			std::unique_ptr<ISwapChain> m_swapChain;
 			std::unique_ptr<RenderPass> m_renderPass;
 			static Renderer* s_instance;
 		};

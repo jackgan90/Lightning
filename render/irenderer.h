@@ -35,6 +35,7 @@ namespace LightningGE
 			virtual void Render() = 0;
 			//return the device of render system
 			virtual IDevice* GetDevice() = 0;
+			virtual ISwapChain* GetSwapChain() = 0;
 			//set default render target clear color.At the beginning of each frame,the back buffer is cleared to this color
 			virtual void SetClearColor(const ColorF& color) = 0;
 			//get the current frame index

@@ -41,7 +41,6 @@ namespace LightningGE
 			void InitDevice(const ComPtr<IDXGIFactory4>& dxgiFactory);
 			void InitSwapChain(const ComPtr<IDXGIFactory4>& dxgiFactory, const SharedWindowPtr& pWindow);
 			void CreateFences();
-			std::unique_ptr<D3D12SwapChain> m_swapChain;
 			std::unique_ptr<D3D12RenderTargetManager> m_rtMgr;
 			std::vector<ComPtr<ID3D12Fence>> m_fences;
 			std::vector<UINT64> m_fenceValues;

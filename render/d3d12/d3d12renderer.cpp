@@ -56,7 +56,7 @@ namespace LightningGE
 			CreateFences();
 			logger.Log(LogLevel::Info, "Initialize D3D12 render context succeeded!");
 			
-			ComPtr<IDXGISwapChain3> nativeSwapChain = m_swapChain->m_swapChain;
+			ComPtr<IDXGISwapChain3> nativeSwapChain = static_cast<D3D12SwapChain*>(m_swapChain.get())->m_swapChain;
 			m_currentBackBufferIndex = nativeSwapChain->GetCurrentBackBufferIndex();
 			m_renderTargets.reserve(8);
 #ifndef NDEBUG
@@ -220,7 +220,7 @@ namespace LightningGE
 		{
 			WaitForPreviousFrame(false);
 			m_frameIndex++;
-			m_currentBackBufferIndex = m_swapChain->m_swapChain->GetCurrentBackBufferIndex();
+			m_currentBackBufferIndex = static_cast<D3D12SwapChain*>(m_swapChain.get())->m_swapChain->GetCurrentBackBufferIndex();
 			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
 			pD3D12Device->BeginFrame(m_currentBackBufferIndex);
 			m_renderTargets.clear();
@@ -253,7 +253,7 @@ namespace LightningGE
 		void D3D12Renderer::WaitForPreviousFrame(bool waitAll)
 		{
 			HRESULT hr;
-			ComPtr<IDXGISwapChain3> nativeSwapChain = m_swapChain->m_swapChain;
+			ComPtr<IDXGISwapChain3> nativeSwapChain = static_cast<D3D12SwapChain*>(m_swapChain.get())->m_swapChain;
 			std::vector<UINT> bufferIndice;
 			if (!waitAll)
 			{

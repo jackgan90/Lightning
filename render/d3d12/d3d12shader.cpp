@@ -25,11 +25,37 @@ namespace LightningGE
 			D3DReflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), IID_PPV_ARGS(&m_shaderReflect));
 			//UINT constantCount = shaderReflect->GetNumInterfaceSlots();
 			m_shaderReflect->GetDesc(&m_desc);
+			//create heap descriptor(samplers excluded)
+			//TODO : should create sampler descriptor heap
+			D3D12_DESCRIPTOR_HEAP_DESC desc{};
+			desc.NumDescriptors = m_desc.BoundResources;
+			desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+			desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+			desc.NodeMask = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+			/*
+			m_commitHeapInfo = D3D12DescriptorHeapManager::Instance()->Create(desc);
+			auto nativeDevice = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNativeDevice();
+			for (size_t i = 0; i < m_desc.ConstantBuffers; i++)
+			{
+				//ComPtr<ID3D12Resource> constantBuffer;
+				//nativeDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE,
+				//	&CD3DX12_RESOURCE_DESC::Buffer(,
+				//	D3D12_RESOURCE_STATE_DEPTH_WRITE, &dsClearValue, IID_PPV_ARGS(&m_resource));
+				//m_constantBuffers.push_back(constantBuffer);
+			}
+			*/
 		}
 
 		D3D12Shader::~D3D12Shader()
 		{
-
+			if (m_commitHeapInfo)
+			{
+				D3D12DescriptorHeapManager::Instance()->Destroy(m_commitHeapInfo->heapID);
+				m_commitHeapInfo = nullptr;
+			}
+			m_constantBuffers.clear();
+			m_byteCode.Reset();
+			m_shaderReflect.Reset();
 		}
 
 		ShaderType D3D12Shader::GetType()const
@@ -78,9 +104,15 @@ namespace LightningGE
 			return 0;
 		}
 
-		std::size_t D3D12Shader::GetInputArgumentCount()const
+		std::size_t D3D12Shader::GetArgumentCount()const
 		{
 			return m_desc.BoundResources;
 		}
+
+		void D3D12Shader::SetArgument(const ShaderArgument& argument)
+		{
+
+		}
+
 	}
 }
