@@ -24,6 +24,11 @@ namespace LightningGE
 			m_compileAllocator = std::make_unique<StackAllocator<true, 16, 8192>>();
 		}
 
+		ShaderManager::~ShaderManager()
+		{
+			m_shaders.clear();
+		}
+
 		SharedShaderPtr ShaderManager::CreateShaderFromSource(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)
 		{
 			auto hash = Shader::Hash(type, shaderName, defineMap);

@@ -83,7 +83,10 @@ namespace LightningGE
 			for (auto& context : m_uploadContexts)
 			{
 				if (context.bufferName)
+				{
 					delete[] context.bufferName;
+					context.resource.Reset();
+				}
 			}
 			m_uploadContexts.clear();
 			m_constantNameToBuffers.clear();

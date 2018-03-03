@@ -80,6 +80,13 @@ namespace LightningGE
 			{
 				DEALLOC(m_smallObjAllocator, m_pInputElementDesc);
 			}
+			for (auto it = m_bufferCommitMap.begin();it != m_bufferCommitMap.end();++it)
+			{
+				it->second.uploadHeap.Reset();
+				it->second.defaultHeap.Reset();
+			}
+			m_bufferCommitMap.clear();
+			m_shaderMgr.reset();
 		}
 
 		void D3D12Device::ClearRenderTarget(IRenderTarget* rt, const ColorF& color, const RectIList* rects)

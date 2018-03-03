@@ -14,7 +14,7 @@ namespace LightningGE
 
 		D3D12RenderTarget::~D3D12RenderTarget()
 		{
- 
+			m_nativeRenderTarget.Reset();
 		}
 
 		bool D3D12RenderTarget::IsSwapChainRenderTarget()const
