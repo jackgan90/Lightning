@@ -14,33 +14,63 @@ namespace LightningGE
 		using Foundation::FilePointerType;
 		using Foundation::FileAnchor;
 
-		D3D12Shader::D3D12Shader(ShaderType type, const std::string& name, const std::string& entry, const char* const shaderSource):
+		D3D12Shader::D3D12Shader(ID3D12Device* device, ShaderType type, const std::string& name, const std::string& entry, const char* const shaderSource):
 			Shader(type, name, entry, shaderSource), m_commitHeapInfo(nullptr)
 		{
 			assert(shaderSource);
 			CompileImpl(&s_compileAllocator);
 			D3DReflect(m_byteCode->GetBufferPointer(), m_byteCode->GetBufferSize(), IID_PPV_ARGS(&m_shaderReflect));
-			//UINT constantCount = shaderReflect->GetNumInterfaceSlots();
 			m_shaderReflect->GetDesc(&m_desc);
 			//create heap descriptor(samplers excluded)
 			//TODO : should create sampler descriptor heap
-			D3D12_DESCRIPTOR_HEAP_DESC desc{};
-			desc.NumDescriptors = m_desc.BoundResources;
-			desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-			desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-			desc.NodeMask = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			/*
-			m_commitHeapInfo = D3D12DescriptorHeapManager::Instance()->Create(desc);
-			auto nativeDevice = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNativeDevice();
-			for (size_t i = 0; i < m_desc.ConstantBuffers; i++)
+			if (m_desc.ConstantBuffers > 0)
 			{
-				//ComPtr<ID3D12Resource> constantBuffer;
-				//nativeDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE,
-				//	&CD3DX12_RESOURCE_DESC::Buffer(,
-				//	D3D12_RESOURCE_STATE_DEPTH_WRITE, &dsClearValue, IID_PPV_ARGS(&m_resource));
-				//m_constantBuffers.push_back(constantBuffer);
+				D3D12_DESCRIPTOR_HEAP_DESC desc{};
+				desc.NumDescriptors = m_desc.BoundResources;
+				desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+				desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+				desc.NodeMask = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+				m_commitHeapInfo = D3D12DescriptorHeapManager::Instance()->Create(desc, device);
+				CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_commitHeapInfo->cpuHeapStart);
+				for (size_t i = 0; i < m_desc.ConstantBuffers; i++)
+				{
+					auto constantBufferRefl = m_shaderReflect->GetConstantBufferByIndex(i);
+					D3D12_SHADER_BUFFER_DESC bufferDesc;
+					constantBufferRefl->GetDesc(&bufferDesc);
+					auto bufferSize = bufferDesc.Size;
+					//d3d12 constant buffer must be a multiple of 256,so we round it to the nearest larger multiple of 256
+					bufferSize = (bufferSize + 255) & ~255;
+					ConstantUploadContext context;
+					context.handle = handle;
+					context.bufferIndex = i;
+					if (bufferDesc.Name)
+					{
+						context.bufferName = new char[std::strlen(bufferDesc.Name) + 1];
+						std::strcpy(context.bufferName, bufferDesc.Name);
+					}
+					else
+					{
+						context.bufferName = nullptr;
+					}
+					for (size_t j = 0; j < bufferDesc.Variables; j++)
+					{
+						ID3D12ShaderReflectionVariable* variableRefl = constantBufferRefl->GetVariableByIndex(j);
+						D3D12_SHADER_VARIABLE_DESC shaderVarDesc;
+						variableRefl->GetDesc(&shaderVarDesc);
+						m_constantNameToBuffers[shaderVarDesc.Name] = i;
+					}
+					device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE,
+						&CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
+						D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&context.resource));
+					D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
+					cbvDesc.BufferLocation = context.resource->GetGPUVirtualAddress();
+					cbvDesc.SizeInBytes = bufferSize;
+					device->CreateConstantBufferView(&cbvDesc, context.handle);
+					handle.Offset(m_commitHeapInfo->incrementSize);
+					m_uploadContexts.push_back(context);
+				}
+				
 			}
-			*/
 		}
 
 		D3D12Shader::~D3D12Shader()
@@ -50,7 +80,13 @@ namespace LightningGE
 				D3D12DescriptorHeapManager::Instance()->Destroy(m_commitHeapInfo->heapID);
 				m_commitHeapInfo = nullptr;
 			}
-			m_constantBuffers.clear();
+			for (auto& context : m_uploadContexts)
+			{
+				if (context.bufferName)
+					delete[] context.bufferName;
+			}
+			m_uploadContexts.clear();
+			m_constantNameToBuffers.clear();
 			m_byteCode.Reset();
 			m_shaderReflect.Reset();
 		}

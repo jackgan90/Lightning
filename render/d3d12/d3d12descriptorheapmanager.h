@@ -27,12 +27,12 @@ namespace LightningGE
 		public:
 			D3D12DescriptorHeapManager();
 			~D3D12DescriptorHeapManager();
-			const HeapAllocationInfo* Create(const D3D12_DESCRIPTOR_HEAP_DESC& desc);
+			const HeapAllocationInfo* Create(const D3D12_DESCRIPTOR_HEAP_DESC& desc, ID3D12Device* pDevice=nullptr);
 			void Destroy(UINT heapID);
-			UINT GetIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type);
+			UINT GetIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type, ID3D12Device* pDevice=nullptr);
 			void Clear();
 		private:
-			ComPtr<ID3D12Device> GetNativeDevice();
+			ID3D12Device* GetNativeDevice();
 			struct _HeapAllocationInfoInternal : HeapAllocationInfo
 			{
 				ComPtr<ID3D12DescriptorHeap> heap;

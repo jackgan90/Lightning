@@ -26,14 +26,13 @@ namespace LightningGE
 		using Foundation::EngineConfig;
 		using Foundation::StackAllocator;
 		const char* const DEFAULT_VS_SOURCE =
-			"struct VS_IN\n"
+			"cbuffer VS_IN : register(b0)\n"
 			"{\n"
 			"	float4x4 wvp;"
 			"};\n"
-			"ConstantBuffer<VS_IN> vs_in : register(b0);\n"
 			"float4 main(float4 position:POSITION):SV_POSITION\n"
 			"{\n"
-				"return mul(vs_in.wvp, position);\n"
+				"return mul(wvp, position);\n"
 			"}\n";
 		const char* const DEFAULT_PS_SOURCE =
 			"float4 main(void):COLOR\n"
@@ -246,7 +245,7 @@ namespace LightningGE
 		SharedShaderPtr D3D12Device::CreateShader(ShaderType type, const std::string& shaderName, 
 			const char* const shaderSource, const ShaderDefine& defineMap)
 		{
-			return std::make_shared<D3D12Shader>(type, shaderName, DEFAULT_SHADER_ENTRY, shaderSource);
+			return std::make_shared<D3D12Shader>(m_device.Get(), type, shaderName, DEFAULT_SHADER_ENTRY, shaderSource);
 		}
 
 		void D3D12Device::ApplyShader(IShader* pShader)

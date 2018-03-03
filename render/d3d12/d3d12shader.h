@@ -17,7 +17,7 @@ namespace LightningGE
 		public:
 			friend class D3D12Device;
 			friend class D3D12ShaderManager;
-			D3D12Shader(ShaderType type, const std::string& name, const std::string& entry, const char* const shaderSource);
+			D3D12Shader(ID3D12Device* device, ShaderType type, const std::string& name, const std::string& entry, const char* const shaderSource);
 			~D3D12Shader()override;
 			const ShaderDefine GetMacros()const override;
 			//bool Compile(const Foundation::SharedFilePtr& file, const ShaderDefine& define)override;
@@ -28,12 +28,21 @@ namespace LightningGE
 			void* GetByteCodeBuffer()const;
 			SIZE_T GetByteCodeBufferSize()const;
 		private:
+			//use to commit constant to shader
+			struct ConstantUploadContext
+			{
+				ComPtr<ID3D12Resource> resource;
+				D3D12_CPU_DESCRIPTOR_HANDLE handle;
+				char* bufferName;
+				UINT bufferIndex;
+			};
 			void CompileImpl(IMemoryAllocator* memoryAllocator);
 			ComPtr<ID3D10Blob> m_byteCode;
 			ComPtr<ID3D12ShaderReflection> m_shaderReflect;
 			D3D12_SHADER_DESC m_desc;
 			const HeapAllocationInfo *m_commitHeapInfo;
-			std::vector<ComPtr<ID3D12Resource>> m_constantBuffers;
+			std::vector<ConstantUploadContext> m_uploadContexts;
+			std::unordered_map<std::string, UINT> m_constantNameToBuffers;
 		};
 	}
 }

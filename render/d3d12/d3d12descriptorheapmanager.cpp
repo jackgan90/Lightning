@@ -18,15 +18,15 @@ namespace LightningGE
 			logger.Log(LogLevel::Info, "Descriptor heap manager destruct!");
 		}
 
-		ComPtr<ID3D12Device> D3D12DescriptorHeapManager::GetNativeDevice()
+		ID3D12Device* D3D12DescriptorHeapManager::GetNativeDevice()
 		{
-			return static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNativeDevice();
+			return static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNativeDevice().Get();
 		}
 
-		const HeapAllocationInfo* D3D12DescriptorHeapManager::Create(const D3D12_DESCRIPTOR_HEAP_DESC& desc)
+		const HeapAllocationInfo* D3D12DescriptorHeapManager::Create(const D3D12_DESCRIPTOR_HEAP_DESC& desc, ID3D12Device* pDevice)
 		{
 			ComPtr<ID3D12DescriptorHeap> heap;
-			auto nativeDevice = GetNativeDevice();
+			auto nativeDevice = pDevice ? pDevice : GetNativeDevice();
 			HRESULT hr = nativeDevice->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&heap));
 			if (FAILED(hr))
 			{
@@ -39,7 +39,7 @@ namespace LightningGE
 			info.heap = heap;
 			info.cpuHeapStart = heap->GetCPUDescriptorHandleForHeapStart();
 			info.gpuHeapStart = heap->GetGPUDescriptorHandleForHeapStart();
-			info.incrementSize = GetIncrementSize(desc.Type);
+			info.incrementSize = GetIncrementSize(desc.Type, pDevice);
 			info.heapID = m_currentID++;
 			m_heaps[info.heapID] = info;
 			return &m_heaps[info.heapID];
@@ -53,11 +53,11 @@ namespace LightningGE
 			m_heaps.erase(it);
 		}
 
-		UINT D3D12DescriptorHeapManager::GetIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type)
+		UINT D3D12DescriptorHeapManager::GetIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type, ID3D12Device* pDevice)
 		{
 			if (m_incrementSizes.find(type) == m_incrementSizes.end())
 			{
-				auto nativeDevice = GetNativeDevice();
+				auto nativeDevice = pDevice ? pDevice : GetNativeDevice();
 				m_incrementSizes[type] = nativeDevice->GetDescriptorHandleIncrementSize(type);
 			}
 			return m_incrementSizes[type];
