@@ -12,6 +12,7 @@ namespace LightningGE
 		class LIGHTNINGGE_SCENE_API SceneManager : public Singleton<SceneManager>
 		{
 		public:
+			~SceneManager();
 			template<typename... Args>
 			Scene* CreateScene(Args&&... args)
 			{
@@ -22,6 +23,7 @@ namespace LightningGE
 			}
 			void Update();
 			void DestroyScene(const std::uint32_t sceneId);
+			void DestroyAll();
 		protected:
 			std::uint32_t m_currentSceneId;
 			std::unordered_map<std::uint32_t, Scene*> m_scenes;

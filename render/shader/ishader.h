@@ -33,6 +33,7 @@ namespace LightningGE
 
 		enum class ShaderArgumentType
 		{
+			UNKNOWN,
 			FLOAT,
 			FLOAT2,
 			FLOAT3,
@@ -66,6 +67,7 @@ namespace LightningGE
 				Matrix4x4f m4;
 				//TODO : add texture and sampler
 			};
+			ShaderArgument():type(ShaderArgumentType::UNKNOWN){}
 			ShaderArgument(const float _f):type(ShaderArgumentType::FLOAT), f(_f){}
 			ShaderArgument(const Vector2f& _v2) :type(ShaderArgumentType::FLOAT2) { new (&v2)Vector2f(_v2); }
 			ShaderArgument(Vector2f&& _v2) :type(ShaderArgumentType::FLOAT2) { new (&v2)Vector2f(std::move(_v2)); }

@@ -20,5 +20,21 @@ namespace LightningGE
 				m_scenes.erase(it);
 			}
 		}
+
+		SceneManager::~SceneManager()
+		{
+			DestroyAll();
+		}
+
+		void SceneManager::DestroyAll()
+		{
+			for (auto it = m_scenes.begin();it != m_scenes.end();++it)
+			{
+				delete it->second;
+			}
+			m_scenes.clear();
+		}
+
+
 	}
 }

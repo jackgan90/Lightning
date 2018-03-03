@@ -26,6 +26,7 @@ namespace LightningGE
 
 		Application::~Application()
 		{
+			SceneManager::Instance()->DestroyAll();
 			m_renderer.reset();
 			m_windowMgr.reset();
 			logger.Log(LogLevel::Info, "Application quit.");

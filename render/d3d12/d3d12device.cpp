@@ -28,7 +28,7 @@ namespace LightningGE
 		const char* const DEFAULT_VS_SOURCE =
 			"cbuffer VS_IN : register(b0)\n"
 			"{\n"
-			"	float4x4 wvp;"
+			"	float4x4 wvp;\n"
 			"};\n"
 			"float4 main(float4 position:POSITION):SV_POSITION\n"
 			"{\n"
@@ -305,12 +305,11 @@ namespace LightningGE
 			if (it != m_rootSignatures.end())
 				return it->second;
 
-			//TODO :create root signature based on shader parameters
 			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-			CD3DX12_ROOT_PARAMETER cbParameters[1]; 
-			cbParameters[0].InitAsConstantBufferView(0);
-			//TODO : deny other shader stages
-			rootSignatureDesc.Init(1, cbParameters, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+			D3D12_ROOT_PARAMETER cbParameters[5]; 
+			for (std::size_t i = 0; i < shaders.size(); ++i)
+				cbParameters[i] = static_cast<D3D12Shader*>(shaders[i])->GetRootParameter();
+			rootSignatureDesc.Init(shaders.size(), cbParameters, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 			ComPtr<ID3DBlob> signature;
 			auto hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, nullptr);
