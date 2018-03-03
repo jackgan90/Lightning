@@ -6,14 +6,22 @@
 #include "filesystem.h"
 #include "hashableobject.h"
 #include "semantics.h"
+#include "renderexception.h"
+#include "memory/stackallocator.h"
 #include "types/vector.h"
 
 namespace LightningGE
 {
 	namespace Render
 	{
+		using Foundation::StackAllocator;
+		class LIGHTNINGGE_RENDER_API ShaderCompileException : public RendererException
+		{
+		public:
+			ShaderCompileException(const char*const w):RendererException(w){}
+		};
+
 		using Utility::HashableObject;
-		class IShaderManager;
 		enum class ShaderType
 		{
 			VERTEX = 1,
@@ -89,13 +97,10 @@ namespace LightningGE
 			virtual void DefineMacros(const ShaderDefine& define) = 0;
 			virtual const ShaderDefine GetMacros()const = 0;
 			virtual std::size_t GetArgumentCount()const = 0;
-			//virtual bool Compile(const Foundation::SharedFilePtr& file, const ShaderDefine& define) = 0;
-			//virtual const std::string GetCompileErrorLog()const = 0;
+			virtual void Compile() = 0;
 			virtual std::string GetName()const = 0;
 			virtual void SetArgument(const ShaderArgument& argument) = 0;
-#ifndef NDEBUG
 			virtual const char* const GetSource()const = 0;
-#endif
 			virtual void GetShaderModelVersion(int& major, int& minor) = 0;
 		};
 
@@ -105,15 +110,25 @@ namespace LightningGE
 		{
 		public:
 			static size_t Hash(const ShaderType& type, const std::string& shaderName, const ShaderDefine& defineMap);
-			Shader(const std::string& entryPoint);
+			Shader(ShaderType type, const std::string& name, const std::string& entryPoint, const char* const source);
 			~Shader()override;
 			void SetEntryPoint(const std::string& entryPoint)override;
 			void DefineMacros(const ShaderDefine& define)override;
 			std::string GetEntryPoint()const override { return m_entryPoint; }
+			ShaderType GetType()const override;
+			const char* const GetSource()const override;
+			std::string GetName()const override;
+			void GetShaderModelVersion(int& major, int& minor)override;
 		protected:
 			size_t CalculateHashInternal()override;
+			ShaderType m_type;
+			std::string m_name;
 			std::string m_entryPoint;
+			const char* const m_source;
 			ShaderDefine m_macros;
+			int m_smMajorVersion;
+			int m_smMinorVersion;
+			static StackAllocator<true, 16, 8192 > s_compileAllocator;
 		};
 	}
 }

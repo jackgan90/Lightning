@@ -17,7 +17,6 @@ namespace LightningGE
 			virtual SharedShaderPtr GetShader(size_t shaderHash) = 0;
 			virtual SharedShaderPtr CreateShaderFromSource(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap) = 0;
 			virtual SharedShaderPtr CreateShaderFromFile(ShaderType type, const std::string& fileName, const ShaderDefine& defineMap) = 0;
-			virtual IMemoryAllocator* GetCompileAllocator()const = 0;
 		protected:
 			IShaderManager(){}
 		};

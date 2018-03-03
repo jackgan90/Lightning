@@ -1,5 +1,6 @@
 #include <sstream>
 #include <d3dx12.h>
+#include <cassert>
 #include "d3d12device.h"
 #include "renderer.h"
 #include "shadermanager.h"
@@ -13,16 +14,12 @@ namespace LightningGE
 		using Foundation::FilePointerType;
 		using Foundation::FileAnchor;
 
-		D3D12Shader::D3D12Shader(ShaderType type, const std::string& name, const char* const shaderSource, const ComPtr<ID3D10Blob>& byteCode,
-			int smMajor, int smMinor, const std::string& entry):
-			Shader(entry), m_type(type)
-			,m_name(name), m_byteCode(byteCode)
-			,m_smMajorVersion(smMajor), m_smMinorVersion(smMinor)
-#ifndef NDEBUG
-			,m_source(shaderSource)
-#endif
+		D3D12Shader::D3D12Shader(ShaderType type, const std::string& name, const std::string& entry, const char* const shaderSource):
+			Shader(type, name, entry, shaderSource), m_commitHeapInfo(nullptr)
 		{
-			D3DReflect(byteCode->GetBufferPointer(), byteCode->GetBufferSize(), IID_PPV_ARGS(&m_shaderReflect));
+			assert(shaderSource);
+			CompileImpl(&s_compileAllocator);
+			D3DReflect(m_byteCode->GetBufferPointer(), m_byteCode->GetBufferSize(), IID_PPV_ARGS(&m_shaderReflect));
 			//UINT constantCount = shaderReflect->GetNumInterfaceSlots();
 			m_shaderReflect->GetDesc(&m_desc);
 			//create heap descriptor(samplers excluded)
@@ -58,32 +55,9 @@ namespace LightningGE
 			m_shaderReflect.Reset();
 		}
 
-		ShaderType D3D12Shader::GetType()const
-		{
-			return m_type;
-		}
-
 		const ShaderDefine D3D12Shader::GetMacros()const
 		{
 			return m_macros;
-		}
-
-		std::string D3D12Shader::GetName()const
-		{
-			return m_name;
-		}
-
-#ifndef NDEBUG
-		const char* const D3D12Shader::GetSource()const
-		{
-			return m_source;
-		}
-#endif
-
-		void D3D12Shader::GetShaderModelVersion(int& major, int& minor)
-		{
-			major = m_smMajorVersion;
-			minor = m_smMinorVersion;
 		}
 
 		void* D3D12Shader::GetByteCodeBuffer()const
@@ -114,5 +88,87 @@ namespace LightningGE
 
 		}
 
+		void D3D12Shader::Compile()
+		{
+			if (m_source)
+			{
+				CompileImpl(&s_compileAllocator);
+			}
+		}
+
+		void D3D12Shader::CompileImpl(IMemoryAllocator* memoryAllocator)
+		{
+			D3D_SHADER_MACRO* pMacros = nullptr;
+			auto macroCount = m_macros.GetMacroCount();
+			if (macroCount)
+			{
+				pMacros = ALLOC_ARRAY(memoryAllocator, macroCount + 1, D3D_SHADER_MACRO);
+				std::memset(&pMacros[macroCount], 0, sizeof(D3D_SHADER_MACRO));
+				auto macros = m_macros.GetAllDefine();
+				auto idx = 0;
+				for (auto it = macros.begin(); it != macros.end(); ++it,++idx)
+				{
+					const char* name = it->first.c_str();
+					pMacros[idx].Name = ALLOC_ARRAY(memoryAllocator, std::strlen(name)+1, const char);
+					std::strcpy(const_cast<char*>(pMacros[idx].Name), name);
+					const char* definition = it->second.c_str();
+					pMacros[idx].Definition = ALLOC_ARRAY(memoryAllocator, std::strlen(definition)+1, const char);
+					std::strcpy(const_cast<char*>(pMacros[idx].Definition), definition);
+				}
+			}
+			//TODO: resolve include
+#ifndef NDEBUG
+			UINT flags1 = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+#else
+			UINT flags1 = 0;
+#endif
+			//TODO : flags2 is used to compile effect file.Should implement it later
+			UINT flags2 = 0;
+			ComPtr<ID3DBlob> errorLog;
+			char shaderModel[32];
+			m_smMajorVersion = DEFAULT_SHADER_MODEL_MAJOR_VERSION;
+			m_smMinorVersion = DEFAULT_SHADER_MODEL_MINOR_VERSION;
+			GetShaderModelString(shaderModel, m_type, DEFAULT_SHADER_MODEL_MAJOR_VERSION, DEFAULT_SHADER_MODEL_MINOR_VERSION);
+			HRESULT hr = ::D3DCompile(m_source, static_cast<SIZE_T>(strlen(m_source) + 1), nullptr, pMacros, nullptr, DEFAULT_SHADER_ENTRY,
+				shaderModel, flags1, flags2, &m_byteCode, &errorLog);
+			if (FAILED(hr))
+			{
+				std::stringstream ss;
+				ss << "Compile shader " << m_name << " failed!";
+				if (macroCount)
+				{
+					ss << "Defined macros:" << std::endl;
+					for (size_t i = 0; i < macroCount; i++)
+					{
+						ss << pMacros[i].Name << ":" << pMacros[i].Definition << std::endl;
+						DEALLOC(memoryAllocator, const_cast<char*>(pMacros[i].Name));
+						DEALLOC(memoryAllocator, const_cast<char*>(pMacros[i].Definition));
+					}
+				}
+				if (pMacros)
+				{
+					DEALLOC(memoryAllocator, pMacros);
+				}
+				ss << "Detailed info:" << std::endl;
+				size_t compileErrorBufferSize = errorLog->GetBufferSize();
+				char* compileErrorBuffer = ALLOC(memoryAllocator, compileErrorBufferSize, char);
+				std::memcpy(compileErrorBuffer, errorLog->GetBufferPointer(), compileErrorBufferSize);
+				compileErrorBuffer[compileErrorBufferSize] = 0;
+				ss << compileErrorBuffer;
+				logger.Log(LogLevel::Error, "%s", ss.str().c_str());
+				DEALLOC(memoryAllocator, compileErrorBuffer);
+				throw ShaderCompileException("Failed to compile shader!");
+			}
+
+			if (pMacros)
+			{
+				for (size_t i = 0; i < macroCount; i++)
+				{
+					memoryAllocator->Deallocate(static_cast<void*>(const_cast<char*>(pMacros[i].Name)));
+					memoryAllocator->Deallocate(static_cast<void*>(const_cast<char*>(pMacros[i].Definition)));
+				}
+				memoryAllocator->Deallocate(pMacros);
+			}
+		}
 	}
 }

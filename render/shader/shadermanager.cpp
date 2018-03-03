@@ -64,7 +64,9 @@ namespace LightningGE
 				return SharedShaderPtr();
 			}
 			buffer[size] = 0;
-			return CreateShaderFromSource(type, shaderFileName, buffer, defineMap);
+			auto pShader = CreateShaderFromSource(type, shaderFileName, buffer, defineMap);
+			DEALLOC(m_compileAllocator, buffer);
+			return pShader;
 		}
 
 		SharedShaderPtr ShaderManager::GetShader(size_t shaderHash)
