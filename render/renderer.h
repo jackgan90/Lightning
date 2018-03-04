@@ -19,7 +19,7 @@ namespace LightningGE
 			ISwapChain* GetSwapChain()override;
 			//return the current frame index
 			std::uint64_t GetCurrentFrameIndex()const override;
-			void Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material)override;
+			void Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material, const Transform& transform)override;
 			void SetRenderPass(RenderPassType type)override;
 			static Renderer* Instance() { return s_instance; }
 		protected:

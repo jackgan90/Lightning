@@ -10,6 +10,7 @@
 #include "renderpass.h"
 #include "geometry.h"
 #include "material.h"
+#include "transform.h"
 
 namespace LightningGE
 {
@@ -42,7 +43,7 @@ namespace LightningGE
 			virtual std::uint64_t GetCurrentFrameIndex()const = 0;
 			virtual std::uint8_t GetFrameResourceIndex()const = 0;
 			virtual void SetRenderPass(RenderPassType type) = 0;
-			virtual void Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material) = 0;
+			virtual void Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material, const Transform& transform) = 0;
 		};
 	}
 }

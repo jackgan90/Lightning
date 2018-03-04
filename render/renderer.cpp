@@ -51,10 +51,10 @@ namespace LightningGE
 		}
 
 
-		void Renderer::Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material)
+		void Renderer::Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material, const Transform& transform)
 		{
 			if (m_renderPass)
-				m_renderPass->Draw(geometry, material);
+				m_renderPass->Draw(geometry, material, transform);
 		}
 
 		void Renderer::SetRenderPass(RenderPassType type)

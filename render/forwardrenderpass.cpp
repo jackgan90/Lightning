@@ -5,7 +5,7 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		void ForwardRenderPass::Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material)
+		void ForwardRenderPass::Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material, const Transform& transform)
 		{
 			m_renderItems.emplace_back(geometry, material);
 		}

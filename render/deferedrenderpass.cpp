@@ -4,7 +4,7 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		void DeferedRenderPass::Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material)
+		void DeferedRenderPass::Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material, const Transform& transform)
 		{
 
 		}

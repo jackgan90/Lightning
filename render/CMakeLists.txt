@@ -25,7 +25,8 @@ set(HEADERS rendererexportdef.h
 			material.h
 			renderpass.h
 			forwardrenderpass.h
-			deferedrenderpass.h)
+			deferedrenderpass.h
+			transform.h)
 set(SOURCES renderer.cpp
 			device.cpp
 			vertexbuffer.cpp
@@ -39,7 +40,8 @@ set(SOURCES renderer.cpp
 			geometry.cpp
 			material.cpp
 			forwardrenderpass.cpp
-			deferedrenderpass.cpp)
+			deferedrenderpass.cpp
+			transform.cpp)
 
 set(TYPES_HEADERS	types/color.h
 					types/rect.h

@@ -16,7 +16,7 @@ namespace LightningGE
 
 		void Primitive::Draw(Render::Renderer& renderer)
 		{
-			renderer.Draw(m_geo, m_material);
+			renderer.Draw(m_geo, m_material, m_transform);
 		}
 
 		float Cube::verticeTemplate[24] = { 0.5f, 0.5f, -0.5f,  //right top front
@@ -45,7 +45,7 @@ namespace LightningGE
 		};
 		Cube::Cube(float size) : 
 		Primitive(Render::PrimitiveType::TRIANGLE_LIST),
-		m_size(size)
+			m_size(size) 
 		{
 			assert(m_size > 0 && "The size of the cube must be greater than 0!");
 			Render::VertexComponent comp;
@@ -75,6 +75,7 @@ namespace LightningGE
 			m_geo->primType = Render::PrimitiveType::TRIANGLE_LIST;
 			m_material = std::make_shared<Render::Material>();
 			m_material->RequireSemantic(Render::RenderSemantics::WVP);
+			m_transform = Render::Transform(Render::Vector3f({ 1.0f, 1.0f, 1.0f }), Render::Vector3f({ 2.0f, 2.0f, 2.0f }));
 		}
 
 		Cube::~Cube()

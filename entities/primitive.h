@@ -15,6 +15,7 @@ namespace LightningGE
 		class LIGHTNINGGE_ENTITIES_API Primitive : public IDrawable
 		{
 		public:
+			LIGHTNINGGE_ALIGNED_OPERATOR_NEW
 			Primitive(PrimitiveType topology);
 			virtual ~Primitive();
 			void Draw(Render::Renderer& renderer) override;
@@ -22,6 +23,7 @@ namespace LightningGE
 		protected:
 			Render::SharedGeometryPtr m_geo;
 			Render::SharedMaterialPtr m_material;
+			Render::Transform m_transform;
 			PrimitiveType m_primType;
 		};
 
