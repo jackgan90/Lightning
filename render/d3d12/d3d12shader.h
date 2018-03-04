@@ -27,15 +27,15 @@ namespace LightningGE
 			void Compile()override;
 			void* GetByteCodeBuffer()const;
 			SIZE_T GetByteCodeBufferSize()const;
-			D3D12_ROOT_PARAMETER GetRootParameter()const;
+			std::vector<D3D12_ROOT_PARAMETER> GetRootParameters()const;
 		private:
 			//use to commit constant to shader
 			struct ConstantUploadContext
 			{
 				//upload heap use to update constant value
-				ComPtr<ID3D12Resource> resource;
+				ComPtr<ID3D12Resource> resource[RENDER_FRAME_COUNT];
 				//handle to resource
-				D3D12_CPU_DESCRIPTOR_HANDLE handle;
+				D3D12_CPU_DESCRIPTOR_HANDLE handle[RENDER_FRAME_COUNT];
 				//constant buffer name in shader
 				char* bufferName;
 				//specified register index in shader
@@ -54,7 +54,8 @@ namespace LightningGE
 			const HeapAllocationInfo *m_commitHeapInfo;
 			std::vector<ConstantUploadContext> m_uploadContexts;
 			std::unordered_map<std::string, ArgumentBinding> m_argumentBindings;
-			CD3DX12_ROOT_PARAMETER m_rootParameter;
+			CD3DX12_ROOT_PARAMETER m_cbvParameter;
+			std::vector<D3D12_ROOT_PARAMETER> m_rootParameters;
 			D3D12_DESCRIPTOR_RANGE *m_descriptorRanges;
 		};
 	}

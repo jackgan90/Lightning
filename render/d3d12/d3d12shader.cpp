@@ -22,12 +22,6 @@ namespace LightningGE
 			CompileImpl(&s_compileAllocator);
 			D3DReflect(m_byteCode->GetBufferPointer(), m_byteCode->GetBufferSize(), IID_PPV_ARGS(&m_shaderReflect));
 			m_shaderReflect->GetDesc(&m_desc);
-			std::size_t rangeIndex{ 0 };
-			if (m_desc.BoundResources)
-			{
-				m_descriptorRanges = new D3D12_DESCRIPTOR_RANGE[m_desc.BoundResources];
-				m_rootParameter.InitAsDescriptorTable(m_desc.BoundResources, m_descriptorRanges, GetParameterVisibility());
-			}
 			std::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC> bindDescs;
 			for (std::size_t i = 0;i < m_desc.BoundResources;++i)
 			{
@@ -39,9 +33,10 @@ namespace LightningGE
 			//TODO : should create sampler descriptor heap
 			if (m_desc.ConstantBuffers > 0)
 			{
+				m_descriptorRanges = new D3D12_DESCRIPTOR_RANGE[m_desc.ConstantBuffers];
 				//initialize cbv descriptor ranges, number of descriptors is the number of constant buffers
 				D3D12_DESCRIPTOR_HEAP_DESC desc{};
-				desc.NumDescriptors = m_desc.BoundResources;
+				desc.NumDescriptors = m_desc.ConstantBuffers * RENDER_FRAME_COUNT;
 				desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
 				desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 				desc.NodeMask = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
@@ -52,19 +47,6 @@ namespace LightningGE
 					auto constantBufferRefl = m_shaderReflect->GetConstantBufferByIndex(i);
 					D3D12_SHADER_BUFFER_DESC bufferDesc;
 					constantBufferRefl->GetDesc(&bufferDesc);
-					D3D12_SHADER_INPUT_BIND_DESC& bindDesc = bindDescs[bufferDesc.Name];
-					m_descriptorRanges[rangeIndex].BaseShaderRegister = bindDesc.BindPoint;
-					m_descriptorRanges[rangeIndex].NumDescriptors = 1;
-					m_descriptorRanges[rangeIndex].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-					m_descriptorRanges[rangeIndex].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-					m_descriptorRanges[rangeIndex].RegisterSpace = bindDesc.Space;
-					rangeIndex++;
-
-					ConstantUploadContext context;
-					context.handle = handle;
-					context.bufferName = new char[std::strlen(bufferDesc.Name) + 1];
-					std::strcpy(context.bufferName, bufferDesc.Name);
-					context.registerIndex = bindDesc.BindPoint;
 					for (size_t j = 0; j < bufferDesc.Variables; j++)
 					{
 						ID3D12ShaderReflectionVariable* variableRefl = constantBufferRefl->GetVariableByIndex(j);
@@ -75,20 +57,36 @@ namespace LightningGE
 						argBinding.offsetInBuffer = shaderVarDesc.StartOffset;
 						m_argumentBindings[shaderVarDesc.Name] = argBinding;
 					}
-					auto bufferSize = bufferDesc.Size;
-					//d3d12 constant buffer must be a multiple of 256,so we round it to the nearest larger multiple of 256
-					bufferSize = (bufferSize + 255) & ~255;
-					device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE,
-						&CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
-						D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&context.resource));
-					D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
-					cbvDesc.BufferLocation = context.resource->GetGPUVirtualAddress();
-					cbvDesc.SizeInBytes = bufferSize;
-					device->CreateConstantBufferView(&cbvDesc, context.handle);
-					handle.Offset(m_commitHeapInfo->incrementSize);
+					D3D12_SHADER_INPUT_BIND_DESC& bindDesc = bindDescs[bufferDesc.Name];
+					m_descriptorRanges[i].BaseShaderRegister = bindDesc.BindPoint;
+					m_descriptorRanges[i].NumDescriptors = 1;
+					m_descriptorRanges[i].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+					m_descriptorRanges[i].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+					m_descriptorRanges[i].RegisterSpace = bindDesc.Space;
+
+					ConstantUploadContext context;
+					context.bufferName = new char[std::strlen(bufferDesc.Name) + 1];
+					std::strcpy(context.bufferName, bufferDesc.Name);
+					context.registerIndex = bindDesc.BindPoint;
+					for (std::size_t k = 0;k < RENDER_FRAME_COUNT;++k)
+					{
+						context.handle[k] = handle;
+						auto bufferSize = bufferDesc.Size;
+						//d3d12 constant buffer must be a multiple of 256,so we round it to the nearest larger multiple of 256
+						bufferSize = (bufferSize + 255) & ~255;
+						device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE,
+							&CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
+							D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&context.resource[k]));
+						D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
+						cbvDesc.BufferLocation = context.resource[k]->GetGPUVirtualAddress();
+						cbvDesc.SizeInBytes = bufferSize;
+						device->CreateConstantBufferView(&cbvDesc, context.handle[k]);
+						handle.Offset(m_commitHeapInfo->incrementSize);
+					}
 					m_uploadContexts.push_back(context);
 				}
-				
+				m_cbvParameter.InitAsDescriptorTable(m_desc.ConstantBuffers, m_descriptorRanges, GetParameterVisibility());
+				m_rootParameters.push_back(m_cbvParameter);
 			}
 			//TODO initialize other shader resource
 		}
@@ -109,7 +107,10 @@ namespace LightningGE
 				if (context.bufferName)
 				{
 					delete[] context.bufferName;
-					context.resource.Reset();
+				}
+				for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
+				{
+					context.resource[i].Reset();
 				}
 			}
 			m_uploadContexts.clear();
@@ -176,9 +177,9 @@ namespace LightningGE
 			}
 		}
 
-		D3D12_ROOT_PARAMETER D3D12Shader::GetRootParameter()const
+		std::vector<D3D12_ROOT_PARAMETER> D3D12Shader::GetRootParameters()const
 		{
-			return m_rootParameter;
+			return m_rootParameters;
 		}
 
 		D3D12_SHADER_VISIBILITY D3D12Shader::GetParameterVisibility()const

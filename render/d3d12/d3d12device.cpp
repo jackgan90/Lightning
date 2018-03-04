@@ -305,10 +305,14 @@ namespace LightningGE
 				return it->second;
 
 			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-			D3D12_ROOT_PARAMETER cbParameters[5]; 
-			for (std::size_t i = 0; i < shaders.size(); ++i)
-				cbParameters[i] = static_cast<D3D12Shader*>(shaders[i])->GetRootParameter();
-			rootSignatureDesc.Init(shaders.size(), cbParameters, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+			//D3D12_ROOT_PARAMETER cbParameters[5]; 
+			std::vector<D3D12_ROOT_PARAMETER> cbParameters;
+			for (std::size_t i = 0;i < shaders.size();++i)
+			{
+				auto parameters = static_cast<D3D12Shader*>(shaders[i])->GetRootParameters();
+				cbParameters.insert(cbParameters.end(), parameters.begin(), parameters.end());
+			}
+			rootSignatureDesc.Init(cbParameters.size(), &cbParameters[0], 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 			ComPtr<ID3DBlob> signature;
 			auto hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, nullptr);
