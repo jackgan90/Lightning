@@ -149,7 +149,7 @@ namespace LightningGE
 			sampleDesc.Quality = msaaEnabled ? qualityLevels - 1 : 0;
 
 			DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
-			swapChainDesc.BufferCount = config.SwapChainBufferCount;
+			swapChainDesc.BufferCount = RENDER_FRAME_COUNT;
 			swapChainDesc.BufferDesc = bufferDesc;
 			swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 			swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
@@ -173,7 +173,7 @@ namespace LightningGE
 			HRESULT hr;
 			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
 			ComPtr<ID3D12Device> nativeDevice = pD3D12Device->m_device;
-			for (size_t i = 0; i < config.SwapChainBufferCount; i++)
+			for (size_t i = 0; i < RENDER_FRAME_COUNT; i++)
 			{
 				m_fenceValues.push_back(0);
 				ComPtr<ID3D12Fence> fence;
@@ -262,7 +262,7 @@ namespace LightningGE
 			else
 			{
 				auto commandQueue = static_cast<D3D12Device*>(m_device.get())->m_commandQueue;
-				for (std::size_t i = 0;i < m_swapChain->GetBufferCount();++i)
+				for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
 				{
 					bufferIndice.push_back(i);
 					//explicit signal to prevent release assert

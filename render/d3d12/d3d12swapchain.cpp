@@ -18,9 +18,6 @@ namespace LightningGE
 		D3D12SwapChain::D3D12SwapChain(const ComPtr<IDXGISwapChain3>& pSwapChain, D3D12Renderer* pRenderer):m_renderer(pRenderer)
 		{
 			m_swapChain = pSwapChain;
-			DXGI_SWAP_CHAIN_DESC desc;
-			pSwapChain->GetDesc(&desc);
-			m_bufferCount = desc.BufferCount;
 			BindRenderTargets();
 		}
 
@@ -42,8 +39,7 @@ namespace LightningGE
 			auto d3ddevice = static_cast<D3D12Device*>(m_renderer->GetDevice());
 			auto nativeDevice = d3ddevice->GetNativeDevice();
 			D3D12_DESCRIPTOR_HEAP_DESC desc{};
-			int renderTargetCount = GetBufferCount();
-			desc.NumDescriptors = renderTargetCount;
+			desc.NumDescriptors = RENDER_FRAME_COUNT;
 			desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 			desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 
@@ -54,14 +50,13 @@ namespace LightningGE
 			}
 			CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(pHeapInfo->cpuHeapStart);
 
-			ComPtr<ID3D12Resource>* swapChainTargets = new ComPtr<ID3D12Resource>[renderTargetCount];
+			ComPtr<ID3D12Resource> swapChainTargets[RENDER_FRAME_COUNT];
 			auto rtMgr = D3D12RenderTargetManager::Instance();
-			for (int i = 0; i < renderTargetCount; i++)
+			for (int i = 0; i < RENDER_FRAME_COUNT; i++)
 			{
 				hr = m_swapChain->GetBuffer(i, IID_PPV_ARGS(&swapChainTargets[i]));
 				if (FAILED(hr))
 				{
-					delete []swapChainTargets;
 					throw SwapChainInitException("Failed to get d3d12 swap chain buffer.");
 				}
 				nativeDevice->CreateRenderTargetView(swapChainTargets[i].Get(), nullptr, rtvHandle);
@@ -69,7 +64,6 @@ namespace LightningGE
 				m_renderTargets[i] = rt->GetID();
 				rtvHandle.Offset(pHeapInfo->incrementSize);
 			}
-			delete []swapChainTargets;
 		}
 
 		SharedRenderTargetPtr D3D12SwapChain::GetBufferRenderTarget(unsigned int bufferIndex)

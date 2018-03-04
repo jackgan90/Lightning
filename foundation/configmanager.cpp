@@ -23,7 +23,6 @@ namespace LightningGE
 			{
 				pt::read_xml(CONFIG_FILE_NAME, m_tree);
 				m_config.ResourceRoot = m_tree.get<std::string>("lightning_game_engine_configuration.resource.root");
-				m_config.SwapChainBufferCount = m_tree.get<unsigned int>("lightning_game_engine_configuration.render.swap_chain_buffer_count");
 				m_config.MSAAEnabled = m_tree.get<bool>("lightning_game_engine_configuration.render.msaa_enable");
 				m_config.MSAASampleCount = m_tree.get<unsigned int>("lightning_game_engine_configuration.render.msaa_sample_count");
 			}

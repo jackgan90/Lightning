@@ -11,7 +11,6 @@ namespace LightningGE
 		struct EngineConfig
 		{
 			std::string ResourceRoot;		//the root directory of resources(shader,script,mesh etc)
-			unsigned int SwapChainBufferCount;	//the buffer count of swapchain
 			bool MSAAEnabled;				//is msaa enabled?
 			unsigned int MSAASampleCount;	// msaa sample count
 		};
