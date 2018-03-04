@@ -54,7 +54,6 @@ namespace LightningGE
 			const HeapAllocationInfo *m_commitHeapInfo;
 			std::vector<ConstantUploadContext> m_uploadContexts;
 			std::unordered_map<std::string, ArgumentBinding> m_argumentBindings;
-			CD3DX12_ROOT_PARAMETER m_cbvParameter;
 			std::vector<D3D12_ROOT_PARAMETER> m_rootParameters;
 			D3D12_DESCRIPTOR_RANGE *m_descriptorRanges;
 		};

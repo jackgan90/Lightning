@@ -55,7 +55,7 @@ namespace LightningGE
 			ShaderArgumentType type;
 			ShaderArgumentRegister registerIndex;
 			ShaderArgumentSpace registerSpace;
-			const char* name;
+			std::string name;
 			union
 			{
 				float f;

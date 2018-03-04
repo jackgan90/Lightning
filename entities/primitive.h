@@ -2,6 +2,7 @@
 #include <memory>
 #include <cstdint>
 #include "drawable.h"
+#include "material.h"
 #include "vertexbuffer.h"
 #include "indexbuffer.h"
 #include "renderconstants.h"
@@ -20,6 +21,7 @@ namespace LightningGE
 			PrimitiveType GetPrimitiveType()const { return m_primType; }
 		protected:
 			Render::SharedGeometryPtr m_geo;
+			Render::SharedMaterialPtr m_material;
 			PrimitiveType m_primType;
 		};
 

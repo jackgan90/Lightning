@@ -32,6 +32,7 @@ namespace LightningGE
 			D3D12Renderer(const SharedWindowPtr& pContext, const SharedFileSystemPtr& fs);
 			~D3D12Renderer()override;
 			void SetClearColor(const ColorF& color)override;
+			std::uint8_t GetFrameResourceIndex()const override;
 		protected:
 			void BeginFrame()override;
 			void DoFrame()override;

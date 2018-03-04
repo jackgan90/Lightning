@@ -179,6 +179,7 @@ namespace LightningGE
 				static const Matrix<_Scalar, Rows, Columns> m(Eigen::Matrix<_Scalar, Rows, Columns>::Identity());
 				return m;
 			}
+			const _Scalar* GetData()const { return m_value.data(); }
 		protected:
 			template<typename _Scalar, int _Rows, int _Columns> friend class Matrix;
 			template<typename _Scalar, int Dimension> friend class Vector;

@@ -37,7 +37,7 @@ namespace LightningGE
 		{
 			HRESULT hr;
 			auto d3ddevice = static_cast<D3D12Device*>(m_renderer->GetDevice());
-			auto nativeDevice = d3ddevice->GetNativeDevice();
+			auto nativeDevice = d3ddevice->GetNative();
 			D3D12_DESCRIPTOR_HEAP_DESC desc{};
 			desc.NumDescriptors = RENDER_FRAME_COUNT;
 			desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;

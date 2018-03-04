@@ -46,7 +46,7 @@ namespace LightningGE
 			dsClearValue.DepthStencil.Depth = m_depthClearValue;
 			dsClearValue.DepthStencil.Stencil = m_stencilClearValue;
 
-			auto nativeDevice = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNativeDevice();
+			auto nativeDevice = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNative();
 			nativeDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE,
 				&CD3DX12_RESOURCE_DESC::Tex2D(nativeFormat, m_width, m_height, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL),
 				D3D12_RESOURCE_STATE_DEPTH_WRITE, &dsClearValue, IID_PPV_ARGS(&m_resource));

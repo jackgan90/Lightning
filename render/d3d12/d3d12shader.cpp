@@ -85,8 +85,9 @@ namespace LightningGE
 					}
 					m_uploadContexts.push_back(context);
 				}
-				m_cbvParameter.InitAsDescriptorTable(m_desc.ConstantBuffers, m_descriptorRanges, GetParameterVisibility());
-				m_rootParameters.push_back(m_cbvParameter);
+				CD3DX12_ROOT_PARAMETER cbvParameter;
+				cbvParameter.InitAsDescriptorTable(m_desc.ConstantBuffers, m_descriptorRanges, GetParameterVisibility());
+				m_rootParameters.push_back(cbvParameter);
 			}
 			//TODO initialize other shader resource
 		}
@@ -151,7 +152,7 @@ namespace LightningGE
 		{
 			if (argument.type == ShaderArgumentType::UNKNOWN)
 			{
-				logger.Log(LogLevel::Error, "Unknown shader argument type");
+				logger.Log(LogLevel::Warning, "Unknown shader argument type when set shader %s", m_name.c_str());
 				return;
 			}
 			switch (argument.type)
@@ -163,7 +164,70 @@ namespace LightningGE
 			case ShaderArgumentType::MATRIX2:
 			case ShaderArgumentType::MATRIX3:
 			case ShaderArgumentType::MATRIX4:
+			{
+				assert(m_commitHeapInfo);
+				auto it = m_argumentBindings.find(argument.name);
+				if (it == m_argumentBindings.end())
+				{
+					logger.Log(LogLevel::Warning, "shader argument of type %d with name %s doesn't exist in shader %s",
+						argument.type, argument.name.c_str(), m_name.c_str());
+				}
+				else
+				{
+					const auto& bindingInfo = it->second;
+					auto& uploadContext = m_uploadContexts[bindingInfo.bufferIndex];
+					CD3DX12_RANGE readRange(0, 0);
+					D3D12_RANGE writtenRange{};
+					void* temp{ nullptr };
+					auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
+					uploadContext.resource[resourceIndex]->Map(0, &readRange, &temp);
+					void* mappedStart = reinterpret_cast<std::uint8_t*>(temp) + bindingInfo.offsetInBuffer;
+					writtenRange.Begin = bindingInfo.offsetInBuffer;
+					if (argument.type == ShaderArgumentType::FLOAT)
+					{
+						*reinterpret_cast<float*>(mappedStart) = argument.GetFloat();
+						writtenRange.End = writtenRange.Begin + sizeof(float);
+					}
+					else
+					{
+						const float* data{ nullptr };
+						std::size_t size{ 0 };
+						switch (argument.type)
+						{
+						case ShaderArgumentType::FLOAT2:
+							data = argument.GetVector2().GetData();
+							size = 2 * sizeof(float);
+							break;
+						case ShaderArgumentType::FLOAT3:
+							data = argument.GetVector3().GetData();
+							size = 3 * sizeof(float);
+							break;
+						case ShaderArgumentType::FLOAT4:
+							data = argument.GetVector4().GetData();
+							size = 4 * sizeof(float);
+							break;
+						case ShaderArgumentType::MATRIX2:
+							data = argument.GetMatrix2().GetData();
+							size = 4 * sizeof(float);
+							break;
+						case ShaderArgumentType::MATRIX3:
+							data = argument.GetMatrix3().GetData();
+							size = 9 * sizeof(float);
+							break;
+						case ShaderArgumentType::MATRIX4:
+							data = argument.GetMatrix4().GetData();
+							size = 16 * sizeof(float);
+							break;
+						default:
+							break;
+						}
+						std::memcpy(mappedStart, data, size);
+						writtenRange.End = writtenRange.Begin + size;
+					}
+					uploadContext.resource[resourceIndex]->Unmap(0, &writtenRange);
+				}
 				break;
+			}
 			default:
 				break;
 			}

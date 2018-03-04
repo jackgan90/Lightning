@@ -20,7 +20,7 @@ namespace LightningGE
 
 		ID3D12Device* D3D12DescriptorHeapManager::GetNativeDevice()
 		{
-			return static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNativeDevice().Get();
+			return static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNative();
 		}
 
 		const HeapAllocationInfo* D3D12DescriptorHeapManager::Create(const D3D12_DESCRIPTOR_HEAP_DESC& desc, ID3D12Device* pDevice)
@@ -67,6 +67,17 @@ namespace LightningGE
 		{
 			m_heaps.clear();
 		}
+
+		ID3D12DescriptorHeap* D3D12DescriptorHeapManager::GetHeap(UINT heapID)const
+		{
+			auto it = m_heaps.find(heapID);
+			if (it == m_heaps.end())
+			{
+				return nullptr;
+			}
+			return it->second.heap.Get();
+		}
+
 
 	}
 }

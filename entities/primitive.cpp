@@ -16,7 +16,7 @@ namespace LightningGE
 
 		void Primitive::Draw(Render::Renderer& renderer)
 		{
-			renderer.Draw(m_geo, Render::SharedMaterialPtr());
+			renderer.Draw(m_geo, m_material);
 		}
 
 		float Cube::verticeTemplate[24] = { 0.5f, 0.5f, -0.5f,  //right top front
@@ -73,6 +73,8 @@ namespace LightningGE
 			m_geo->vbs_dirty[0] = true;
 			m_geo->ib_dirty = true;
 			m_geo->primType = Render::PrimitiveType::TRIANGLE_LIST;
+			m_material = std::make_shared<Render::Material>();
+			m_material->RequireSemantic(Render::RenderSemantics::WVP);
 		}
 
 		Cube::~Cube()

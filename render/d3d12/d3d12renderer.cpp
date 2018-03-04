@@ -56,7 +56,7 @@ namespace LightningGE
 			CreateFences();
 			logger.Log(LogLevel::Info, "Initialize D3D12 render context succeeded!");
 			
-			ComPtr<IDXGISwapChain3> nativeSwapChain = static_cast<D3D12SwapChain*>(m_swapChain.get())->m_swapChain;
+			auto nativeSwapChain = static_cast<D3D12SwapChain*>(m_swapChain.get())->GetNative();
 			m_currentBackBufferIndex = nativeSwapChain->GetCurrentBackBufferIndex();
 			m_renderTargets.reserve(8);
 #ifndef NDEBUG
@@ -133,7 +133,7 @@ namespace LightningGE
 				msQualityLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
 				msQualityLevels.SampleCount = config.MSAASampleCount > 0 ? config.MSAASampleCount : 1;
 				msQualityLevels.NumQualityLevels = 0;
-				pD3D12Device->m_device->CheckFeatureSupport(
+				pD3D12Device->GetNative()->CheckFeatureSupport(
 					D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msQualityLevels, sizeof(msQualityLevels));
 				qualityLevels = msQualityLevels.NumQualityLevels;
 				sampleCount = msQualityLevels.SampleCount;
@@ -160,7 +160,7 @@ namespace LightningGE
 
 			ComPtr<IDXGISwapChain> tempSwapChain;
 
-			dxgiFactory->CreateSwapChain(pD3D12Device->m_commandQueue.Get(),
+			dxgiFactory->CreateSwapChain(pD3D12Device->GetCommandQueue(),
 				&swapChainDesc, &tempSwapChain);
 			ComPtr<IDXGISwapChain3> swapChain;
 			tempSwapChain.As(&swapChain);
@@ -172,7 +172,7 @@ namespace LightningGE
 			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
 			HRESULT hr;
 			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
-			ComPtr<ID3D12Device> nativeDevice = pD3D12Device->m_device;
+			auto nativeDevice = pD3D12Device->GetNative();
 			for (size_t i = 0; i < RENDER_FRAME_COUNT; i++)
 			{
 				m_fenceValues.push_back(0);
@@ -220,7 +220,7 @@ namespace LightningGE
 		{
 			WaitForPreviousFrame(false);
 			m_frameIndex++;
-			m_currentBackBufferIndex = static_cast<D3D12SwapChain*>(m_swapChain.get())->m_swapChain->GetCurrentBackBufferIndex();
+			m_currentBackBufferIndex = static_cast<D3D12SwapChain*>(m_swapChain.get())->GetNative()->GetCurrentBackBufferIndex();
 			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
 			pD3D12Device->BeginFrame(m_currentBackBufferIndex);
 			m_renderTargets.clear();
@@ -237,14 +237,14 @@ namespace LightningGE
 		void D3D12Renderer::EndFrame()
 		{
 			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
-			auto commandList = pD3D12Device->m_commandList;
+			auto commandList = pD3D12Device->GetGraphicsCommandList();
 			auto currentSwapChainRT = m_swapChain->GetBufferRenderTarget(m_currentBackBufferIndex);
 			auto nativeRT = static_cast<D3D12RenderTarget*>(currentSwapChainRT.get());
 			commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRT->GetNative().Get(),
 				D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
-			auto commandQueue = pD3D12Device->m_commandQueue;
+			auto commandQueue = pD3D12Device->GetCommandQueue();
 			commandList->Close();
-			ID3D12CommandList* commandListArray[] = { commandList.Get() };
+			ID3D12CommandList* commandListArray[] = { commandList};
 			commandQueue->ExecuteCommandLists(_countof(commandListArray), commandListArray);
 			commandQueue->Signal(m_fences[m_currentBackBufferIndex].Get(), m_fenceValues[m_currentBackBufferIndex]);
 			m_swapChain->Present();
@@ -253,7 +253,7 @@ namespace LightningGE
 		void D3D12Renderer::WaitForPreviousFrame(bool waitAll)
 		{
 			HRESULT hr;
-			ComPtr<IDXGISwapChain3> nativeSwapChain = static_cast<D3D12SwapChain*>(m_swapChain.get())->m_swapChain;
+			auto nativeSwapChain = static_cast<D3D12SwapChain*>(m_swapChain.get())->GetNative();
 			std::vector<UINT> bufferIndice;
 			if (!waitAll)
 			{
@@ -261,7 +261,7 @@ namespace LightningGE
 			}
 			else
 			{
-				auto commandQueue = static_cast<D3D12Device*>(m_device.get())->m_commandQueue;
+				auto commandQueue = static_cast<D3D12Device*>(m_device.get())->GetCommandQueue();
 				for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
 				{
 					bufferIndice.push_back(i);
@@ -290,5 +290,9 @@ namespace LightningGE
 			m_clearColor = color;
 		}
 
+		std::uint8_t D3D12Renderer::GetFrameResourceIndex()const
+		{
+			return m_currentBackBufferIndex;
+		}
 	}
 }

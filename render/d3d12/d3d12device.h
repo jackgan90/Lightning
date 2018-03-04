@@ -20,12 +20,13 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDER_API D3D12Device : public Device
 		{
 		public:
-			friend class D3D12Renderer;
 			D3D12Device(const ComPtr<ID3D12Device>& pDevice, const SharedFileSystemPtr& fs);
 			~D3D12Device()override;
 			void ClearRenderTarget(IRenderTarget* rt, const ColorF& color, const RectIList* rects=nullptr)override;
 			SharedVertexBufferPtr CreateVertexBuffer()override;
-			ComPtr<ID3D12Device> GetNativeDevice()const { return m_device; }
+			ID3D12Device* GetNative()const { return m_device.Get(); }
+			ID3D12CommandQueue* GetCommandQueue()const { return m_commandQueue.Get(); }
+			ID3D12GraphicsCommandList* GetGraphicsCommandList()const { return m_commandList.Get(); }
 			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)override;
 			void ApplyRasterizerState(const RasterizerState& state)override;
 			void ApplyBlendState(const BlendState& state)override;
@@ -35,6 +36,7 @@ namespace LightningGE
 			void ApplyScissorRects(const RectFList& scissorRects)override;
 			void ApplyRenderTargets(const RenderTargetList& renderTargets, const IDepthStencilBuffer* dsBuffer)override;
 			void CommitGPUBuffer(const GPUBuffer* pBuffer)override;
+			void BeginFrame(const UINT backBufferIndex);
 		private:
 			struct GPUBufferCommit
 			{
@@ -47,7 +49,6 @@ namespace LightningGE
 					D3D12_INDEX_BUFFER_VIEW indexBufferView;
 				};
 			};
-			void BeginFrame(const UINT backBufferIndex);
 			//if parameter pState is nullptr,this method will create a default pipeline state
 			using PipelineCacheMap = std::unordered_map<std::size_t, ComPtr<ID3D12PipelineState>>;
 			using RootSignatureMap = std::unordered_map<std::size_t, ComPtr<ID3D12RootSignature>>;
