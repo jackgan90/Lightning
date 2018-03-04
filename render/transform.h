@@ -9,7 +9,6 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDER_API Transform
 		{
 		public:
-			LIGHTNINGGE_ALIGNED_OPERATOR_NEW
 			Transform();
 			Transform(const Vector3f& pos, const Vector3f& scale);
 			Matrix4x4f GetTransformMatrix()const;

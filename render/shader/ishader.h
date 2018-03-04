@@ -51,7 +51,6 @@ namespace LightningGE
 
 		struct LIGHTNINGGE_RENDER_API ShaderArgument
 		{
-			LIGHTNINGGE_ALIGNED_OPERATOR_NEW
 			ShaderArgumentType type;
 			ShaderArgumentRegister registerIndex;
 			ShaderArgumentSpace registerSpace;

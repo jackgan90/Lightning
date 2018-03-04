@@ -27,7 +27,6 @@ namespace LightningGE
 		class LIGHTNINGGE_ENTITIES_API Camera
 		{
 		public:
-			LIGHTNINGGE_ALIGNED_OPERATOR_NEW
 			Camera();
 			Camera(const Vector3f& worldPosition, const Vector3f& lookDir, const Vector3f& worldUp = Vector3f{0.0f, 1.0f, 0.0f});
 			Camera(CameraType type, const float near, const float far, const float fov, const float aspectRatio,

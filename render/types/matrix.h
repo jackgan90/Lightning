@@ -21,7 +21,7 @@ namespace LightningGE
 			//Don't declare any of the five member control methods here,just let the compiler auto generated them.since this class is highly unlikely has many
 			//child classes and even if there's child class of Matrix,subclasses shouldn't add too complex structures
 			using VectorBaseType = Matrix<_Scalar, Rows, 1>;
-			Matrix():m_value(Eigen::Matrix<_Scalar, Rows, Columns>::Identity()){}
+			Matrix():m_value(InternalMatrixType::Identity()){}
 			//construct with an initializer list
 			Matrix(const std::initializer_list<_Scalar>& data) 
 			{ 
@@ -176,16 +176,22 @@ namespace LightningGE
 			static const Matrix<_Scalar, Rows, Columns> Identity()
 			{
 				static_assert(Rows == Columns, "Only square matrices have identity matrix!");
-				static const Matrix<_Scalar, Rows, Columns> m(Eigen::Matrix<_Scalar, Rows, Columns>::Identity());
+				static const Matrix<_Scalar, Rows, Columns> m(InternalMatrixType::Identity());
 				return m;
 			}
 			const _Scalar* GetData()const { return m_value.data(); }
 		protected:
+			static constexpr int InternalAlignmentOptions = Eigen::DontAlign | 
+				((Rows == 1 && Columns != 1) ? Eigen::RowMajor : 
+				(Columns == 1 && Rows != 1) ? Eigen::ColMajor : Eigen::ColMajor);
+			using InternalMatrixType = Eigen::Matrix<_Scalar, Rows, Columns, InternalAlignmentOptions>;
+			template<int Dimension>
+			using InternalVectorType = Eigen::Matrix<_Scalar, Dimension, 1, InternalAlignmentOptions>;
 			template<typename _Scalar, int _Rows, int _Columns> friend class Matrix;
 			template<typename _Scalar, int Dimension> friend class Vector;
-			Eigen::Matrix<_Scalar, Rows, Columns> m_value;
-			Matrix(const Eigen::Matrix<_Scalar, Rows, Columns>& m):m_value(m){}
-			Matrix(Eigen::Matrix<_Scalar, Rows, Columns>&& m):m_value(std::move(m)){}
+			InternalMatrixType m_value;
+			Matrix(const InternalMatrixType& m):m_value(m){}
+			Matrix(InternalMatrixType&& m):m_value(std::move(m)){}
 			template<typename S, int _Rows, int _Columns, typename T>
 			auto SetInternal(T&& m) ->
 				typename std::enable_if<std::is_convertible<
@@ -244,7 +250,7 @@ namespace LightningGE
 			if (Rows != Columns)
 				return false;
 
-			Eigen::Matrix<_Scalar, Rows, Columns> invMatrix;
+			InternalMatrixType invMatrix;
 			_Scalar determinant;
 			bool invertible{ false };
 			m_value.computeInverseAndDetWithCheck(invMatrix, determinant, invertible);
@@ -258,7 +264,7 @@ namespace LightningGE
 			if (Rows != Columns)
 				return false;
 
-			Eigen::FullPivLU<Eigen::Matrix<_Scalar, Rows, Columns>> lu(m_value);
+			Eigen::FullPivLU<InternalMatrixType> lu(m_value);
 			return lu.isInvertible();
 		}
 

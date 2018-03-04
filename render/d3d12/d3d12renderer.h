@@ -28,7 +28,6 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDER_API D3D12Renderer : public Renderer
 		{
 		public:
-			LIGHTNINGGE_ALIGNED_OPERATOR_NEW
 			D3D12Renderer(const SharedWindowPtr& pContext, const SharedFileSystemPtr& fs);
 			~D3D12Renderer()override;
 			void SetClearColor(const ColorF& color)override;

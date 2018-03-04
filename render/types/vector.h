@@ -54,8 +54,8 @@ namespace LightningGE
 				return v;
 			}
 		protected:
-			Vector(Eigen::Matrix<_Scalar, Dimension, 1>&& v):Matrix<_Scalar, Dimension, 1>(std::move(v)){}
-			Vector(const Eigen::Matrix<_Scalar, Dimension, 1>& v):Matrix<_Scalar, Dimension, 1>(v){}
+			Vector(InternalVectorType<Dimension>&& v):Matrix<_Scalar, Dimension, 1>(std::move(v)){}
+			Vector(const InternalVectorType<Dimension>& v):Matrix<_Scalar, Dimension, 1>(v){}
 		};
 
 		using Vector4f = Vector<float, 4>;
