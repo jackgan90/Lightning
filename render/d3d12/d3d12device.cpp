@@ -309,7 +309,7 @@ namespace LightningGE
 			std::vector<D3D12_ROOT_PARAMETER> cbParameters;
 			for (std::size_t i = 0;i < shaders.size();++i)
 			{
-				auto parameters = static_cast<D3D12Shader*>(shaders[i])->GetRootParameters();
+				const auto& parameters = static_cast<D3D12Shader*>(shaders[i])->GetRootParameters();
 				cbParameters.insert(cbParameters.end(), parameters.begin(), parameters.end());
 			}
 			rootSignatureDesc.Init(cbParameters.size(), &cbParameters[0], 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);

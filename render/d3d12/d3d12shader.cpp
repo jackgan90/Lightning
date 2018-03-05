@@ -241,7 +241,7 @@ namespace LightningGE
 			}
 		}
 
-		std::vector<D3D12_ROOT_PARAMETER> D3D12Shader::GetRootParameters()const
+		const std::vector<D3D12_ROOT_PARAMETER>& D3D12Shader::GetRootParameters()const
 		{
 			return m_rootParameters;
 		}

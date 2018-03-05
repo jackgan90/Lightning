@@ -13,7 +13,7 @@ namespace LightningGE
 		{
 		public:
 			void RequireSemantic(RenderSemantics semantic) { m_semantics.emplace(semantic); }
-			SemanticSet GetSemanticRequirements()const { return m_semantics; }
+			const SemanticSet& GetSemanticRequirements()const { return m_semantics; }
 		protected:
 			SemanticSet m_semantics;
 		};
