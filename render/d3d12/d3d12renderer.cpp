@@ -38,7 +38,7 @@ namespace LightningGE
 		}
 
 		D3D12Renderer::D3D12Renderer(const SharedWindowPtr& pWindow, const SharedFileSystemPtr& fs) : Renderer(fs)
-			,m_clearColor(0.5f, 0.5f, 0.5f, 1.0f)
+			,m_clearColor(0.5f, 0.5f, 0.5f, 1.0f), m_currentBackBufferIndex(0)
 		{
 #ifndef NDEBUG
 			EnableDebugLayer();

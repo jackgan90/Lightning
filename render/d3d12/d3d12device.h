@@ -57,13 +57,15 @@ namespace LightningGE
 			void SetUpDefaultPipelineStates();
 			ComPtr<ID3D12RootSignature> GetRootSignature(const std::vector<IShader*>& shaders);
 			ComPtr<ID3D12PipelineState> CreateAndCachePipelineState(const PipelineState& pState, std::size_t hashValue);
+			void BindAllShaderResources();
+			void BindShaderResources(IShader* pShader, UINT rootParameterIndex);
 			SharedFileSystemPtr m_fs;
 			ComPtr<ID3D12Device> m_device;
 			ComPtr<ID3D12CommandQueue> m_commandQueue;
 			std::vector<ComPtr<ID3D12CommandAllocator>> m_commandAllocators;
 			size_t m_inputElementCount;
 			ComPtr<ID3D12GraphicsCommandList> m_commandList;
-			ComPtr<ID3D12PipelineState> m_pipelineState;
+			ComPtr<ID3D12PipelineState> m_d3d12PipelineState;
 			D3D12_VIEWPORT m_viewport;
 			std::unique_ptr<IMemoryAllocator> m_smallObjAllocator;
 			D3D12_GRAPHICS_PIPELINE_STATE_DESC m_pipelineDesc;

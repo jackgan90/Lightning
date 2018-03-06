@@ -3,6 +3,7 @@
 #include <wrl/client.h>
 #include <d3dcompiler.h>
 #include <vector>
+#include <unordered_map>
 #include "d3d12shadermanager.h"
 #include "d3d12descriptorheapmanager.h"
 #include "ishader.h"
@@ -12,6 +13,34 @@ namespace LightningGE
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
+		enum class D3D12RootBoundResourceType
+		{
+			DescriptorTable,
+			ConstantBufferView,
+			ShaderResourceView,
+			UnorderedAccessView,
+			Constant
+		};
+
+		struct D3D12Constant32BitValue
+		{
+			const void* p32BitValues;
+			UINT num32BitValues;
+			UINT dest32BitValueOffset;
+		};
+
+		struct D3D12RootBoundResource
+		{
+			D3D12RootBoundResourceType type;
+			ID3D12DescriptorHeap* descriptorTableHeap;
+			union
+			{
+				D3D12_GPU_DESCRIPTOR_HANDLE descriptorTableHandle;
+				D3D12_GPU_VIRTUAL_ADDRESS GPUVirtualAddress;
+				D3D12Constant32BitValue constant32BitValue;
+			};
+		};
+
 		class D3D12Shader : public Shader
 		{
 		public:
@@ -28,6 +57,7 @@ namespace LightningGE
 			void* GetByteCodeBuffer()const;
 			SIZE_T GetByteCodeBufferSize()const;
 			const std::vector<D3D12_ROOT_PARAMETER>& GetRootParameters()const;
+			const std::vector<D3D12RootBoundResource>& GetRootBoundResources()const;
 		private:
 			//use to commit constant to shader
 			struct ConstantUploadContext
@@ -55,6 +85,7 @@ namespace LightningGE
 			std::vector<ConstantUploadContext> m_uploadContexts;
 			std::unordered_map<std::string, ArgumentBinding> m_argumentBindings;
 			std::vector<D3D12_ROOT_PARAMETER> m_rootParameters;
+			std::unordered_map<std::uint8_t, std::vector<D3D12RootBoundResource>> m_rootBoundResources;
 			D3D12_DESCRIPTOR_RANGE *m_descriptorRanges;
 		};
 	}

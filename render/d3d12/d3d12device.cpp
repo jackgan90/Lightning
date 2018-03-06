@@ -189,8 +189,74 @@ namespace LightningGE
 			{
 				pipelineState = CreateAndCachePipelineState(state, hashValue);
 			}
-			m_pipelineState = pipelineState;
-			m_commandList->SetPipelineState(m_pipelineState.Get());
+			m_d3d12PipelineState = pipelineState;
+			m_commandList->SetPipelineState(m_d3d12PipelineState.Get());
+			if (m_pipelineDesc.pRootSignature)
+			{
+				m_commandList->SetGraphicsRootSignature(m_pipelineDesc.pRootSignature);
+				BindAllShaderResources();
+			}
+		}
+
+		void D3D12Device::BindAllShaderResources()
+		{
+			std::size_t rootParameterIndex{ 0 };
+			if (m_devicePipelineState.vs)
+			{
+				BindShaderResources(m_devicePipelineState.vs, rootParameterIndex);
+				rootParameterIndex += static_cast<D3D12Shader*>(m_devicePipelineState.vs)->GetRootParameters().size();
+			}
+			if (m_devicePipelineState.fs)
+			{
+				BindShaderResources(m_devicePipelineState.fs, rootParameterIndex);
+				rootParameterIndex += static_cast<D3D12Shader*>(m_devicePipelineState.fs)->GetRootParameters().size();
+			}
+			if (m_devicePipelineState.gs)
+			{
+				BindShaderResources(m_devicePipelineState.gs, rootParameterIndex);
+				rootParameterIndex += static_cast<D3D12Shader*>(m_devicePipelineState.gs)->GetRootParameters().size();
+			}
+			if (m_devicePipelineState.hs)
+			{
+				BindShaderResources(m_devicePipelineState.hs, rootParameterIndex);
+				rootParameterIndex += static_cast<D3D12Shader*>(m_devicePipelineState.hs)->GetRootParameters().size();
+			}
+			if (m_devicePipelineState.ds)
+			{
+				BindShaderResources(m_devicePipelineState.ds, rootParameterIndex);
+				rootParameterIndex += static_cast<D3D12Shader*>(m_devicePipelineState.ds)->GetRootParameters().size();
+			}
+		}
+
+		void D3D12Device::BindShaderResources(IShader* pShader, UINT rootParameterIndex)
+		{
+			auto pD3D12Shader = static_cast<D3D12Shader*>(pShader);
+			auto const& boundResources = pD3D12Shader->GetRootBoundResources();
+			for (std::size_t i = 0;i < boundResources.size();++i)
+			{
+				const auto& boundResource = boundResources[i];
+				switch (boundResource.type)
+				{
+				case D3D12RootBoundResourceType::DescriptorTable:
+					m_commandList->SetDescriptorHeaps(1, &boundResource.descriptorTableHeap);
+					m_commandList->SetGraphicsRootDescriptorTable(rootParameterIndex + i, boundResource.descriptorTableHandle);
+					break;
+				case D3D12RootBoundResourceType::ConstantBufferView:
+					m_commandList->SetGraphicsRootConstantBufferView(rootParameterIndex + i, boundResource.GPUVirtualAddress);
+					break;
+				case D3D12RootBoundResourceType::ShaderResourceView:
+					m_commandList->SetGraphicsRootShaderResourceView(rootParameterIndex + i, boundResource.GPUVirtualAddress);
+					break;
+				case D3D12RootBoundResourceType::UnorderedAccessView:
+					m_commandList->SetGraphicsRootUnorderedAccessView(rootParameterIndex + i, boundResource.GPUVirtualAddress);
+					break;
+				case D3D12RootBoundResourceType::Constant:
+					m_commandList->SetGraphicsRoot32BitConstants(rootParameterIndex + i, boundResource.constant32BitValue.num32BitValues, boundResource.constant32BitValue.p32BitValues, boundResource.constant32BitValue.dest32BitValueOffset);
+					break;
+				default:
+					break;
+				}
+			}
 		}
 
 		void D3D12Device::ApplyViewports(const RectFList& vp)
@@ -241,11 +307,11 @@ namespace LightningGE
 		void D3D12Device::SetUpDefaultPipelineStates()
 		{
 			auto defaultShader = m_shaderMgr->CreateShaderFromSource(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
-			m_currentPipelineState.vs = defaultShader.get();
+			m_devicePipelineState.vs = defaultShader.get();
 			VertexComponent defaultComponent{ EngineSemantics[0], 0, RenderFormat::R32G32B32_FLOAT, 0, false, 0};
-			m_currentPipelineState.vertexComponents[defaultComponent] = 0;
-			m_currentPipelineState.depthStencilState.depthTestEnable = false;
-			ApplyPipelineState(m_currentPipelineState);
+			m_devicePipelineState.vertexComponents[defaultComponent] = 0;
+			m_devicePipelineState.depthStencilState.depthTestEnable = false;
+			ApplyPipelineState(m_devicePipelineState);
 		}
 
 		SharedShaderPtr D3D12Device::CreateShader(ShaderType type, const std::string& shaderName, 
@@ -305,7 +371,6 @@ namespace LightningGE
 				return it->second;
 
 			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-			//D3D12_ROOT_PARAMETER cbParameters[5]; 
 			std::vector<D3D12_ROOT_PARAMETER> cbParameters;
 			for (std::size_t i = 0;i < shaders.size();++i)
 			{
@@ -363,7 +428,7 @@ namespace LightningGE
 				m_device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
 							D3D12_HEAP_FLAG_NONE, &CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
 							D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&bufferCommit.uploadHeap));
-				//should consider dangling pointer,when this buffer is released m_bufferCommitMap still holds a pointer to
+				//TODO : should consider dangling pointer,when this buffer is released m_bufferCommitMap still holds a pointer to
 				//the GPUBuffer,but since the buffer is destroyed,there should be no other reference to it so leave it
 				//in m_bufferCommitMap wouldn't cause problems,but still, need to find a good way to resolve such condition
 				switch (bufferCommit.type)

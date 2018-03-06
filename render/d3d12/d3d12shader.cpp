@@ -89,6 +89,20 @@ namespace LightningGE
 				cbvParameter.InitAsDescriptorTable(m_desc.ConstantBuffers, m_descriptorRanges, GetParameterVisibility());
 				m_rootParameters.push_back(cbvParameter);
 			}
+			for (std::size_t i = 0; i < RENDER_FRAME_COUNT;++i)
+			{
+				m_rootBoundResources.emplace(i, std::vector<D3D12RootBoundResource>());
+				if (m_desc.ConstantBuffers > 0)
+				{
+					D3D12RootBoundResource boundResource;
+					boundResource.descriptorTableHeap = D3D12DescriptorHeapManager::Instance()->GetHeap(m_commitHeapInfo->heapID);
+					boundResource.type = D3D12RootBoundResourceType::DescriptorTable;
+					CD3DX12_GPU_DESCRIPTOR_HANDLE handle(m_commitHeapInfo->gpuHeapStart);
+					handle.Offset(i * m_commitHeapInfo->incrementSize * m_desc.ConstantBuffers);
+					boundResource.descriptorTableHandle = handle;
+					m_rootBoundResources[i].push_back(boundResource);
+				}
+			}
 			//TODO initialize other shader resource
 		}
 
@@ -244,6 +258,14 @@ namespace LightningGE
 		const std::vector<D3D12_ROOT_PARAMETER>& D3D12Shader::GetRootParameters()const
 		{
 			return m_rootParameters;
+		}
+
+		const std::vector<D3D12RootBoundResource>& D3D12Shader::GetRootBoundResources()const
+		{
+			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
+			auto it = m_rootBoundResources.find(resourceIndex);
+			assert(it != m_rootBoundResources.end());
+			return it->second;
 		}
 
 		D3D12_SHADER_VISIBILITY D3D12Shader::GetParameterVisibility()const

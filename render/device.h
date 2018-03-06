@@ -17,7 +17,7 @@ namespace LightningGE
 			void ApplyPipelineState(const PipelineState& state)override;
 		protected:
 			std::unique_ptr<IShaderManager> m_shaderMgr;
-			PipelineState m_currentPipelineState;
+			PipelineState m_devicePipelineState;
 		};
 	}
 }
