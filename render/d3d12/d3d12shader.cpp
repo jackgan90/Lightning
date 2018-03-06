@@ -260,6 +260,12 @@ namespace LightningGE
 			return m_rootParameters;
 		}
 
+		std::size_t D3D12Shader::GetRootParameterCount()const
+		{
+			return m_rootParameters.size();
+		}
+
+
 		const std::vector<D3D12RootBoundResource>& D3D12Shader::GetRootBoundResources()const
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();

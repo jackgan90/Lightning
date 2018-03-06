@@ -204,27 +204,27 @@ namespace LightningGE
 			if (m_devicePipelineState.vs)
 			{
 				BindShaderResources(m_devicePipelineState.vs, rootParameterIndex);
-				rootParameterIndex += static_cast<D3D12Shader*>(m_devicePipelineState.vs)->GetRootParameters().size();
+				rootParameterIndex += static_cast<D3D12Shader*>(m_devicePipelineState.vs)->GetRootParameterCount();
 			}
 			if (m_devicePipelineState.fs)
 			{
 				BindShaderResources(m_devicePipelineState.fs, rootParameterIndex);
-				rootParameterIndex += static_cast<D3D12Shader*>(m_devicePipelineState.fs)->GetRootParameters().size();
+				rootParameterIndex += static_cast<D3D12Shader*>(m_devicePipelineState.fs)->GetRootParameterCount();
 			}
 			if (m_devicePipelineState.gs)
 			{
 				BindShaderResources(m_devicePipelineState.gs, rootParameterIndex);
-				rootParameterIndex += static_cast<D3D12Shader*>(m_devicePipelineState.gs)->GetRootParameters().size();
+				rootParameterIndex += static_cast<D3D12Shader*>(m_devicePipelineState.gs)->GetRootParameterCount();
 			}
 			if (m_devicePipelineState.hs)
 			{
 				BindShaderResources(m_devicePipelineState.hs, rootParameterIndex);
-				rootParameterIndex += static_cast<D3D12Shader*>(m_devicePipelineState.hs)->GetRootParameters().size();
+				rootParameterIndex += static_cast<D3D12Shader*>(m_devicePipelineState.hs)->GetRootParameterCount();
 			}
 			if (m_devicePipelineState.ds)
 			{
 				BindShaderResources(m_devicePipelineState.ds, rootParameterIndex);
-				rootParameterIndex += static_cast<D3D12Shader*>(m_devicePipelineState.ds)->GetRootParameters().size();
+				rootParameterIndex += static_cast<D3D12Shader*>(m_devicePipelineState.ds)->GetRootParameterCount();
 			}
 		}
 
@@ -238,6 +238,7 @@ namespace LightningGE
 				switch (boundResource.type)
 				{
 				case D3D12RootBoundResourceType::DescriptorTable:
+					//TODO : should bind all descriptor heaps not only the heap that this shader uses
 					m_commandList->SetDescriptorHeaps(1, &boundResource.descriptorTableHeap);
 					m_commandList->SetGraphicsRootDescriptorTable(rootParameterIndex + i, boundResource.descriptorTableHandle);
 					break;

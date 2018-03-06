@@ -57,6 +57,7 @@ namespace LightningGE
 			void* GetByteCodeBuffer()const;
 			SIZE_T GetByteCodeBufferSize()const;
 			const std::vector<D3D12_ROOT_PARAMETER>& GetRootParameters()const;
+			std::size_t GetRootParameterCount()const;
 			const std::vector<D3D12RootBoundResource>& GetRootBoundResources()const;
 		private:
 			//use to commit constant to shader
