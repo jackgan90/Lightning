@@ -17,9 +17,10 @@ namespace LightningGE
 			void CommitBuffers(const SharedGeometryPtr& geometry);
 			struct RenderItem
 			{
-				RenderItem(const SharedGeometryPtr& geo, const SharedMaterialPtr& mtl):geometry(geo), material(mtl){}
+				RenderItem(const SharedGeometryPtr& geo, const SharedMaterialPtr& mtl, const Transform& trans):geometry(geo), material(mtl), transform(trans){}
 				SharedGeometryPtr geometry;
 				SharedMaterialPtr material;
+				Transform transform;
 			};
 			using RenderItemList = std::vector<RenderItem>;
 			RenderItemList m_renderItems;
