@@ -295,7 +295,12 @@ namespace LightningGE
 			}
 		};
 
-		using VertexComponentBoundMap = std::unordered_map<VertexComponent, std::uint16_t>;
+		struct VertexInputLayout
+		{
+			std::uint8_t slot;
+			std::vector<VertexComponent> components;
+		};
+
 		struct PipelineState
 		{
 			RasterizerState rasterizerState;
@@ -306,7 +311,7 @@ namespace LightningGE
 			IShader* gs;
 			IShader* hs;
 			IShader* ds;
-			VertexComponentBoundMap vertexComponents;
+			VertexInputLayout inputLayout;
 
 			bool operator==(const PipelineState& state)const noexcept
 			{
@@ -350,22 +355,20 @@ namespace LightningGE
 					return false;
 				}
 
-				if (vertexComponents.size() != state.vertexComponents.size())
+				if (inputLayout.slot != state.inputLayout.slot)
 				{
 					return false;
 				}
 
-				for (auto it=vertexComponents.cbegin();it != vertexComponents.cend();++it)
+				if (inputLayout.components.size() != state.inputLayout.components.size())
 				{
-					auto slot = state.vertexComponents.find(it->first);
-					if (slot == state.vertexComponents.end())
-					{
+					return false;
+				}
+
+				for (std::size_t i = 0; i < inputLayout.components.size();++i)
+				{
+					if (inputLayout.components[i] != state.inputLayout.components[i])
 						return false;
-					}
-					if (it->second != slot->second)
-					{
-						return false;
-					}
 				}
 
 				return true;
@@ -443,6 +446,21 @@ namespace std
 		}
 	};
 
+	template<> struct hash<LightningGE::Render::VertexInputLayout>
+	{
+		std::size_t operator()(const LightningGE::Render::VertexInputLayout& layout)const noexcept
+		{
+			std::size_t seed = 0;
+			boost::hash_combine(seed, layout.slot);
+			boost::hash_combine(seed, layout.components.size());
+			for (const auto& component : layout.components)
+			{
+				boost::hash_combine(seed, std::hash<LightningGE::Render::VertexComponent>{}(component));
+			}
+			return seed;
+		}
+	};
+
 	template<> struct hash<LightningGE::Render::PipelineState>
 	{
 		std::size_t operator()(const LightningGE::Render::PipelineState& state)const noexcept
@@ -476,12 +494,8 @@ namespace std
 				boost::hash_combine(seed, 0x20);
 				boost::hash_combine(seed, LightningGE::Render::Shader::Hash(state.ds->GetType(), state.ds->GetName(), state.ds->GetMacros()));
 			}
-			for (auto it = state.vertexComponents.cbegin();it != state.vertexComponents.cend();++it)
-			{
-				const auto& component = it->first;
-				boost::hash_combine(seed, std::hash<LightningGE::Render::VertexComponent>{}(component));
-				boost::hash_combine(seed, it->second);
-			}
+
+			boost::hash_combine(seed, std::hash<LightningGE::Render::VertexInputLayout>{}(state.inputLayout));
 			return seed;
 		}
 	};

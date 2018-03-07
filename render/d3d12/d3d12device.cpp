@@ -292,7 +292,7 @@ namespace LightningGE
 				shaders.push_back(state.hs);
 			if (state.ds)
 				shaders.push_back(state.ds);
-			UpdatePSOInputLayout(state.vertexComponents);
+			UpdatePSOInputLayout(state.inputLayout);
 			auto rootSignature = GetRootSignature(shaders);
 			m_pipelineDesc.pRootSignature = rootSignature.Get();
 			auto hr = m_device->CreateGraphicsPipelineState(&m_pipelineDesc, IID_PPV_ARGS(&pipelineState));
@@ -311,7 +311,8 @@ namespace LightningGE
 			m_defaultShaders[ShaderType::FRAGMENT] = m_shaderMgr->CreateShaderFromSource(ShaderType::FRAGMENT, "[Built-in]default.ps", DEFAULT_PS_SOURCE, ShaderDefine()); 
 			m_devicePipelineState.vs = m_defaultShaders[ShaderType::VERTEX].get();
 			VertexComponent defaultComponent{ EngineSemantics[0], 0, RenderFormat::R32G32B32_FLOAT, 0, false, 0};
-			m_devicePipelineState.vertexComponents[defaultComponent] = 0;
+			m_devicePipelineState.inputLayout.slot = 0;
+			m_devicePipelineState.inputLayout.components.push_back(defaultComponent);
 			m_devicePipelineState.depthStencilState.depthTestEnable = false;
 			ApplyPipelineState(m_devicePipelineState);
 		}
@@ -332,20 +333,19 @@ namespace LightningGE
 			}
 		}
 
-		void D3D12Device::UpdatePSOInputLayout(const VertexComponentBoundMap& components)
+		void D3D12Device::UpdatePSOInputLayout(const VertexInputLayout& inputLayout)
 		{
-			if (components.empty())
+			if (inputLayout.components.empty())
 				return;
 			if (m_pInputElementDesc)
 				DEALLOC(m_smallObjAllocator, m_pInputElementDesc);
-			m_pInputElementDesc = ALLOC_ARRAY(m_smallObjAllocator, components.size(), D3D12_INPUT_ELEMENT_DESC);
+			m_pInputElementDesc = ALLOC_ARRAY(m_smallObjAllocator, inputLayout.components.size(), D3D12_INPUT_ELEMENT_DESC);
 			std::size_t i = 0;
-			for (auto it = components.cbegin();it != components.cend();++it)
+			for (const auto& component : inputLayout.components)
 			{
-				const auto& component = it->first;
 				m_pInputElementDesc[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 				m_pInputElementDesc[i].Format = D3D12TypeMapper::MapRenderFormat(component.format);
-				m_pInputElementDesc[i].InputSlot = it->second;
+				m_pInputElementDesc[i].InputSlot = inputLayout.slot;
 				m_pInputElementDesc[i].InputSlotClass = component.isInstance ? \
 					D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA : D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 				m_pInputElementDesc[i].InstanceDataStepRate = component.instanceStepRate;
@@ -356,7 +356,7 @@ namespace LightningGE
 			D3D12_INPUT_LAYOUT_DESC& inputLayoutDesc = m_pipelineDesc.InputLayout;
 
 			// we can get the number of elements in an array by "sizeof(array) / sizeof(arrayElementType)"
-			inputLayoutDesc.NumElements = components.size();
+			inputLayoutDesc.NumElements = inputLayout.components.size();
 			inputLayoutDesc.pInputElementDescs = m_pInputElementDesc;
 		}
 
