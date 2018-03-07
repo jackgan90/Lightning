@@ -311,7 +311,7 @@ namespace LightningGE
 			IShader* gs;
 			IShader* hs;
 			IShader* ds;
-			VertexInputLayout inputLayout;
+			std::vector<VertexInputLayout> inputLayouts;
 
 			bool operator==(const PipelineState& state)const noexcept
 			{
@@ -355,20 +355,26 @@ namespace LightningGE
 					return false;
 				}
 
-				if (inputLayout.slot != state.inputLayout.slot)
+				if (inputLayouts.size() != state.inputLayouts.size())
 				{
 					return false;
 				}
-
-				if (inputLayout.components.size() != state.inputLayout.components.size())
+				
+				for (std::size_t i = 0;i < inputLayouts.size();++i)
 				{
-					return false;
-				}
-
-				for (std::size_t i = 0; i < inputLayout.components.size();++i)
-				{
-					if (inputLayout.components[i] != state.inputLayout.components[i])
+					if (inputLayouts[i].slot != state.inputLayouts[i].slot)
+					{
 						return false;
+					}
+					if (inputLayouts[i].components.size() != state.inputLayouts[i].components.size())
+					{
+						return false;
+					}
+					for (std::size_t j = 0;j < inputLayouts[i].components.size();++j)
+					{
+						if (inputLayouts[i].components[j] != state.inputLayouts[i].components[j])
+							return false;
+					}
 				}
 
 				return true;
@@ -494,8 +500,13 @@ namespace std
 				boost::hash_combine(seed, 0x20);
 				boost::hash_combine(seed, LightningGE::Render::Shader::Hash(state.ds->GetType(), state.ds->GetName(), state.ds->GetMacros()));
 			}
-
-			boost::hash_combine(seed, std::hash<LightningGE::Render::VertexInputLayout>{}(state.inputLayout));
+			
+			boost::hash_combine(seed, state.inputLayouts.size());
+			for (const auto& inputLayout : state.inputLayouts)
+			{
+				boost::hash_combine(seed, inputLayout.slot);
+				boost::hash_combine(seed, std::hash<LightningGE::Render::VertexInputLayout>{}(inputLayout));
+			}
 			return seed;
 		}
 	};

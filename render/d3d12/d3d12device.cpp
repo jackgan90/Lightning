@@ -292,7 +292,7 @@ namespace LightningGE
 				shaders.push_back(state.hs);
 			if (state.ds)
 				shaders.push_back(state.ds);
-			UpdatePSOInputLayout(state.inputLayout);
+			UpdatePSOInputLayout(state.inputLayouts);
 			auto rootSignature = GetRootSignature(shaders);
 			m_pipelineDesc.pRootSignature = rootSignature.Get();
 			auto hr = m_device->CreateGraphicsPipelineState(&m_pipelineDesc, IID_PPV_ARGS(&pipelineState));
@@ -311,8 +311,10 @@ namespace LightningGE
 			m_defaultShaders[ShaderType::FRAGMENT] = m_shaderMgr->CreateShaderFromSource(ShaderType::FRAGMENT, "[Built-in]default.ps", DEFAULT_PS_SOURCE, ShaderDefine()); 
 			m_devicePipelineState.vs = m_defaultShaders[ShaderType::VERTEX].get();
 			VertexComponent defaultComponent{ EngineSemantics[0], 0, RenderFormat::R32G32B32_FLOAT, 0, false, 0};
-			m_devicePipelineState.inputLayout.slot = 0;
-			m_devicePipelineState.inputLayout.components.push_back(defaultComponent);
+			VertexInputLayout layout;
+			layout.slot = 0;
+			layout.components.push_back(defaultComponent);
+			m_devicePipelineState.inputLayouts.push_back(layout);
 			m_devicePipelineState.depthStencilState.depthTestEnable = false;
 			ApplyPipelineState(m_devicePipelineState);
 		}
@@ -333,30 +335,38 @@ namespace LightningGE
 			}
 		}
 
-		void D3D12Device::UpdatePSOInputLayout(const VertexInputLayout& inputLayout)
+		void D3D12Device::UpdatePSOInputLayout(const std::vector<VertexInputLayout>& inputLayouts)
 		{
-			if (inputLayout.components.empty())
+			if (inputLayouts.empty())
 				return;
 			if (m_pInputElementDesc)
 				DEALLOC(m_smallObjAllocator, m_pInputElementDesc);
-			m_pInputElementDesc = ALLOC_ARRAY(m_smallObjAllocator, inputLayout.components.size(), D3D12_INPUT_ELEMENT_DESC);
-			std::size_t i = 0;
-			for (const auto& component : inputLayout.components)
+			std::size_t inputElementCount{ 0 };
+			for (const auto& inputLayout : inputLayouts)
 			{
-				m_pInputElementDesc[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-				m_pInputElementDesc[i].Format = D3D12TypeMapper::MapRenderFormat(component.format);
-				m_pInputElementDesc[i].InputSlot = inputLayout.slot;
-				m_pInputElementDesc[i].InputSlotClass = component.isInstance ? \
-					D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA : D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-				m_pInputElementDesc[i].InstanceDataStepRate = component.instanceStepRate;
-				m_pInputElementDesc[i].SemanticIndex = component.semanticIndex;
-				m_pInputElementDesc[i].SemanticName = component.semanticItem.name;
-				++i;
+				inputElementCount += inputLayout.components.size();
+			}
+			m_pInputElementDesc = ALLOC_ARRAY(m_smallObjAllocator, inputElementCount, D3D12_INPUT_ELEMENT_DESC);
+			std::size_t i = 0;
+			for (const auto& inputLayout : inputLayouts)
+			{
+				for (const auto& component : inputLayout.components)
+				{
+					m_pInputElementDesc[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+					m_pInputElementDesc[i].Format = D3D12TypeMapper::MapRenderFormat(component.format);
+					m_pInputElementDesc[i].InputSlot = inputLayout.slot;
+					m_pInputElementDesc[i].InputSlotClass = component.isInstance ? \
+						D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA : D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+					m_pInputElementDesc[i].InstanceDataStepRate = component.instanceStepRate;
+					m_pInputElementDesc[i].SemanticIndex = component.semanticIndex;
+					m_pInputElementDesc[i].SemanticName = component.semanticItem.name;
+					++i;
+				}
 			}
 			D3D12_INPUT_LAYOUT_DESC& inputLayoutDesc = m_pipelineDesc.InputLayout;
 
 			// we can get the number of elements in an array by "sizeof(array) / sizeof(arrayElementType)"
-			inputLayoutDesc.NumElements = inputLayout.components.size();
+			inputLayoutDesc.NumElements = inputElementCount;
 			inputLayoutDesc.pInputElementDescs = m_pInputElementDesc;
 		}
 
