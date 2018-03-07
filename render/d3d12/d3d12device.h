@@ -36,7 +36,7 @@ namespace LightningGE
 			void ApplyScissorRects(const RectFList& scissorRects)override;
 			void ApplyRenderTargets(const RenderTargetList& renderTargets, const IDepthStencilBuffer* dsBuffer)override;
 			void CommitGPUBuffer(const GPUBuffer* pBuffer)override;
-			void BeginFrame(const UINT backBufferIndex);
+			void BeginFrame(const UINT frameResourceIndex);
 		private:
 			struct GPUBufferCommit
 			{
@@ -73,6 +73,9 @@ namespace LightningGE
 			RootSignatureMap m_rootSignatures;
 			D3D12_INPUT_ELEMENT_DESC* m_pInputElementDesc;
 			std::unordered_map<const GPUBuffer*, GPUBufferCommit> m_bufferCommitMap;
+			const IDepthStencilBuffer* m_currentDSBuffer;
+			D3D12_CPU_DESCRIPTOR_HANDLE m_frameRTVHandles[RENDER_FRAME_COUNT][MAX_RENDER_TARGET_COUNT];
+			std::uint8_t m_frameResourceIndex;
 		};
 	}
 }

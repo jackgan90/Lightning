@@ -18,6 +18,7 @@ namespace LightningGE
 		D3D12SwapChain::D3D12SwapChain(const ComPtr<IDXGISwapChain3>& pSwapChain, D3D12Renderer* pRenderer):m_renderer(pRenderer)
 		{
 			m_swapChain = pSwapChain;
+			m_swapChain->GetDesc(&m_desc);
 			BindRenderTargets();
 		}
 
@@ -60,7 +61,7 @@ namespace LightningGE
 					throw SwapChainInitException("Failed to get d3d12 swap chain buffer.");
 				}
 				nativeDevice->CreateRenderTargetView(swapChainTargets[i].Get(), nullptr, rtvHandle);
-				auto rt = rtMgr->CreateSwapChainRenderTarget(swapChainTargets[i], rtvHandle);
+				auto rt = rtMgr->CreateSwapChainRenderTarget(swapChainTargets[i], rtvHandle, this);
 				m_renderTargets[i] = rt->GetID();
 				rtvHandle.Offset(pHeapInfo->incrementSize);
 			}

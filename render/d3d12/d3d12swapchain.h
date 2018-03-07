@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include "iswapchain.h"
 #include "d3d12rendertargetmanager.h"
+#include "d3d12typemapper.h"
 
 namespace LightningGE
 {
@@ -22,12 +23,16 @@ namespace LightningGE
 			~D3D12SwapChain()override;
 			bool Present()override;
 			SharedRenderTargetPtr GetBufferRenderTarget(unsigned int bufferIndex)override;
+			std::size_t GetSampleCount()const override { return m_desc.SampleDesc.Count; }
+			int GetSampleQuality()const override { return m_desc.SampleDesc.Quality; }
+			RenderFormat GetRenderFormat()const { return D3D12TypeMapper::MapRenderFormat(m_desc.BufferDesc.Format); }
 			IDXGISwapChain3* GetNative() { return m_swapChain.Get(); }
 		private:
 			void BindRenderTargets();
 			D3D12Renderer* m_renderer;
 			ComPtr<IDXGISwapChain3> m_swapChain;
 			std::unordered_map<UINT, RenderTargetID> m_renderTargets;
+			DXGI_SWAP_CHAIN_DESC m_desc;
 		};
 	}
 }

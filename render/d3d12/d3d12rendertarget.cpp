@@ -9,7 +9,6 @@ namespace LightningGE
 			,m_isSwapChainTarget(isSwapChainTarget)
 			,m_ID(rtID)
 		{
-
 		}
 
 		D3D12RenderTarget::~D3D12RenderTarget()

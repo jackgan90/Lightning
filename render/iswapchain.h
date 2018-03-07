@@ -13,6 +13,8 @@ namespace LightningGE
 			virtual ~ISwapChain() = default;
 			//preset the current back buffer to display
 			virtual bool Present() = 0;
+			virtual std::size_t GetSampleCount()const = 0;
+			virtual int GetSampleQuality()const = 0;
 			//get corresponding render target
 			virtual SharedRenderTargetPtr GetBufferRenderTarget(unsigned int bufferIndex) = 0;
 		};

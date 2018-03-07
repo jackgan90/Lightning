@@ -149,6 +149,19 @@ namespace LightningGE
 				}
 			}
 
+			static RenderFormat MapRenderFormat(DXGI_FORMAT format)
+			{
+				switch (format)
+				{
+				case DXGI_FORMAT_R32G32B32_FLOAT:
+					return RenderFormat::R32G32B32_FLOAT;
+				case DXGI_FORMAT_D24_UNORM_S8_UINT:
+					return RenderFormat::D24_S8;
+				default:
+					return RenderFormat::R32G32B32_FLOAT;
+				}
+			}
+
 			static DXGI_FORMAT MapIndexType(IndexType type)
 			{
 				switch (type)

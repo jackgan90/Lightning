@@ -7,7 +7,6 @@
 #include "d3d12device.h"
 #include "d3d12rendertarget.h"
 #include "d3d12depthstencilbuffer.h"
-#include "d3d12swapchain.h"
 #include "d3d12shader.h"
 #include "d3d12typemapper.h"
 #include "renderconstants.h"
@@ -40,7 +39,7 @@ namespace LightningGE
 				"return float4(1.0f, 0.0f, 0.0f, 1.0f);\n"
 			"}\n";
 		D3D12Device::D3D12Device(const ComPtr<ID3D12Device>& pDevice, const SharedFileSystemPtr& fs)
-			:Device(), m_fs(fs), m_pipelineDesc{}, m_pInputElementDesc(nullptr)
+			:Device(), m_fs(fs), m_pipelineDesc{}, m_pInputElementDesc(nullptr), m_currentDSBuffer(nullptr)
 		{
 			m_smallObjAllocator = std::make_unique<StackAllocator<true, 16, 8192>>();
 			m_device = pDevice;
@@ -173,6 +172,14 @@ namespace LightningGE
 			pDesc->BackFace.StencilPassOp = D3D12TypeMapper::MapStencilOp(state.backFace.passOp);
 			pDesc->BackFace.StencilFailOp = D3D12TypeMapper::MapStencilOp(state.backFace.failOp);
 			pDesc->BackFace.StencilDepthFailOp = D3D12TypeMapper::MapStencilOp(state.backFace.depthFailOp);
+			if (state.depthTestEnable || state.stencilEnable)
+			{
+				if (m_currentDSBuffer)
+				{
+					m_pipelineDesc.DSVFormat = D3D12TypeMapper::MapRenderFormat(m_currentDSBuffer->GetRenderFormat());
+				}
+			}
+
 		}
 
 		void D3D12Device::ApplyPipelineState(const PipelineState& state)
@@ -330,8 +337,33 @@ namespace LightningGE
 			if (pShader)
 			{
 				auto d3d12shader = static_cast<D3D12Shader*>(pShader);
-				m_pipelineDesc.VS.pShaderBytecode = d3d12shader->GetByteCodeBuffer();
-				m_pipelineDesc.VS.BytecodeLength = d3d12shader->GetByteCodeBufferSize();
+				auto byteCode = d3d12shader->GetByteCodeBuffer();
+				auto byteCodeLength = d3d12shader->GetByteCodeBufferSize();
+				switch (pShader->GetType())
+				{
+				case ShaderType::VERTEX:
+					m_pipelineDesc.VS.pShaderBytecode = byteCode;
+					m_pipelineDesc.VS.BytecodeLength = byteCodeLength;
+					break;
+				case ShaderType::FRAGMENT:
+					m_pipelineDesc.PS.pShaderBytecode = byteCode;
+					m_pipelineDesc.PS.BytecodeLength = byteCodeLength;
+					break;
+				case ShaderType::GEOMETRY:
+					m_pipelineDesc.GS.pShaderBytecode = byteCode;
+					m_pipelineDesc.GS.BytecodeLength = byteCodeLength;
+					break;
+				case ShaderType::TESSELATION_CONTROL:
+					m_pipelineDesc.HS.pShaderBytecode = byteCode;
+					m_pipelineDesc.HS.BytecodeLength = byteCodeLength;
+					break;
+				case ShaderType::TESSELATION_EVALUATION:
+					m_pipelineDesc.DS.pShaderBytecode = byteCode;
+					m_pipelineDesc.DS.BytecodeLength = byteCodeLength;
+					break;
+				default:
+					break;
+				}
 			}
 		}
 
@@ -357,7 +389,7 @@ namespace LightningGE
 					m_pInputElementDesc[i].InputSlot = inputLayout.slot;
 					m_pInputElementDesc[i].InputSlotClass = component.isInstance ? \
 						D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA : D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-					m_pInputElementDesc[i].InstanceDataStepRate = component.instanceStepRate;
+					m_pInputElementDesc[i].InstanceDataStepRate = component.isInstance ? component.instanceStepRate : 0;
 					m_pInputElementDesc[i].SemanticIndex = component.semanticIndex;
 					m_pInputElementDesc[i].SemanticName = component.semanticItem.name;
 					++i;
@@ -408,22 +440,31 @@ namespace LightningGE
 			return rootSignature;
 		}
 
-		void D3D12Device::BeginFrame(const UINT backBufferIndex)
+		void D3D12Device::BeginFrame(const UINT frameResourceIndex)
 		{
-			m_commandAllocators[backBufferIndex]->Reset();
-			m_commandList->Reset(m_commandAllocators[backBufferIndex].Get(), nullptr);
+			m_commandAllocators[frameResourceIndex]->Reset();
+			m_commandList->Reset(m_commandAllocators[frameResourceIndex].Get(), nullptr);
+			m_frameResourceIndex = frameResourceIndex;
 		}
 
 		void D3D12Device::ApplyRenderTargets(const RenderTargetList& renderTargets, const IDepthStencilBuffer* dsBuffer)
 		{
-			D3D12_CPU_DESCRIPTOR_HANDLE* rtvHandles = ALLOC_ARRAY(m_smallObjAllocator, renderTargets.size(), D3D12_CPU_DESCRIPTOR_HANDLE);
+			//TODO : actually should set pipeline description based on PipelineState rather than set them here
+			auto rtvHandles = m_frameRTVHandles[m_frameResourceIndex];
 			for (std::size_t i = 0; i < renderTargets.size();++i)
 			{
 				rtvHandles[i] = static_cast<const D3D12RenderTarget*>(renderTargets[i])->GetCPUHandle();
+				if (i == 0)
+				{
+					m_pipelineDesc.SampleDesc.Count = renderTargets[i]->GetSampleCount();
+					m_pipelineDesc.SampleDesc.Quality = renderTargets[i]->GetSampleQuality();
+				}
+				m_pipelineDesc.RTVFormats[i] = D3D12TypeMapper::MapRenderFormat(renderTargets[i]->GetRenderFormat());
 			}
 			auto dsHandle = static_cast<const D3D12DepthStencilBuffer*>(dsBuffer)->GetCPUHandle();
 			m_commandList->OMSetRenderTargets(renderTargets.size(), rtvHandles, FALSE, &dsHandle);
-			DEALLOC(m_smallObjAllocator, rtvHandles);
+			m_currentDSBuffer = dsBuffer;
+			m_pipelineDesc.NumRenderTargets = renderTargets.size();
 		}
 
 		void D3D12Device::CommitGPUBuffer(const GPUBuffer* pBuffer)
