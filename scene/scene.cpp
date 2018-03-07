@@ -8,6 +8,7 @@ namespace LightningGE
 		Scene::Scene(const std::uint32_t id):m_id(id)
 		{
 			m_mainCamera = new Camera();
+			m_renderData.camera = m_mainCamera;
 		}
 
 		Scene::~Scene()
@@ -23,7 +24,7 @@ namespace LightningGE
 		{
 			for (auto& drawable : m_drawables)
 			{
-				drawable->Draw(*Render::Renderer::Instance());
+				drawable->Draw(*Render::Renderer::Instance(), m_renderData);
 			}
 		}
 

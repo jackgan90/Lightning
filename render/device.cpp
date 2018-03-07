@@ -29,5 +29,14 @@ namespace LightningGE
 		{
 			m_devicePipelineState = state;
 		}
+
+		SharedShaderPtr Device::GetDefaultShader(ShaderType type)
+		{
+			auto it = m_defaultShaders.find(type);
+			if (it == m_defaultShaders.end())
+				return SharedShaderPtr();
+			return it->second;
+		}
+
 	}
 }

@@ -6,12 +6,14 @@ set(HEADERS sceneexportdef.h
 			scenemanager.h
 			drawable.h
 			primitive.h
-			camera.h)
+			camera.h
+			scenerenderdata.h)
 
 set(SOURCES scene.cpp 
 			scenemanager.cpp
 			primitive.cpp
-			camera.cpp)
+			camera.cpp
+			scenerenderdata.cpp)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

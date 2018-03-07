@@ -15,9 +15,12 @@ namespace LightningGE
 			void ApplyBlendState(const BlendState& state)override;
 			void ApplyDepthStencilState(const DepthStencilState& state)override;
 			void ApplyPipelineState(const PipelineState& state)override;
+			SharedShaderPtr GetDefaultShader(ShaderType type)override;
 		protected:
+			using DefaultShaderMap = std::unordered_map<ShaderType, SharedShaderPtr>;
 			std::unique_ptr<IShaderManager> m_shaderMgr;
 			PipelineState m_devicePipelineState;
+			DefaultShaderMap m_defaultShaders;
 		};
 	}
 }

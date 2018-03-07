@@ -18,7 +18,7 @@ namespace LightningGE
 		public:
 			Primitive();
 			virtual ~Primitive();
-			void Draw(Render::Renderer& renderer) override;
+			void Draw(Render::Renderer& renderer, const SceneRenderData& sceneRenderData) override;
 			PrimitiveType GetPrimitiveType()const { return m_renderItem.geometry->primType; }
 		protected:
 			Render::RenderItem m_renderItem;

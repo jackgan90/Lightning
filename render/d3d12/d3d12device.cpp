@@ -35,7 +35,7 @@ namespace LightningGE
 				"return mul(wvp, position);\n"
 			"}\n";
 		const char* const DEFAULT_PS_SOURCE =
-			"float4 main(void):COLOR\n"
+			"float4 main(void):SV_Target\n"
 			"{\n"
 				"return float4(1.0f, 0.0f, 0.0f, 1.0f);\n"
 			"}\n";
@@ -307,8 +307,9 @@ namespace LightningGE
 
 		void D3D12Device::SetUpDefaultPipelineStates()
 		{
-			auto defaultShader = m_shaderMgr->CreateShaderFromSource(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
-			m_devicePipelineState.vs = defaultShader.get();
+			m_defaultShaders[ShaderType::VERTEX] = m_shaderMgr->CreateShaderFromSource(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
+			m_defaultShaders[ShaderType::FRAGMENT] = m_shaderMgr->CreateShaderFromSource(ShaderType::FRAGMENT, "[Built-in]default.ps", DEFAULT_PS_SOURCE, ShaderDefine()); 
+			m_devicePipelineState.vs = m_defaultShaders[ShaderType::VERTEX].get();
 			VertexComponent defaultComponent{ EngineSemantics[0], 0, RenderFormat::R32G32B32_FLOAT, 0, false, 0};
 			m_devicePipelineState.vertexComponents[defaultComponent] = 0;
 			m_devicePipelineState.depthStencilState.depthTestEnable = false;

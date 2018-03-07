@@ -4,13 +4,12 @@
 #include "sceneexportdef.h"
 #include "camera.h"
 #include "drawable.h"
+#include "scenerenderdata.h"
 
 namespace LightningGE
 {
 	namespace Scene
 	{
-		using Scene::Camera;
-		using Scene::SharedDrawablePtr;
 		class LIGHTNINGGE_SCENE_API Scene
 		{
 		public:
@@ -24,6 +23,7 @@ namespace LightningGE
 			Camera* m_mainCamera;
 			std::uint32_t m_id;
 			std::vector<SharedDrawablePtr> m_drawables;
+			SceneRenderData m_renderData;
 		};
 	}
 }

@@ -14,8 +14,13 @@ namespace LightningGE
 
 		}
 
-		void Primitive::Draw(Render::Renderer& renderer)
+		void Primitive::Draw(Render::Renderer& renderer, const SceneRenderData& sceneRenderData)
 		{
+			if (sceneRenderData.camera)
+			{
+				m_renderItem.viewMatrix = sceneRenderData.camera->GetViewMatrix();
+				m_renderItem.projectionMatrix = sceneRenderData.camera->GetProjectionMatrix();
+			}
 			renderer.Draw(m_renderItem);
 		}
 
@@ -73,6 +78,9 @@ namespace LightningGE
 			m_renderItem.geometry->primType = Render::PrimitiveType::TRIANGLE_LIST;
 			m_renderItem.material = std::make_shared<Render::Material>();
 			m_renderItem.material->RequireSemantic(Render::RenderSemantics::WVP);
+			auto device = Renderer::Instance()->GetDevice();
+			m_renderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::VERTEX));
+			m_renderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::FRAGMENT));
 			m_renderItem.transform = Render::Transform(Render::Vector3f({ 2.0f, 1.0f, 1.0f }), Render::Vector3f({ 2.0f, 2.0f, 2.0f }));
 		}
 

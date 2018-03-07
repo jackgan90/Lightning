@@ -20,6 +20,7 @@ namespace LightningGE
 			//return the current frame index
 			std::uint64_t GetCurrentFrameIndex()const override;
 			void Draw(const RenderItem& item)override;
+			//TODO there can be multiple render passes in effect simultaneously,shoulc change it
 			void SetRenderPass(RenderPassType type)override;
 			static Renderer* Instance() { return s_instance; }
 		protected:
