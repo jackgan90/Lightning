@@ -6,27 +6,25 @@
 #include "vertexbuffer.h"
 #include "indexbuffer.h"
 #include "renderconstants.h"
+#include "renderitem.h"
 
 namespace LightningGE
 {
-	namespace Entities
+	namespace Scene
 	{
 		using Render::PrimitiveType;
-		class LIGHTNINGGE_ENTITIES_API Primitive : public IDrawable
+		class LIGHTNINGGE_SCENE_API Primitive : public IDrawable
 		{
 		public:
-			Primitive(PrimitiveType topology);
+			Primitive();
 			virtual ~Primitive();
 			void Draw(Render::Renderer& renderer) override;
-			PrimitiveType GetPrimitiveType()const { return m_primType; }
+			PrimitiveType GetPrimitiveType()const { return m_renderItem.geometry->primType; }
 		protected:
-			Render::SharedGeometryPtr m_geo;
-			Render::SharedMaterialPtr m_material;
-			Render::Transform m_transform;
-			PrimitiveType m_primType;
+			Render::RenderItem m_renderItem;
 		};
 
-		class LIGHTNINGGE_ENTITIES_API Cube : public Primitive
+		class LIGHTNINGGE_SCENE_API Cube : public Primitive
 		{
 		public:
 			Cube(float size);

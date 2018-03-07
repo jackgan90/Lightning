@@ -1,8 +1,17 @@
 project(scene)
 message(STATUS "Configuring project scene")
 
-set(HEADERS sceneexportdef.h scene.h scenemanager.h)
-set(SOURCES scene.cpp scenemanager.cpp)
+set(HEADERS sceneexportdef.h 
+			scene.h 
+			scenemanager.h
+			drawable.h
+			primitive.h
+			camera.h)
+
+set(SOURCES scene.cpp 
+			scenemanager.cpp
+			primitive.cpp
+			camera.cpp)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -30,5 +39,5 @@ if(MSVC)
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
 
-add_dependencies(${PROJECT_NAME} foundation utilities entities render)
-target_link_libraries(${PROJECT_NAME} foundation utilities entities render)
+add_dependencies(${PROJECT_NAME} foundation utilities render)
+target_link_libraries(${PROJECT_NAME} foundation utilities render)

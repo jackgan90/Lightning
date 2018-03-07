@@ -10,18 +10,11 @@ namespace LightningGE
 		{
 		public:	
 			ForwardRenderPass():RenderPass(RenderPassType::FORWARD){}
-			void Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material, const Transform& transform)override;
+			void Draw(const RenderItem& item)override;
 			//Apply is called by renderer once per frame.Subclasses should commit render resources to device in this method.
 			void Apply()override;
 		protected:
 			void CommitBuffers(const SharedGeometryPtr& geometry);
-			struct RenderItem
-			{
-				RenderItem(const SharedGeometryPtr& geo, const SharedMaterialPtr& mtl, const Transform& trans):geometry(geo), material(mtl), transform(trans){}
-				SharedGeometryPtr geometry;
-				SharedMaterialPtr material;
-				Transform transform;
-			};
 			using RenderItemList = std::vector<RenderItem>;
 			RenderItemList m_renderItems;
 		};

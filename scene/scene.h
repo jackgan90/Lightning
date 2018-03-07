@@ -9,8 +9,8 @@ namespace LightningGE
 {
 	namespace Scene
 	{
-		using Entities::Camera;
-		using Entities::SharedDrawablePtr;
+		using Scene::Camera;
+		using Scene::SharedDrawablePtr;
 		class LIGHTNINGGE_SCENE_API Scene
 		{
 		public:
@@ -19,6 +19,7 @@ namespace LightningGE
 			std::uint32_t GetID()const { return m_id; }
 			virtual void Update();
 			void AddDrawable(const SharedDrawablePtr& drawable);
+			Camera* GetMainCamera() { return m_mainCamera; }
 		protected:
 			Camera* m_mainCamera;
 			std::uint32_t m_id;

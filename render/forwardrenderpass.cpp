@@ -5,9 +5,9 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		void ForwardRenderPass::Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material, const Transform& transform)
+		void ForwardRenderPass::Draw(const RenderItem& item)
 		{
-			m_renderItems.emplace_back(geometry, material, transform);
+			m_renderItems.push_back(item);
 		}
 
 		//Apply is called by renderer once per frame.Subclasses should commit render resources to device in this method.

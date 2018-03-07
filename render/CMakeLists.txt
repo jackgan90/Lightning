@@ -26,7 +26,8 @@ set(HEADERS rendererexportdef.h
 			renderpass.h
 			forwardrenderpass.h
 			deferedrenderpass.h
-			transform.h)
+			transform.h
+			renderitem.h)
 set(SOURCES renderer.cpp
 			device.cpp
 			vertexbuffer.cpp

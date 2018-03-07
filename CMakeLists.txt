@@ -21,7 +21,6 @@ add_subdirectory(window)
 add_subdirectory(render)
 add_subdirectory(unittest)
 add_subdirectory(serialization)
-add_subdirectory(entities)
 add_subdirectory(scene)
 
 

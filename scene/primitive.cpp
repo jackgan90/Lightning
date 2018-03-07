@@ -3,9 +3,9 @@
 
 namespace LightningGE
 {
-	namespace Entities
+	namespace Scene
 	{
-		Primitive::Primitive(PrimitiveType topology) : m_primType(topology)
+		Primitive::Primitive()
 		{
 		}
 
@@ -16,7 +16,7 @@ namespace LightningGE
 
 		void Primitive::Draw(Render::Renderer& renderer)
 		{
-			renderer.Draw(m_geo, m_material, m_transform);
+			renderer.Draw(m_renderItem);
 		}
 
 		float Cube::verticeTemplate[24] = { 0.5f, 0.5f, -0.5f,  //right top front
@@ -43,9 +43,7 @@ namespace LightningGE
 			//bottom face
 			6, 7, 3, 6, 3, 2
 		};
-		Cube::Cube(float size) : 
-		Primitive(Render::PrimitiveType::TRIANGLE_LIST),
-			m_size(size) 
+		Cube::Cube(float size) : m_size(size) 
 		{
 			assert(m_size > 0 && "The size of the cube must be greater than 0!");
 			Render::VertexComponent comp;
@@ -57,9 +55,9 @@ namespace LightningGE
 			comp.semanticItem = { Render::RenderSemantics::POSITION, "POSITION" };
 			std::vector<Render::VertexComponent> comps;
 			comps.push_back(comp);
-			m_geo = std::make_shared<Render::Geometry>();
-			m_geo->vbs[0] = std::make_unique<Render::VertexBuffer>(comps);
-			m_geo->ib = std::make_unique<Render::IndexBuffer>(Render::IndexType::UINT16);
+			m_renderItem.geometry = std::make_shared<Render::Geometry>();
+			m_renderItem.geometry->vbs[0] = std::make_unique<Render::VertexBuffer>(comps);
+			m_renderItem.geometry->ib = std::make_unique<Render::IndexBuffer>(Render::IndexType::UINT16);
 			float* vertices = new float[sizeof(float) * 24];
 			for (std::size_t i = 0;i < 24;++i)
 			{
@@ -67,15 +65,15 @@ namespace LightningGE
 			}
 
 			m_vertices = reinterpret_cast<std::uint8_t*>(vertices);
-			m_geo->vbs[0]->SetBuffer(m_vertices, sizeof(float) * 24);
-			m_geo->ib->SetBuffer(reinterpret_cast<std::uint8_t*>(&s_indices), sizeof(s_indices));
-			std::fill(std::begin(m_geo->vbs_dirty), std::end(m_geo->vbs_dirty), false);
-			m_geo->vbs_dirty[0] = true;
-			m_geo->ib_dirty = true;
-			m_geo->primType = Render::PrimitiveType::TRIANGLE_LIST;
-			m_material = std::make_shared<Render::Material>();
-			m_material->RequireSemantic(Render::RenderSemantics::WVP);
-			m_transform = Render::Transform(Render::Vector3f({ 1.0f, 1.0f, 1.0f }), Render::Vector3f({ 2.0f, 2.0f, 2.0f }));
+			m_renderItem.geometry->vbs[0]->SetBuffer(m_vertices, sizeof(float) * 24);
+			m_renderItem.geometry->ib->SetBuffer(reinterpret_cast<std::uint8_t*>(&s_indices), sizeof(s_indices));
+			std::fill(std::begin(m_renderItem.geometry->vbs_dirty), std::end(m_renderItem.geometry->vbs_dirty), false);
+			m_renderItem.geometry->vbs_dirty[0] = true;
+			m_renderItem.geometry->ib_dirty = true;
+			m_renderItem.geometry->primType = Render::PrimitiveType::TRIANGLE_LIST;
+			m_renderItem.material = std::make_shared<Render::Material>();
+			m_renderItem.material->RequireSemantic(Render::RenderSemantics::WVP);
+			m_renderItem.transform = Render::Transform(Render::Vector3f({ 2.0f, 1.0f, 1.0f }), Render::Vector3f({ 2.0f, 2.0f, 2.0f }));
 		}
 
 		Cube::~Cube()

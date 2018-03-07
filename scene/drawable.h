@@ -1,14 +1,14 @@
 #pragma once
 #include <memory>
-#include "entitiesexportdef.h"
+#include "sceneexportdef.h"
 #include "renderer.h"
 
 namespace LightningGE
 {
-	namespace Entities
+	namespace Scene
 	{
 		using Render::Renderer;
-		class LIGHTNINGGE_ENTITIES_API IDrawable
+		class LIGHTNINGGE_SCENE_API IDrawable
 		{
 		public:
 			virtual ~IDrawable() = default;

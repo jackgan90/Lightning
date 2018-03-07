@@ -7,10 +7,9 @@
 #include "iswapchain.h"
 #include "irendertargetmanager.h"
 #include "color.h"
+#include "matrix.h"
+#include "renderitem.h"
 #include "renderpass.h"
-#include "geometry.h"
-#include "material.h"
-#include "transform.h"
 
 namespace LightningGE
 {
@@ -43,7 +42,7 @@ namespace LightningGE
 			virtual std::uint64_t GetCurrentFrameIndex()const = 0;
 			virtual std::uint8_t GetFrameResourceIndex()const = 0;
 			virtual void SetRenderPass(RenderPassType type) = 0;
-			virtual void Draw(const SharedGeometryPtr& geometry, const SharedMaterialPtr& material, const Transform& transform) = 0;
+			virtual void Draw(const RenderItem& item) = 0;
 		};
 	}
 }

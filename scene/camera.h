@@ -1,12 +1,12 @@
 #include <cmath>
-#include "entitiesexportdef.h"
+#include "sceneexportdef.h"
 #include "vector.h"
 
 #define LIGHTNINGGE_PI 3.14159265358979
 
 namespace LightningGE
 {
-	namespace Entities
+	namespace Scene
 	{
 		enum class CameraType
 		{
@@ -24,7 +24,7 @@ namespace LightningGE
 		using Render::Vector3f;
 		using Render::Matrix4x4f;
 		//Use right-handed coordinate system
-		class LIGHTNINGGE_ENTITIES_API Camera
+		class LIGHTNINGGE_SCENE_API Camera
 		{
 		public:
 			Camera();

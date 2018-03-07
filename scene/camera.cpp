@@ -3,7 +3,7 @@
 
 namespace LightningGE
 {
-	namespace Entities
+	namespace Scene
 	{
 		using Render::Matrix3x3f;
 		using Render::Vector4f;
