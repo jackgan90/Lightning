@@ -39,7 +39,7 @@ namespace LightningGE
 				"return float4(1.0f, 0.0f, 0.0f, 1.0f);\n"
 			"}\n";
 		D3D12Device::D3D12Device(const ComPtr<ID3D12Device>& pDevice, const SharedFileSystemPtr& fs)
-			:Device(), m_fs(fs), m_pipelineDesc{}, m_pInputElementDesc(nullptr), m_currentDSBuffer(nullptr)
+			:Device(), m_fs(fs), m_pipelineDesc{}, m_pInputElementDesc(nullptr), m_currentDSBuffer(nullptr), m_frameResourceIndex(0)
 		{
 			m_smallObjAllocator = std::make_unique<StackAllocator<true, 16, 8192>>();
 			m_device = pDevice;
@@ -201,11 +201,59 @@ namespace LightningGE
 			if (m_pipelineDesc.pRootSignature)
 			{
 				m_commandList->SetGraphicsRootSignature(m_pipelineDesc.pRootSignature);
-				BindAllShaderResources();
+				ExtractShaderDescriptorHeaps();
+				//TODO : cancel all heap binding when empty?
+				if (!m_descriptorHeaps[m_frameResourceIndex].empty())
+				{
+					m_commandList->SetDescriptorHeaps(m_descriptorHeaps[m_frameResourceIndex].size(), &m_descriptorHeaps[m_frameResourceIndex][0]);
+				}
+				BindShaderResources();
 			}
 		}
 
-		void D3D12Device::BindAllShaderResources()
+		void D3D12Device::ExtractShaderDescriptorHeaps()
+		{
+			ExtractShaderDescriptorHeaps(m_devicePipelineState.vs);
+			ExtractShaderDescriptorHeaps(m_devicePipelineState.fs);
+			ExtractShaderDescriptorHeaps(m_devicePipelineState.gs);
+			ExtractShaderDescriptorHeaps(m_devicePipelineState.hs);
+			ExtractShaderDescriptorHeaps(m_devicePipelineState.ds);
+		}
+
+		void D3D12Device::ExtractShaderDescriptorHeaps(IShader* pShader)
+		{
+			if (pShader)
+			{
+				auto pD3D12Shader = static_cast<D3D12Shader*>(pShader);
+				auto const& boundResources = pD3D12Shader->GetRootBoundResources();
+				for (std::size_t i = 0; i < boundResources.size(); ++i)
+				{
+					const auto& boundResource = boundResources[i];
+					if (boundResource.type == D3D12RootBoundResourceType::DescriptorTable)
+					{
+						m_descriptorHeaps[m_frameResourceIndex].push_back(boundResource.descriptorTableHeap);
+					}
+				}
+			}
+		}
+
+
+		void D3D12Device::ApplyVBAndIBToGPUDevice()
+		{
+			if (!m_frameVertexBuffers[m_frameResourceIndex].empty())
+			{
+				for (auto it = m_frameVertexBuffers[m_frameResourceIndex].cbegin();it != m_frameVertexBuffers[m_frameResourceIndex].cend();++it)
+				{
+					if (!it->second.empty())
+					{
+						m_commandList->IASetVertexBuffers(it->first, it->second.size(), &it->second[0]);
+					}
+				}
+			}
+
+		}
+
+		void D3D12Device::BindShaderResources()
 		{
 			std::size_t rootParameterIndex{ 0 };
 			if (m_devicePipelineState.vs)
@@ -245,8 +293,6 @@ namespace LightningGE
 				switch (boundResource.type)
 				{
 				case D3D12RootBoundResourceType::DescriptorTable:
-					//TODO : should bind all descriptor heaps not only the heap that this shader uses
-					m_commandList->SetDescriptorHeaps(1, &boundResource.descriptorTableHeap);
 					m_commandList->SetGraphicsRootDescriptorTable(rootParameterIndex + i, boundResource.descriptorTableHandle);
 					break;
 				case D3D12RootBoundResourceType::ConstantBufferView:
@@ -442,9 +488,12 @@ namespace LightningGE
 
 		void D3D12Device::BeginFrame(const UINT frameResourceIndex)
 		{
-			m_commandAllocators[frameResourceIndex]->Reset();
-			m_commandList->Reset(m_commandAllocators[frameResourceIndex].Get(), nullptr);
 			m_frameResourceIndex = frameResourceIndex;
+			m_commandAllocators[m_frameResourceIndex]->Reset();
+			m_commandList->Reset(m_commandAllocators[m_frameResourceIndex].Get(), nullptr);
+			//TODO : some heaps can be reused in multiple frames,this heaps are not forced to clear
+			m_descriptorHeaps[m_frameResourceIndex].clear();
+			m_frameVertexBuffers[m_frameResourceIndex].clear();
 		}
 
 		void D3D12Device::ApplyRenderTargets(const RenderTargetList& renderTargets, const IDepthStencilBuffer* dsBuffer)
@@ -487,15 +536,21 @@ namespace LightningGE
 				switch (bufferCommit.type)
 				{
 				case GPUBufferType::VERTEX:
+				{
+					auto pVertexBuffer = static_cast<VertexBuffer*>(const_cast<GPUBuffer*>(pBuffer));
 					bufferCommit.vertexBufferView.BufferLocation = bufferCommit.defaultHeap->GetGPUVirtualAddress();
 					bufferCommit.vertexBufferView.SizeInBytes = bufferSize;
-					bufferCommit.vertexBufferView.StrideInBytes = static_cast<VertexBuffer*>(const_cast<GPUBuffer*>(pBuffer))->GetVertexSize();
+					bufferCommit.vertexBufferView.StrideInBytes = pVertexBuffer->GetVertexSize();
 					break;
+				}
 				case GPUBufferType::INDEX:
+				{
+					auto pIndexBuffer = static_cast<const IndexBuffer*>(pBuffer);
 					bufferCommit.indexBufferView.BufferLocation = bufferCommit.defaultHeap->GetGPUVirtualAddress();
 					bufferCommit.indexBufferView.SizeInBytes = bufferSize;
-					bufferCommit.indexBufferView.Format = D3D12TypeMapper::MapIndexType(static_cast<const IndexBuffer*>(pBuffer)->GetIndexType());
+					bufferCommit.indexBufferView.Format = D3D12TypeMapper::MapIndexType(pIndexBuffer->GetIndexType());
 					break;
+				}
 				default:
 					logger.Log(LogLevel::Warning, "Unknown GPUBuffer Commit!");
 					break;
@@ -508,6 +563,27 @@ namespace LightningGE
 				m_commandList->ResourceBarrier(1, 
 					&CD3DX12_RESOURCE_BARRIER::Transition(bufferCommit.defaultHeap.Get(), 
 						D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_COPY_DEST));
+			}
+			switch (bufferCommit.type)
+			{
+			case GPUBufferType::VERTEX:
+			{
+				auto pVertexBuffer = static_cast<VertexBuffer*>(const_cast<GPUBuffer*>(pBuffer));
+				auto bindSlot = pVertexBuffer->GetGPUBindSlot();
+				if (m_frameVertexBuffers[m_frameResourceIndex].find(bindSlot) == m_frameVertexBuffers[m_frameResourceIndex].end())
+				{
+					m_frameVertexBuffers[m_frameResourceIndex][bindSlot] = std::vector<D3D12_VERTEX_BUFFER_VIEW>();
+				}
+				m_frameVertexBuffers[m_frameResourceIndex][bindSlot].push_back(bufferCommit.vertexBufferView);
+				break;
+			}
+			case GPUBufferType::INDEX:
+			{
+				m_frameIndexBuffer[m_frameResourceIndex] = bufferCommit.indexBufferView;
+				break;
+			}
+			default:
+				break;
 			}
 			D3D12_SUBRESOURCE_DATA subResourceData{};
 			subResourceData.pData = pBuffer->GetBuffer();

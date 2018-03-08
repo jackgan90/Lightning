@@ -15,9 +15,9 @@ namespace LightningGE
 		{
 			for (auto& renderItem : m_renderItems)
 			{
-				CommitBuffers(renderItem.geometry);
 				CommitPipelineStates(renderItem);
-				SetShaderArguments(renderItem);
+				CommitShaderArguments(renderItem);
+				CommitBuffers(renderItem.geometry);
 			}
 			m_renderItems.clear();
 		}
@@ -39,7 +39,7 @@ namespace LightningGE
 			pDevice->ApplyPipelineState(state);
 		}
 
-		void ForwardRenderPass::SetShaderArguments(const RenderItem& item)
+		void ForwardRenderPass::CommitShaderArguments(const RenderItem& item)
 		{
 			//TODO : set other arguments for shaders
 			if (!item.material)

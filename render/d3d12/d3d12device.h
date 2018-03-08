@@ -57,8 +57,11 @@ namespace LightningGE
 			void SetUpDefaultPipelineStates();
 			ComPtr<ID3D12RootSignature> GetRootSignature(const std::vector<IShader*>& shaders);
 			ComPtr<ID3D12PipelineState> CreateAndCachePipelineState(const PipelineState& pState, std::size_t hashValue);
-			void BindAllShaderResources();
+			void ExtractShaderDescriptorHeaps();
+			void ExtractShaderDescriptorHeaps(IShader* pShader);
+			void BindShaderResources();
 			void BindShaderResources(IShader* pShader, UINT rootParameterIndex);
+			void ApplyVBAndIBToGPUDevice();
 			SharedFileSystemPtr m_fs;
 			ComPtr<ID3D12Device> m_device;
 			ComPtr<ID3D12CommandQueue> m_commandQueue;
@@ -76,6 +79,10 @@ namespace LightningGE
 			const IDepthStencilBuffer* m_currentDSBuffer;
 			D3D12_CPU_DESCRIPTOR_HANDLE m_frameRTVHandles[RENDER_FRAME_COUNT][MAX_RENDER_TARGET_COUNT];
 			std::uint8_t m_frameResourceIndex;
+			//TODO : will ID3D12DescriptorHeap be dangling?
+			std::vector<ID3D12DescriptorHeap*> m_descriptorHeaps[RENDER_FRAME_COUNT];
+			std::unordered_map<std::uint8_t, std::vector<D3D12_VERTEX_BUFFER_VIEW>> m_frameVertexBuffers[RENDER_FRAME_COUNT];
+			D3D12_INDEX_BUFFER_VIEW m_frameIndexBuffer[RENDER_FRAME_COUNT];
 		};
 	}
 }
