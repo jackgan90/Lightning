@@ -17,7 +17,7 @@ namespace LightningGE
 		protected:
 			void CommitBuffers(const SharedGeometryPtr& geometry);
 			void CommitPipelineStates(const RenderItem& item);
-			void SetShaderArguments(const RenderItem& item);
+			void CommitShaderArguments(const RenderItem& item);
 			std::vector<VertexInputLayout> GetInputLayouts(const SharedGeometryPtr& geometry);
 			using RenderItemList = std::vector<RenderItem>;
 			RenderItemList m_renderItems;
