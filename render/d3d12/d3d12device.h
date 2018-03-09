@@ -36,6 +36,7 @@ namespace LightningGE
 			void ApplyScissorRects(const RectFList& scissorRects)override;
 			void ApplyRenderTargets(const RenderTargetList& renderTargets, const IDepthStencilBuffer* dsBuffer)override;
 			void CommitGPUBuffer(const GPUBuffer* pBuffer)override;
+			void BindGPUBuffers(std::uint8_t startSlot, const GPUBuffer** pBuffers, const std::uint8_t bufferCount)override;
 			void BeginFrame(const UINT frameResourceIndex);
 		private:
 			struct GPUBufferCommit
@@ -61,7 +62,6 @@ namespace LightningGE
 			void ExtractShaderDescriptorHeaps(IShader* pShader);
 			void BindShaderResources();
 			void BindShaderResources(IShader* pShader, UINT rootParameterIndex);
-			void ApplyVBAndIBToGPUDevice();
 			SharedFileSystemPtr m_fs;
 			ComPtr<ID3D12Device> m_device;
 			ComPtr<ID3D12CommandQueue> m_commandQueue;
@@ -81,8 +81,6 @@ namespace LightningGE
 			std::uint8_t m_frameResourceIndex;
 			//TODO : will ID3D12DescriptorHeap be dangling?
 			std::vector<ID3D12DescriptorHeap*> m_descriptorHeaps[RENDER_FRAME_COUNT];
-			std::unordered_map<std::uint8_t, std::vector<D3D12_VERTEX_BUFFER_VIEW>> m_frameVertexBuffers[RENDER_FRAME_COUNT];
-			D3D12_INDEX_BUFFER_VIEW m_frameIndexBuffer[RENDER_FRAME_COUNT];
 		};
 	}
 }

@@ -19,7 +19,6 @@ set(HEADERS rendererexportdef.h
 			renderexception.h
 			rendererfactory.h
 			gpubuffer.h
-			bindablebuffer.h
 			renderconstants.h
 			geometry.h
 			material.h
@@ -37,7 +36,6 @@ set(SOURCES renderer.cpp
 			renderconstants.cpp
 			rendertargetmanager.cpp
 			gpubuffer.cpp
-			bindablebuffer.cpp
 			geometry.cpp
 			material.cpp
 			forwardrenderpass.cpp

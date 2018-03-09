@@ -71,7 +71,6 @@ namespace LightningGE
 
 			m_vertices = reinterpret_cast<std::uint8_t*>(vertices);
 			m_renderItem.geometry->vbs[0]->SetBuffer(m_vertices, sizeof(float) * 24);
-			m_renderItem.geometry->vbs[0]->SetGPUBindSlot(0);
 			m_renderItem.geometry->ib->SetBuffer(reinterpret_cast<std::uint8_t*>(&s_indices), sizeof(s_indices));
 			std::fill(std::begin(m_renderItem.geometry->vbs_dirty), std::end(m_renderItem.geometry->vbs_dirty), false);
 			m_renderItem.geometry->vbs_dirty[0] = true;

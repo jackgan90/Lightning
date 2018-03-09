@@ -3,7 +3,7 @@
 #include <boost/functional/hash.hpp>
 #include <memory>
 #include "semantics.h"
-#include "bindablebuffer.h"
+#include "gpubuffer.h"
 #include "renderconstants.h"
 
 namespace LightningGE
@@ -64,7 +64,7 @@ namespace LightningGE
 
 		};
 
-		class LIGHTNINGGE_RENDER_API VertexBuffer : public BindableBuffer
+		class LIGHTNINGGE_RENDER_API VertexBuffer : public GPUBuffer
 		{
 		public:
 			VertexBuffer(const std::vector<VertexComponent>& components);

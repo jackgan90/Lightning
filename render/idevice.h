@@ -32,7 +32,10 @@ namespace LightningGE
 			virtual void ApplyViewports(const RectFList& vp) = 0;
 			virtual void ApplyScissorRects(const RectFList& scissorRects) = 0;
 			virtual void ApplyRenderTargets(const RenderTargetList& renderTargets, const IDepthStencilBuffer* dsBuffer) = 0;
+			//copy all data pointed to by pBuffer to GPU
 			virtual void CommitGPUBuffer(const GPUBuffer* pBuffer) = 0;
+			//bind pBuffer to a GPU slot(does not copy data,just binding), each invocation will override previous binding
+			virtual void BindGPUBuffers(std::uint8_t startSlot, const GPUBuffer** pBuffers, const std::uint8_t bufferCount) = 0;
 		};
 		using SharedDevicePtr = std::shared_ptr<IDevice>;
 	}

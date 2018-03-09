@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "bindablebuffer.h"
+#include "gpubuffer.h"
 
 namespace LightningGE
 {
@@ -12,7 +12,7 @@ namespace LightningGE
 			UINT32,
 		};
 
-		class LIGHTNINGGE_RENDER_API IndexBuffer : public BindableBuffer
+		class LIGHTNINGGE_RENDER_API IndexBuffer : public GPUBuffer
 		{
 		public:
 			IndexBuffer(IndexType type);
