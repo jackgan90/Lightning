@@ -15,9 +15,9 @@ namespace LightningGE
 			m_devicePipelineState.rasterizerState = state;
 		}
 
-		void Device::ApplyBlendState(const BlendState& state)
+		void Device::ApplyBlendStates(std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount)
 		{
-			m_devicePipelineState.blendState = state;
+			std::memcpy(&m_devicePipelineState.blendStates[firstRTIndex], states, stateCount * sizeof(BlendState));
 		}
 
 		void Device::ApplyDepthStencilState(const DepthStencilState& state)

@@ -5,6 +5,7 @@
 #include "renderer.h"
 #include "shadermanager.h"
 #include "d3d12shader.h"
+#include "rendererhelper.h"
 
 namespace LightningGE
 {
@@ -179,7 +180,9 @@ namespace LightningGE
 			case ShaderArgumentType::MATRIX3:
 			case ShaderArgumentType::MATRIX4:
 			{
-				assert(m_commitHeapInfo);
+				if (!m_commitHeapInfo)
+					break;
+				//assert(m_commitHeapInfo);
 				auto it = m_argumentBindings.find(argument.name);
 				if (it == m_argumentBindings.end())
 				{

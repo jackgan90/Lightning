@@ -32,7 +32,7 @@ namespace LightningGE
 		protected:
 			float m_size;
 			std::uint8_t* m_vertices;
-			static float verticeTemplate[24];
+			static float verticeTemplate[];
 			static std::uint16_t s_indices[36];
 		};
 	}

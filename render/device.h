@@ -12,7 +12,7 @@ namespace LightningGE
 		public:
 			Device();
 			void ApplyRasterizerState(const RasterizerState& state)override;
-			void ApplyBlendState(const BlendState& state)override;
+			void ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount)override;
 			void ApplyDepthStencilState(const DepthStencilState& state)override;
 			void ApplyPipelineState(const PipelineState& state)override;
 			SharedShaderPtr GetDefaultShader(ShaderType type)override;

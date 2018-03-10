@@ -29,12 +29,12 @@ namespace LightningGE
 			"{\n"
 			"	float4x4 wvp;\n"
 			"};\n"
-			"float4 main(float4 position:POSITION):SV_POSITION\n"
+			"float4 main(float3 position:POSITION):SV_POSITION\n"
 			"{\n"
-				"return mul(wvp, position);\n"
+				"return float4(position, 1.0f);\n"
 			"}\n";
 		const char* const DEFAULT_PS_SOURCE =
-			"float4 main(void):SV_Target\n"
+			"float4 main(void):SV_TARGET\n"
 			"{\n"
 				"return float4(1.0f, 0.0f, 0.0f, 1.0f);\n"
 			"}\n";
@@ -137,19 +137,23 @@ namespace LightningGE
 			pDesc->FrontCounterClockwise = state.frontFaceWindingOrder == FrontFaceWindingOrder::COUNTER_CLOCKWISE;
 		}
 
-		void D3D12Device::ApplyBlendState(const BlendState& state)
+		void D3D12Device::ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount)
 		{
-			Device::ApplyBlendState(state);
-			auto boundIndex = state.renderTarget ? state.renderTarget->GetBoundIndex() : 0;
-			assert(boundIndex >= 0);
-			D3D12_RENDER_TARGET_BLEND_DESC* pDesc = &m_pipelineDesc.BlendState.RenderTarget[boundIndex];
-			pDesc->BlendEnable = state.enable;
-			pDesc->BlendOp = D3D12TypeMapper::MapBlendOp(state.colorOp);
-			pDesc->BlendOpAlpha = D3D12TypeMapper::MapBlendOp(state.alphaOp);
-			pDesc->SrcBlend = D3D12TypeMapper::MapBlendFactor(state.srcColorFactor);
-			pDesc->SrcBlendAlpha = D3D12TypeMapper::MapBlendFactor(state.srcAlphaFactor);
-			pDesc->DestBlend = D3D12TypeMapper::MapBlendFactor(state.destColorFactor);
-			pDesc->DestBlendAlpha = D3D12TypeMapper::MapBlendFactor(state.destAlphaFactor);
+			Device::ApplyBlendStates(firstRTIndex, states, stateCount);
+			for (std::size_t i = firstRTIndex; i < firstRTIndex + stateCount;++i)
+			{
+				D3D12_RENDER_TARGET_BLEND_DESC* pDesc = &m_pipelineDesc.BlendState.RenderTarget[i];
+				pDesc->BlendEnable = states[i].enable;
+				pDesc->BlendOp = D3D12TypeMapper::MapBlendOp(states[i].colorOp);
+				pDesc->BlendOpAlpha = D3D12TypeMapper::MapBlendOp(states[i].alphaOp);
+				pDesc->SrcBlend = D3D12TypeMapper::MapBlendFactor(states[i].srcColorFactor);
+				pDesc->SrcBlendAlpha = D3D12TypeMapper::MapBlendFactor(states[i].srcAlphaFactor);
+				pDesc->DestBlend = D3D12TypeMapper::MapBlendFactor(states[i].destColorFactor);
+				pDesc->DestBlendAlpha = D3D12TypeMapper::MapBlendFactor(states[i].destAlphaFactor);
+				//TODO RenderTargetWriteMask must be set to D3D12_COLOR_WRITE_ENABLE_ALL even if blend is disabled
+				//I can't figure out the reason yet,need to delve into it
+				pDesc->RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
+			}
 		}
 
 		void D3D12Device::ApplyDepthStencilState(const DepthStencilState& state)
@@ -157,6 +161,8 @@ namespace LightningGE
 			Device::ApplyDepthStencilState(state);
 			D3D12_DEPTH_STENCIL_DESC* pDesc = &m_pipelineDesc.DepthStencilState;
 			pDesc->DepthEnable = state.depthTestEnable;
+			//TODO change
+			pDesc->DepthEnable = FALSE;
 			pDesc->DepthFunc = D3D12TypeMapper::MapCmpFunc(state.depthCmpFunc);
 			pDesc->DepthWriteMask = state.depthWriteEnable ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;
 			pDesc->StencilEnable = state.stencilEnable;
@@ -311,7 +317,7 @@ namespace LightningGE
 		{
 			ComPtr<ID3D12PipelineState> pipelineState;
 			ApplyRasterizerState(state.rasterizerState);
-			ApplyBlendState(state.blendState);
+			ApplyBlendStates(0, state.blendStates, state.outputRenderTargetCount);
 			ApplyDepthStencilState(state.depthStencilState);
 			std::vector<IShader*> shaders;
 			ApplyShader(state.vs);
@@ -332,6 +338,13 @@ namespace LightningGE
 			UpdatePSOInputLayout(state.inputLayouts);
 			auto rootSignature = GetRootSignature(shaders);
 			m_pipelineDesc.pRootSignature = rootSignature.Get();
+			m_pipelineDesc.PrimitiveTopologyType = D3D12TypeMapper::MapPrimitiveType(state.primType);
+			//TODO : should apply pipeline state based on PipelineState
+			m_pipelineDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+			m_pipelineDesc.NumRenderTargets = m_devicePipelineState.outputRenderTargetCount;
+			m_pipelineDesc.SampleDesc.Count = 1;
+			m_pipelineDesc.SampleDesc.Quality = 0;
+			m_pipelineDesc.SampleMask = 0xfffffff;
 			auto hr = m_device->CreateGraphicsPipelineState(&m_pipelineDesc, IID_PPV_ARGS(&pipelineState));
 			if (FAILED(hr))
 			{
@@ -353,6 +366,8 @@ namespace LightningGE
 			layout.components.push_back(defaultComponent);
 			m_devicePipelineState.inputLayouts.push_back(layout);
 			m_devicePipelineState.depthStencilState.depthTestEnable = false;
+			m_devicePipelineState.primType = PrimitiveType::TRIANGLE_LIST;
+			m_devicePipelineState.outputRenderTargetCount = 1;
 			ApplyPipelineState(m_devicePipelineState);
 		}
 
@@ -451,7 +466,8 @@ namespace LightningGE
 				const auto& parameters = static_cast<D3D12Shader*>(shaders[i])->GetRootParameters();
 				cbParameters.insert(cbParameters.end(), parameters.begin(), parameters.end());
 			}
-			rootSignatureDesc.Init(cbParameters.size(), &cbParameters[0], 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+			D3D12_ROOT_PARAMETER* pParameters = cbParameters.empty() ? nullptr : &cbParameters[0];
+			rootSignatureDesc.Init(cbParameters.size(), pParameters, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 			ComPtr<ID3DBlob> signature;
 			auto hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, nullptr);
@@ -544,23 +560,77 @@ namespace LightningGE
 			else
 			{
 				bufferCommit = it->second;
+				D3D12_RESOURCE_STATES oldState = bufferCommit.type == GPUBufferType::VERTEX ? \
+					D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER : D3D12_RESOURCE_STATE_INDEX_BUFFER;
 				m_commandList->ResourceBarrier(1, 
 					&CD3DX12_RESOURCE_BARRIER::Transition(bufferCommit.defaultHeap.Get(), 
-						D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, D3D12_RESOURCE_STATE_COPY_DEST));
+						oldState, D3D12_RESOURCE_STATE_COPY_DEST));
 			}
 			D3D12_SUBRESOURCE_DATA subResourceData{};
 			subResourceData.pData = pBuffer->GetBuffer();
 			subResourceData.RowPitch = bufferSize;
 			subResourceData.SlicePitch = bufferSize;
 			UpdateSubresources(m_commandList.Get(), bufferCommit.defaultHeap.Get(), bufferCommit.uploadHeap.Get(), 0, 0, 1, &subResourceData);
+			D3D12_RESOURCE_STATES newState = bufferCommit.type == GPUBufferType::VERTEX ? \
+				D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER : D3D12_RESOURCE_STATE_INDEX_BUFFER;
+
 			m_commandList->ResourceBarrier(1, 
 				&CD3DX12_RESOURCE_BARRIER::Transition(bufferCommit.defaultHeap.Get(), 
-					D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER));
+					D3D12_RESOURCE_STATE_COPY_DEST, newState));
 		}
 
-		void D3D12Device::BindGPUBuffers(std::uint8_t startSlot, const GPUBuffer** pBuffers, const std::uint8_t bufferCount)
+		void D3D12Device::BindGPUBuffers(std::uint8_t startSlot, const std::vector<GPUBuffer*>& pBuffers)
 		{
-
+			if (pBuffers.empty())
+				return;
+			auto bufferType = pBuffers[0]->GetType();
+			switch (bufferType)
+			{
+			case GPUBufferType::VERTEX:
+			{
+				D3D12_VERTEX_BUFFER_VIEW* bufferViews = m_frameVBViews[m_frameResourceIndex];
+				for (std::uint8_t i = startSlot; i < startSlot + pBuffers.size();++i)
+				{
+					bufferViews[i] = m_bufferCommitMap[pBuffers[i]].vertexBufferView;
+				}
+				m_commandList->IASetVertexBuffers(startSlot, pBuffers.size(), bufferViews);
+				break;
+			}
+			case GPUBufferType::INDEX:
+				m_commandList->IASetIndexBuffer(&m_bufferCommitMap[pBuffers[0]].indexBufferView);
+				break;
+			default:
+				break;
+			}
 		}
+
+		void D3D12Device::DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset)
+		{
+			//TODO : set topology based on pipeline state
+			m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			m_commandList->DrawInstanced(vertexCountPerInstance, instanceCount, firstVertexIndex, instanceDataOffset);
+		}
+
+		void D3D12Device::DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset)
+		{
+			//TODO : set topology based on pipeline state
+			D3D12_VIEWPORT	vp{};
+			vp.Width = 800;
+			vp.Height = 600;
+			vp.TopLeftX = 0;
+			vp.TopLeftY = 0;
+			vp.MinDepth = 0.0f;
+			vp.MaxDepth = 1.0f;
+
+			D3D12_RECT scissorRect;
+			scissorRect.left = scissorRect.top = 0;
+			scissorRect.right = 800;
+			scissorRect.bottom = 600;
+			m_commandList->RSSetScissorRects(1, &scissorRect);
+			m_commandList->RSSetViewports(1, &vp);
+			m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			m_commandList->DrawIndexedInstanced(indexCountPerInstance, instanceCount, firstIndex, indexDataOffset, instanceDataOffset);
+		}
+
 	}
 }

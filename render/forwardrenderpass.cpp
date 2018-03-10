@@ -1,3 +1,4 @@
+#include <unordered_map>
 #include "forwardrenderpass.h"
 #include "renderer.h"
 
@@ -18,6 +19,7 @@ namespace LightningGE
 				CommitPipelineStates(renderItem);
 				CommitShaderArguments(renderItem);
 				CommitBuffers(renderItem.geometry);
+				Draw(renderItem.geometry);
 			}
 			m_renderItems.clear();
 		}
@@ -25,6 +27,8 @@ namespace LightningGE
 		void ForwardRenderPass::CommitPipelineStates(const RenderItem& item)
 		{
 			PipelineState state{};
+			//TODO : set render target count based on model setting
+			state.outputRenderTargetCount = 1;
 			if (item.material)
 			{
 				state.vs = item.material->GetShader(ShaderType::VERTEX);
@@ -33,6 +37,7 @@ namespace LightningGE
 				state.hs = item.material->GetShader(ShaderType::TESSELATION_CONTROL);
 				state.ds = item.material->GetShader(ShaderType::TESSELATION_EVALUATION);
 			}
+			state.primType = item.geometry->primType;
 			//TODO : Apply other pipeline states(blend state, rasterizer state etc)
 			auto pDevice = Renderer::Instance()->GetDevice();
 			state.inputLayouts = GetInputLayouts(item.geometry);
@@ -88,7 +93,8 @@ namespace LightningGE
 		void ForwardRenderPass::CommitBuffers(const SharedGeometryPtr& geometry)
 		{
 			auto pDevice = Renderer::Instance()->GetDevice();
-			for (size_t i = 0; i < MAX_GEOMETRY_BUFFER_COUNT; i++)
+			std::unordered_map<std::uint8_t, std::vector<GPUBuffer*>> bufferBinding;
+			for (std::uint8_t i = 0; i < MAX_GEOMETRY_BUFFER_COUNT; i++)
 			{
 				if (!geometry->vbs[i])
 					continue;
@@ -97,12 +103,50 @@ namespace LightningGE
 					pDevice->CommitGPUBuffer(geometry->vbs[i].get());
 					geometry->vbs_dirty[i] = false;
 				}
+				if (bufferBinding.empty())
+				{
+					bufferBinding.insert(std::make_pair(i, std::vector<GPUBuffer*>()));
+					bufferBinding[i].push_back(geometry->vbs[i].get());
+				}
+				else
+				{
+					if (bufferBinding.find(i - 1) != bufferBinding.end())
+						bufferBinding[i - 1].push_back(geometry->vbs[i].get());
+					else
+					{
+						bufferBinding.insert(std::make_pair(i, std::vector<GPUBuffer*>()));
+						bufferBinding[i].push_back(geometry->vbs[i].get());
+					}
+				}
 			}
-			if (geometry->ib && geometry->ib_dirty)
+			if (geometry->ib)
 			{
-				pDevice->CommitGPUBuffer(geometry->ib.get());
-				geometry->ib_dirty = false;
+				if (geometry->ib_dirty)
+				{
+					pDevice->CommitGPUBuffer(geometry->ib.get());
+					geometry->ib_dirty = false;
+				}
+				bufferBinding.insert(std::make_pair(MAX_GEOMETRY_BUFFER_COUNT, std::vector<GPUBuffer*>()));
+				bufferBinding[MAX_GEOMETRY_BUFFER_COUNT].push_back(geometry->ib.get());
+			}
+			for (auto it = bufferBinding.cbegin();it != bufferBinding.cend();++it)
+			{
+				pDevice->BindGPUBuffers(it->first, it->second);
 			}
 		}
+
+		void ForwardRenderPass::Draw(const SharedGeometryPtr& geometry)
+		{
+			auto pDevice = Renderer::Instance()->GetDevice();
+			if (geometry->ib)
+			{
+				pDevice->DrawIndexed(geometry->ib->GetIndexCount(), 1, 0, 0, 0);
+			}
+			else
+			{
+				//TODO : should implement
+			}
+		}
+
 	}
 }

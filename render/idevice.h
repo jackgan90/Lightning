@@ -26,7 +26,7 @@ namespace LightningGE
 			virtual SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap) = 0;
 			virtual SharedShaderPtr GetDefaultShader(ShaderType type) = 0;
 			virtual void ApplyRasterizerState(const RasterizerState& state) = 0;
-			virtual void ApplyBlendState(const BlendState& state) = 0;
+			virtual void ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount) = 0;
 			virtual void ApplyDepthStencilState(const DepthStencilState& state) = 0;
 			virtual void ApplyPipelineState(const PipelineState& state) = 0;
 			virtual void ApplyViewports(const RectFList& vp) = 0;
@@ -35,7 +35,9 @@ namespace LightningGE
 			//copy all data pointed to by pBuffer to GPU
 			virtual void CommitGPUBuffer(const GPUBuffer* pBuffer) = 0;
 			//bind pBuffer to a GPU slot(does not copy data,just binding), each invocation will override previous binding
-			virtual void BindGPUBuffers(std::uint8_t startSlot, const GPUBuffer** pBuffers, const std::uint8_t bufferCount) = 0;
+			virtual void BindGPUBuffers(std::uint8_t startSlot, const std::vector<GPUBuffer*>& buffers) = 0;
+			virtual void DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset) = 0;
+			virtual void DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset) = 0;
 		};
 		using SharedDevicePtr = std::shared_ptr<IDevice>;
 	}

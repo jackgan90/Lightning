@@ -38,7 +38,7 @@ namespace LightningGE
 			m_renderer = CreateRenderer();
 			//Create a simple scene here just for test
 			auto scene = SceneManager::Instance()->CreateScene();
-			auto cube = std::make_shared<Scene::Cube>(1.0);
+			auto cube = std::make_shared<Scene::Cube>(0.5);
 			scene->AddDrawable(cube);
 			//End of scene creation
 			RegisterWindowHandlers();

@@ -33,7 +33,6 @@ set(SOURCES renderer.cpp
 			indexbuffer.cpp
 			rendererhelper.cpp
 			rendererfactory.cpp
-			renderconstants.cpp
 			rendertargetmanager.cpp
 			gpubuffer.cpp
 			geometry.cpp

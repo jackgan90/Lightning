@@ -41,7 +41,7 @@ namespace LightningGE
 			,m_clearColor(0.5f, 0.5f, 0.5f, 1.0f), m_currentBackBufferIndex(0)
 		{
 #ifndef NDEBUG
-			EnableDebugLayer();
+			//EnableDebugLayer();
 #endif
 			ComPtr<IDXGIFactory4> dxgiFactory;
 			HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(&dxgiFactory));
@@ -60,7 +60,7 @@ namespace LightningGE
 			m_currentBackBufferIndex = nativeSwapChain->GetCurrentBackBufferIndex();
 			m_renderTargets.reserve(8);
 #ifndef NDEBUG
-			InitDXGIDebug();
+			//InitDXGIDebug();
 #endif
 			REPORT_LIVE_OBJECTS;
 		}

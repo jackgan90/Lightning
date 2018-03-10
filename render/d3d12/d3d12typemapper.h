@@ -142,6 +142,8 @@ namespace LightningGE
 				{
 				case RenderFormat::R32G32B32_FLOAT:
 					return DXGI_FORMAT_R32G32B32_FLOAT;
+				case RenderFormat::R32G32B32A32_FLOAT:
+					return DXGI_FORMAT_R32G32B32A32_FLOAT;
 				case RenderFormat::D24_S8:
 					return DXGI_FORMAT_D24_UNORM_S8_UINT;
 				default:
@@ -155,6 +157,8 @@ namespace LightningGE
 				{
 				case DXGI_FORMAT_R32G32B32_FLOAT:
 					return RenderFormat::R32G32B32_FLOAT;
+				case DXGI_FORMAT_R32G32B32A32_FLOAT:
+					return RenderFormat::R32G32B32A32_FLOAT;
 				case DXGI_FORMAT_D24_UNORM_S8_UINT:
 					return RenderFormat::D24_S8;
 				default:
@@ -172,6 +176,25 @@ namespace LightningGE
 					return DXGI_FORMAT_R32_UINT;
 				default:
 					return DXGI_FORMAT_R16_UINT;
+				}
+			}
+
+			static D3D12_PRIMITIVE_TOPOLOGY_TYPE MapPrimitiveType(PrimitiveType type)
+			{
+				switch (type)
+				{
+				case PrimitiveType::POINT_LIST:
+					return D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
+				case PrimitiveType::LINE_LIST:
+					return D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+				case PrimitiveType::LINE_STRIP:
+					return D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+				case PrimitiveType::TRIANGLE_LIST:
+					return D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+				case PrimitiveType::TRIANGLE_STRIP:
+					return D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+				default:
+					return D3D12_PRIMITIVE_TOPOLOGY_TYPE_UNDEFINED;
 				}
 			}
 		};

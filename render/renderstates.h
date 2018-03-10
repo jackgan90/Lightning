@@ -6,6 +6,7 @@
 #include "ishader.h"
 #include "irendertarget.h"
 #include "vertexbuffer.h"
+#include "renderconstants.h"
 #include "types/rect.h"
 
 namespace LightningGE
@@ -41,7 +42,6 @@ namespace LightningGE
 			BlendState():enable(false), colorOp(BlendOperation::ADD) ,alphaOp(BlendOperation::ADD)
 				, srcColorFactor(BlendFactor::SRC_ALPHA) ,srcAlphaFactor(BlendFactor::SRC_ALPHA)
 				, destColorFactor(BlendFactor::INV_SRC_ALPHA), destAlphaFactor(BlendFactor::INV_SRC_ALPHA)
-				, renderTarget(nullptr)
 			{
 			}
 			bool enable;
@@ -51,7 +51,6 @@ namespace LightningGE
 			BlendFactor srcAlphaFactor;
 			BlendFactor destColorFactor;
 			BlendFactor destAlphaFactor;
-			IRenderTarget* renderTarget;
 
 			bool operator==(const BlendState& state)const noexcept
 			{
@@ -85,11 +84,6 @@ namespace LightningGE
 					return false;
 				}
 				
-				if (renderTarget != state.renderTarget)
-				{
-					return false;
-				}
-
 				return true;
 			}
 
@@ -303,8 +297,9 @@ namespace LightningGE
 
 		struct PipelineState
 		{
+			PrimitiveType primType;
 			RasterizerState rasterizerState;
-			BlendState blendState;
+			BlendState blendStates[MAX_RENDER_TARGET_COUNT];
 			DepthStencilState depthStencilState;
 			IShader* vs;
 			IShader* fs;
@@ -312,17 +307,29 @@ namespace LightningGE
 			IShader* hs;
 			IShader* ds;
 			std::vector<VertexInputLayout> inputLayouts;
+			std::uint8_t outputRenderTargetCount;
 
 			bool operator==(const PipelineState& state)const noexcept
 			{
+				if (primType != state.primType)
+				{
+					return false;
+				}
+
+				if (outputRenderTargetCount != state.outputRenderTargetCount)
+				{
+					return false;
+				}
+
 				if (rasterizerState != state.rasterizerState)
 				{
 					return false;
 				}
 
-				if (blendState != state.blendState)
+				for (std::uint8_t i = 0;i < outputRenderTargetCount;++i)
 				{
-					return false;
+					if (blendStates[i] != state.blendStates[i])
+						return false;
 				}
 
 				if (depthStencilState != state.depthStencilState)
@@ -421,7 +428,6 @@ namespace std
 			boost::hash_combine(seed, state.destAlphaFactor);
 			boost::hash_combine(seed, state.destColorFactor);
 			boost::hash_combine(seed, state.enable);
-			boost::hash_combine(seed, state.renderTarget? state.renderTarget->GetID() : 0);
 			boost::hash_combine(seed, state.srcAlphaFactor);
 			boost::hash_combine(seed, state.srcColorFactor);
 			return seed;
@@ -472,8 +478,13 @@ namespace std
 		std::size_t operator()(const LightningGE::Render::PipelineState& state)const noexcept
 		{
 			std::size_t seed = 0;
+			boost::hash_combine(seed, state.primType);
+			boost::hash_combine(seed, state.outputRenderTargetCount);
 			boost::hash_combine(seed, std::hash<LightningGE::Render::RasterizerState>{}(state.rasterizerState));
-			boost::hash_combine(seed, std::hash<LightningGE::Render::BlendState>{}(state.blendState));
+			for (std::uint8_t i = 0;i < state.outputRenderTargetCount;++i)
+			{
+				boost::hash_combine(seed, std::hash<LightningGE::Render::BlendState>{}(state.blendStates[i]));
+			}
 			boost::hash_combine(seed, std::hash<LightningGE::Render::DepthStencilState>{}(state.depthStencilState));
 			if (state.vs)
 			{

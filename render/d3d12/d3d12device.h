@@ -29,14 +29,16 @@ namespace LightningGE
 			ID3D12GraphicsCommandList* GetGraphicsCommandList()const { return m_commandList.Get(); }
 			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)override;
 			void ApplyRasterizerState(const RasterizerState& state)override;
-			void ApplyBlendState(const BlendState& state)override;
+			void ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount)override;
 			void ApplyDepthStencilState(const DepthStencilState& state)override;
 			void ApplyPipelineState(const PipelineState& state)override;
 			void ApplyViewports(const RectFList& vp)override;
 			void ApplyScissorRects(const RectFList& scissorRects)override;
 			void ApplyRenderTargets(const RenderTargetList& renderTargets, const IDepthStencilBuffer* dsBuffer)override;
 			void CommitGPUBuffer(const GPUBuffer* pBuffer)override;
-			void BindGPUBuffers(std::uint8_t startSlot, const GPUBuffer** pBuffers, const std::uint8_t bufferCount)override;
+			void BindGPUBuffers(std::uint8_t startSlot, const std::vector<GPUBuffer*>& buffers)override;
+			void DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset)override;
+			void DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset)override;
 			void BeginFrame(const UINT frameResourceIndex);
 		private:
 			struct GPUBufferCommit
@@ -81,6 +83,7 @@ namespace LightningGE
 			std::uint8_t m_frameResourceIndex;
 			//TODO : will ID3D12DescriptorHeap be dangling?
 			std::vector<ID3D12DescriptorHeap*> m_descriptorHeaps[RENDER_FRAME_COUNT];
+			D3D12_VERTEX_BUFFER_VIEW m_frameVBViews[RENDER_FRAME_COUNT][MAX_GEOMETRY_BUFFER_COUNT];
 		};
 	}
 }
