@@ -1,5 +1,6 @@
 #pragma once
 #include <d3d12.h>
+#include <dxgi1_4.h>
 #include <wrl\client.h>
 #include <vector>
 #include <memory>
@@ -20,7 +21,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDER_API D3D12Device : public Device
 		{
 		public:
-			D3D12Device(const ComPtr<ID3D12Device>& pDevice, const SharedFileSystemPtr& fs);
+			D3D12Device(IDXGIFactory4* factory, const SharedFileSystemPtr& fs);
 			~D3D12Device()override;
 			void ClearRenderTarget(IRenderTarget* rt, const ColorF& color, const RectIList* rects=nullptr)override;
 			SharedVertexBufferPtr CreateVertexBuffer()override;
@@ -55,6 +56,7 @@ namespace LightningGE
 			//if parameter pState is nullptr,this method will create a default pipeline state
 			using PipelineCacheMap = std::unordered_map<std::size_t, ComPtr<ID3D12PipelineState>>;
 			using RootSignatureMap = std::unordered_map<std::size_t, ComPtr<ID3D12RootSignature>>;
+			void CreateNativeDevice(IDXGIFactory4* factory);
 			void ApplyShader(IShader* pShader);
 			void UpdatePSOInputLayout(const std::vector<VertexInputLayout>& inputLayouts);
 			void SetUpDefaultPipelineStates();
@@ -67,7 +69,7 @@ namespace LightningGE
 			SharedFileSystemPtr m_fs;
 			ComPtr<ID3D12Device> m_device;
 			ComPtr<ID3D12CommandQueue> m_commandQueue;
-			std::vector<ComPtr<ID3D12CommandAllocator>> m_commandAllocators;
+			ComPtr<ID3D12CommandAllocator> m_commandAllocators[RENDER_FRAME_COUNT];
 			size_t m_inputElementCount;
 			ComPtr<ID3D12GraphicsCommandList> m_commandList;
 			ComPtr<ID3D12PipelineState> m_d3d12PipelineState;

@@ -38,11 +38,11 @@ namespace LightningGE
 			"{\n"
 				"return float4(1.0f, 0.0f, 0.0f, 1.0f);\n"
 			"}\n";
-		D3D12Device::D3D12Device(const ComPtr<ID3D12Device>& pDevice, const SharedFileSystemPtr& fs)
+		D3D12Device::D3D12Device(IDXGIFactory4* factory, const SharedFileSystemPtr& fs)
 			:Device(), m_fs(fs), m_pipelineDesc{}, m_pInputElementDesc(nullptr), m_currentDSBuffer(nullptr), m_frameResourceIndex(0)
 		{
+			CreateNativeDevice(factory);
 			m_smallObjAllocator = std::make_unique<StackAllocator<true, 16, 8192>>();
-			m_device = pDevice;
 			D3D12_COMMAND_QUEUE_DESC desc = {};
 			HRESULT hr = m_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&m_commandQueue));
 			if (FAILED(hr))
@@ -51,13 +51,11 @@ namespace LightningGE
 			}
 			for (size_t i = 0; i < RENDER_FRAME_COUNT; i++)
 			{
-				ComPtr<ID3D12CommandAllocator> allocator;
-				hr = m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator));
+				hr = m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocators[i]));
 				if (FAILED(hr))
 				{
 					throw DeviceInitException("Failed to create command allocator!");
 				}
-				m_commandAllocators.push_back(allocator);
 			}
 			hr = m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[0].Get(), nullptr, IID_PPV_ARGS(&m_commandList));
 			if (FAILED(hr))
@@ -86,6 +84,43 @@ namespace LightningGE
 			m_bufferCommitMap.clear();
 			m_shaderMgr.reset();
 		}
+
+		void D3D12Device::CreateNativeDevice(IDXGIFactory4* factory)
+		{
+			ComPtr<IDXGIAdapter1> adaptor;
+			int adaptorIndex = 0;
+			bool adaptorFound = false;
+			HRESULT hr;
+
+			while (factory->EnumAdapters1(adaptorIndex, &adaptor) != DXGI_ERROR_NOT_FOUND)
+			{
+				DXGI_ADAPTER_DESC1 desc;
+				adaptor->GetDesc1(&desc);
+
+				if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+				{
+					adaptorIndex++;
+					continue;
+				}
+				hr = D3D12CreateDevice(adaptor.Get(), D3D_FEATURE_LEVEL_11_0, __uuidof(ID3D12Device), nullptr);
+				if (SUCCEEDED(hr))
+				{
+					adaptorFound = true;
+					break;
+				}
+				adaptorIndex++;
+			}
+			if (!adaptorFound)
+			{
+				throw DeviceInitException("Can't find hardware d3d12 adaptor!");
+			}
+			hr = D3D12CreateDevice(adaptor.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&m_device));
+			if (FAILED(hr))
+			{
+				throw DeviceInitException("Failed to create d3d12 device!");
+			}
+		}
+
 
 		void D3D12Device::ClearRenderTarget(IRenderTarget* rt, const ColorF& color, const RectIList* rects)
 		{

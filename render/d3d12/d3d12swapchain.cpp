@@ -2,12 +2,13 @@
 #include <dxgi.h>
 #include "common.h"
 #include "logger.h"
-//#include "rendererfactory.h"
+#include "winwindow.h"
 #include "d3d12renderer.h"
 #include "d3d12swapchain.h"
 #include "d3d12rendertarget.h"
 #include "d3d12rendertargetmanager.h"
 #include "d3d12descriptorheapmanager.h"
+#include "configmanager.h"
 
 namespace LightningGE
 {
@@ -15,17 +16,64 @@ namespace LightningGE
 	{
 		using Foundation::logger;
 		using Foundation::LogLevel;
-		D3D12SwapChain::D3D12SwapChain(const ComPtr<IDXGISwapChain3>& pSwapChain, D3D12Renderer* pRenderer):m_renderer(pRenderer)
+		using Foundation::ConfigManager;
+		using Foundation::EngineConfig;
+		using WindowSystem::WinWindow;
+		D3D12SwapChain::D3D12SwapChain(IDXGIFactory4* factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow)
 		{
-			m_swapChain = pSwapChain;
+			CreateNativeSwapChain(factory, pDevice, pCommandQueue, pWindow);
 			m_swapChain->GetDesc(&m_desc);
-			BindRenderTargets();
+			BindRenderTargets(pDevice);
+		}
+
+		void D3D12SwapChain::CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow)
+		{
+			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
+			UINT sampleCount = 1;
+			bool msaaEnabled = false;
+			UINT qualityLevels = 0;
+			if (config.MSAAEnabled)
+			{
+				D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels;
+				msQualityLevels.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+				msQualityLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
+				msQualityLevels.SampleCount = config.MSAASampleCount > 0 ? config.MSAASampleCount : 1;
+				msQualityLevels.NumQualityLevels = 0;
+				pDevice->CheckFeatureSupport(
+					D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msQualityLevels, sizeof(msQualityLevels));
+				qualityLevels = msQualityLevels.NumQualityLevels;
+				sampleCount = msQualityLevels.SampleCount;
+				assert(qualityLevels > 0 && "Unexpected MSAA quality levels.");
+			}
+			DXGI_MODE_DESC bufferDesc = {};
+			bufferDesc.Width = pWindow->GetWidth();
+			bufferDesc.Height = pWindow->GetHeight();
+			bufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+
+			DXGI_SAMPLE_DESC sampleDesc = {};
+			sampleDesc.Count = msaaEnabled ? sampleCount : 1;
+			sampleDesc.Quality = msaaEnabled ? qualityLevels - 1 : 0;
+
+			DXGI_SWAP_CHAIN_DESC swapChainDesc = {};
+			swapChainDesc.BufferCount = RENDER_FRAME_COUNT;
+			swapChainDesc.BufferDesc = bufferDesc;
+			swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+			swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+			auto hwnd = static_cast<WinWindow*>(pWindow)->GetWindowHandle();
+			swapChainDesc.OutputWindow = hwnd;
+			swapChainDesc.SampleDesc = sampleDesc;
+			swapChainDesc.Windowed = TRUE;
+
+			ComPtr<IDXGISwapChain> tempSwapChain;
+
+			auto hr = factory->CreateSwapChain(pCommandQueue, &swapChainDesc, &tempSwapChain);
+			ComPtr<IDXGISwapChain3> swapChain;
+			tempSwapChain.As(&m_swapChain);
 		}
 
 		D3D12SwapChain::~D3D12SwapChain()
 		{
 			m_renderTargets.clear();
-			m_renderer = nullptr;
 		}
 
 		bool D3D12SwapChain::Present()
@@ -34,11 +82,9 @@ namespace LightningGE
 			return SUCCEEDED(hr);
 		}
 
-		void D3D12SwapChain::BindRenderTargets()
+		void D3D12SwapChain::BindRenderTargets(ID3D12Device* pDevice)
 		{
 			HRESULT hr;
-			auto d3ddevice = static_cast<D3D12Device*>(m_renderer->GetDevice());
-			auto nativeDevice = d3ddevice->GetNative();
 			D3D12_DESCRIPTOR_HEAP_DESC desc{};
 			desc.NumDescriptors = RENDER_FRAME_COUNT;
 			desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
@@ -60,7 +106,7 @@ namespace LightningGE
 				{
 					throw SwapChainInitException("Failed to get d3d12 swap chain buffer.");
 				}
-				nativeDevice->CreateRenderTargetView(swapChainTargets[i].Get(), nullptr, rtvHandle);
+				pDevice->CreateRenderTargetView(swapChainTargets[i].Get(), nullptr, rtvHandle);
 				auto rt = rtMgr->CreateSwapChainRenderTarget(swapChainTargets[i], rtvHandle, this);
 				m_renderTargets[i] = rt->GetID();
 				rtvHandle.Offset(pHeapInfo->incrementSize);
@@ -74,5 +120,7 @@ namespace LightningGE
 				return SharedRenderTargetPtr();
 			return D3D12RenderTargetManager::Instance()->GetRenderTarget(it->second);
 		}
+
+
 	}
 }

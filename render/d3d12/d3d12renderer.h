@@ -38,9 +38,9 @@ namespace LightningGE
 			void EndFrame()override;
 		private:
 			void WaitForPreviousFrame(bool waitAll);
-			void InitDevice(const ComPtr<IDXGIFactory4>& dxgiFactory);
-			void InitSwapChain(const ComPtr<IDXGIFactory4>& dxgiFactory, const SharedWindowPtr& pWindow);
 			void CreateFences();
+			ComPtr<ID3D12CommandQueue> m_commandQueue;
+			ComPtr<ID3D12GraphicsCommandList> m_commandList;
 			std::unique_ptr<D3D12RenderTargetManager> m_rtMgr;
 			std::vector<ComPtr<ID3D12Fence>> m_fences;
 			std::vector<UINT64> m_fenceValues;
