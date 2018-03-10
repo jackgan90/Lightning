@@ -106,7 +106,7 @@ namespace LightningGE
 			BACK
 		};
 
-		enum class FrontFaceWindingOrder
+		enum class WindingOrder
 		{
 			COUNTER_CLOCKWISE,
 			CLOCKWISE
@@ -114,13 +114,13 @@ namespace LightningGE
 
 		struct RasterizerState
 		{
-			RasterizerState() :fillMode(FillMode::SOLID), cullMode(CullMode::BACK), frontFaceWindingOrder(FrontFaceWindingOrder::COUNTER_CLOCKWISE)
+			RasterizerState() :fillMode(FillMode::SOLID), cullMode(CullMode::BACK), frontFace(WindingOrder::COUNTER_CLOCKWISE)
 			{
 
 			}
 			FillMode fillMode;
 			CullMode cullMode;
-			FrontFaceWindingOrder frontFaceWindingOrder;
+			WindingOrder frontFace;
 
 			bool operator==(const RasterizerState& state)const noexcept
 			{
@@ -134,7 +134,7 @@ namespace LightningGE
 					return false;
 				}
 
-				if (frontFaceWindingOrder != state.frontFaceWindingOrder)
+				if (frontFace != state.frontFace)
 				{
 					return false;
 				}
@@ -227,9 +227,9 @@ namespace LightningGE
 			CmpFunc depthCmpFunc;
 			//stencil config
 			bool stencilEnable;
-			unsigned char stencilRef;
-			unsigned char stencilReadMask;
-			unsigned char stencilWriteMask;
+			std::uint8_t stencilRef;
+			std::uint8_t stencilReadMask;
+			std::uint8_t stencilWriteMask;
 			StencilFace frontFace;
 			StencilFace backFace;
 
@@ -295,9 +295,18 @@ namespace LightningGE
 			std::vector<VertexComponent> components;
 		};
 
+		struct Viewport : public RectF
+		{
+		};
+
+		struct ScissorRect : public RectF
+		{
+		};
+
 		struct PipelineState
 		{
 			PrimitiveType primType;
+			std::uint8_t outputRenderTargetCount;
 			RasterizerState rasterizerState;
 			BlendState blendStates[MAX_RENDER_TARGET_COUNT];
 			DepthStencilState depthStencilState;
@@ -307,7 +316,8 @@ namespace LightningGE
 			IShader* hs;
 			IShader* ds;
 			std::vector<VertexInputLayout> inputLayouts;
-			std::uint8_t outputRenderTargetCount;
+			Viewport viewPort;
+			ScissorRect scissorRect;
 
 			bool operator==(const PipelineState& state)const noexcept
 			{
@@ -384,6 +394,16 @@ namespace LightningGE
 					}
 				}
 
+				if (viewPort != state.viewPort)
+				{
+					return false;
+				}
+
+				if (scissorRect != state.scissorRect)
+				{
+					return false;
+				}
+
 				return true;
 			}
 
@@ -393,19 +413,23 @@ namespace LightningGE
 			}
 		};
 
-		struct Viewport : public RectF
-		{
-		};
-
-		struct ScissorRect : public RectF
-		{
-
-		};
 	}
 }
 
 namespace std
 {
+	template<typename T>
+	std::size_t PipelineHash(const T& object)
+	{
+		return std::hash<T>{}(object);
+	}
+
+	template<typename T>
+	std::size_t PipelineHash(const T* pObject)
+	{
+		return std::hash<T>{}(*oObject);
+	}
+
 	template<> struct hash<LightningGE::Render::RasterizerState>
 	{
 		std::size_t operator()(const LightningGE::Render::RasterizerState& state)const noexcept
@@ -413,7 +437,7 @@ namespace std
 			std::size_t seed = 0;
 			boost::hash_combine(seed, state.cullMode);
 			boost::hash_combine(seed, state.fillMode);
-			boost::hash_combine(seed, state.frontFaceWindingOrder);
+			boost::hash_combine(seed, state.frontFace);
 			return seed;
 		}
 	};
@@ -467,8 +491,35 @@ namespace std
 			boost::hash_combine(seed, layout.components.size());
 			for (const auto& component : layout.components)
 			{
-				boost::hash_combine(seed, std::hash<LightningGE::Render::VertexComponent>{}(component));
+				boost::hash_combine(seed, PipelineHash(component));
 			}
+			return seed;
+		}
+	};
+	
+	
+	template<> struct hash<LightningGE::Render::Viewport>
+	{
+		std::size_t operator()(const LightningGE::Render::Viewport& viewPort)const noexcept
+		{
+			std::size_t seed = 0;
+			boost::hash_combine(seed, viewPort.left());
+			boost::hash_combine(seed, viewPort.right());
+			boost::hash_combine(seed, viewPort.top());
+			boost::hash_combine(seed, viewPort.bottom());
+			return seed;
+		}
+	};
+
+	template<> struct hash<LightningGE::Render::ScissorRect>
+	{
+		std::size_t operator()(const LightningGE::Render::ScissorRect& scissorRect)const noexcept
+		{
+			std::size_t seed = 0;
+			boost::hash_combine(seed, scissorRect.left());
+			boost::hash_combine(seed, scissorRect.right());
+			boost::hash_combine(seed, scissorRect.top());
+			boost::hash_combine(seed, scissorRect.bottom());
 			return seed;
 		}
 	};
@@ -480,44 +531,46 @@ namespace std
 			std::size_t seed = 0;
 			boost::hash_combine(seed, state.primType);
 			boost::hash_combine(seed, state.outputRenderTargetCount);
-			boost::hash_combine(seed, std::hash<LightningGE::Render::RasterizerState>{}(state.rasterizerState));
+			boost::hash_combine(seed, PipelineHash(state.rasterizerState));
 			for (std::uint8_t i = 0;i < state.outputRenderTargetCount;++i)
 			{
-				boost::hash_combine(seed, std::hash<LightningGE::Render::BlendState>{}(state.blendStates[i]));
+				boost::hash_combine(seed, PipelineHash(state.blendStates[i]));
 			}
-			boost::hash_combine(seed, std::hash<LightningGE::Render::DepthStencilState>{}(state.depthStencilState));
+			boost::hash_combine(seed, PipelineHash(state.depthStencilState));
 			if (state.vs)
 			{
 				boost::hash_combine(seed, 0x01);
-				boost::hash_combine(seed, LightningGE::Render::Shader::Hash(state.vs->GetType(), state.vs->GetName(), state.vs->GetMacros()));
+				boost::hash_combine(seed, PipelineHash(state.vs));
 			}
 			if (state.fs)
 			{
 				boost::hash_combine(seed, 0x02);
-				boost::hash_combine(seed, LightningGE::Render::Shader::Hash(state.fs->GetType(), state.fs->GetName(), state.fs->GetMacros()));
+				boost::hash_combine(seed, PipelineHash(state.fs));
 			}
 			if (state.gs)
 			{
 				boost::hash_combine(seed, 0x04);
-				boost::hash_combine(seed, LightningGE::Render::Shader::Hash(state.gs->GetType(), state.gs->GetName(), state.gs->GetMacros()));
+				boost::hash_combine(seed, PipelineHash(state.gs));
 			}
 			if (state.hs)
 			{
 				boost::hash_combine(seed, 0x10);
-				boost::hash_combine(seed, LightningGE::Render::Shader::Hash(state.hs->GetType(), state.hs->GetName(), state.hs->GetMacros()));
+				boost::hash_combine(seed, PipelineHash(state.hs));
 			}
 			if (state.ds)
 			{
 				boost::hash_combine(seed, 0x20);
-				boost::hash_combine(seed, LightningGE::Render::Shader::Hash(state.ds->GetType(), state.ds->GetName(), state.ds->GetMacros()));
+				boost::hash_combine(seed, PipelineHash(state.ds));
 			}
 			
 			boost::hash_combine(seed, state.inputLayouts.size());
 			for (const auto& inputLayout : state.inputLayouts)
 			{
-				boost::hash_combine(seed, inputLayout.slot);
-				boost::hash_combine(seed, std::hash<LightningGE::Render::VertexInputLayout>{}(inputLayout));
+				boost::hash_combine(seed, PipelineHash(inputLayout));
 			}
+
+			boost::hash_combine(seed, PipelineHash(state.viewPort));
+			boost::hash_combine(seed, PipelineHash(state.scissorRect));
 			return seed;
 		}
 	};

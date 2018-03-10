@@ -1,6 +1,6 @@
 #pragma once
 #include <d3d12.h>
-#include "renderstates.h"
+#include "pipelinestate.h"
 #include "indexbuffer.h"
 
 namespace LightningGE

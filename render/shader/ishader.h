@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <exception>
+#include <boost/functional/hash.hpp>
 #include "rendererexportdef.h"
 #include "shaderdefine.h"
 #include "filesystem.h"
@@ -132,4 +133,15 @@ namespace LightningGE
 			static StackAllocator<true, 16, 8192 > s_compileAllocator;
 		};
 	}
+}
+
+namespace std
+{
+	template<> struct hash<LightningGE::Render::IShader>
+	{
+		std::size_t operator()(const LightningGE::Render::IShader& shader)const noexcept
+		{
+			return LightningGE::Render::Shader::Hash(shader.GetType(), shader.GetName(), shader.GetMacros());
+		}
+	};
 }

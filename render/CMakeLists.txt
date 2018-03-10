@@ -11,7 +11,7 @@ set(HEADERS rendererexportdef.h
 			idepthstencilbuffer.h
 			irenderer.h
 			renderer.h
-			renderstates.h
+			pipelinestate.h
 			semantics.h
 			vertexbuffer.h
 			indexbuffer.h

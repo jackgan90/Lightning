@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "renderpass.h"
-#include "renderstates.h"
+#include "pipelinestate.h"
 
 namespace LightningGE
 {

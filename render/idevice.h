@@ -5,7 +5,7 @@
 #include "rendererexportdef.h"
 #include "irendertarget.h"
 #include "idepthstencilbuffer.h"
-#include "renderstates.h"
+#include "pipelinestate.h"
 #include "gpubuffer.h"
 #include "vertexbuffer.h"
 #include "ishader.h"
@@ -25,13 +25,7 @@ namespace LightningGE
 			virtual SharedVertexBufferPtr CreateVertexBuffer() = 0;
 			virtual SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap) = 0;
 			virtual SharedShaderPtr GetDefaultShader(ShaderType type) = 0;
-			virtual void ApplyRasterizerState(const RasterizerState& state) = 0;
-			virtual void ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount) = 0;
-			virtual void ApplyDepthStencilState(const DepthStencilState& state) = 0;
 			virtual void ApplyPipelineState(const PipelineState& state) = 0;
-			virtual void ApplyViewports(const RectFList& vp) = 0;
-			virtual void ApplyScissorRects(const RectFList& scissorRects) = 0;
-			virtual void ApplyRenderTargets(const SharedRenderTargetPtr* renderTargets, const std::uint8_t targetCount, const IDepthStencilBuffer* dsBuffer) = 0;
 			//copy all data pointed to by pBuffer to GPU
 			virtual void CommitGPUBuffer(const GPUBuffer* pBuffer) = 0;
 			//bind pBuffer to a GPU slot(does not copy data,just binding), each invocation will override previous binding

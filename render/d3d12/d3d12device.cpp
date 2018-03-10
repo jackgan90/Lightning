@@ -169,7 +169,7 @@ namespace LightningGE
 			D3D12_RASTERIZER_DESC* pDesc = &m_pipelineDesc.RasterizerState;
 			pDesc->FillMode = D3D12TypeMapper::MapFillMode(state.fillMode);
 			pDesc->CullMode = D3D12TypeMapper::MapCullMode(state.cullMode);
-			pDesc->FrontCounterClockwise = state.frontFaceWindingOrder == FrontFaceWindingOrder::COUNTER_CLOCKWISE;
+			pDesc->FrontCounterClockwise = state.frontFace == WindingOrder::COUNTER_CLOCKWISE;
 		}
 
 		void D3D12Device::ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount)

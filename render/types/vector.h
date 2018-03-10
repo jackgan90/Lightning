@@ -39,7 +39,7 @@ namespace LightningGE
 			}
 			bool operator!=(const Vector<_Scalar, Dimension>& v)const
 			{
-				return !(*this == mv);
+				return !(*this == v);
 			}
 			_Scalar& operator[](const int comp) { return Matrix<_Scalar, Dimension, 1>::operator()(comp, 0); }
 			_Scalar operator[](const int comp)const { return Matrix<_Scalar, Dimension, 1>::operator()(comp, 0); }

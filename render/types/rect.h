@@ -9,6 +9,7 @@ namespace LightningGE
 		class Rect : public Vector<_Scalar, 4>
 		{
 		public:
+			Rect() :Vector<_Scalar, 4>(){}
 			Rect(const _Scalar left, const _Scalar top, const _Scalar width, const _Scalar height):Vector<_Scalar, 4>({left, top, width, height}){}
 			template<typename Iterable>
 			Rect(const Iterable& data, typename std::iterator_traits<decltype(std::cbegin(data))>::pointer=nullptr) : Vector<_Scalar, 4>(data){}

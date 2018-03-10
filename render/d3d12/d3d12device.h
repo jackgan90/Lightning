@@ -21,6 +21,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDER_API D3D12Device : public Device
 		{
 		public:
+			friend class D3D12Renderer;
 			D3D12Device(IDXGIFactory4* factory, const SharedFileSystemPtr& fs);
 			~D3D12Device()override;
 			void ClearRenderTarget(IRenderTarget* rt, const ColorF& color, const RectIList* rects=nullptr)override;
@@ -29,18 +30,19 @@ namespace LightningGE
 			ID3D12CommandQueue* GetCommandQueue()const { return m_commandQueue.Get(); }
 			ID3D12GraphicsCommandList* GetGraphicsCommandList()const { return m_commandList.Get(); }
 			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)override;
-			void ApplyRasterizerState(const RasterizerState& state)override;
-			void ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount)override;
-			void ApplyDepthStencilState(const DepthStencilState& state)override;
 			void ApplyPipelineState(const PipelineState& state)override;
-			void ApplyViewports(const RectFList& vp)override;
-			void ApplyScissorRects(const RectFList& scissorRects)override;
-			void ApplyRenderTargets(const SharedRenderTargetPtr* renderTargets, const std::uint8_t targetCount, const IDepthStencilBuffer* dsBuffer)override;
 			void CommitGPUBuffer(const GPUBuffer* pBuffer)override;
 			void BindGPUBuffers(std::uint8_t startSlot, const std::vector<GPUBuffer*>& buffers)override;
 			void DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset)override;
 			void DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset)override;
 			void BeginFrame(const UINT frameResourceIndex);
+		protected:
+			void ApplyRasterizerState(const RasterizerState& state)override;
+			void ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount)override;
+			void ApplyDepthStencilState(const DepthStencilState& state)override;
+			void ApplyViewports(const RectFList& vp)override;
+			void ApplyScissorRects(const RectFList& scissorRects)override;
+			void ApplyRenderTargets(const SharedRenderTargetPtr* renderTargets, const std::uint8_t targetCount, const IDepthStencilBuffer* dsBuffer)override;
 		private:
 			struct GPUBufferCommit
 			{

@@ -145,7 +145,7 @@ namespace LightningGE
 			auto currentSwapChainRT = m_swapChain->GetBufferRenderTarget(m_currentBackBufferIndex);
 			m_device->ClearRenderTarget(currentSwapChainRT.get(), m_clearColor);
 			m_frameResources[m_currentBackBufferIndex].renderTargets[0] = currentSwapChainRT;
-			m_device->ApplyRenderTargets(m_frameResources[m_currentBackBufferIndex].renderTargets, 
+			static_cast<D3D12Device*>(m_device.get())->ApplyRenderTargets(m_frameResources[m_currentBackBufferIndex].renderTargets, 
 				1, m_depthStencilBuffer.get());
 		}
 

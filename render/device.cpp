@@ -38,5 +38,20 @@ namespace LightningGE
 			return it->second;
 		}
 
+		void Device::ApplyViewports(const RectFList& vp)
+		{
+
+		}
+
+		void Device::ApplyScissorRects(const RectFList& scissorRects)
+		{
+
+		}
+
+		void Device::ApplyRenderTargets(const SharedRenderTargetPtr* renderTargets, const std::uint8_t targetCount, const IDepthStencilBuffer* dsBuffer)
+		{
+
+		}
+
 	}
 }
