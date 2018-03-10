@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <vector>
 #include "irenderer.h"
 #include "filesystem.h"
 #include "renderpass.h"
@@ -21,7 +22,7 @@ namespace LightningGE
 			std::uint64_t GetCurrentFrameIndex()const override;
 			void Draw(const RenderItem& item)override;
 			//TODO there can be multiple render passes in effect simultaneously,shoulc change it
-			void SetRenderPass(RenderPassType type)override;
+			void AddRenderPass(RenderPassType type)override;
 			static Renderer* Instance() { return s_instance; }
 		protected:
 			Renderer(const SharedFileSystemPtr& fs, RenderPassType renderPassType = RenderPassType::FORWARD);
@@ -33,7 +34,7 @@ namespace LightningGE
 			SharedFileSystemPtr m_fs;
 			std::unique_ptr<IDevice> m_device;
 			std::unique_ptr<ISwapChain> m_swapChain;
-			std::unique_ptr<RenderPass> m_renderPass;
+			std::vector<std::unique_ptr<RenderPass>> m_renderPasses;
 			static Renderer* s_instance;
 		};
 	}

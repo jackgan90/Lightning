@@ -23,7 +23,6 @@ namespace LightningGE
 		{
 			WaitForPreviousFrame(true);
 			logger.Log(LogLevel::Info, "Start to clean up render resources.");
-			m_fences.clear();
 			::CloseHandle(m_fenceEvent);
 			m_fenceEvent = nullptr;
 			//Note:we should release resources in advance to make REPORT_LIVE_OBJECTS work correctly because if we let the share pointer
@@ -63,7 +62,6 @@ namespace LightningGE
 			
 			auto nativeSwapChain = static_cast<D3D12SwapChain*>(m_swapChain.get())->GetNative();
 			m_currentBackBufferIndex = nativeSwapChain->GetCurrentBackBufferIndex();
-			m_renderTargets.reserve(8);
 #ifndef NDEBUG
 			InitDXGIDebug();
 #endif
@@ -93,14 +91,13 @@ namespace LightningGE
 			auto nativeDevice = pD3D12Device->GetNative();
 			for (size_t i = 0; i < RENDER_FRAME_COUNT; i++)
 			{
-				m_fenceValues.push_back(0);
+				m_frameResources[i].fenceValue = 0;
 				ComPtr<ID3D12Fence> fence;
-				hr = nativeDevice->CreateFence(m_fenceValues.back(), D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+				hr = nativeDevice->CreateFence(m_frameResources[i].fenceValue, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_frameResources[i].fence));
 				if (FAILED(hr))
 				{
 					throw DeviceInitException("Failed to create fence!");
 				}
-				m_fences.push_back(fence);
 			}
 			m_fenceEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
 			if (!m_fenceEvent)
@@ -141,15 +138,15 @@ namespace LightningGE
 			m_currentBackBufferIndex = static_cast<D3D12SwapChain*>(m_swapChain.get())->GetNative()->GetCurrentBackBufferIndex();
 			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
 			pD3D12Device->BeginFrame(m_currentBackBufferIndex);
-			m_renderTargets.clear();
 		}
 
 		void D3D12Renderer::DoFrame()
 		{
 			auto currentSwapChainRT = m_swapChain->GetBufferRenderTarget(m_currentBackBufferIndex);
 			m_device->ClearRenderTarget(currentSwapChainRT.get(), m_clearColor);
-			m_renderTargets.push_back(currentSwapChainRT.get());
-			m_device->ApplyRenderTargets(m_renderTargets, m_depthStencilBuffer.get());
+			m_frameResources[m_currentBackBufferIndex].renderTargets[0] = currentSwapChainRT;
+			m_device->ApplyRenderTargets(m_frameResources[m_currentBackBufferIndex].renderTargets, 
+				1, m_depthStencilBuffer.get());
 		}
 
 		void D3D12Renderer::EndFrame()
@@ -161,7 +158,8 @@ namespace LightningGE
 			m_commandList->Close();
 			ID3D12CommandList* commandListArray[] = { m_commandList.Get() };
 			m_commandQueue->ExecuteCommandLists(_countof(commandListArray), commandListArray);
-			m_commandQueue->Signal(m_fences[m_currentBackBufferIndex].Get(), m_fenceValues[m_currentBackBufferIndex]);
+			m_commandQueue->Signal(m_frameResources[m_currentBackBufferIndex].fence.Get(), 
+				m_frameResources[m_currentBackBufferIndex].fenceValue);
 			m_swapChain->Present();
 		}
 
@@ -180,22 +178,22 @@ namespace LightningGE
 				{
 					bufferIndice.push_back(i);
 					//explicit signal to prevent release assert
-					m_commandQueue->Signal(m_fences[i].Get(), m_fenceValues[i]);
+					m_commandQueue->Signal(m_frameResources[i].fence.Get(), m_frameResources[i].fenceValue);
 				}
 			}
 			for (const auto& bufferIndex : bufferIndice)
 			{
-				if (m_fences[bufferIndex]->GetCompletedValue() < m_fenceValues[bufferIndex])
+				if (m_frameResources[bufferIndex].fence->GetCompletedValue() < m_frameResources[bufferIndex].fenceValue)
 				{
-					hr = m_fences[bufferIndex]->SetEventOnCompletion(m_fenceValues[bufferIndex], m_fenceEvent);
+					hr = m_frameResources[bufferIndex].fence->SetEventOnCompletion(m_frameResources[bufferIndex].fenceValue, m_fenceEvent);
 					if (FAILED(hr))
 					{
 						logger.Log(LogLevel::Error, "Failed to SetEventOnCompletion, back buffer index:%d, fence value:%d",
-							bufferIndex, m_fenceValues[bufferIndex]);
+							bufferIndex, m_frameResources[bufferIndex].fenceValue);
 					}
 					::WaitForSingleObject(m_fenceEvent, INFINITE);
 				}
-				++m_fenceValues[bufferIndex];
+				++m_frameResources[bufferIndex].fenceValue;
 			}
 		}
 

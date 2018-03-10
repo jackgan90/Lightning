@@ -530,14 +530,14 @@ namespace LightningGE
 			m_descriptorHeaps[m_frameResourceIndex].clear();
 		}
 
-		void D3D12Device::ApplyRenderTargets(const RenderTargetList& renderTargets, const IDepthStencilBuffer* dsBuffer)
+		void D3D12Device::ApplyRenderTargets(const SharedRenderTargetPtr* renderTargets, const std::uint8_t targetCount, const IDepthStencilBuffer* dsBuffer)
 		{
-			assert(renderTargets.size() <= MAX_RENDER_TARGET_COUNT);
+			assert(targetCount <= MAX_RENDER_TARGET_COUNT);
 			//TODO : actually should set pipeline description based on PipelineState rather than set them here
 			auto rtvHandles = m_frameRTVHandles[m_frameResourceIndex];
-			for (std::size_t i = 0; i < renderTargets.size();++i)
+			for (std::size_t i = 0; i < targetCount;++i)
 			{
-				rtvHandles[i] = static_cast<const D3D12RenderTarget*>(renderTargets[i])->GetCPUHandle();
+				rtvHandles[i] = static_cast<const D3D12RenderTarget*>(renderTargets[i].get())->GetCPUHandle();
 				if (i == 0)
 				{
 					m_pipelineDesc.SampleDesc.Count = renderTargets[i]->GetSampleCount();
@@ -546,9 +546,9 @@ namespace LightningGE
 				m_pipelineDesc.RTVFormats[i] = D3D12TypeMapper::MapRenderFormat(renderTargets[i]->GetRenderFormat());
 			}
 			auto dsHandle = static_cast<const D3D12DepthStencilBuffer*>(dsBuffer)->GetCPUHandle();
-			m_commandList->OMSetRenderTargets(renderTargets.size(), rtvHandles, FALSE, &dsHandle);
+			m_commandList->OMSetRenderTargets(targetCount, rtvHandles, FALSE, &dsHandle);
 			m_currentDSBuffer = dsBuffer;
-			m_pipelineDesc.NumRenderTargets = renderTargets.size();
+			m_pipelineDesc.NumRenderTargets = targetCount;
 		}
 
 		void D3D12Device::CommitGPUBuffer(const GPUBuffer* pBuffer)

@@ -31,7 +31,7 @@ namespace LightningGE
 			virtual void ApplyPipelineState(const PipelineState& state) = 0;
 			virtual void ApplyViewports(const RectFList& vp) = 0;
 			virtual void ApplyScissorRects(const RectFList& scissorRects) = 0;
-			virtual void ApplyRenderTargets(const RenderTargetList& renderTargets, const IDepthStencilBuffer* dsBuffer) = 0;
+			virtual void ApplyRenderTargets(const SharedRenderTargetPtr* renderTargets, const std::uint8_t targetCount, const IDepthStencilBuffer* dsBuffer) = 0;
 			//copy all data pointed to by pBuffer to GPU
 			virtual void CommitGPUBuffer(const GPUBuffer* pBuffer) = 0;
 			//bind pBuffer to a GPU slot(does not copy data,just binding), each invocation will override previous binding

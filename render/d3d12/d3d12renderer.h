@@ -37,18 +37,22 @@ namespace LightningGE
 			void DoFrame()override;
 			void EndFrame()override;
 		private:
+			struct FrameResource
+			{
+				ComPtr<ID3D12Fence> fence;
+				UINT64 fenceValue;
+				SharedRenderTargetPtr renderTargets[MAX_RENDER_TARGET_COUNT];
+			};
 			void WaitForPreviousFrame(bool waitAll);
 			void CreateFences();
 			ComPtr<ID3D12CommandQueue> m_commandQueue;
 			ComPtr<ID3D12GraphicsCommandList> m_commandList;
 			std::unique_ptr<D3D12RenderTargetManager> m_rtMgr;
-			std::vector<ComPtr<ID3D12Fence>> m_fences;
-			std::vector<UINT64> m_fenceValues;
 			HANDLE m_fenceEvent;
 			UINT m_currentBackBufferIndex;
 			ColorF m_clearColor;
 			std::unique_ptr<D3D12DepthStencilBuffer> m_depthStencilBuffer;
-			RenderTargetList m_renderTargets;
+			FrameResource m_frameResources[RENDER_FRAME_COUNT];
 #ifndef NDEBUG
 			ComPtr<ID3D12Debug> m_d3d12Debug;
 			ComPtr<IDXGIDebug> m_dxgiDebug;

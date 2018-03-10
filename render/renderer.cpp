@@ -12,7 +12,7 @@ namespace LightningGE
 		{
 			assert(!s_instance);
 			s_instance = this;
-			SetRenderPass(renderPassType);
+			AddRenderPass(renderPassType);
 		}
 
 		Renderer::~Renderer()
@@ -31,8 +31,10 @@ namespace LightningGE
 
 		void Renderer::ApplyRenderPass()
 		{
-			if (m_renderPass)
-				m_renderPass->Apply();
+			for (auto& pass : m_renderPasses)
+			{
+				pass->Apply();
+			}
 		}
 
 		std::uint64_t Renderer::GetCurrentFrameIndex()const
@@ -53,20 +55,21 @@ namespace LightningGE
 
 		void Renderer::Draw(const RenderItem& item)
 		{
-			if (m_renderPass)
-				m_renderPass->Draw(item);
+			for (auto& pass : m_renderPasses)
+			{
+				pass->Draw(item);
+			}
 		}
 
-		void Renderer::SetRenderPass(RenderPassType type)
+		void Renderer::AddRenderPass(RenderPassType type)
 		{
-			m_renderPass.reset();
 			switch (type)
 			{
 			case RenderPassType::FORWARD:
-				m_renderPass = std::make_unique<ForwardRenderPass>();
+				m_renderPasses.emplace_back(std::make_unique<ForwardRenderPass>());
 				break;
 			case RenderPassType::DEFERED:
-				m_renderPass = std::make_unique<DeferedRenderPass>();
+				m_renderPasses.emplace_back(std::make_unique<DeferedRenderPass>());
 				break;
 			default:
 				break;

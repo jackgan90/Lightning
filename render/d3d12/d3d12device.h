@@ -35,7 +35,7 @@ namespace LightningGE
 			void ApplyPipelineState(const PipelineState& state)override;
 			void ApplyViewports(const RectFList& vp)override;
 			void ApplyScissorRects(const RectFList& scissorRects)override;
-			void ApplyRenderTargets(const RenderTargetList& renderTargets, const IDepthStencilBuffer* dsBuffer)override;
+			void ApplyRenderTargets(const SharedRenderTargetPtr* renderTargets, const std::uint8_t targetCount, const IDepthStencilBuffer* dsBuffer)override;
 			void CommitGPUBuffer(const GPUBuffer* pBuffer)override;
 			void BindGPUBuffers(std::uint8_t startSlot, const std::vector<GPUBuffer*>& buffers)override;
 			void DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset)override;
@@ -70,7 +70,6 @@ namespace LightningGE
 			ComPtr<ID3D12Device> m_device;
 			ComPtr<ID3D12CommandQueue> m_commandQueue;
 			ComPtr<ID3D12CommandAllocator> m_commandAllocators[RENDER_FRAME_COUNT];
-			size_t m_inputElementCount;
 			ComPtr<ID3D12GraphicsCommandList> m_commandList;
 			ComPtr<ID3D12PipelineState> m_d3d12PipelineState;
 			D3D12_VIEWPORT m_viewport;
