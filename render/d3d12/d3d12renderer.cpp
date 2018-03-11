@@ -27,7 +27,6 @@ namespace LightningGE
 			m_fenceEvent = nullptr;
 			//Note:we should release resources in advance to make REPORT_LIVE_OBJECTS work correctly because if we let the share pointer
 			//destructor run out of the scope,we cannot trace the objects 
-			m_rtMgr.reset();
 			m_swapChain.reset();
 			m_depthStencilBuffer.reset();
 			D3D12RenderTargetManager::Instance()->Clear();
@@ -134,7 +133,7 @@ namespace LightningGE
 		void D3D12Renderer::BeginFrame()
 		{
 			WaitForPreviousFrame(false);
-			m_frameIndex++;
+			m_frameCount++;
 			m_currentBackBufferIndex = static_cast<D3D12SwapChain*>(m_swapChain.get())->GetNative()->GetCurrentBackBufferIndex();
 			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
 			pD3D12Device->BeginFrame(m_currentBackBufferIndex);

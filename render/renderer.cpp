@@ -8,7 +8,7 @@ namespace LightningGE
 	namespace Render
 	{
 		Renderer* Renderer::s_instance{ nullptr };
-		Renderer::Renderer(const SharedFileSystemPtr& fs, RenderPassType renderPassType) :m_frameIndex(0), m_fs(fs)
+		Renderer::Renderer(const SharedFileSystemPtr& fs, RenderPassType renderPassType) :m_frameCount(0), m_fs(fs)
 		{
 			assert(!s_instance);
 			s_instance = this;
@@ -37,9 +37,9 @@ namespace LightningGE
 			}
 		}
 
-		std::uint64_t Renderer::GetCurrentFrameIndex()const
+		std::uint64_t Renderer::GetCurrentFrameCount()const
 		{
-			return m_frameIndex;
+			return m_frameCount;
 		}
 
 		IDevice* Renderer::GetDevice()

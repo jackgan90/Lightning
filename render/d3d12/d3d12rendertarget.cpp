@@ -4,16 +4,19 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		D3D12RenderTarget::D3D12RenderTarget(const ComPtr<ID3D12Resource>& pRenderTarget, bool isSwapChainTarget, const RenderTargetID& rtID)
-			:m_nativeRenderTarget(pRenderTarget)
-			,m_isSwapChainTarget(isSwapChainTarget)
+		D3D12RenderTarget::D3D12RenderTarget(const RenderTargetID rtID, const ComPtr<ID3D12Resource>& resource, ISwapChain* pSwapChain)
+			:m_resource(resource)
+			,m_isSwapChainTarget(true)
 			,m_ID(rtID)
 		{
+			m_sampleCount = pSwapChain->GetSampleCount();
+			m_sampleQuality = pSwapChain->GetSampleQuality();
+			m_format = pSwapChain->GetRenderFormat();
 		}
 
 		D3D12RenderTarget::~D3D12RenderTarget()
 		{
-			m_nativeRenderTarget.Reset();
+			m_resource.Reset();
 		}
 
 		bool D3D12RenderTarget::IsSwapChainRenderTarget()const

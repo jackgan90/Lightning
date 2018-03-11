@@ -15,6 +15,7 @@ namespace LightningGE
 			virtual bool Present() = 0;
 			virtual std::size_t GetSampleCount()const = 0;
 			virtual int GetSampleQuality()const = 0;
+			virtual RenderFormat GetRenderFormat()const = 0;
 			//get corresponding render target
 			virtual SharedRenderTargetPtr GetBufferRenderTarget(unsigned int bufferIndex) = 0;
 		};

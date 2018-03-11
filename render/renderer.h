@@ -19,7 +19,7 @@ namespace LightningGE
 			IDevice* GetDevice()override;
 			ISwapChain* GetSwapChain()override;
 			//return the current frame index
-			std::uint64_t GetCurrentFrameIndex()const override;
+			std::uint64_t GetCurrentFrameCount()const override;
 			void Draw(const RenderItem& item)override;
 			//TODO there can be multiple render passes in effect simultaneously,shoulc change it
 			void AddRenderPass(RenderPassType type)override;
@@ -30,7 +30,7 @@ namespace LightningGE
 			virtual void DoFrame() = 0;
 			virtual void EndFrame() = 0;
 			virtual void ApplyRenderPass();
-			std::uint64_t m_frameIndex;
+			std::uint64_t m_frameCount;
 			SharedFileSystemPtr m_fs;
 			std::unique_ptr<IDevice> m_device;
 			std::unique_ptr<ISwapChain> m_swapChain;

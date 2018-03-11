@@ -27,7 +27,7 @@ namespace LightningGE
 			SharedRenderTargetPtr GetBufferRenderTarget(unsigned int bufferIndex)override;
 			std::size_t GetSampleCount()const override { return m_desc.SampleDesc.Count; }
 			int GetSampleQuality()const override { return m_desc.SampleDesc.Quality; }
-			RenderFormat GetRenderFormat()const { return D3D12TypeMapper::MapRenderFormat(m_desc.BufferDesc.Format); }
+			RenderFormat GetRenderFormat()const override{ return D3D12TypeMapper::MapRenderFormat(m_desc.BufferDesc.Format); }
 			IDXGISwapChain3* GetNative() { return m_swapChain.Get(); }
 		private:
 			void BindRenderTargets(ID3D12Device* pDevice);

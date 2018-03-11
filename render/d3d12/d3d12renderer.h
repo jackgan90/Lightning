@@ -47,7 +47,6 @@ namespace LightningGE
 			void CreateFences();
 			ComPtr<ID3D12CommandQueue> m_commandQueue;
 			ComPtr<ID3D12GraphicsCommandList> m_commandList;
-			std::unique_ptr<D3D12RenderTargetManager> m_rtMgr;
 			HANDLE m_fenceEvent;
 			UINT m_currentBackBufferIndex;
 			ColorF m_clearColor;

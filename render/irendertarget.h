@@ -14,9 +14,6 @@ namespace LightningGE
 		public:
 			//return if the render target representing a swap chain buffer(a back buffer)
 			virtual bool IsSwapChainRenderTarget()const = 0;
-			//returns the bound index of GPU.typically a GPU is able to bind multiple render targets at the same time.
-			//Each bound render target has a bound index.
-			virtual std::size_t GetBoundIndex()const = 0;
 			//get pixel sample count
 			virtual std::size_t GetSampleCount() = 0;
 			//get pixel sample quality

@@ -39,7 +39,7 @@ namespace LightningGE
 			//set default render target clear color.At the beginning of each frame,the back buffer is cleared to this color
 			virtual void SetClearColor(const ColorF& color) = 0;
 			//get the current frame index
-			virtual std::uint64_t GetCurrentFrameIndex()const = 0;
+			virtual std::uint64_t GetCurrentFrameCount()const = 0;
 			virtual std::uint8_t GetFrameResourceIndex()const = 0;
 			virtual void AddRenderPass(RenderPassType type) = 0;
 			virtual void Draw(const RenderItem& item) = 0;

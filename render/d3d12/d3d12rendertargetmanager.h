@@ -19,7 +19,7 @@ namespace LightningGE
 			~D3D12RenderTargetManager()override;
 			SharedRenderTargetPtr CreateRenderTarget()override;
 			SharedRenderTargetPtr CreateSwapChainRenderTarget(const ComPtr<ID3D12Resource>& swapChainRT, 
-				const D3D12_CPU_DESCRIPTOR_HANDLE& handle, const D3D12SwapChain* pSwapChain);
+				const D3D12_CPU_DESCRIPTOR_HANDLE& handle, D3D12SwapChain* pSwapChain);
 		private:
 			RenderTargetID m_currentID;
 		};
