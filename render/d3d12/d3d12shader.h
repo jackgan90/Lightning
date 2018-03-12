@@ -32,7 +32,7 @@ namespace LightningGE
 		struct D3D12RootBoundResource
 		{
 			D3D12RootBoundResourceType type;
-			ID3D12DescriptorHeap* descriptorTableHeap;
+			ComPtr<ID3D12DescriptorHeap> descriptorTableHeap;
 			union
 			{
 				D3D12_GPU_DESCRIPTOR_HANDLE descriptorTableHandle;

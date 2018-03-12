@@ -68,7 +68,7 @@ namespace LightningGE
 			m_heaps.clear();
 		}
 
-		ID3D12DescriptorHeap* D3D12DescriptorHeapManager::GetHeap(UINT heapID)const
+		ComPtr<ID3D12DescriptorHeap> D3D12DescriptorHeapManager::GetHeap(UINT heapID)const
 		{
 			auto it = m_heaps.find(heapID);
 			if (it == m_heaps.end())

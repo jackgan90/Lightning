@@ -85,7 +85,7 @@ namespace LightningGE
 			D3D12_CPU_DESCRIPTOR_HANDLE m_frameRTVHandles[RENDER_FRAME_COUNT][MAX_RENDER_TARGET_COUNT];
 			std::uint8_t m_frameResourceIndex;
 			//TODO : will ID3D12DescriptorHeap be dangling?
-			std::vector<ID3D12DescriptorHeap*> m_descriptorHeaps[RENDER_FRAME_COUNT];
+			std::vector<ComPtr<ID3D12DescriptorHeap>> m_descriptorHeaps[RENDER_FRAME_COUNT];
 			D3D12_VERTEX_BUFFER_VIEW m_frameVBViews[RENDER_FRAME_COUNT][MAX_GEOMETRY_BUFFER_COUNT];
 		};
 	}
