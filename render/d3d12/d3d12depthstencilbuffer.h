@@ -2,6 +2,7 @@
 #include<d3d12.h>
 #include <wrl\client.h>
 #include "idepthstencilbuffer.h"
+#include "d3d12descriptorheapmanager.h"
 
 namespace LightningGE
 {
@@ -18,7 +19,7 @@ namespace LightningGE
 			float GetDepthClearValue()const override;
 			std::uint32_t GetStencilClearValue()const override;
 			RenderFormat GetRenderFormat()const override;
-			D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return m_cpuHandle; }
+			D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return m_heap.cpuHandle; }
 			std::uint32_t GetWidth()const override { return m_width; }
 			std::uint32_t GetHeight()const override { return m_height; }
 		private:
@@ -29,10 +30,7 @@ namespace LightningGE
 			RenderFormat m_format;
 			std::uint32_t m_width;
 			std::uint32_t m_height;
-			D3D12_CPU_DESCRIPTOR_HANDLE m_cpuHandle;
-			D3D12_GPU_DESCRIPTOR_HANDLE m_gpuHandle;
-			//not sure if it's efficient to split the heap creation on multiple objects,should profile
-			UINT m_heapID;
+			DescriptorHeap m_heap;
 		};
 	}
 }

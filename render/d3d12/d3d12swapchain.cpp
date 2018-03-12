@@ -19,14 +19,14 @@ namespace LightningGE
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
 		using WindowSystem::WinWindow;
-		D3D12SwapChain::D3D12SwapChain(IDXGIFactory4* factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow)
+		D3D12SwapChain::D3D12SwapChain(const ComPtr<IDXGIFactory4>& factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow)
 		{
 			CreateNativeSwapChain(factory, pDevice, pCommandQueue, pWindow);
 			m_swapChain->GetDesc(&m_desc);
 			BindRenderTargets(pDevice);
 		}
 
-		void D3D12SwapChain::CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow)
+		void D3D12SwapChain::CreateNativeSwapChain(const ComPtr<IDXGIFactory4>& factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow)
 		{
 			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
 			UINT sampleCount = 1;
@@ -84,32 +84,17 @@ namespace LightningGE
 
 		void D3D12SwapChain::BindRenderTargets(ID3D12Device* pDevice)
 		{
-			HRESULT hr;
-			D3D12_DESCRIPTOR_HEAP_DESC desc{};
-			desc.NumDescriptors = RENDER_FRAME_COUNT;
-			desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-			desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-
-			const HeapAllocationInfo* pHeapInfo = D3D12DescriptorHeapManager::Instance()->Create(desc);
-			if (!pHeapInfo)
-			{
-				throw SwapChainInitException("Failed to allocate RTV descriptor heap!");
-			}
-			CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(pHeapInfo->cpuHeapStart);
-
-			ComPtr<ID3D12Resource> swapChainTargets[RENDER_FRAME_COUNT];
+			ComPtr<ID3D12Resource> resources[RENDER_FRAME_COUNT];
 			auto rtMgr = D3D12RenderTargetManager::Instance();
 			for (int i = 0; i < RENDER_FRAME_COUNT; i++)
 			{
-				hr = m_swapChain->GetBuffer(i, IID_PPV_ARGS(&swapChainTargets[i]));
+				auto hr = m_swapChain->GetBuffer(i, IID_PPV_ARGS(&resources[i]));
 				if (FAILED(hr))
 				{
 					throw SwapChainInitException("Failed to get d3d12 swap chain buffer.");
 				}
-				pDevice->CreateRenderTargetView(swapChainTargets[i].Get(), nullptr, rtvHandle);
-				auto rt = rtMgr->CreateSwapChainRenderTarget(swapChainTargets[i], rtvHandle, this);
-				m_renderTargets[i] = rt->GetID();
-				rtvHandle.Offset(pHeapInfo->incrementSize);
+				auto renderTarget = rtMgr->CreateSwapChainRenderTarget(resources[i], pDevice, this);
+				m_renderTargets[i] = renderTarget->GetID();
 			}
 		}
 

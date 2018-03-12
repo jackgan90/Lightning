@@ -22,7 +22,7 @@ namespace LightningGE
 		{
 		public:
 			friend class D3D12Renderer;
-			D3D12Device(IDXGIFactory4* factory, const SharedFileSystemPtr& fs);
+			D3D12Device(const ComPtr<IDXGIFactory4>& factory, const SharedFileSystemPtr& fs);
 			~D3D12Device()override;
 			void ClearRenderTarget(IRenderTarget* rt, const ColorF& color, const RectIList* rects=nullptr)override;
 			SharedVertexBufferPtr CreateVertexBuffer()override;
@@ -58,7 +58,7 @@ namespace LightningGE
 			//if parameter pState is nullptr,this method will create a default pipeline state
 			using PipelineCacheMap = std::unordered_map<std::size_t, ComPtr<ID3D12PipelineState>>;
 			using RootSignatureMap = std::unordered_map<std::size_t, ComPtr<ID3D12RootSignature>>;
-			void CreateNativeDevice(IDXGIFactory4* factory);
+			void CreateNativeDevice(const ComPtr<IDXGIFactory4>& factory);
 			void ApplyShader(IShader* pShader);
 			void UpdatePSOInputLayout(const std::vector<VertexInputLayout>& inputLayouts);
 			void SetUpDefaultPipelineStates();

@@ -16,7 +16,7 @@ namespace LightningGE
 		using Foundation::FileAnchor;
 
 		D3D12Shader::D3D12Shader(ID3D12Device* device, ShaderType type, const std::string& name, const std::string& entry, const char* const shaderSource):
-			Shader(type, name, entry, shaderSource), m_commitHeapInfo(nullptr)
+			Shader(type, name, entry, shaderSource)
 			, m_descriptorRanges(nullptr)
 		{
 			assert(shaderSource);
@@ -36,13 +36,9 @@ namespace LightningGE
 			{
 				m_descriptorRanges = new D3D12_DESCRIPTOR_RANGE[m_desc.ConstantBuffers];
 				//initialize cbv descriptor ranges, number of descriptors is the number of constant buffers
-				D3D12_DESCRIPTOR_HEAP_DESC desc{};
-				desc.NumDescriptors = m_desc.ConstantBuffers * RENDER_FRAME_COUNT;
-				desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-				desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-				desc.NodeMask = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-				m_commitHeapInfo = D3D12DescriptorHeapManager::Instance()->Create(desc, device);
-				CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_commitHeapInfo->cpuHeapStart);
+				m_commitHeapInfo = D3D12DescriptorHeapManager::Instance()->Allocate(
+					D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, true, m_desc.ConstantBuffers * RENDER_FRAME_COUNT);
+				CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_commitHeapInfo.cpuHandle);
 				for (size_t i = 0; i < m_desc.ConstantBuffers; i++)
 				{
 					auto constantBufferRefl = m_shaderReflect->GetConstantBufferByIndex(i);
@@ -82,7 +78,7 @@ namespace LightningGE
 						cbvDesc.BufferLocation = context.resource[k]->GetGPUVirtualAddress();
 						cbvDesc.SizeInBytes = bufferSize;
 						device->CreateConstantBufferView(&cbvDesc, context.handle[k]);
-						handle.Offset(m_commitHeapInfo->incrementSize);
+						handle.Offset(m_commitHeapInfo.incrementSize);
 					}
 					m_uploadContexts.push_back(context);
 				}
@@ -96,10 +92,10 @@ namespace LightningGE
 				if (m_desc.ConstantBuffers > 0)
 				{
 					D3D12RootBoundResource boundResource;
-					boundResource.descriptorTableHeap = D3D12DescriptorHeapManager::Instance()->GetHeap(m_commitHeapInfo->heapID);
+					boundResource.descriptorTableHeap = D3D12DescriptorHeapManager::Instance()->GetHeap(m_commitHeapInfo.heapID);
 					boundResource.type = D3D12RootBoundResourceType::DescriptorTable;
-					CD3DX12_GPU_DESCRIPTOR_HANDLE handle(m_commitHeapInfo->gpuHeapStart);
-					handle.Offset(i * m_commitHeapInfo->incrementSize * m_desc.ConstantBuffers);
+					CD3DX12_GPU_DESCRIPTOR_HANDLE handle(m_commitHeapInfo.gpuHandle);
+					handle.Offset(i * m_commitHeapInfo.incrementSize * m_desc.ConstantBuffers);
 					boundResource.descriptorTableHandle = handle;
 					m_rootBoundResources[i].push_back(boundResource);
 				}
@@ -109,11 +105,6 @@ namespace LightningGE
 
 		D3D12Shader::~D3D12Shader()
 		{
-			if (m_commitHeapInfo)
-			{
-				D3D12DescriptorHeapManager::Instance()->Destroy(m_commitHeapInfo->heapID);
-				m_commitHeapInfo = nullptr;
-			}
 			if (m_descriptorRanges)
 			{
 				delete[] m_descriptorRanges;
@@ -133,6 +124,8 @@ namespace LightningGE
 			m_argumentBindings.clear();
 			m_byteCode.Reset();
 			m_shaderReflect.Reset();
+			if(m_desc.ConstantBuffers > 0)
+				D3D12DescriptorHeapManager::Instance()->Deallocate(m_commitHeapInfo.cpuHandle);
 		}
 
 		const ShaderDefine D3D12Shader::GetMacros()const
@@ -180,14 +173,12 @@ namespace LightningGE
 			case ShaderArgumentType::MATRIX3:
 			case ShaderArgumentType::MATRIX4:
 			{
-				if (!m_commitHeapInfo)
-					break;
 				//assert(m_commitHeapInfo);
 				auto it = m_argumentBindings.find(argument.name);
 				if (it == m_argumentBindings.end())
 				{
-					logger.Log(LogLevel::Warning, "shader argument of type %d with name %s doesn't exist in shader %s",
-						argument.type, argument.name.c_str(), m_name.c_str());
+					//logger.Log(LogLevel::Warning, "shader argument of type %d with name %s doesn't exist in shader %s",
+					//	argument.type, argument.name.c_str(), m_name.c_str());
 				}
 				else
 				{

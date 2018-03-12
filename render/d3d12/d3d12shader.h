@@ -82,7 +82,7 @@ namespace LightningGE
 			ComPtr<ID3D10Blob> m_byteCode;
 			ComPtr<ID3D12ShaderReflection> m_shaderReflect;
 			D3D12_SHADER_DESC m_desc;
-			const HeapAllocationInfo *m_commitHeapInfo;
+			DescriptorHeap m_commitHeapInfo;
 			std::vector<ConstantUploadContext> m_uploadContexts;
 			std::unordered_map<std::string, ArgumentBinding> m_argumentBindings;
 			std::vector<D3D12_ROOT_PARAMETER> m_rootParameters;

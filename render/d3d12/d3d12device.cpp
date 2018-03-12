@@ -38,7 +38,7 @@ namespace LightningGE
 			"{\n"
 				"return float4(1.0f, 0.0f, 0.0f, 1.0f);\n"
 			"}\n";
-		D3D12Device::D3D12Device(IDXGIFactory4* factory, const SharedFileSystemPtr& fs)
+		D3D12Device::D3D12Device(const ComPtr<IDXGIFactory4>& factory, const SharedFileSystemPtr& fs)
 			:Device(), m_fs(fs), m_pipelineDesc{}, m_pInputElementDesc(nullptr), m_currentDSBuffer(nullptr), m_frameResourceIndex(0)
 		{
 			CreateNativeDevice(factory);
@@ -85,7 +85,7 @@ namespace LightningGE
 			m_shaderMgr.reset();
 		}
 
-		void D3D12Device::CreateNativeDevice(IDXGIFactory4* factory)
+		void D3D12Device::CreateNativeDevice(const ComPtr<IDXGIFactory4>& factory)
 		{
 			ComPtr<IDXGIAdapter1> adaptor;
 			int adaptorIndex = 0;

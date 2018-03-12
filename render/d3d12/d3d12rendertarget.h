@@ -3,6 +3,7 @@
 #include <wrl\client.h>
 #include "iswapchain.h"
 #include "irendertarget.h"
+#include "d3d12descriptorheapmanager.h"
 
 namespace LightningGE
 {
@@ -13,13 +14,13 @@ namespace LightningGE
 		{
 		public:
 			friend class D3D12RenderTargetManager;
-			D3D12RenderTarget(const RenderTargetID rtID, const ComPtr<ID3D12Resource>& resource, ISwapChain* pSwapChain);
+			D3D12RenderTarget(const RenderTargetID rtID, const ComPtr<ID3D12Resource>& resource, ID3D12Device* pNativeDevice, ISwapChain* pSwapChain);
 			~D3D12RenderTarget()override;
 			bool IsSwapChainRenderTarget()const override;
 			RenderTargetID GetID() const override { return m_ID; }
 			ComPtr<ID3D12Resource> GetNative()const { return m_resource; }
-			const D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return m_cpuHandle; }
-			const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle()const { return m_gpuHandle; }
+			const D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return m_heap.cpuHandle; }
+			const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle()const { return m_heap.gpuHandle; }
 			std::size_t GetSampleCount()override { return m_sampleCount; }
 			int GetSampleQuality()override { return m_sampleQuality; }
 			RenderFormat GetRenderFormat()const override { return m_format; }
@@ -27,8 +28,7 @@ namespace LightningGE
 			ComPtr<ID3D12Resource> m_resource;
 			bool m_isSwapChainTarget;
 			RenderTargetID m_ID;
-			D3D12_CPU_DESCRIPTOR_HANDLE m_cpuHandle;
-			D3D12_GPU_DESCRIPTOR_HANDLE m_gpuHandle;
+			DescriptorHeap m_heap;
 			std::size_t m_sampleCount;
 			int m_sampleQuality;
 			RenderFormat m_format;

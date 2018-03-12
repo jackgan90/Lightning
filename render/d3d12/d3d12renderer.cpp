@@ -29,9 +29,10 @@ namespace LightningGE
 			//destructor run out of the scope,we cannot trace the objects 
 			m_swapChain.reset();
 			m_depthStencilBuffer.reset();
+			ReleaseFrameResources();
 			D3D12RenderTargetManager::Instance()->Clear();
-			D3D12DescriptorHeapManager::Instance()->Clear();
 			m_device.reset();
+			D3D12DescriptorHeapManager::Instance()->Clear();
 			REPORT_LIVE_OBJECTS;
 		}
 
@@ -49,11 +50,11 @@ namespace LightningGE
 			{
 				throw DeviceInitException("Failed to create DXGI factory!");
 			}
-			m_device = std::make_unique<D3D12Device>(dxgiFactory.Get(), m_fs);
+			m_device = std::make_unique<D3D12Device>(dxgiFactory, m_fs);
 			auto pNativeDevice = static_cast<D3D12Device*>(m_device.get())->GetNative();
 			m_commandQueue = static_cast<D3D12Device*>(m_device.get())->GetCommandQueue();
 			m_commandList = static_cast<D3D12Device*>(m_device.get())->GetGraphicsCommandList();
-			m_swapChain = std::make_unique<D3D12SwapChain>(dxgiFactory.Get(), pNativeDevice, m_commandQueue.Get(), pWindow.get());
+			m_swapChain = std::make_unique<D3D12SwapChain>(dxgiFactory, pNativeDevice, m_commandQueue.Get(), pWindow.get());
 			m_depthStencilBuffer = std::make_unique<D3D12DepthStencilBuffer>(pWindow->GetWidth(), pWindow->GetHeight());
 			
 			CreateFences();
@@ -205,5 +206,18 @@ namespace LightningGE
 		{
 			return m_currentBackBufferIndex;
 		}
+
+		void D3D12Renderer::ReleaseFrameResources()
+		{
+			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
+			{
+				for (std::size_t j = 0;j < MAX_RENDER_TARGET_COUNT;++j)
+				{
+					m_frameResources[i].renderTargets[j].reset();
+				}
+				m_frameResources[i].fence.Reset();
+			}
+		}
+
 	}
 }

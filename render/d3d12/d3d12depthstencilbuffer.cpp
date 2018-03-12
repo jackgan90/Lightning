@@ -9,14 +9,14 @@ namespace LightningGE
 	namespace Render
 	{
 		D3D12DepthStencilBuffer::D3D12DepthStencilBuffer(const std::uint32_t width, const std::uint32_t height):
-			m_depthClearValue(1.0f), m_stencilClearValue(0), m_format(RenderFormat::D24_S8), m_heapID(0), m_width(width), m_height(height)
+			m_depthClearValue(1.0f), m_stencilClearValue(0), m_format(RenderFormat::D24_S8), m_width(width), m_height(height)
 		{
 			CreateResource();
 		}
 
 		D3D12DepthStencilBuffer::D3D12DepthStencilBuffer(const std::uint32_t width, const std::uint32_t height,
 			RenderFormat format, const float depthClearValue, const std::uint32_t stencilClearValue):
-			m_depthClearValue(depthClearValue), m_stencilClearValue(stencilClearValue), m_format(format), m_heapID(0)
+			m_depthClearValue(depthClearValue), m_stencilClearValue(stencilClearValue), m_format(format) 
 			,m_width(width), m_height(height)
 		{
 			CreateResource();
@@ -25,14 +25,7 @@ namespace LightningGE
 		void D3D12DepthStencilBuffer::CreateResource()
 		{
 			//create heap
-			D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc{};
-			dsvHeapDesc.NumDescriptors = 1;
-			dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
-			dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			auto heapInfo = D3D12DescriptorHeapManager::Instance()->Create(dsvHeapDesc);
-			m_heapID = heapInfo->heapID;
-			m_cpuHandle = heapInfo->cpuHeapStart;
-			m_gpuHandle = heapInfo->gpuHeapStart;
+			m_heap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, false, 1);
 
 			auto nativeFormat = D3D12TypeMapper::MapRenderFormat(m_format);
 			//create resource
@@ -50,13 +43,13 @@ namespace LightningGE
 			nativeDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE,
 				&CD3DX12_RESOURCE_DESC::Tex2D(nativeFormat, m_width, m_height, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL),
 				D3D12_RESOURCE_STATE_DEPTH_WRITE, &dsClearValue, IID_PPV_ARGS(&m_resource));
-			nativeDevice->CreateDepthStencilView(m_resource.Get(), &dsvDesc, m_cpuHandle);
+			nativeDevice->CreateDepthStencilView(m_resource.Get(), &dsvDesc, m_heap.cpuHandle);
 		}
 
 		D3D12DepthStencilBuffer::~D3D12DepthStencilBuffer()
 		{
 			m_resource.Reset();
-			D3D12DescriptorHeapManager::Instance()->Destroy(m_heapID);
+			D3D12DescriptorHeapManager::Instance()->Deallocate(m_heap.cpuHandle);
 		}
 
 		void D3D12DepthStencilBuffer::SetClearValue(float depthValue, std::uint32_t stencilValue)
