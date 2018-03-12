@@ -19,14 +19,14 @@ namespace LightningGE
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
 		using WindowSystem::WinWindow;
-		D3D12SwapChain::D3D12SwapChain(const ComPtr<IDXGIFactory4>& factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow)
+		D3D12SwapChain::D3D12SwapChain(IDXGIFactory4* factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow)
 		{
 			CreateNativeSwapChain(factory, pDevice, pCommandQueue, pWindow);
 			m_swapChain->GetDesc(&m_desc);
 			BindRenderTargets(pDevice);
 		}
 
-		void D3D12SwapChain::CreateNativeSwapChain(const ComPtr<IDXGIFactory4>& factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow)
+		void D3D12SwapChain::CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow)
 		{
 			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
 			UINT sampleCount = 1;

@@ -21,7 +21,7 @@ namespace LightningGE
 		public:
 			//we have to use raw pointer,because at the time the swap chain is created, D3D12Renderer is not constructed successfully yet
 			//so there's actually no shared pointer pointed to it.Passing a smart pointer here will cause error
-			D3D12SwapChain(const ComPtr<IDXGIFactory4>& factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandList, IWindow* pWindow);
+			D3D12SwapChain(IDXGIFactory4* factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandList, IWindow* pWindow);
 			~D3D12SwapChain()override;
 			bool Present()override;
 			SharedRenderTargetPtr GetBufferRenderTarget(unsigned int bufferIndex)override;
@@ -31,7 +31,7 @@ namespace LightningGE
 			IDXGISwapChain3* GetNative() { return m_swapChain.Get(); }
 		private:
 			void BindRenderTargets(ID3D12Device* pDevice);
-			void CreateNativeSwapChain(const ComPtr<IDXGIFactory4>& factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow);
+			void CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow);
 			ComPtr<IDXGISwapChain3> m_swapChain;
 			std::unordered_map<UINT, RenderTargetID> m_renderTargets;
 			DXGI_SWAP_CHAIN_DESC m_desc;
