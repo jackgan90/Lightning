@@ -36,9 +36,8 @@ namespace LightningGE
 			{
 				m_descriptorRanges = new D3D12_DESCRIPTOR_RANGE[m_desc.ConstantBuffers];
 				//initialize cbv descriptor ranges, number of descriptors is the number of constant buffers
-				m_commitHeapInfo = D3D12DescriptorHeapManager::Instance()->Allocate(
-					D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, true, m_desc.ConstantBuffers * RENDER_FRAME_COUNT);
-				CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_commitHeapInfo.cpuHandle);
+				m_constantHeap = D3D12DescriptorHeapManager::Instance()->Allocate(
+					D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, true, m_desc.ConstantBuffers * RENDER_FRAME_COUNT, device);
 				for (size_t i = 0; i < m_desc.ConstantBuffers; i++)
 				{
 					auto constantBufferRefl = m_shaderReflect->GetConstantBufferByIndex(i);
@@ -54,6 +53,8 @@ namespace LightningGE
 						argBinding.offsetInBuffer = shaderVarDesc.StartOffset;
 						m_argumentBindings[shaderVarDesc.Name] = argBinding;
 					}
+					//TODO : now one constant buffer corresponds to one descriptor range.I believe this is 
+					//not very efficient.Should join adjacent constant buffers to one range
 					D3D12_SHADER_INPUT_BIND_DESC& bindDesc = bindDescs[bufferDesc.Name];
 					m_descriptorRanges[i].BaseShaderRegister = bindDesc.BindPoint;
 					m_descriptorRanges[i].NumDescriptors = 1;
@@ -65,21 +66,7 @@ namespace LightningGE
 					context.bufferName = new char[std::strlen(bufferDesc.Name) + 1];
 					std::strcpy(context.bufferName, bufferDesc.Name);
 					context.registerIndex = bindDesc.BindPoint;
-					for (std::size_t k = 0;k < RENDER_FRAME_COUNT;++k)
-					{
-						context.handle[k] = handle;
-						auto bufferSize = bufferDesc.Size;
-						//d3d12 constant buffer must be a multiple of 256,so we round it to the nearest larger multiple of 256
-						bufferSize = (bufferSize + 255) & ~255;
-						device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE,
-							&CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
-							D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&context.resource[k]));
-						D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
-						cbvDesc.BufferLocation = context.resource[k]->GetGPUVirtualAddress();
-						cbvDesc.SizeInBytes = bufferSize;
-						device->CreateConstantBufferView(&cbvDesc, context.handle[k]);
-						handle.Offset(m_commitHeapInfo.incrementSize);
-					}
+					context.bufferSize = bufferDesc.Size;
 					m_uploadContexts.push_back(context);
 				}
 				CD3DX12_ROOT_PARAMETER cbvParameter;
@@ -91,13 +78,31 @@ namespace LightningGE
 				m_rootBoundResources.emplace(i, std::vector<D3D12RootBoundResource>());
 				if (m_desc.ConstantBuffers > 0)
 				{
-					D3D12RootBoundResource boundResource;
-					boundResource.descriptorTableHeap = D3D12DescriptorHeapManager::Instance()->GetHeap(m_commitHeapInfo.heapID);
-					boundResource.type = D3D12RootBoundResourceType::DescriptorTable;
-					CD3DX12_GPU_DESCRIPTOR_HANDLE handle(m_commitHeapInfo.gpuHandle);
-					handle.Offset(i * m_commitHeapInfo.incrementSize * m_desc.ConstantBuffers);
-					boundResource.descriptorTableHandle = handle;
-					m_rootBoundResources[i].push_back(boundResource);
+					CD3DX12_CPU_DESCRIPTOR_HANDLE handle(m_constantHeap.cpuHandle);
+					handle.Offset(i * m_desc.ConstantBuffers * m_constantHeap.incrementSize);
+					CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(m_constantHeap.gpuHandle);
+					gpuHandle.Offset(i * m_desc.ConstantBuffers * m_constantHeap.incrementSize);
+					for (std::size_t k = 0;k < m_desc.ConstantBuffers;++k)
+					{
+						auto& context = m_uploadContexts[k];
+						context.handle[i] = handle;
+						//d3d12 constant buffer must be a multiple of 256,so we round it to the nearest larger multiple of 256
+						UINT64 bufferSize = (context.bufferSize + 255) & ~255;
+						device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE,
+							&CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
+							D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&context.resource[i]));
+						D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
+						cbvDesc.BufferLocation = context.resource[i]->GetGPUVirtualAddress();
+						cbvDesc.SizeInBytes = bufferSize;
+						device->CreateConstantBufferView(&cbvDesc, context.handle[i]);
+						D3D12RootBoundResource boundResource;
+						boundResource.descriptorTableHeap = D3D12DescriptorHeapManager::Instance()->GetHeap(m_constantHeap.heapID);
+						boundResource.type = D3D12RootBoundResourceType::DescriptorTable;
+						boundResource.descriptorTableHandle = gpuHandle;
+						m_rootBoundResources[i].push_back(boundResource);
+						handle.Offset(m_constantHeap.incrementSize);
+						gpuHandle.Offset(m_constantHeap.incrementSize);
+					}
 				}
 			}
 			//TODO initialize other shader resource
@@ -125,7 +130,7 @@ namespace LightningGE
 			m_byteCode.Reset();
 			m_shaderReflect.Reset();
 			if(m_desc.ConstantBuffers > 0)
-				D3D12DescriptorHeapManager::Instance()->Deallocate(m_commitHeapInfo.cpuHandle);
+				D3D12DescriptorHeapManager::Instance()->Deallocate(m_constantHeap.cpuHandle);
 		}
 
 		const ShaderDefine D3D12Shader::GetMacros()const

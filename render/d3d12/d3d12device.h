@@ -84,8 +84,9 @@ namespace LightningGE
 			const IDepthStencilBuffer* m_currentDSBuffer;
 			D3D12_CPU_DESCRIPTOR_HANDLE m_frameRTVHandles[RENDER_FRAME_COUNT][MAX_RENDER_TARGET_COUNT];
 			std::uint8_t m_frameResourceIndex;
-			//TODO : will ID3D12DescriptorHeap be dangling?
-			std::vector<ComPtr<ID3D12DescriptorHeap>> m_descriptorHeaps[RENDER_FRAME_COUNT];
+			//The reason we don't use ComPtr here is that descriptor heaps are not released during rendering
+			//so it's not necessary to hold share pointers just to prevent them from being released
+			std::vector<ID3D12DescriptorHeap*> m_descriptorHeaps[RENDER_FRAME_COUNT];
 			D3D12_VERTEX_BUFFER_VIEW m_frameVBViews[RENDER_FRAME_COUNT][MAX_GEOMETRY_BUFFER_COUNT];
 		};
 	}

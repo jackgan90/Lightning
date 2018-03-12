@@ -272,7 +272,7 @@ namespace LightningGE
 					const auto& boundResource = boundResources[i];
 					if (boundResource.type == D3D12RootBoundResourceType::DescriptorTable)
 					{
-						m_descriptorHeaps[m_frameResourceIndex].push_back(boundResource.descriptorTableHeap);
+						m_descriptorHeaps[m_frameResourceIndex].push_back(boundResource.descriptorTableHeap.Get());
 					}
 				}
 			}

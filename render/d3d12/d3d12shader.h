@@ -71,6 +71,8 @@ namespace LightningGE
 				char* bufferName;
 				//specified register index in shader
 				UINT registerIndex;
+				//constant buffer size
+				UINT64 bufferSize;
 			};
 			struct ArgumentBinding
 			{
@@ -82,7 +84,7 @@ namespace LightningGE
 			ComPtr<ID3D10Blob> m_byteCode;
 			ComPtr<ID3D12ShaderReflection> m_shaderReflect;
 			D3D12_SHADER_DESC m_desc;
-			DescriptorHeap m_commitHeapInfo;
+			DescriptorHeap m_constantHeap;
 			std::vector<ConstantUploadContext> m_uploadContexts;
 			std::unordered_map<std::string, ArgumentBinding> m_argumentBindings;
 			std::vector<D3D12_ROOT_PARAMETER> m_rootParameters;

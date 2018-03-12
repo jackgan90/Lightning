@@ -40,20 +40,20 @@ namespace LightningGE
 			{
 				D3D12_DESCRIPTOR_HEAP_DESC desc;
 				ComPtr<ID3D12DescriptorHeap> heap;
-				std::list<std::tuple<std::size_t, std::size_t>> freeIntervals;
+				std::list<std::tuple<UINT64, UINT64>> freeIntervals;
 				std::size_t freeDescriptors;
-				std::unordered_map<std::size_t, std::size_t> locationToSizes;
+				std::unordered_map<UINT64, std::size_t> locationToSizes;
 			};
 			ID3D12Device* GetNativeDevice();
 			UINT HeapTypeHash(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible) { return static_cast<UINT>(type) << 1 | static_cast<UINT>(shaderVisible); }
 			std::tuple<bool, _DescriptorHeapInternal> CreateHeapInternal(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT descriptorCount, ID3D12Device* pDevice);
 			std::tuple<bool, DescriptorHeap> TryAllocateInternal(_DescriptorHeapInternal& heapInfo, UINT count);
 			std::tuple<bool, DescriptorHeap> TryAllocateInternal(std::vector<_DescriptorHeapInternal>& heapList, UINT count);
-			void Deallocate(_DescriptorHeapInternal& heapInfo, const std::size_t offset);
+			void Deallocate(_DescriptorHeapInternal& heapInfo, const UINT64 offset);
 			std::unordered_map<UINT, std::vector<_DescriptorHeapInternal>> m_heaps;
 			std::unordered_map<UINT, ComPtr<ID3D12DescriptorHeap>> m_heapIDToHeaps;
 			std::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, UINT> m_incrementSizes;
-			std::unordered_map<SIZE_T, _DescriptorHeapInternal*> m_cpuHandleToInternal;
+			std::unordered_map<UINT64, _DescriptorHeapInternal*> m_cpuHandleToInternal;
 			std::unordered_map<UINT64, _DescriptorHeapInternal*> m_gpuHandleToInternal;
 			UINT m_currentID;
 		};

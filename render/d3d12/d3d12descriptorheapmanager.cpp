@@ -63,7 +63,7 @@ namespace LightningGE
 			heapInfo.freeIntervals.emplace_back(std::make_tuple(0, descriptorCount));
 			heapInfo.cpuHandle = heapInfo.heap->GetCPUDescriptorHandleForHeapStart();
 			heapInfo.gpuHandle = heapInfo.heap->GetGPUDescriptorHandleForHeapStart();
-			heapInfo.incrementSize = GetIncrementSize(type);
+			heapInfo.incrementSize = GetIncrementSize(type, pDevice);
 			heapInfo.heapID = m_currentID;
 			
 			auto typeHash = HeapTypeHash(type, shaderVisible);
@@ -138,7 +138,7 @@ namespace LightningGE
 			auto it = m_cpuHandleToInternal.find(handle.ptr);
 			assert(it != m_cpuHandleToInternal.end());
 			//calculate handle offset in heap
-			std::size_t offset = (handle.ptr - it->second->cpuHandle.ptr) / it->second->incrementSize;
+			auto offset = (handle.ptr - it->second->cpuHandle.ptr) / it->second->incrementSize;
 			Deallocate(*it->second, offset);
 			//erase gpu handle as well
 			m_gpuHandleToInternal.erase(it->second->gpuHandle.ptr + offset * it->second->incrementSize);
@@ -149,14 +149,14 @@ namespace LightningGE
 		{
 			auto it = m_gpuHandleToInternal.find(handle.ptr);
 			assert(it != m_gpuHandleToInternal.end());
-			std::size_t offset = (handle.ptr - it->second->cpuHandle.ptr) / it->second->incrementSize;
+			auto offset = (handle.ptr - it->second->cpuHandle.ptr) / it->second->incrementSize;
 			Deallocate(*it->second, offset);
 			//erase cpu handle as well
 			m_cpuHandleToInternal.erase(it->second->cpuHandle.ptr + offset * it->second->incrementSize);
 			m_gpuHandleToInternal.erase(it);
 		}
 
-		void D3D12DescriptorHeapManager::Deallocate(_DescriptorHeapInternal& heapInfo, const std::size_t offset)
+		void D3D12DescriptorHeapManager::Deallocate(_DescriptorHeapInternal& heapInfo, const UINT64 offset)
 		{
 			auto it = heapInfo.locationToSizes.find(offset);
 			assert(it != heapInfo.locationToSizes.end());
