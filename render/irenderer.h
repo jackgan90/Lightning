@@ -40,7 +40,7 @@ namespace LightningGE
 			virtual void SetClearColor(const ColorF& color) = 0;
 			//get the current frame index
 			virtual std::uint64_t GetCurrentFrameCount()const = 0;
-			virtual std::uint8_t GetFrameResourceIndex()const = 0;
+			virtual std::size_t GetFrameResourceIndex()const = 0;
 			virtual void AddRenderPass(RenderPassType type) = 0;
 			virtual void Draw(const RenderItem& item) = 0;
 		};

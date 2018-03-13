@@ -122,9 +122,10 @@ namespace LightningGE
 		}
 
 
-		void D3D12Device::ClearRenderTarget(IRenderTarget* rt, const ColorF& color, const RectIList* rects)
+		void D3D12Device::ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectIList* rects)
 		{
-			D3D12RenderTarget *pTarget = static_cast<D3D12RenderTarget*>(rt);
+			D3D12RenderTarget *pTarget = static_cast<D3D12RenderTarget*>(rt.get());
+			assert(pTarget);
 			ComPtr<ID3D12Resource> nativeRenderTarget = pTarget->GetNative();
 			//should check the type of the rt to transit it from previous state to render target state
 			//currently just check back buffer render target
@@ -134,11 +135,16 @@ namespace LightningGE
 					D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 			}
 
-			//TODO : check gpu?
+			//cache render target to prevent it from being released before GPU execute ClearRenderTargetView
+			auto& frameRenderTargets = m_frameResources[m_frameResourceIndex].renderTargets;
+			if (frameRenderTargets.find(rt.get()) == frameRenderTargets.end())
+				frameRenderTargets.emplace(rt.get(), rt);
+
 			const float clearColor[] = { color.r(), color.g(), color.b(), color.a() };
 			auto rtvHandle = pTarget->GetCPUHandle();
 			if (rects && !rects->empty())
 			{
+				//TODO : This implementation is wrong.Should allocate frame memory not local memory,must fix later
 				D3D12_RECT* d3dRect = ALLOC_ARRAY(m_smallObjAllocator, rects->size(), D3D12_RECT);
 				for (size_t i = 0; i < rects->size(); i++)
 				{
@@ -155,6 +161,43 @@ namespace LightningGE
 				m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 			}
 		}
+
+		void D3D12Device::ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, 
+			float depth, std::uint8_t stencil, const RectIList* rects)
+		{
+			D3D12_CLEAR_FLAGS clearFlags = D3D12_CLEAR_FLAG_DEPTH;
+			if ((flags & DepthStencilClearFlags::CLEAR_DEPTH) != DepthStencilClearFlags::CLEAR_DEPTH)
+			{
+				clearFlags &= ~D3D12_CLEAR_FLAG_DEPTH;
+			}
+			if ((flags & DepthStencilClearFlags::CLEAR_STENCIL) == DepthStencilClearFlags::CLEAR_STENCIL)
+			{
+				clearFlags |= D3D12_CLEAR_FLAG_STENCIL;
+			}
+			auto dsvHandle = static_cast<D3D12DepthStencilBuffer*>(buffer.get())->GetCPUHandle();
+			auto& frameDSBuffers = m_frameResources[m_frameResourceIndex].depthStencilBuffers;
+			if (frameDSBuffers.find(buffer.get()) == frameDSBuffers.end())
+				frameDSBuffers.emplace(buffer.get(), buffer);
+			if (rects && !rects->empty())
+			{
+				//TODO : This implementation is wrong.Should allocate frame memory not local memory,must fix later
+				D3D12_RECT* d3dRect = ALLOC_ARRAY(m_smallObjAllocator, rects->size(), D3D12_RECT);
+				for (size_t i = 0; i < rects->size(); i++)
+				{
+					d3dRect[i].left = (*rects)[i].left();
+					d3dRect[i].right = (*rects)[i].right();
+					d3dRect[i].top = (*rects)[i].top();
+					d3dRect[i].bottom = (*rects)[i].bottom();
+				}
+				m_commandList->ClearDepthStencilView(dsvHandle, clearFlags, depth, stencil, rects->size(), d3dRect);
+				DEALLOC(m_smallObjAllocator, d3dRect);
+			}
+			else
+			{
+				m_commandList->ClearDepthStencilView(dsvHandle, clearFlags, depth, stencil, 0, nullptr);
+			}
+		}
+
 
 
 		SharedVertexBufferPtr D3D12Device::CreateVertexBuffer()
@@ -196,8 +239,6 @@ namespace LightningGE
 			Device::ApplyDepthStencilState(state);
 			D3D12_DEPTH_STENCIL_DESC* pDesc = &m_pipelineDesc.DepthStencilState;
 			pDesc->DepthEnable = state.depthTestEnable;
-			//TODO change
-			pDesc->DepthEnable = FALSE;
 			pDesc->DepthFunc = D3D12TypeMapper::MapCmpFunc(state.depthCmpFunc);
 			pDesc->DepthWriteMask = state.depthWriteEnable ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;
 			pDesc->StencilEnable = state.stencilEnable;
@@ -523,7 +564,7 @@ namespace LightningGE
 			return rootSignature;
 		}
 
-		void D3D12Device::BeginFrame(const UINT frameResourceIndex)
+		void D3D12Device::BeginFrame(const std::size_t frameResourceIndex)
 		{
 			m_frameResourceIndex = frameResourceIndex;
 			m_frameResources[frameResourceIndex].Release(true);
@@ -535,9 +576,15 @@ namespace LightningGE
 			assert(targetCount <= MAX_RENDER_TARGET_COUNT);
 			//TODO : actually should set pipeline description based on PipelineState rather than set them here
 			auto rtvHandles = m_frameResources[m_frameResourceIndex].rtvHandles;
+			auto& frameRenderTargets = m_frameResources[m_frameResourceIndex].renderTargets;
 			for (std::size_t i = 0; i < targetCount;++i)
 			{
+				if (frameRenderTargets.find(renderTargets[i].get()) == frameRenderTargets.end())
+				{
+					frameRenderTargets.emplace(renderTargets[i].get(), renderTargets[i]);
+				}
 				rtvHandles[i] = static_cast<const D3D12RenderTarget*>(renderTargets[i].get())->GetCPUHandle();
+				//TODO : Is it correct to use the first render target's sample description to set the pipeline desc?
 				if (i == 0)
 				{
 					m_pipelineDesc.SampleDesc.Count = renderTargets[i]->GetSampleCount();
@@ -548,7 +595,9 @@ namespace LightningGE
 			auto dsHandle = static_cast<const D3D12DepthStencilBuffer*>(dsBuffer.get())->GetCPUHandle();
 			m_commandList->OMSetRenderTargets(targetCount, rtvHandles, FALSE, &dsHandle);
 			m_currentDSBuffer = dsBuffer;
-			m_frameResources[m_frameResourceIndex].depthStencilBuffers.push_back(dsBuffer);
+			auto& frameDSBuffers = m_frameResources[m_frameResourceIndex].depthStencilBuffers;
+			if (frameDSBuffers.find(dsBuffer.get()) == frameDSBuffers.end())
+				frameDSBuffers.emplace(dsBuffer.get(), dsBuffer);
 			m_pipelineDesc.NumRenderTargets = targetCount;
 		}
 

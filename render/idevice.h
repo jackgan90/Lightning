@@ -21,7 +21,8 @@ namespace LightningGE
 		public:
 			virtual ~IDevice() = default;
 			//clear a specified render target,possibly parts of it defined by an array of rects
-			virtual void ClearRenderTarget(IRenderTarget* rt, const ColorF& color, const RectIList* rects=nullptr) = 0;
+			virtual void ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectIList* rects=nullptr) = 0;
+			virtual void ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr) = 0;
 			virtual SharedVertexBufferPtr CreateVertexBuffer() = 0;
 			virtual SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap) = 0;
 			virtual SharedShaderPtr GetDefaultShader(ShaderType type) = 0;
@@ -32,6 +33,7 @@ namespace LightningGE
 			virtual void BindGPUBuffers(std::uint8_t startSlot, const std::vector<GPUBuffer*>& buffers) = 0;
 			virtual void DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset) = 0;
 			virtual void DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset) = 0;
+			virtual void BeginFrame(const std::size_t frameResourceIndex) = 0;
 		};
 		using SharedDevicePtr = std::shared_ptr<IDevice>;
 	}

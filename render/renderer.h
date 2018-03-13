@@ -20,22 +20,31 @@ namespace LightningGE
 			ISwapChain* GetSwapChain()override;
 			//return the current frame index
 			std::uint64_t GetCurrentFrameCount()const override;
+			void SetClearColor(const ColorF& color)override;
 			void Draw(const RenderItem& item)override;
 			//TODO there can be multiple render passes in effect simultaneously,shoulc change it
 			void AddRenderPass(RenderPassType type)override;
+			std::size_t GetFrameResourceIndex()const override;
 			static Renderer* Instance() { return s_instance; }
 		protected:
+			struct FrameResource
+			{
+
+			};
 			Renderer(const SharedFileSystemPtr& fs, RenderPassType renderPassType = RenderPassType::FORWARD);
-			virtual void BeginFrame() = 0;
-			virtual void DoFrame() = 0;
+			virtual void BeginFrame();
+			virtual void DoFrame();
 			virtual void EndFrame() = 0;
 			virtual void ApplyRenderPass();
+			static Renderer* s_instance;
 			std::uint64_t m_frameCount;
 			SharedFileSystemPtr m_fs;
 			std::unique_ptr<IDevice> m_device;
 			std::unique_ptr<ISwapChain> m_swapChain;
 			std::vector<std::unique_ptr<RenderPass>> m_renderPasses;
-			static Renderer* s_instance;
+			std::size_t m_currentBackBufferIndex;
+			ColorF m_clearColor;
+			SharedDepthStencilBufferPtr m_depthStencilBuffer;
 		};
 	}
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include "enumoperation.h"
 
 namespace LightningGE
 {
@@ -21,6 +22,13 @@ namespace LightningGE
 			TRIANGLE_LIST,
 			TRIANGLE_STRIP
 		};
+
+		enum class DepthStencilClearFlags : unsigned int
+		{
+			CLEAR_DEPTH = 0x01,
+			CLEAR_STENCIL = 0x02,
+		};
+		ENABLE_ENUM_BITMASK_OPERATORS(DepthStencilClearFlags)
 
 		constexpr const int DEFAULT_SHADER_MODEL_MAJOR_VERSION = 5;
 		constexpr const int DEFAULT_SHADER_MODEL_MINOR_VERSION = 0;

@@ -106,6 +106,11 @@ namespace LightningGE
 			return D3D12RenderTargetManager::Instance()->GetRenderTarget(it->second);
 		}
 
+		std::size_t D3D12SwapChain::GetCurrentBackBufferIndex()const
+		{
+			return m_swapChain->GetCurrentBackBufferIndex();
+		}
+
 
 	}
 }

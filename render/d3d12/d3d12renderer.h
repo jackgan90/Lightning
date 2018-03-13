@@ -30,8 +30,6 @@ namespace LightningGE
 		public:
 			D3D12Renderer(const SharedWindowPtr& pContext, const SharedFileSystemPtr& fs);
 			~D3D12Renderer()override;
-			void SetClearColor(const ColorF& color)override;
-			std::uint8_t GetFrameResourceIndex()const override;
 		protected:
 			void BeginFrame()override;
 			void DoFrame()override;
@@ -56,9 +54,6 @@ namespace LightningGE
 			ComPtr<ID3D12CommandQueue> m_commandQueue;
 			ComPtr<ID3D12GraphicsCommandList> m_commandList;
 			HANDLE m_fenceEvent;
-			UINT m_currentBackBufferIndex;
-			ColorF m_clearColor;
-			SharedDepthStencilBufferPtr m_depthStencilBuffer;
 			FrameResource m_frameResources[RENDER_FRAME_COUNT];
 #ifndef NDEBUG
 			ComPtr<ID3D12Debug> m_d3d12Debug;

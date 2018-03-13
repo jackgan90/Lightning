@@ -27,19 +27,19 @@ namespace LightningGE
 			m_fenceEvent = nullptr;
 			//Note:we should release resources in advance to make REPORT_LIVE_OBJECTS work correctly because if we let the share pointer
 			//destructor run out of the scope,we cannot trace the objects 
-			m_swapChain.reset();
-			m_depthStencilBuffer.reset();
 			m_commandQueue.Reset();
 			m_commandList.Reset();
+			//device , swap chain and depth stencil buffer are parent class's members but we still release them here because we need to track alive resources
+			m_device.reset();
+			m_swapChain.reset();
+			m_depthStencilBuffer.reset();
 			ReleaseFrameResources();
 			D3D12RenderTargetManager::Instance()->Clear();
-			m_device.reset();
 			D3D12DescriptorHeapManager::Instance()->Clear();
 			REPORT_LIVE_OBJECTS;
 		}
 
 		D3D12Renderer::D3D12Renderer(const SharedWindowPtr& pWindow, const SharedFileSystemPtr& fs) : Renderer(fs)
-			,m_clearColor(0.5f, 0.5f, 0.5f, 1.0f), m_currentBackBufferIndex(0)
 		{
 			ComPtr<IDXGIFactory4> dxgiFactory;
 #ifndef NDEBUG
@@ -62,8 +62,7 @@ namespace LightningGE
 			CreateFences();
 			logger.Log(LogLevel::Info, "Initialize D3D12 render context succeeded!");
 			
-			auto nativeSwapChain = static_cast<D3D12SwapChain*>(m_swapChain.get())->GetNative();
-			m_currentBackBufferIndex = nativeSwapChain->GetCurrentBackBufferIndex();
+			m_currentBackBufferIndex = m_swapChain->GetCurrentBackBufferIndex();
 #ifndef NDEBUG
 			InitDXGIDebug();
 #endif
@@ -136,20 +135,14 @@ namespace LightningGE
 		void D3D12Renderer::BeginFrame()
 		{
 			WaitForPreviousFrame(false);
-			m_frameCount++;
-			m_currentBackBufferIndex = static_cast<D3D12SwapChain*>(m_swapChain.get())->GetNative()->GetCurrentBackBufferIndex();
+			Renderer::BeginFrame();
 			//Release frame resources used by previous frame
 			m_frameResources[m_currentBackBufferIndex].Release(true);
-			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
-			pD3D12Device->BeginFrame(m_currentBackBufferIndex);
 		}
 
 		void D3D12Renderer::DoFrame()
 		{
-			auto currentSwapChainRT = m_swapChain->GetBufferRenderTarget(m_currentBackBufferIndex);
-			m_device->ClearRenderTarget(currentSwapChainRT.get(), m_clearColor);
-			static_cast<D3D12Device*>(m_device.get())->ApplyRenderTargets(&currentSwapChainRT, 
-				1, m_depthStencilBuffer);
+			Renderer::DoFrame();
 		}
 
 		void D3D12Renderer::EndFrame()
@@ -198,16 +191,6 @@ namespace LightningGE
 				}
 				++m_frameResources[bufferIndex].fenceValue;
 			}
-		}
-
-		void D3D12Renderer::SetClearColor(const ColorF& color)
-		{
-			m_clearColor = color;
-		}
-
-		std::uint8_t D3D12Renderer::GetFrameResourceIndex()const
-		{
-			return m_currentBackBufferIndex;
 		}
 
 		void D3D12Renderer::ReleaseFrameResources()

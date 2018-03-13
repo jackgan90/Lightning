@@ -10,6 +10,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDER_API Device : public IDevice
 		{
 		public:
+			friend class Renderer;
 			Device();
 			void ApplyPipelineState(const PipelineState& state)override;
 			SharedShaderPtr GetDefaultShader(ShaderType type)override;

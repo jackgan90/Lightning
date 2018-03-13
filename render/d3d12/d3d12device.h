@@ -24,7 +24,8 @@ namespace LightningGE
 			friend class D3D12Renderer;
 			D3D12Device(IDXGIFactory4* factory, const SharedFileSystemPtr& fs);
 			~D3D12Device()override;
-			void ClearRenderTarget(IRenderTarget* rt, const ColorF& color, const RectIList* rects=nullptr)override;
+			void ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectIList* rects=nullptr)override;
+			void ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr)override;
 			SharedVertexBufferPtr CreateVertexBuffer()override;
 			ID3D12Device* GetNative()const { return m_device.Get(); }
 			ID3D12CommandQueue* GetCommandQueue()const { return m_commandQueue.Get(); }
@@ -35,7 +36,7 @@ namespace LightningGE
 			void BindGPUBuffers(std::uint8_t startSlot, const std::vector<GPUBuffer*>& buffers)override;
 			void DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset)override;
 			void DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset)override;
-			void BeginFrame(const UINT frameResourceIndex);
+			void BeginFrame(const std::size_t frameResourceIndex);
 		protected:
 			void ApplyRasterizerState(const RasterizerState& state)override;
 			void ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount)override;
@@ -61,8 +62,11 @@ namespace LightningGE
 				D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[MAX_RENDER_TARGET_COUNT];
 				//The reason we don't use ComPtr here is that descriptor heaps are not released during rendering
 				//so it's not necessary to hold share pointers just to prevent them from being released
+				//descriptorHeaps is more like an intermediate container because descriptor heaps are not released
+				//so the only purpose of it is to pass arguments to DirectX API
 				std::vector<ID3D12DescriptorHeap*> descriptorHeaps;
-				std::vector<SharedDepthStencilBufferPtr> depthStencilBuffers;
+				std::unordered_map<IDepthStencilBuffer*, SharedDepthStencilBufferPtr> depthStencilBuffers;
+				std::unordered_map<IRenderTarget*, SharedRenderTargetPtr> renderTargets;
 				D3D12_VERTEX_BUFFER_VIEW vbViews[MAX_GEOMETRY_BUFFER_COUNT];
 				ComPtr<ID3D12CommandAllocator> commandAllocator;
 
@@ -70,6 +74,7 @@ namespace LightningGE
 				{
 					descriptorHeaps.clear();
 					depthStencilBuffers.clear();
+					renderTargets.clear();
 					if (!perFrame)
 					{
 						commandAllocator.Reset();
