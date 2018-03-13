@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <memory>
 #include "rendererexportdef.h"
 #include "renderconstants.h"
 
@@ -18,5 +19,6 @@ namespace LightningGE
 			virtual std::uint32_t GetWidth()const = 0;
 			virtual std::uint32_t GetHeight()const = 0;
 		};
+		using SharedDepthStencilBufferPtr = std::shared_ptr<IDepthStencilBuffer>;
 	}
 }

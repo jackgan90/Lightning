@@ -48,10 +48,5 @@ namespace LightningGE
 
 		}
 
-		void Device::ApplyRenderTargets(const SharedRenderTargetPtr* renderTargets, const std::uint8_t targetCount, const IDepthStencilBuffer* dsBuffer)
-		{
-
-		}
-
 	}
 }

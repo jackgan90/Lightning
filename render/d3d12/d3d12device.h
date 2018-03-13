@@ -42,7 +42,7 @@ namespace LightningGE
 			void ApplyDepthStencilState(const DepthStencilState& state)override;
 			void ApplyViewports(const RectFList& vp)override;
 			void ApplyScissorRects(const RectFList& scissorRects)override;
-			void ApplyRenderTargets(const SharedRenderTargetPtr* renderTargets, const std::uint8_t targetCount, const IDepthStencilBuffer* dsBuffer)override;
+			void ApplyRenderTargets(const SharedRenderTargetPtr* renderTargets, const std::uint8_t targetCount, const SharedDepthStencilBufferPtr& dsBuffer)override;
 		private:
 			struct GPUBufferCommit
 			{
@@ -62,12 +62,14 @@ namespace LightningGE
 				//The reason we don't use ComPtr here is that descriptor heaps are not released during rendering
 				//so it's not necessary to hold share pointers just to prevent them from being released
 				std::vector<ID3D12DescriptorHeap*> descriptorHeaps;
+				std::vector<SharedDepthStencilBufferPtr> depthStencilBuffers;
 				D3D12_VERTEX_BUFFER_VIEW vbViews[MAX_GEOMETRY_BUFFER_COUNT];
 				ComPtr<ID3D12CommandAllocator> commandAllocator;
 
 				void Release(bool perFrame)
 				{
 					descriptorHeaps.clear();
+					depthStencilBuffers.clear();
 					if (!perFrame)
 					{
 						commandAllocator.Reset();
@@ -105,13 +107,8 @@ namespace LightningGE
 			std::unordered_map<const GPUBuffer*, GPUBufferCommit> m_bufferCommitMap;
 			//depth stencil buffer is a resource of Renderer and will be kept alive during rendering cycle.So the availability of
 			//this resource is ensured by Renderer.Device need not to use shared ptr to keep it valid 
-			const IDepthStencilBuffer* m_currentDSBuffer;
-			D3D12_CPU_DESCRIPTOR_HANDLE m_frameRTVHandles[RENDER_FRAME_COUNT][MAX_RENDER_TARGET_COUNT];
+			SharedDepthStencilBufferPtr m_currentDSBuffer;
 			std::uint8_t m_frameResourceIndex;
-			//The reason we don't use ComPtr here is that descriptor heaps are not released during rendering
-			//so it's not necessary to hold share pointers just to prevent them from being released
-			std::vector<ID3D12DescriptorHeap*> m_descriptorHeaps[RENDER_FRAME_COUNT];
-			D3D12_VERTEX_BUFFER_VIEW m_frameVBViews[RENDER_FRAME_COUNT][MAX_GEOMETRY_BUFFER_COUNT];
 			FrameResource m_frameResources[RENDER_FRAME_COUNT];
 		};
 	}

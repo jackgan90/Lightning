@@ -58,7 +58,7 @@ namespace LightningGE
 			HANDLE m_fenceEvent;
 			UINT m_currentBackBufferIndex;
 			ColorF m_clearColor;
-			std::unique_ptr<D3D12DepthStencilBuffer> m_depthStencilBuffer;
+			SharedDepthStencilBufferPtr m_depthStencilBuffer;
 			FrameResource m_frameResources[RENDER_FRAME_COUNT];
 #ifndef NDEBUG
 			ComPtr<ID3D12Debug> m_d3d12Debug;

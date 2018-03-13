@@ -57,7 +57,7 @@ namespace LightningGE
 			m_commandQueue = static_cast<D3D12Device*>(m_device.get())->GetCommandQueue();
 			m_commandList = static_cast<D3D12Device*>(m_device.get())->GetGraphicsCommandList();
 			m_swapChain = std::make_unique<D3D12SwapChain>(dxgiFactory.Get(), pNativeDevice, m_commandQueue.Get(), pWindow.get());
-			m_depthStencilBuffer = std::make_unique<D3D12DepthStencilBuffer>(pWindow->GetWidth(), pWindow->GetHeight());
+			m_depthStencilBuffer = std::make_shared<D3D12DepthStencilBuffer>(pWindow->GetWidth(), pWindow->GetHeight());
 			
 			CreateFences();
 			logger.Log(LogLevel::Info, "Initialize D3D12 render context succeeded!");
@@ -149,7 +149,7 @@ namespace LightningGE
 			auto currentSwapChainRT = m_swapChain->GetBufferRenderTarget(m_currentBackBufferIndex);
 			m_device->ClearRenderTarget(currentSwapChainRT.get(), m_clearColor);
 			static_cast<D3D12Device*>(m_device.get())->ApplyRenderTargets(&currentSwapChainRT, 
-				1, m_depthStencilBuffer.get());
+				1, m_depthStencilBuffer);
 		}
 
 		void D3D12Renderer::EndFrame()
