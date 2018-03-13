@@ -41,7 +41,14 @@ namespace LightningGE
 			{
 				ComPtr<ID3D12Fence> fence;
 				UINT64 fenceValue;
-				SharedRenderTargetPtr renderTargets[MAX_RENDER_TARGET_COUNT];
+
+				void Release(bool perFrame)
+				{
+					if (!perFrame)
+					{
+						fence.Reset();
+					}
+				}
 			};
 			void WaitForPreviousFrame(bool waitAll);
 			void CreateFences();

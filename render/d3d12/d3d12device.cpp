@@ -51,13 +51,13 @@ namespace LightningGE
 			}
 			for (size_t i = 0; i < RENDER_FRAME_COUNT; i++)
 			{
-				hr = m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocators[i]));
+				hr = m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_frameResources[i].commandAllocator));
 				if (FAILED(hr))
 				{
 					throw DeviceInitException("Failed to create command allocator!");
 				}
 			}
-			hr = m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[0].Get(), nullptr, IID_PPV_ARGS(&m_commandList));
+			hr = m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_frameResources[0].commandAllocator.Get(), nullptr, IID_PPV_ARGS(&m_commandList));
 			if (FAILED(hr))
 			{
 				throw DeviceInitException("Failed to create command list!");
@@ -524,10 +524,8 @@ namespace LightningGE
 		void D3D12Device::BeginFrame(const UINT frameResourceIndex)
 		{
 			m_frameResourceIndex = frameResourceIndex;
-			m_commandAllocators[m_frameResourceIndex]->Reset();
-			m_commandList->Reset(m_commandAllocators[m_frameResourceIndex].Get(), nullptr);
-			//TODO : some heaps can be reused in multiple frames,this heaps are not forced to clear
-			m_descriptorHeaps[m_frameResourceIndex].clear();
+			m_frameResources[frameResourceIndex].Release(true);
+			m_commandList->Reset(m_frameResources[frameResourceIndex].commandAllocator.Get(), nullptr);
 		}
 
 		void D3D12Device::ApplyRenderTargets(const SharedRenderTargetPtr* renderTargets, const std::uint8_t targetCount, const IDepthStencilBuffer* dsBuffer)

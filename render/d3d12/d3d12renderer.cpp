@@ -138,6 +138,8 @@ namespace LightningGE
 			WaitForPreviousFrame(false);
 			m_frameCount++;
 			m_currentBackBufferIndex = static_cast<D3D12SwapChain*>(m_swapChain.get())->GetNative()->GetCurrentBackBufferIndex();
+			//Release frame resources used by previous frame
+			m_frameResources[m_currentBackBufferIndex].Release(true);
 			D3D12Device* pD3D12Device = static_cast<D3D12Device*>(m_device.get());
 			pD3D12Device->BeginFrame(m_currentBackBufferIndex);
 		}
@@ -146,8 +148,7 @@ namespace LightningGE
 		{
 			auto currentSwapChainRT = m_swapChain->GetBufferRenderTarget(m_currentBackBufferIndex);
 			m_device->ClearRenderTarget(currentSwapChainRT.get(), m_clearColor);
-			m_frameResources[m_currentBackBufferIndex].renderTargets[0] = currentSwapChainRT;
-			static_cast<D3D12Device*>(m_device.get())->ApplyRenderTargets(m_frameResources[m_currentBackBufferIndex].renderTargets, 
+			static_cast<D3D12Device*>(m_device.get())->ApplyRenderTargets(&currentSwapChainRT, 
 				1, m_depthStencilBuffer.get());
 		}
 
@@ -213,11 +214,7 @@ namespace LightningGE
 		{
 			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
-				for (std::size_t j = 0;j < MAX_RENDER_TARGET_COUNT;++j)
-				{
-					m_frameResources[i].renderTargets[j].reset();
-				}
-				m_frameResources[i].fence.Reset();
+				m_frameResources[i].Release(false);
 			}
 		}
 

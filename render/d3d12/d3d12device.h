@@ -55,6 +55,29 @@ namespace LightningGE
 					D3D12_INDEX_BUFFER_VIEW indexBufferView;
 				};
 			};
+
+			struct FrameResource
+			{
+				D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[MAX_RENDER_TARGET_COUNT];
+				//The reason we don't use ComPtr here is that descriptor heaps are not released during rendering
+				//so it's not necessary to hold share pointers just to prevent them from being released
+				std::vector<ID3D12DescriptorHeap*> descriptorHeaps;
+				D3D12_VERTEX_BUFFER_VIEW vbViews[MAX_GEOMETRY_BUFFER_COUNT];
+				ComPtr<ID3D12CommandAllocator> commandAllocator;
+
+				void Release(bool perFrame)
+				{
+					descriptorHeaps.clear();
+					if (!perFrame)
+					{
+						commandAllocator.Reset();
+					}
+					else
+					{
+						commandAllocator->Reset();
+					}
+				}
+			};
 			//if parameter pState is nullptr,this method will create a default pipeline state
 			using PipelineCacheMap = std::unordered_map<std::size_t, ComPtr<ID3D12PipelineState>>;
 			using RootSignatureMap = std::unordered_map<std::size_t, ComPtr<ID3D12RootSignature>>;
@@ -71,7 +94,6 @@ namespace LightningGE
 			SharedFileSystemPtr m_fs;
 			ComPtr<ID3D12Device> m_device;
 			ComPtr<ID3D12CommandQueue> m_commandQueue;
-			ComPtr<ID3D12CommandAllocator> m_commandAllocators[RENDER_FRAME_COUNT];
 			ComPtr<ID3D12GraphicsCommandList> m_commandList;
 			ComPtr<ID3D12PipelineState> m_d3d12PipelineState;
 			D3D12_VIEWPORT m_viewport;
@@ -81,6 +103,8 @@ namespace LightningGE
 			RootSignatureMap m_rootSignatures;
 			D3D12_INPUT_ELEMENT_DESC* m_pInputElementDesc;
 			std::unordered_map<const GPUBuffer*, GPUBufferCommit> m_bufferCommitMap;
+			//depth stencil buffer is a resource of Renderer and will be kept alive during rendering cycle.So the availability of
+			//this resource is ensured by Renderer.Device need not to use shared ptr to keep it valid 
 			const IDepthStencilBuffer* m_currentDSBuffer;
 			D3D12_CPU_DESCRIPTOR_HANDLE m_frameRTVHandles[RENDER_FRAME_COUNT][MAX_RENDER_TARGET_COUNT];
 			std::uint8_t m_frameResourceIndex;
@@ -88,6 +112,7 @@ namespace LightningGE
 			//so it's not necessary to hold share pointers just to prevent them from being released
 			std::vector<ID3D12DescriptorHeap*> m_descriptorHeaps[RENDER_FRAME_COUNT];
 			D3D12_VERTEX_BUFFER_VIEW m_frameVBViews[RENDER_FRAME_COUNT][MAX_GEOMETRY_BUFFER_COUNT];
+			FrameResource m_frameResources[RENDER_FRAME_COUNT];
 		};
 	}
 }
