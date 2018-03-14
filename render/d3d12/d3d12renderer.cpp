@@ -174,7 +174,7 @@ namespace LightningGE
 					backBufferIndex -= 1;
 				if (m_frameResources[backBufferIndex].fence->GetCompletedValue() >= m_frameResources[backBufferIndex].fenceValue)
 				{
-					if (m_frameCount - i - 1 > 0)
+					if (m_frameCount > i + 1)
 					{
 						g_RenderAllocator.ReleaseFramesBefore(m_frameCount - i - 1);
 						m_frameResources[backBufferIndex].Release(perFrame);
