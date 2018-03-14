@@ -52,6 +52,12 @@ namespace LightningGE
 			static_cast<Device*>(m_device.get())->ApplyRenderTargets(&currentSwapChainRT, 1, m_depthStencilBuffer);
 		}
 
+		void Renderer::EndFrame()
+		{
+			g_RenderAllocator.FinishFrame(m_frameCount);
+		}
+
+
 		void Renderer::SetClearColor(const ColorF& color)
 		{
 			m_clearColor = color;

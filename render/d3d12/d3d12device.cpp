@@ -14,6 +14,7 @@
 #include "shadermanager.h"
 #include "logger.h"
 #include "configmanager.h"
+#include "ringallocator.h"
 
 namespace LightningGE
 {
@@ -23,7 +24,9 @@ namespace LightningGE
 		using Foundation::logger;
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
-		using Foundation::StackAllocator;
+		using Foundation::RingAllocator;
+
+		extern RingAllocator g_RenderAllocator;
 		const char* const DEFAULT_VS_SOURCE =
 			"cbuffer VS_IN : register(b0)\n"
 			"{\n"
@@ -39,10 +42,9 @@ namespace LightningGE
 				"return float4(1.0f, 0.0f, 0.0f, 1.0f);\n"
 			"}\n";
 		D3D12Device::D3D12Device(IDXGIFactory4* factory, const SharedFileSystemPtr& fs)
-			:Device(), m_fs(fs), m_pipelineDesc{}, m_pInputElementDesc(nullptr), m_frameResourceIndex(0)
+			:Device(), m_fs(fs), m_pipelineDesc{},  m_frameResourceIndex(0)
 		{
 			CreateNativeDevice(factory);
-			m_smallObjAllocator = std::make_unique<StackAllocator<true, 16, 8192>>();
 			D3D12_COMMAND_QUEUE_DESC desc = {};
 			HRESULT hr = m_device->CreateCommandQueue(&desc, IID_PPV_ARGS(&m_commandQueue));
 			if (FAILED(hr))
@@ -72,10 +74,6 @@ namespace LightningGE
 
 		D3D12Device::~D3D12Device()
 		{
-			if (m_pInputElementDesc)
-			{
-				DEALLOC(m_smallObjAllocator, m_pInputElementDesc);
-			}
 			for (auto it = m_bufferCommitMap.begin();it != m_bufferCommitMap.end();++it)
 			{
 				it->second.uploadHeap.Reset();
@@ -143,7 +141,7 @@ namespace LightningGE
 			if (rects && !rects->empty())
 			{
 				//TODO : This implementation is wrong.Should allocate frame memory not local memory,must fix later
-				D3D12_RECT* d3dRect = ALLOC_ARRAY(m_smallObjAllocator, rects->size(), D3D12_RECT);
+				D3D12_RECT* d3dRect = g_RenderAllocator.Allocate<D3D12_RECT>(rects->size());
 				for (size_t i = 0; i < rects->size(); i++)
 				{
 					d3dRect[i].left = (*rects)[i].left();
@@ -152,7 +150,6 @@ namespace LightningGE
 					d3dRect[i].bottom = (*rects)[i].bottom();
 				}
 				m_commandList->ClearRenderTargetView(rtvHandle, clearColor, rects->size(), d3dRect);
-				DEALLOC(m_smallObjAllocator, d3dRect);
 			}
 			else
 			{
@@ -177,7 +174,7 @@ namespace LightningGE
 			if (rects && !rects->empty())
 			{
 				//TODO : This implementation is wrong.Should allocate frame memory not local memory,must fix later
-				D3D12_RECT* d3dRect = ALLOC_ARRAY(m_smallObjAllocator, rects->size(), D3D12_RECT);
+				D3D12_RECT* d3dRect = g_RenderAllocator.Allocate<D3D12_RECT>(rects->size());
 				for (size_t i = 0; i < rects->size(); i++)
 				{
 					d3dRect[i].left = (*rects)[i].left();
@@ -186,7 +183,6 @@ namespace LightningGE
 					d3dRect[i].bottom = (*rects)[i].bottom();
 				}
 				m_commandList->ClearDepthStencilView(dsvHandle, clearFlags, depth, stencil, rects->size(), d3dRect);
-				DEALLOC(m_smallObjAllocator, d3dRect);
 			}
 			else
 			{
@@ -506,33 +502,31 @@ namespace LightningGE
 				inputLayoutDesc.pInputElementDescs = nullptr;
 				return;
 			}
-			if (m_pInputElementDesc)
-				DEALLOC(m_smallObjAllocator, m_pInputElementDesc);
 			std::size_t inputElementCount{ 0 };
 			for (const auto& inputLayout : inputLayouts)
 			{
 				inputElementCount += inputLayout.components.size();
 			}
-			m_pInputElementDesc = ALLOC_ARRAY(m_smallObjAllocator, inputElementCount, D3D12_INPUT_ELEMENT_DESC);
+			auto pInputElementDesc = g_RenderAllocator.Allocate<D3D12_INPUT_ELEMENT_DESC>(inputElementCount);
 			std::size_t i = 0;
 			for (const auto& inputLayout : inputLayouts)
 			{
 				for (const auto& component : inputLayout.components)
 				{
-					m_pInputElementDesc[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
-					m_pInputElementDesc[i].Format = D3D12TypeMapper::MapRenderFormat(component.format);
-					m_pInputElementDesc[i].InputSlot = inputLayout.slot;
-					m_pInputElementDesc[i].InputSlotClass = component.isInstance ? \
+					pInputElementDesc[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+					pInputElementDesc[i].Format = D3D12TypeMapper::MapRenderFormat(component.format);
+					pInputElementDesc[i].InputSlot = inputLayout.slot;
+					pInputElementDesc[i].InputSlotClass = component.isInstance ? \
 						D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA : D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-					m_pInputElementDesc[i].InstanceDataStepRate = component.isInstance ? component.instanceStepRate : 0;
-					m_pInputElementDesc[i].SemanticIndex = component.semanticIndex;
-					m_pInputElementDesc[i].SemanticName = component.semanticItem.name;
+					pInputElementDesc[i].InstanceDataStepRate = component.isInstance ? component.instanceStepRate : 0;
+					pInputElementDesc[i].SemanticIndex = component.semanticIndex;
+					pInputElementDesc[i].SemanticName = component.semanticItem.name;
 					++i;
 				}
 			}
 
 			inputLayoutDesc.NumElements = inputElementCount;
-			inputLayoutDesc.pInputElementDescs = m_pInputElementDesc;
+			inputLayoutDesc.pInputElementDescs = pInputElementDesc;
 		}
 
 		ComPtr<ID3D12RootSignature> D3D12Device::GetRootSignature(const std::vector<IShader*>& shaders)

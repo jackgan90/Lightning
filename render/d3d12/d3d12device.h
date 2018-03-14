@@ -5,7 +5,6 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
-#include "stackallocator.h"
 #include "device.h"
 #include "stackallocator.h"
 #include "filesystem.h"
@@ -106,11 +105,9 @@ namespace LightningGE
 			ComPtr<ID3D12GraphicsCommandList> m_commandList;
 			ComPtr<ID3D12PipelineState> m_d3d12PipelineState;
 			D3D12_VIEWPORT m_viewport;
-			std::unique_ptr<IMemoryAllocator> m_smallObjAllocator;
 			D3D12_GRAPHICS_PIPELINE_STATE_DESC m_pipelineDesc;
 			PipelineCacheMap m_pipelineCache;
 			RootSignatureMap m_rootSignatures;
-			D3D12_INPUT_ELEMENT_DESC* m_pInputElementDesc;
 			std::unordered_map<const GPUBuffer*, GPUBufferCommit> m_bufferCommitMap;
 			//depth stencil buffer is a resource of Renderer and will be kept alive during rendering cycle.So the availability of
 			//this resource is ensured by Renderer.Device need not to use shared ptr to keep it valid 

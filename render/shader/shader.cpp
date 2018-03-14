@@ -6,7 +6,6 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		StackAllocator<true, 16, 8192 > Shader::s_compileAllocator;
 		size_t Shader::Hash(const ShaderType& type, const std::string& shaderName, const ShaderDefine& defineMap)
 		{
 			std::size_t hash = Utility::CalculateHash(shaderName, defineMap.GetAllDefine());

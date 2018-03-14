@@ -34,7 +34,7 @@ namespace LightningGE
 			Renderer(const SharedFileSystemPtr& fs, RenderPassType renderPassType = RenderPassType::FORWARD);
 			virtual void BeginFrame();
 			virtual void DoFrame();
-			virtual void EndFrame() = 0;
+			virtual void EndFrame();
 			virtual void ApplyRenderPass();
 			static Renderer* s_instance;
 			std::uint64_t m_frameCount;

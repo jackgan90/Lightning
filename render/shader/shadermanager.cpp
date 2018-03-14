@@ -5,6 +5,7 @@
 #include "filesystemfactory.h"
 #include "filesystem.h"
 #include "logger.h"
+#include "ringallocator.h"
 
 namespace LightningGE
 {
@@ -17,11 +18,13 @@ namespace LightningGE
 		using Foundation::FileAnchor;
 		using Foundation::logger;
 		using Foundation::LogLevel;
-		using Foundation::StackAllocator;
+		using Foundation::RingAllocator;
+
+		extern RingAllocator g_RenderAllocator;
+
 		ShaderManager::ShaderManager(const SharedFileSystemPtr& fs)
 		{
 			m_fs = fs;
-			m_compileAllocator = std::make_unique<StackAllocator<true, 16, 8192>>();
 		}
 
 		ShaderManager::~ShaderManager()
@@ -60,17 +63,15 @@ namespace LightningGE
 				return SharedShaderPtr();
 			}
 			shaderFile->SetFilePointer(FilePointerType::Read, FileAnchor::Begin, 0);
-			char* buffer = ALLOC_ARRAY(m_compileAllocator, size+1, char);
+			char* buffer = g_RenderAllocator.Allocate<char>(size + 1);
 			auto readSize = shaderFile->Read(buffer, size);
 			if (readSize < size)
 			{
 				logger.Log(LogLevel::Error, "Failed to read shader file.Shader name:%s, file size:%d, read size:%d", shaderFile->GetPath().c_str(), size, readSize);
-				DEALLOC(m_compileAllocator, buffer);
 				return SharedShaderPtr();
 			}
 			buffer[size] = 0;
 			auto pShader = CreateShaderFromSource(type, shaderFileName, buffer, defineMap);
-			DEALLOC(m_compileAllocator, buffer);
 			return pShader;
 		}
 

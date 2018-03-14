@@ -2,7 +2,6 @@
 #include <memory>
 #include "filesystem.h"
 #include "ishadermanager.h"
-#include "stackallocator.h"
 
 namespace LightningGE
 {
@@ -23,7 +22,6 @@ namespace LightningGE
 			virtual SharedShaderPtr CreateConcreteShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap) = 0;
 			ShaderMap m_shaders;
 			SharedFileSystemPtr m_fs;
-			std::unique_ptr<IMemoryAllocator> m_compileAllocator;
 		};
 	}
 }

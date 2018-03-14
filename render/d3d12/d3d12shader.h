@@ -79,7 +79,7 @@ namespace LightningGE
 				UINT bufferIndex;
 				UINT offsetInBuffer;
 			};
-			void CompileImpl(IMemoryAllocator* memoryAllocator);
+			void CompileImpl();
 			D3D12_SHADER_VISIBILITY GetParameterVisibility()const;
 			ComPtr<ID3D10Blob> m_byteCode;
 			ComPtr<ID3D12ShaderReflection> m_shaderReflect;

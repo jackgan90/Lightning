@@ -8,14 +8,12 @@
 #include "hashableobject.h"
 #include "semantics.h"
 #include "renderexception.h"
-#include "memory/stackallocator.h"
 #include "types/vector.h"
 
 namespace LightningGE
 {
 	namespace Render
 	{
-		using Foundation::StackAllocator;
 		class LIGHTNINGGE_RENDER_API ShaderCompileException : public RendererException
 		{
 		public:
@@ -130,7 +128,6 @@ namespace LightningGE
 			ShaderDefine m_macros;
 			int m_smMajorVersion;
 			int m_smMinorVersion;
-			static StackAllocator<true, 16, 8192 > s_compileAllocator;
 		};
 	}
 }

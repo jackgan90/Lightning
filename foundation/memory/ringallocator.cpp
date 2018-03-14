@@ -109,7 +109,7 @@ namespace LightningGE
 		}
 
 
-		std::uint8_t* RingAllocator::Allocate(std::size_t size)
+		std::uint8_t* RingAllocator::AllocateBytes(std::size_t size)
 		{
 			if (m_buffers.empty())
 			{

@@ -423,7 +423,7 @@ namespace
 	{
 		RingAllocator allocator;
 		std::size_t usedSize{ 0 };
-		auto p = allocator.Allocate(10);
+		auto p = allocator.Allocate<std::uint8_t>(10);
 		REQUIRE(p != nullptr);
 		REQUIRE(allocator.GetUsedMemorySize() == 10);
 		for (std::size_t k = 0;k < 20;++k)
@@ -432,7 +432,7 @@ namespace
 			for (std::size_t i = 0;i < 20;++i)
 			{
 				usedSize += i * 100;
-				allocator.Allocate(i * 100);
+				allocator.Allocate<std::uint8_t>(i * 100);
 			}
 			allocator.FinishFrame(k+1);
 			auto realUsedSize = allocator.GetUsedMemorySize();

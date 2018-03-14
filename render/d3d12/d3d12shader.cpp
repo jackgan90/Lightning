@@ -6,6 +6,7 @@
 #include "shadermanager.h"
 #include "d3d12shader.h"
 #include "rendererhelper.h"
+#include "ringallocator.h"
 
 namespace LightningGE
 {
@@ -14,13 +15,16 @@ namespace LightningGE
 		using Foundation::FileSize;
 		using Foundation::FilePointerType;
 		using Foundation::FileAnchor;
+		using Foundation::RingAllocator;
+
+		extern RingAllocator g_RenderAllocator;
 
 		D3D12Shader::D3D12Shader(ID3D12Device* device, ShaderType type, const std::string& name, const std::string& entry, const char* const shaderSource):
 			Shader(type, name, entry, shaderSource)
 			, m_descriptorRanges(nullptr)
 		{
 			assert(shaderSource);
-			CompileImpl(&s_compileAllocator);
+			CompileImpl();
 			D3DReflect(m_byteCode->GetBufferPointer(), m_byteCode->GetBufferSize(), IID_PPV_ARGS(&m_shaderReflect));
 			m_shaderReflect->GetDesc(&m_desc);
 			std::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC> bindDescs;
@@ -250,7 +254,7 @@ namespace LightningGE
 		{
 			if (m_source)
 			{
-				CompileImpl(&s_compileAllocator);
+				CompileImpl();
 			}
 		}
 
@@ -294,23 +298,23 @@ namespace LightningGE
 
 
 
-		void D3D12Shader::CompileImpl(IMemoryAllocator* memoryAllocator)
+		void D3D12Shader::CompileImpl()
 		{
 			D3D_SHADER_MACRO* pMacros = nullptr;
 			auto macroCount = m_macros.GetMacroCount();
 			if (macroCount)
 			{
-				pMacros = ALLOC_ARRAY(memoryAllocator, macroCount + 1, D3D_SHADER_MACRO);
+				pMacros = g_RenderAllocator.Allocate<D3D_SHADER_MACRO>(macroCount + 1);
 				std::memset(&pMacros[macroCount], 0, sizeof(D3D_SHADER_MACRO));
 				auto macros = m_macros.GetAllDefine();
 				auto idx = 0;
 				for (auto it = macros.begin(); it != macros.end(); ++it,++idx)
 				{
 					const char* name = it->first.c_str();
-					pMacros[idx].Name = ALLOC_ARRAY(memoryAllocator, std::strlen(name)+1, const char);
+					pMacros[idx].Name = g_RenderAllocator.Allocate<const char>(std::strlen(name) + 1);
 					std::strcpy(const_cast<char*>(pMacros[idx].Name), name);
 					const char* definition = it->second.c_str();
-					pMacros[idx].Definition = ALLOC_ARRAY(memoryAllocator, std::strlen(definition)+1, const char);
+					pMacros[idx].Definition = g_RenderAllocator.Allocate<const char>(std::strlen(definition) + 1);
 					std::strcpy(const_cast<char*>(pMacros[idx].Definition), definition);
 				}
 			}
@@ -339,33 +343,16 @@ namespace LightningGE
 					for (size_t i = 0; i < macroCount; i++)
 					{
 						ss << pMacros[i].Name << ":" << pMacros[i].Definition << std::endl;
-						DEALLOC(memoryAllocator, const_cast<char*>(pMacros[i].Name));
-						DEALLOC(memoryAllocator, const_cast<char*>(pMacros[i].Definition));
 					}
-				}
-				if (pMacros)
-				{
-					DEALLOC(memoryAllocator, pMacros);
 				}
 				ss << "Detailed info:" << std::endl;
 				size_t compileErrorBufferSize = errorLog->GetBufferSize();
-				char* compileErrorBuffer = ALLOC(memoryAllocator, compileErrorBufferSize, char);
+				char* compileErrorBuffer = g_RenderAllocator.Allocate<char>(compileErrorBufferSize);
 				std::memcpy(compileErrorBuffer, errorLog->GetBufferPointer(), compileErrorBufferSize);
 				compileErrorBuffer[compileErrorBufferSize] = 0;
 				ss << compileErrorBuffer;
 				logger.Log(LogLevel::Error, "%s", ss.str().c_str());
-				DEALLOC(memoryAllocator, compileErrorBuffer);
 				throw ShaderCompileException("Failed to compile shader!");
-			}
-
-			if (pMacros)
-			{
-				for (size_t i = 0; i < macroCount; i++)
-				{
-					memoryAllocator->Deallocate(static_cast<void*>(const_cast<char*>(pMacros[i].Name)));
-					memoryAllocator->Deallocate(static_cast<void*>(const_cast<char*>(pMacros[i].Definition)));
-				}
-				memoryAllocator->Deallocate(pMacros);
 			}
 		}
 	}

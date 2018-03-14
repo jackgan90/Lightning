@@ -159,6 +159,7 @@ namespace LightningGE
 			m_commandQueue->Signal(m_frameResources[m_currentBackBufferIndex].fence.Get(), 
 				m_frameResources[m_currentBackBufferIndex].fenceValue);
 			m_swapChain->Present();
+			Renderer::EndFrame();
 		}
 
 		void D3D12Renderer::ReleasePreviousFrameResources(bool perFrame)

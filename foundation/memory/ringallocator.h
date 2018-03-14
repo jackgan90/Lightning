@@ -18,13 +18,23 @@ namespace LightningGE
 			~RingAllocator() = default;
 			RingAllocator(const RingAllocator&) = delete;
 			RingAllocator& operator=(const RingAllocator&) = delete;
-			std::uint8_t* Allocate(std::size_t size);
+			template<typename T, typename... Args>
+			T* Allocate(std::size_t elementCount, Args&&... args)
+			{
+				auto ptr = AllocateBytes(elementCount * sizeof(T));
+				for (std::size_t i = 0;i < elementCount;++i)
+				{
+					new (ptr + i * sizeof(T)) T(std::forward<Args>(args)...);
+				}
+				return reinterpret_cast<T*>(ptr);
+			}
 			std::size_t GetAllocatedMemorySize()const;
 			std::size_t GetUsedMemorySize()const;
 			void ReleaseFramesBefore(std::uint64_t frame);
 			void FinishFrame(std::uint64_t frame);
 			std::size_t GetInternalBufferCount()const { return m_buffers.size(); }
 		private:
+			std::uint8_t* AllocateBytes(std::size_t size);
 			class RingBuffer
 			{
 			public:
@@ -34,11 +44,6 @@ namespace LightningGE
 				RingBuffer(RingBuffer&&)noexcept;
 				RingBuffer& operator=(RingBuffer&&)noexcept;
 				std::uint8_t* Allocate(std::size_t size);
-				template<typename T>
-				T* Allocate(std::size_t size)
-				{
-					return static_cast<T*>(Allocate(size));
-				}
 				void FinishFrame(std::uint64_t frame);
 				void ReleaseFramesBefore(std::uint64_t frame);
 				std::size_t GetSize()const { return m_maxSize; }
