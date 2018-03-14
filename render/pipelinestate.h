@@ -318,6 +318,7 @@ namespace LightningGE
 			std::vector<VertexInputLayout> inputLayouts;
 			Viewport viewPort;
 			ScissorRect scissorRect;
+			IRenderTarget* renderTargets[MAX_RENDER_TARGET_COUNT];
 
 			bool operator==(const PipelineState& state)const noexcept
 			{
@@ -402,6 +403,14 @@ namespace LightningGE
 				if (scissorRect != state.scissorRect)
 				{
 					return false;
+				}
+
+				for (std::size_t i = 0;i < outputRenderTargetCount;++i)
+				{
+					if (renderTargets[i] != state.renderTargets[i])
+					{
+						return false;
+					}
 				}
 
 				return true;
@@ -571,6 +580,11 @@ namespace std
 
 			boost::hash_combine(seed, PipelineHash(state.viewPort));
 			boost::hash_combine(seed, PipelineHash(state.scissorRect));
+
+			for (std::size_t i = 0;i < state.outputRenderTargetCount;++i)
+			{
+				boost::hash_combine(seed, state.renderTargets[i]->GetID());
+			}
 			return seed;
 		}
 	};

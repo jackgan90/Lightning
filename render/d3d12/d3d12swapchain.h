@@ -30,6 +30,7 @@ namespace LightningGE
 			RenderFormat GetRenderFormat()const override{ return D3D12TypeMapper::MapRenderFormat(m_desc.BufferDesc.Format); }
 			IDXGISwapChain3* GetNative() { return m_swapChain.Get(); }
 			std::size_t GetCurrentBackBufferIndex()const override;
+			SharedRenderTargetPtr GetPrimaryRenderTarget()override;
 		private:
 			void BindRenderTargets(ID3D12Device* pDevice);
 			void CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow);

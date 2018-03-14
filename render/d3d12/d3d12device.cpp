@@ -136,9 +136,7 @@ namespace LightningGE
 			}
 
 			//cache render target to prevent it from being released before GPU execute ClearRenderTargetView
-			auto& frameRenderTargets = m_frameResources[m_frameResourceIndex].renderTargets;
-			if (frameRenderTargets.find(rt.get()) == frameRenderTargets.end())
-				frameRenderTargets.emplace(rt.get(), rt);
+			CacheResourceReference(rt);
 
 			const float clearColor[] = { color.r(), color.g(), color.b(), color.a() };
 			auto rtvHandle = pTarget->GetCPUHandle();
@@ -175,9 +173,7 @@ namespace LightningGE
 				clearFlags |= D3D12_CLEAR_FLAG_STENCIL;
 			}
 			auto dsvHandle = static_cast<D3D12DepthStencilBuffer*>(buffer.get())->GetCPUHandle();
-			auto& frameDSBuffers = m_frameResources[m_frameResourceIndex].depthStencilBuffers;
-			if (frameDSBuffers.find(buffer.get()) == frameDSBuffers.end())
-				frameDSBuffers.emplace(buffer.get(), buffer);
+			CacheResourceReference(buffer);
 			if (rects && !rects->empty())
 			{
 				//TODO : This implementation is wrong.Should allocate frame memory not local memory,must fix later
@@ -254,6 +250,7 @@ namespace LightningGE
 			pDesc->BackFace.StencilPassOp = D3D12TypeMapper::MapStencilOp(state.backFace.passOp);
 			pDesc->BackFace.StencilFailOp = D3D12TypeMapper::MapStencilOp(state.backFace.failOp);
 			pDesc->BackFace.StencilDepthFailOp = D3D12TypeMapper::MapStencilOp(state.backFace.depthFailOp);
+			m_pipelineDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
 			if (state.depthTestEnable || state.stencilEnable)
 			{
 				if (m_currentDSBuffer)
@@ -418,8 +415,18 @@ namespace LightningGE
 			m_pipelineDesc.pRootSignature = rootSignature.Get();
 			m_pipelineDesc.PrimitiveTopologyType = D3D12TypeMapper::MapPrimitiveType(state.primType);
 			//TODO : should apply pipeline state based on PipelineState
-			m_pipelineDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 			m_pipelineDesc.NumRenderTargets = m_devicePipelineState.outputRenderTargetCount;
+			for (size_t i = 0; i < sizeof(m_pipelineDesc.RTVFormats) / sizeof(DXGI_FORMAT); i++)
+			{
+				if (i < m_devicePipelineState.outputRenderTargetCount)
+				{
+					m_pipelineDesc.RTVFormats[i] = D3D12TypeMapper::MapRenderFormat(m_devicePipelineState.renderTargets[i]->GetRenderFormat());
+				}
+				else
+				{
+					m_pipelineDesc.RTVFormats[i] = DXGI_FORMAT_UNKNOWN;
+				}
+			}
 			m_pipelineDesc.SampleDesc.Count = 1;
 			m_pipelineDesc.SampleDesc.Quality = 0;
 			m_pipelineDesc.SampleMask = 0xfffffff;
@@ -445,7 +452,7 @@ namespace LightningGE
 			m_devicePipelineState.inputLayouts.push_back(layout);
 			m_devicePipelineState.depthStencilState.depthTestEnable = false;
 			m_devicePipelineState.primType = PrimitiveType::TRIANGLE_LIST;
-			m_devicePipelineState.outputRenderTargetCount = 1;
+			m_devicePipelineState.outputRenderTargetCount = 0;
 			ApplyPipelineState(m_devicePipelineState);
 		}
 
@@ -492,8 +499,13 @@ namespace LightningGE
 
 		void D3D12Device::UpdatePSOInputLayout(const std::vector<VertexInputLayout>& inputLayouts)
 		{
+			D3D12_INPUT_LAYOUT_DESC& inputLayoutDesc = m_pipelineDesc.InputLayout;
 			if (inputLayouts.empty())
+			{
+				inputLayoutDesc.NumElements = 0;
+				inputLayoutDesc.pInputElementDescs = nullptr;
 				return;
+			}
 			if (m_pInputElementDesc)
 				DEALLOC(m_smallObjAllocator, m_pInputElementDesc);
 			std::size_t inputElementCount{ 0 };
@@ -518,15 +530,15 @@ namespace LightningGE
 					++i;
 				}
 			}
-			D3D12_INPUT_LAYOUT_DESC& inputLayoutDesc = m_pipelineDesc.InputLayout;
 
-			// we can get the number of elements in an array by "sizeof(array) / sizeof(arrayElementType)"
 			inputLayoutDesc.NumElements = inputElementCount;
 			inputLayoutDesc.pInputElementDescs = m_pInputElementDesc;
 		}
 
 		ComPtr<ID3D12RootSignature> D3D12Device::GetRootSignature(const std::vector<IShader*>& shaders)
 		{	
+			//TODO : according to MSDN,pipeline state object can have 0 shader bound.But I found if I omit vertex shader
+			//,the pipeline state creation will fail.Need to find the reason
 			size_t seed = 0;
 			boost::hash_combine(seed, shaders.size());
 			for (const auto& s : shaders)
@@ -579,10 +591,7 @@ namespace LightningGE
 			auto& frameRenderTargets = m_frameResources[m_frameResourceIndex].renderTargets;
 			for (std::size_t i = 0; i < targetCount;++i)
 			{
-				if (frameRenderTargets.find(renderTargets[i].get()) == frameRenderTargets.end())
-				{
-					frameRenderTargets.emplace(renderTargets[i].get(), renderTargets[i]);
-				}
+				CacheResourceReference(renderTargets[i]);
 				rtvHandles[i] = static_cast<const D3D12RenderTarget*>(renderTargets[i].get())->GetCPUHandle();
 				//TODO : Is it correct to use the first render target's sample description to set the pipeline desc?
 				if (i == 0)
@@ -595,9 +604,7 @@ namespace LightningGE
 			auto dsHandle = static_cast<const D3D12DepthStencilBuffer*>(dsBuffer.get())->GetCPUHandle();
 			m_commandList->OMSetRenderTargets(targetCount, rtvHandles, FALSE, &dsHandle);
 			m_currentDSBuffer = dsBuffer;
-			auto& frameDSBuffers = m_frameResources[m_frameResourceIndex].depthStencilBuffers;
-			if (frameDSBuffers.find(dsBuffer.get()) == frameDSBuffers.end())
-				frameDSBuffers.emplace(dsBuffer.get(), dsBuffer);
+			CacheResourceReference(dsBuffer);
 			m_pipelineDesc.NumRenderTargets = targetCount;
 		}
 
@@ -715,6 +722,22 @@ namespace LightningGE
 			m_commandList->RSSetViewports(1, &vp);
 			m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			m_commandList->DrawIndexedInstanced(indexCountPerInstance, instanceCount, firstIndex, indexDataOffset, instanceDataOffset);
+		}
+
+		void D3D12Device::CacheResourceReference(const SharedDepthStencilBufferPtr& resource)
+		{
+			auto& frameDSBuffers = m_frameResources[m_frameResourceIndex].depthStencilBuffers;
+			auto rawPointer = resource.get();
+			if (frameDSBuffers.find(rawPointer) == frameDSBuffers.end())
+				frameDSBuffers.emplace(rawPointer, resource);
+		}
+
+		void D3D12Device::CacheResourceReference(const SharedRenderTargetPtr& resource)
+		{
+			auto& frameRenderTargets = m_frameResources[m_frameResourceIndex].renderTargets;
+			auto rawPointer = resource.get();
+			if (frameRenderTargets.find(rawPointer) == frameRenderTargets.end())
+				frameRenderTargets.emplace(rawPointer, resource);
 		}
 
 	}

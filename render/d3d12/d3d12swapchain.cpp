@@ -111,6 +111,10 @@ namespace LightningGE
 			return m_swapChain->GetCurrentBackBufferIndex();
 		}
 
+		SharedRenderTargetPtr D3D12SwapChain::GetPrimaryRenderTarget()
+		{
+			return GetBufferRenderTarget(GetCurrentBackBufferIndex());
+		}
 
 	}
 }

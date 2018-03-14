@@ -19,6 +19,7 @@ namespace LightningGE
 			virtual std::size_t GetCurrentBackBufferIndex()const = 0;
 			//get corresponding render target
 			virtual SharedRenderTargetPtr GetBufferRenderTarget(unsigned int bufferIndex) = 0;
+			virtual SharedRenderTargetPtr GetPrimaryRenderTarget() = 0;
 		};
 		using SharedSwapChainPtr = std::shared_ptr<ISwapChain>;
 	}

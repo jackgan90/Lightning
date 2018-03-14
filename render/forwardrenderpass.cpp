@@ -29,6 +29,8 @@ namespace LightningGE
 			PipelineState state{};
 			//TODO : set render target count based on model setting
 			state.outputRenderTargetCount = 1;
+			auto pSwapChain = Renderer::Instance()->GetSwapChain();
+			state.renderTargets[0] = pSwapChain->GetPrimaryRenderTarget().get();
 			if (item.material)
 			{
 				state.vs = item.material->GetShader(ShaderType::VERTEX);

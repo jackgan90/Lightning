@@ -142,6 +142,8 @@ namespace LightningGE
 				{
 				case RenderFormat::R32G32B32_FLOAT:
 					return DXGI_FORMAT_R32G32B32_FLOAT;
+				case RenderFormat::R8G8B8A8_UNORM:
+					return DXGI_FORMAT_R8G8B8A8_UNORM;
 				case RenderFormat::R32G32B32A32_FLOAT:
 					return DXGI_FORMAT_R32G32B32A32_FLOAT;
 				case RenderFormat::D24_S8:
@@ -157,6 +159,8 @@ namespace LightningGE
 				{
 				case DXGI_FORMAT_R32G32B32_FLOAT:
 					return RenderFormat::R32G32B32_FLOAT;
+				case DXGI_FORMAT_R8G8B8A8_UNORM:
+					return RenderFormat::R8G8B8A8_UNORM;
 				case DXGI_FORMAT_R32G32B32A32_FLOAT:
 					return RenderFormat::R32G32B32A32_FLOAT;
 				case DXGI_FORMAT_D24_UNORM_S8_UINT:

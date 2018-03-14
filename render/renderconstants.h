@@ -10,6 +10,7 @@ namespace LightningGE
 			UNDEFINED,
 			R32G32B32_FLOAT,
 			R32G32B32A32_FLOAT,
+			R8G8B8A8_UNORM,
 			D24_S8,		//for depth-stencil buffer
 			//TODO : there're more formats to add here...
 		};

@@ -98,6 +98,8 @@ namespace LightningGE
 			void ExtractShaderDescriptorHeaps(IShader* pShader);
 			void BindShaderResources();
 			void BindShaderResources(IShader* pShader, UINT rootParameterIndex);
+			void CacheResourceReference(const SharedDepthStencilBufferPtr& resource);
+			void CacheResourceReference(const SharedRenderTargetPtr& resource);
 			SharedFileSystemPtr m_fs;
 			ComPtr<ID3D12Device> m_device;
 			ComPtr<ID3D12CommandQueue> m_commandQueue;
