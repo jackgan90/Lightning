@@ -3,12 +3,14 @@
 #include "renderer.h"
 #include "forwardrenderpass.h"
 #include "deferedrenderpass.h"
+#include "ringallocator.h"
 
 namespace LightningGE
 {
 	namespace Render
 	{
 		Renderer* Renderer::s_instance{ nullptr };
+		Foundation::RingAllocator g_RenderAllocator;
 		Renderer::Renderer(const SharedFileSystemPtr& fs, RenderPassType renderPassType) :
 			m_frameCount(0), m_fs(fs), m_currentBackBufferIndex(0), m_clearColor(0.5f, 0.5f, 0.5f, 1.0f)
 		{

@@ -49,8 +49,8 @@ namespace LightningGE
 				}
 			};
 			void WaitForPreviousFrame(bool waitAll);
+			void ReleasePreviousFrameResources(bool perFrame);
 			void CreateFences();
-			void ReleaseFrameResources();
 			ComPtr<ID3D12CommandQueue> m_commandQueue;
 			ComPtr<ID3D12GraphicsCommandList> m_commandList;
 			HANDLE m_fenceEvent;

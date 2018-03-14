@@ -10,10 +10,12 @@
 #include "catch.hpp"
 #include "stackallocator.h"
 #include "poolallocator.h"
+#include "ringallocator.h"
 
 using LightningGE::Foundation::IMemoryAllocator;
 using LightningGE::Foundation::PoolAllocator;
 using LightningGE::Foundation::StackAllocator;
+using LightningGE::Foundation::RingAllocator;
 
 namespace 
 {
@@ -415,6 +417,31 @@ namespace
 
 		PoolAllocator<PoolObjOfSize16, 100, true, sizeof(PoolObjOfSize16)> obj_100_aligned_specified_allocator;
 		TestPoolAllocator(obj_100_aligned_specified_allocator);
+	}
+
+	TEST_CASE("Frame Ring Allocator Test")
+	{
+		RingAllocator allocator;
+		std::size_t usedSize{ 0 };
+		auto p = allocator.Allocate(10);
+		REQUIRE(p != nullptr);
+		REQUIRE(allocator.GetUsedMemorySize() == 10);
+		for (std::size_t k = 0;k < 20;++k)
+		{
+			usedSize = 0;
+			for (std::size_t i = 0;i < 20;++i)
+			{
+				usedSize += i * 100;
+				allocator.Allocate(i * 100);
+			}
+			allocator.FinishFrame(k+1);
+			auto realUsedSize = allocator.GetUsedMemorySize();
+			REQUIRE(realUsedSize >= usedSize);
+
+			allocator.ReleaseFramesBefore(k+1);
+			REQUIRE(allocator.GetUsedMemorySize() == 0);
+			REQUIRE(allocator.GetInternalBufferCount() == 1);
+		}
 	}
 }
 

@@ -1,4 +1,3 @@
-//#include "rendererfactory.h"
 #include "d3d12renderer.h"
 #include "d3d12swapchain.h"
 #include "d3d12device.h"
@@ -8,6 +7,7 @@
 #include "configmanager.h"
 #include "logger.h"
 #include "common.h"
+#include "ringallocator.h"
 
 namespace LightningGE
 {
@@ -18,10 +18,14 @@ namespace LightningGE
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
 		using WindowSystem::WinWindow;
+		using Foundation::RingAllocator;
+
+		extern RingAllocator g_RenderAllocator;
 
 		D3D12Renderer::~D3D12Renderer()
 		{
 			WaitForPreviousFrame(true);
+			ReleasePreviousFrameResources(false);
 			logger.Log(LogLevel::Info, "Start to clean up render resources.");
 			::CloseHandle(m_fenceEvent);
 			m_fenceEvent = nullptr;
@@ -33,7 +37,6 @@ namespace LightningGE
 			m_device.reset();
 			m_swapChain.reset();
 			m_depthStencilBuffer.reset();
-			ReleaseFrameResources();
 			D3D12RenderTargetManager::Instance()->Clear();
 			D3D12DescriptorHeapManager::Instance()->Clear();
 			REPORT_LIVE_OBJECTS;
@@ -136,8 +139,7 @@ namespace LightningGE
 		{
 			WaitForPreviousFrame(false);
 			Renderer::BeginFrame();
-			//Release frame resources used by previous frame
-			m_frameResources[m_currentBackBufferIndex].Release(true);
+			ReleasePreviousFrameResources(true);
 		}
 
 		void D3D12Renderer::DoFrame()
@@ -158,6 +160,35 @@ namespace LightningGE
 				m_frameResources[m_currentBackBufferIndex].fenceValue);
 			m_swapChain->Present();
 		}
+
+		void D3D12Renderer::ReleasePreviousFrameResources(bool perFrame)
+		{
+			//trace back RENDER_FRAME_COUNT frames trying to release temporary memory
+			auto backBufferIndex = m_currentBackBufferIndex;
+			for (std::size_t i = 0; i < RENDER_FRAME_COUNT;++i)
+			{
+				if (backBufferIndex == 0)
+					backBufferIndex = RENDER_FRAME_COUNT - 1;
+				else
+					backBufferIndex -= 1;
+				if (m_frameResources[backBufferIndex].fence->GetCompletedValue() >= m_frameResources[backBufferIndex].fenceValue)
+				{
+					if (m_frameCount - i - 1 > 0)
+					{
+						g_RenderAllocator.ReleaseFramesBefore(m_frameCount - i - 1);
+						m_frameResources[backBufferIndex].Release(perFrame);
+					}
+				}
+			}
+			if (!perFrame)
+			{
+				for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
+				{
+					m_frameResources[i].Release(false);
+				}
+			}
+		}
+
 
 		void D3D12Renderer::WaitForPreviousFrame(bool waitAll)
 		{
@@ -193,13 +224,6 @@ namespace LightningGE
 			}
 		}
 
-		void D3D12Renderer::ReleaseFrameResources()
-		{
-			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
-			{
-				m_frameResources[i].Release(false);
-			}
-		}
 
 	}
 }

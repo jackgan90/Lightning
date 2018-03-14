@@ -13,7 +13,35 @@ namespace LightningGE
 
 		RingAllocator::RingBuffer::~RingBuffer()
 		{
-			delete[] m_buffer;
+			if (m_buffer)
+			{
+				delete[] m_buffer;
+				m_buffer = nullptr;
+			}
+		}
+
+		RingAllocator::RingBuffer::RingBuffer(RingBuffer&& buffer)noexcept:
+			m_buffer(buffer.m_buffer), m_maxSize(buffer.m_maxSize), m_usedSize(buffer.m_usedSize)
+			,m_head(buffer.m_head), m_tail(buffer.m_tail), m_frameSize(buffer.m_frameSize),
+			m_frameMarkers(std::move(buffer.m_frameMarkers))
+		{
+			buffer.m_buffer = nullptr;
+		}
+
+		RingAllocator::RingBuffer& RingAllocator::RingBuffer::operator=(RingBuffer&& buffer)noexcept
+		{
+			if (&buffer == this)
+				return *this;
+			m_buffer = buffer.m_buffer;
+			m_maxSize = buffer.m_maxSize;
+			m_usedSize = buffer.m_usedSize;
+			m_head = buffer.m_head;
+			m_tail = buffer.m_tail;
+			m_frameSize = buffer.m_frameSize;
+			m_frameMarkers = std::move(buffer.m_frameMarkers);
+			buffer.m_buffer = nullptr;
+
+			return *this;
 		}
 
 		std::uint8_t* RingAllocator::RingBuffer::Allocate(std::size_t size)
@@ -75,29 +103,75 @@ namespace LightningGE
 			}
 		}
 
+		RingAllocator::RingAllocator():m_lastFinishFrame(0)
+		{
+
+		}
+
+
 		std::uint8_t* RingAllocator::Allocate(std::size_t size)
 		{
 			if (m_buffers.empty())
 			{
-				m_buffers.emplace_back(size);
+				m_buffers.emplace_back(size, m_lastFinishFrame);
 			}
-			auto& buffer = m_buffers.back();
-			auto ptr = buffer.Allocate(size);
+			auto& allocBuffer = m_buffers.back();
+			auto ptr = allocBuffer.buffer.Allocate(size);
 			if (!ptr)
 			{
-				std::size_t newBufferSize = buffer.GetSize() * 2;
+				std::size_t newBufferSize = allocBuffer.buffer.GetSize() * 2;
 				while (newBufferSize < size)
 					newBufferSize *= 2;
-				m_buffers.emplace_back(newBufferSize);
-				ptr = m_buffers.back().Allocate(size);
+				m_buffers.emplace_back(newBufferSize, m_lastFinishFrame);
+				auto& newAllocBuffer = m_buffers.back();
+				ptr = newAllocBuffer.buffer.Allocate(size);
 			}
+			m_buffers.back().lastAllocatedFrame = m_lastFinishFrame;
 			return ptr;
 		}
 
 		void RingAllocator::ReleaseFramesBefore(std::uint64_t frame)
 		{
-			std::for_each(m_buffers.begin(), m_buffers.end(), [frame](RingAllocator::RingBuffer& buffer) {buffer.ReleaseFramesBefore(frame); });
-			std::remove_if(m_buffers.begin(), m_buffers.end(), [&](const RingAllocator::RingBuffer& buffer) {return buffer.Empty(); });
+			std::size_t numBuffersToDelete{ 0 };
+			for (std::size_t i = 0;i < m_buffers.size();++i)
+			{
+				m_buffers[i].buffer.ReleaseFramesBefore(frame);
+				if (i == numBuffersToDelete && i < m_buffers.size() - 1 && m_buffers[i].buffer.Empty())//at lease keep one
+				{
+					numBuffersToDelete++;
+				}
+			}
+			if (numBuffersToDelete)
+			{
+				m_buffers.erase(m_buffers.begin(), m_buffers.begin() + numBuffersToDelete);
+			}
 		}
+
+		void RingAllocator::FinishFrame(std::uint64_t frame)
+		{
+			for (std::size_t i = 0;i < m_buffers.size();++i)
+			{
+				if (m_buffers[i].lastAllocatedFrame != m_lastFinishFrame)
+					continue;
+				m_buffers[i].buffer.FinishFrame(frame);
+			}
+			m_lastFinishFrame = frame;
+		}
+
+		std::size_t RingAllocator::GetAllocatedMemorySize()const
+		{
+			std::size_t totalSize{ 0 };
+			std::for_each(m_buffers.cbegin(), m_buffers.cend(), [&](const auto& allocBuffer) {totalSize += allocBuffer.buffer.GetSize(); });
+			return totalSize;
+		}
+
+		std::size_t RingAllocator::GetUsedMemorySize()const
+		{
+			std::size_t totalSize{ 0 };
+			std::for_each(m_buffers.cbegin(), m_buffers.cend(), [&](const auto& allocBuffer) {totalSize += allocBuffer.buffer.GetUsedSize(); });
+			return totalSize;
+		}
+
+
 	}
 }

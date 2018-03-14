@@ -3,20 +3,48 @@
 #include <cstdint>
 #include <deque>
 #include <vector>
+#include <unordered_map>
+#include "foundationexportdef.h"
 
 namespace LightningGE
 {
 	namespace Foundation
 	{
 		//threaded-unsafe ring allocator.Typycal use in allocation of frame's temp resources
-		class RingAllocator
+		class LIGHTNINGGE_FOUNDATION_API RingAllocator
 		{
 		public:
+			RingAllocator();
+			~RingAllocator() = default;
+			RingAllocator(const RingAllocator&) = delete;
+			RingAllocator& operator=(const RingAllocator&) = delete;
 			std::uint8_t* Allocate(std::size_t size);
+			std::size_t GetAllocatedMemorySize()const;
+			std::size_t GetUsedMemorySize()const;
 			void ReleaseFramesBefore(std::uint64_t frame);
+			void FinishFrame(std::uint64_t frame);
+			std::size_t GetInternalBufferCount()const { return m_buffers.size(); }
 		private:
 			class RingBuffer
 			{
+			public:
+				RingBuffer(std::size_t size);
+				RingBuffer(const RingBuffer&) = delete;
+				RingBuffer& operator=(const RingBuffer&) = delete;
+				RingBuffer(RingBuffer&&)noexcept;
+				RingBuffer& operator=(RingBuffer&&)noexcept;
+				std::uint8_t* Allocate(std::size_t size);
+				template<typename T>
+				T* Allocate(std::size_t size)
+				{
+					return static_cast<T*>(Allocate(size));
+				}
+				void FinishFrame(std::uint64_t frame);
+				void ReleaseFramesBefore(std::uint64_t frame);
+				std::size_t GetSize()const { return m_maxSize; }
+				std::size_t GetUsedSize()const { return m_usedSize; }
+				bool Empty()const { return m_usedSize == 0; }
+				~RingBuffer();
 			private:
 				static constexpr std::size_t MIN_BUFFER_SIZE = 2048;
 				struct FrameMarker
@@ -27,15 +55,6 @@ namespace LightningGE
 					std::size_t size;
 					std::uint64_t frame;
 				};
-			public:
-				RingBuffer(std::size_t size);
-				std::uint8_t* Allocate(std::size_t size);
-				void FinishFrame(std::uint64_t frame);
-				void ReleaseFramesBefore(std::uint64_t frame);
-				std::size_t GetSize()const { return m_maxSize; }
-				bool Empty()const { return m_usedSize == 0; }
-				~RingBuffer();
-			private:
 				std::uint8_t* m_buffer;
 				std::size_t m_maxSize;
 				std::size_t m_usedSize;
@@ -44,7 +63,15 @@ namespace LightningGE
 				std::size_t m_frameSize;
 				std::deque<FrameMarker> m_frameMarkers;
 			};
-			std::vector<RingBuffer> m_buffers;
+
+			struct RingBufferAllocation
+			{
+				RingBufferAllocation(std::size_t size, std::uint64_t frame):buffer(size), lastAllocatedFrame(frame){}
+				RingBuffer buffer;
+				std::uint64_t lastAllocatedFrame;
+			};
+			std::vector<RingBufferAllocation> m_buffers;
+			std::uint64_t m_lastFinishFrame;
 		};
 	}
 }
