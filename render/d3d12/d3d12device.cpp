@@ -604,6 +604,7 @@ namespace LightningGE
 
 		void D3D12Device::CommitGPUBuffer(const SharedGPUBufferPtr& pBuffer)
 		{
+			CacheResourceReference(pBuffer);
 			auto bufferState = D3D12_RESOURCE_STATE_COMMON;
 			ComPtr<ID3D12Resource> d3dResource;
 			ComPtr<ID3D12Resource> intermediateResource;
@@ -611,16 +612,16 @@ namespace LightningGE
 			{
 			case GPUBufferType::VERTEX:
 			{
-				bufferState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 				D3D12VertexBuffer* pvb = static_cast<D3D12VertexBuffer*>(pBuffer.get());
+				bufferState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 				d3dResource = pvb->GetResource();
 				intermediateResource = pvb->GetIntermediateResource();
 				break;
 			}
 			case GPUBufferType::INDEX:
 			{
-				bufferState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
 				D3D12IndexBuffer* pib = static_cast<D3D12IndexBuffer*>(pBuffer.get());
+				bufferState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
 				d3dResource = pib->GetResource();
 				intermediateResource = pib->GetIntermediateResource();
 				break;
@@ -653,6 +654,7 @@ namespace LightningGE
 				for (std::uint8_t i = startSlot; i < startSlot + pBuffers.size();++i)
 				{
 					bufferViews[i] = static_cast<D3D12VertexBuffer*>(pBuffers[i].get())->GetBufferView();
+					CacheResourceReference(pBuffers[i]);
 				}
 				m_commandList->IASetVertexBuffers(startSlot, pBuffers.size(), bufferViews);
 				break;
@@ -661,6 +663,7 @@ namespace LightningGE
 			{
 				D3D12_INDEX_BUFFER_VIEW* bufferView = g_RenderAllocator.Allocate<D3D12_INDEX_BUFFER_VIEW>(1);
 				bufferView[0] = static_cast<D3D12IndexBuffer*>(pBuffers[0].get())->GetBufferView();
+				CacheResourceReference(pBuffers[0]);
 				m_commandList->IASetIndexBuffer(bufferView);
 				break;
 			}
@@ -711,6 +714,14 @@ namespace LightningGE
 			auto rawPointer = resource.get();
 			if (frameRenderTargets.find(rawPointer) == frameRenderTargets.end())
 				frameRenderTargets.emplace(rawPointer, resource);
+		}
+
+		void D3D12Device::CacheResourceReference(const SharedGPUBufferPtr& resource)
+		{
+			auto& frameGPUBuffers = m_frameResources[m_frameResourceIndex].buffers;
+			auto rawPointer = resource.get();
+			if (frameGPUBuffers.find(rawPointer) == frameGPUBuffers.end())
+				frameGPUBuffers.emplace(rawPointer, resource);
 		}
 
 	}

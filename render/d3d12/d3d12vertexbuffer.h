@@ -13,7 +13,6 @@ namespace LightningGE
 			D3D12_VERTEX_BUFFER_VIEW GetBufferView() { return m_bufferView; }
 			ComPtr<ID3D12Resource> GetResource() { return m_resource.GetDefaultHeap(); }
 			ComPtr<ID3D12Resource> GetIntermediateResource() { return m_resource.GetUploadHeap(); }
-			D3D12_RESOURCE_STATES GetResourceState()const { return m_resource.GetAccessState(); }
 		private:
 			D3D12BufferResource m_resource;
 			D3D12_VERTEX_BUFFER_VIEW m_bufferView;
