@@ -9,6 +9,8 @@
 #include "d3d12depthstencilbuffer.h"
 #include "d3d12shader.h"
 #include "d3d12typemapper.h"
+#include "d3d12vertexbuffer.h"
+#include "d3d12indexbuffer.h"
 #include "renderconstants.h"
 #include "semantics.h"
 #include "shadermanager.h"
@@ -74,12 +76,6 @@ namespace LightningGE
 
 		D3D12Device::~D3D12Device()
 		{
-			for (auto it = m_bufferCommitMap.begin();it != m_bufferCommitMap.end();++it)
-			{
-				it->second.uploadHeap.Reset();
-				it->second.defaultHeap.Reset();
-			}
-			m_bufferCommitMap.clear();
 			m_shaderMgr.reset();
 		}
 
@@ -192,10 +188,14 @@ namespace LightningGE
 
 
 
-		SharedVertexBufferPtr D3D12Device::CreateVertexBuffer()
+		SharedVertexBufferPtr D3D12Device::CreateVertexBuffer(std::uint32_t bufferSize, const std::vector<VertexComponent>& components)
 		{
-			//TODO : replace with d3d12 vertex buffer
-			return SharedVertexBufferPtr();
+			return std::make_shared<D3D12VertexBuffer>(m_device.Get(), bufferSize, components);
+		}
+
+		SharedIndexBufferPtr D3D12Device::CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)
+		{
+			return std::make_shared<D3D12IndexBuffer>(m_device.Get(), bufferSize, type);
 		}
 
 		void D3D12Device::ApplyRasterizerState(const RasterizerState& state)
@@ -602,70 +602,45 @@ namespace LightningGE
 			m_pipelineDesc.NumRenderTargets = targetCount;
 		}
 
-		void D3D12Device::CommitGPUBuffer(const IGPUBuffer* pBuffer)
+		void D3D12Device::CommitGPUBuffer(const SharedGPUBufferPtr& pBuffer)
 		{
-			auto it = m_bufferCommitMap.find(pBuffer);
-			auto bufferSize = pBuffer->GetBufferSize();
-			GPUBufferCommit bufferCommit;
-			if (it == m_bufferCommitMap.end())
+			auto bufferState = D3D12_RESOURCE_STATE_COMMON;
+			ComPtr<ID3D12Resource> d3dResource;
+			ComPtr<ID3D12Resource> intermediateResource;
+			switch (pBuffer->GetType())
 			{
-				bufferCommit.type = pBuffer->GetType();
-				m_device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
-							D3D12_HEAP_FLAG_NONE, &CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
-							D3D12_RESOURCE_STATE_COPY_DEST, nullptr, IID_PPV_ARGS(&bufferCommit.defaultHeap));
-				m_device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-							D3D12_HEAP_FLAG_NONE, &CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
-							D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&bufferCommit.uploadHeap));
-				//TODO : should consider dangling pointer,when this buffer is released m_bufferCommitMap still holds a pointer to
-				//the GPUBuffer,but since the buffer is destroyed,there should be no other reference to it so leave it
-				//in m_bufferCommitMap wouldn't cause problems,but still, need to find a good way to resolve such condition
-				switch (bufferCommit.type)
-				{
-				case GPUBufferType::VERTEX:
-				{
-					auto pVertexBuffer = static_cast<IVertexBuffer*>(const_cast<IGPUBuffer*>(pBuffer));
-					bufferCommit.vertexBufferView.BufferLocation = bufferCommit.defaultHeap->GetGPUVirtualAddress();
-					bufferCommit.vertexBufferView.SizeInBytes = bufferSize;
-					bufferCommit.vertexBufferView.StrideInBytes = pVertexBuffer->GetVertexSize();
-					break;
-				}
-				case GPUBufferType::INDEX:
-				{
-					auto pIndexBuffer = static_cast<const IIndexBuffer*>(pBuffer);
-					bufferCommit.indexBufferView.BufferLocation = bufferCommit.defaultHeap->GetGPUVirtualAddress();
-					bufferCommit.indexBufferView.SizeInBytes = bufferSize;
-					bufferCommit.indexBufferView.Format = D3D12TypeMapper::MapIndexType(pIndexBuffer->GetIndexType());
-					break;
-				}
-				default:
-					logger.Log(LogLevel::Warning, "Unknown GPUBuffer Commit!");
-					break;
-				}
-				m_bufferCommitMap[pBuffer] = bufferCommit;
-			}
-			else
+			case GPUBufferType::VERTEX:
 			{
-				bufferCommit = it->second;
-				D3D12_RESOURCE_STATES oldState = bufferCommit.type == GPUBufferType::VERTEX ? \
-					D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER : D3D12_RESOURCE_STATE_INDEX_BUFFER;
-				m_commandList->ResourceBarrier(1, 
-					&CD3DX12_RESOURCE_BARRIER::Transition(bufferCommit.defaultHeap.Get(), 
-						oldState, D3D12_RESOURCE_STATE_COPY_DEST));
+				bufferState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
+				D3D12VertexBuffer* pvb = static_cast<D3D12VertexBuffer*>(pBuffer.get());
+				d3dResource = pvb->GetResource();
+				intermediateResource = pvb->GetIntermediateResource();
+				break;
 			}
+			case GPUBufferType::INDEX:
+			{
+				bufferState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
+				D3D12IndexBuffer* pib = static_cast<D3D12IndexBuffer*>(pBuffer.get());
+				d3dResource = pib->GetResource();
+				intermediateResource = pib->GetIntermediateResource();
+				break;
+			}
+			default:
+				break;
+			}
+			assert(d3dResource && intermediateResource);
+			m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(d3dResource.Get(), bufferState, D3D12_RESOURCE_STATE_COPY_DEST));
+			
 			D3D12_SUBRESOURCE_DATA subResourceData{};
 			subResourceData.pData = pBuffer->GetBuffer();
-			subResourceData.RowPitch = bufferSize;
-			subResourceData.SlicePitch = bufferSize;
-			UpdateSubresources(m_commandList.Get(), bufferCommit.defaultHeap.Get(), bufferCommit.uploadHeap.Get(), 0, 0, 1, &subResourceData);
-			D3D12_RESOURCE_STATES newState = bufferCommit.type == GPUBufferType::VERTEX ? \
-				D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER : D3D12_RESOURCE_STATE_INDEX_BUFFER;
+			subResourceData.RowPitch = pBuffer->GetBufferSize();
+			subResourceData.SlicePitch = pBuffer->GetBufferSize();
+			UpdateSubresources(m_commandList.Get(), d3dResource.Get(), intermediateResource.Get(), 0, 0, 1, &subResourceData);
 
-			m_commandList->ResourceBarrier(1, 
-				&CD3DX12_RESOURCE_BARRIER::Transition(bufferCommit.defaultHeap.Get(), 
-					D3D12_RESOURCE_STATE_COPY_DEST, newState));
+			m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(d3dResource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, bufferState));
 		}
 
-		void D3D12Device::BindGPUBuffers(std::uint8_t startSlot, const std::vector<IGPUBuffer*>& pBuffers)
+		void D3D12Device::BindGPUBuffers(std::uint8_t startSlot, const std::vector<SharedGPUBufferPtr>& pBuffers)
 		{
 			if (pBuffers.empty())
 				return;
@@ -674,17 +649,21 @@ namespace LightningGE
 			{
 			case GPUBufferType::VERTEX:
 			{
-				D3D12_VERTEX_BUFFER_VIEW* bufferViews = m_frameResources[m_frameResourceIndex].vbViews;
+				D3D12_VERTEX_BUFFER_VIEW* bufferViews = g_RenderAllocator.Allocate<D3D12_VERTEX_BUFFER_VIEW>(pBuffers.size());
 				for (std::uint8_t i = startSlot; i < startSlot + pBuffers.size();++i)
 				{
-					bufferViews[i] = m_bufferCommitMap[pBuffers[i]].vertexBufferView;
+					bufferViews[i] = static_cast<D3D12VertexBuffer*>(pBuffers[i].get())->GetBufferView();
 				}
 				m_commandList->IASetVertexBuffers(startSlot, pBuffers.size(), bufferViews);
 				break;
 			}
 			case GPUBufferType::INDEX:
-				m_commandList->IASetIndexBuffer(&m_bufferCommitMap[pBuffers[0]].indexBufferView);
+			{
+				D3D12_INDEX_BUFFER_VIEW* bufferView = g_RenderAllocator.Allocate<D3D12_INDEX_BUFFER_VIEW>(1);
+				bufferView[0] = static_cast<D3D12IndexBuffer*>(pBuffers[0].get())->GetBufferView();
+				m_commandList->IASetIndexBuffer(bufferView);
 				break;
+			}
 			default:
 				break;
 			}

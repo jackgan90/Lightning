@@ -61,8 +61,11 @@ namespace LightningGE
 			std::vector<Render::VertexComponent> comps;
 			comps.push_back(comp);
 			m_renderItem.geometry = std::make_shared<Render::Geometry>();
-			m_renderItem.geometry->vbs[0] = std::make_unique<Render::VertexBuffer>(comps);
-			m_renderItem.geometry->ib = std::make_unique<Render::IndexBuffer>(Render::IndexType::UINT16);
+			//m_renderItem.geometry->vbs[0] = std::make_unique<Render::VertexBuffer>(comps);
+			//m_renderItem.geometry->ib = std::make_unique<Render::IndexBuffer>(Render::IndexType::UINT16);
+			auto pDevice = Renderer::Instance()->GetDevice();
+			m_renderItem.geometry->vbs[0] = pDevice->CreateVertexBuffer(9 * sizeof(float), comps);
+			m_renderItem.geometry->ib = pDevice->CreateIndexBuffer(3 * sizeof(std::uint16_t), Render::IndexType::UINT16);
 			float* vertices = new float[9];
 			vertices[0] = 0.0f;
 			vertices[1] = 0.5f;

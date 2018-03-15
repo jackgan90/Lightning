@@ -25,14 +25,15 @@ namespace LightningGE
 			~D3D12Device()override;
 			void ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectIList* rects=nullptr)override;
 			void ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr)override;
-			SharedVertexBufferPtr CreateVertexBuffer()override;
+			SharedVertexBufferPtr CreateVertexBuffer(std::uint32_t bufferSize, const std::vector<VertexComponent>& components)override;
+			SharedIndexBufferPtr CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;
 			ID3D12Device* GetNative()const { return m_device.Get(); }
 			ID3D12CommandQueue* GetCommandQueue()const { return m_commandQueue.Get(); }
 			ID3D12GraphicsCommandList* GetGraphicsCommandList()const { return m_commandList.Get(); }
 			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)override;
 			void ApplyPipelineState(const PipelineState& state)override;
-			void CommitGPUBuffer(const IGPUBuffer* pBuffer)override;
-			void BindGPUBuffers(std::uint8_t startSlot, const std::vector<IGPUBuffer*>& buffers)override;
+			void CommitGPUBuffer(const SharedGPUBufferPtr& pBuffer)override;
+			void BindGPUBuffers(std::uint8_t startSlot, const std::vector<SharedGPUBufferPtr>& buffers)override;
 			void DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset)override;
 			void DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset)override;
 			void BeginFrame(const std::size_t frameResourceIndex);
@@ -44,18 +45,6 @@ namespace LightningGE
 			void ApplyScissorRects(const RectFList& scissorRects)override;
 			void ApplyRenderTargets(const SharedRenderTargetPtr* renderTargets, const std::uint8_t targetCount, const SharedDepthStencilBufferPtr& dsBuffer)override;
 		private:
-			struct GPUBufferCommit
-			{
-				ComPtr<ID3D12Resource> uploadHeap;
-				ComPtr<ID3D12Resource> defaultHeap;
-				GPUBufferType type;
-				union
-				{
-					D3D12_VERTEX_BUFFER_VIEW vertexBufferView;
-					D3D12_INDEX_BUFFER_VIEW indexBufferView;
-				};
-			};
-
 			struct FrameResource
 			{
 				D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[MAX_RENDER_TARGET_COUNT];
@@ -66,7 +55,7 @@ namespace LightningGE
 				std::vector<ID3D12DescriptorHeap*> descriptorHeaps;
 				std::unordered_map<IDepthStencilBuffer*, SharedDepthStencilBufferPtr> depthStencilBuffers;
 				std::unordered_map<IRenderTarget*, SharedRenderTargetPtr> renderTargets;
-				D3D12_VERTEX_BUFFER_VIEW vbViews[MAX_GEOMETRY_BUFFER_COUNT];
+				std::unordered_map<IGPUBuffer*, SharedGPUBufferPtr> buffers;
 				ComPtr<ID3D12CommandAllocator> commandAllocator;
 
 				void Release(bool perFrame)
@@ -108,7 +97,6 @@ namespace LightningGE
 			D3D12_GRAPHICS_PIPELINE_STATE_DESC m_pipelineDesc;
 			PipelineCacheMap m_pipelineCache;
 			RootSignatureMap m_rootSignatures;
-			std::unordered_map<const IGPUBuffer*, GPUBufferCommit> m_bufferCommitMap;
 			//depth stencil buffer is a resource of Renderer and will be kept alive during rendering cycle.So the availability of
 			//this resource is ensured by Renderer.Device need not to use shared ptr to keep it valid 
 			SharedDepthStencilBufferPtr m_currentDSBuffer;

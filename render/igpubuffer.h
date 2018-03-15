@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <memory>
 #include "rendererexportdef.h"
 #include "renderconstants.h"
 
@@ -27,5 +28,6 @@ namespace LightningGE
 			//get the buffer type
 			virtual GPUBufferType GetType()const = 0;
 		};
+		using SharedGPUBufferPtr = std::shared_ptr<IGPUBuffer>;
 	}
 }

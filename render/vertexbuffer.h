@@ -13,7 +13,6 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDER_API VertexBuffer : public IVertexBuffer
 		{
 		public:
-			VertexBuffer(const std::vector<VertexComponent>& components);
 			const VertexComponent& GetComponentInfo(size_t attributeIndex)override;
 			//get vertex attribute count associate with this vertex buffer
 			std::uint8_t GetComponentCount()override;
@@ -23,6 +22,7 @@ namespace LightningGE
 			std::uint32_t GetVertexSize()override;
 			void SetBuffer(std::uint8_t* buffer, std::uint32_t bufferSize)override;
 		protected:
+			VertexBuffer(const std::vector<VertexComponent>& components);
 			void CalculateVertexCount();
 			void CalculateVertexSize();
 			std::vector<VertexComponent> m_components;

@@ -8,7 +8,7 @@ namespace LightningGE
 	{
 		class LIGHTNINGGE_RENDER_API IndexBuffer : public IIndexBuffer
 		{
-		public:
+		protected:
 			IndexBuffer(IndexType type);
 		};
 	}

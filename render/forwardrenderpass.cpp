@@ -95,29 +95,29 @@ namespace LightningGE
 		void ForwardRenderPass::CommitBuffers(const SharedGeometryPtr& geometry)
 		{
 			auto pDevice = Renderer::Instance()->GetDevice();
-			std::unordered_map<std::uint8_t, std::vector<IGPUBuffer*>> bufferBinding;
+			std::unordered_map<std::uint8_t, std::vector<SharedGPUBufferPtr>> bufferBinding;
 			for (std::uint8_t i = 0; i < MAX_GEOMETRY_BUFFER_COUNT; i++)
 			{
 				if (!geometry->vbs[i])
 					continue;
 				if (geometry->vbs_dirty[i])
 				{
-					pDevice->CommitGPUBuffer(geometry->vbs[i].get());
+					pDevice->CommitGPUBuffer(geometry->vbs[i]);
 					geometry->vbs_dirty[i] = false;
 				}
 				if (bufferBinding.empty())
 				{
-					bufferBinding.insert(std::make_pair(i, std::vector<IGPUBuffer*>()));
-					bufferBinding[i].push_back(geometry->vbs[i].get());
+					bufferBinding.insert(std::make_pair(i, std::vector<SharedGPUBufferPtr>()));
+					bufferBinding[i].push_back(geometry->vbs[i]);
 				}
 				else
 				{
 					if (bufferBinding.find(i - 1) != bufferBinding.end())
-						bufferBinding[i - 1].push_back(geometry->vbs[i].get());
+						bufferBinding[i - 1].push_back(geometry->vbs[i]);
 					else
 					{
-						bufferBinding.insert(std::make_pair(i, std::vector<IGPUBuffer*>()));
-						bufferBinding[i].push_back(geometry->vbs[i].get());
+						bufferBinding.insert(std::make_pair(i, std::vector<SharedGPUBufferPtr>()));
+						bufferBinding[i].push_back(geometry->vbs[i]);
 					}
 				}
 			}
@@ -125,11 +125,11 @@ namespace LightningGE
 			{
 				if (geometry->ib_dirty)
 				{
-					pDevice->CommitGPUBuffer(geometry->ib.get());
+					pDevice->CommitGPUBuffer(geometry->ib);
 					geometry->ib_dirty = false;
 				}
-				bufferBinding.insert(std::make_pair(MAX_GEOMETRY_BUFFER_COUNT, std::vector<IGPUBuffer*>()));
-				bufferBinding[MAX_GEOMETRY_BUFFER_COUNT].push_back(geometry->ib.get());
+				bufferBinding.insert(std::make_pair(MAX_GEOMETRY_BUFFER_COUNT, std::vector<SharedGPUBufferPtr>()));
+				bufferBinding[MAX_GEOMETRY_BUFFER_COUNT].push_back(geometry->ib);
 			}
 			for (auto it = bufferBinding.cbegin();it != bufferBinding.cend();++it)
 			{
