@@ -4,7 +4,7 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		IndexBuffer::IndexBuffer(IndexType type) : m_type(type)
+		IndexBuffer::IndexBuffer(IndexType type) : IIndexBuffer(type)
 		{
 
 		}

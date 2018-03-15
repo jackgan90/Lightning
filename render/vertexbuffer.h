@@ -2,81 +2,26 @@
 #include <vector>
 #include <boost/functional/hash.hpp>
 #include <memory>
-#include "semantics.h"
+#include "ivertexbuffer.h"
 #include "gpubuffer.h"
-#include "renderconstants.h"
 
 namespace LightningGE
 {
 	namespace Render
 	{
-		struct VertexComponent
-		{
-			SemanticItem semanticItem;
-			SemanticIndex semanticIndex;
-			RenderFormat format;
-			//relative to the start of a vertex
-			unsigned int offset;
-			//if this attribute is an instance attribute
-			bool isInstance;
-			//if this attribute is an instance attribute,specify after drawing how many instances should the attribute move to next value
-			unsigned int instanceStepRate;
 
-			bool operator==(const VertexComponent& component)const noexcept
-			{
-				if (semanticItem.semantic != component.semanticItem.semantic)
-				{
-					return false;
-				}
-
-				if (semanticIndex != component.semanticIndex)
-				{
-					return false;
-				}
-
-				if (format != component.format)
-				{
-					return false;
-				}
-
-				if (offset != component.offset)
-				{
-					return false;
-				}
-
-				if (isInstance != component.isInstance)
-				{
-					return false;
-				}
-
-				if (instanceStepRate != component.instanceStepRate)
-				{
-					return false;
-				}
-
-				return true;
-			}
-
-			bool operator!=(const VertexComponent& component)const noexcept
-			{
-				return !(*this == component);
-			}
-
-		};
-
-		class LIGHTNINGGE_RENDER_API VertexBuffer : public GPUBuffer
+		class LIGHTNINGGE_RENDER_API VertexBuffer : public IVertexBuffer
 		{
 		public:
 			VertexBuffer(const std::vector<VertexComponent>& components);
-			const VertexComponent& GetComponentInfo(size_t attributeIndex);
+			const VertexComponent& GetComponentInfo(size_t attributeIndex)override;
 			//get vertex attribute count associate with this vertex buffer
-			std::uint8_t GetComponentCount();
+			std::uint8_t GetComponentCount()override;
 			//get vertices count contained within this vertex buffer
-			std::uint32_t GetVertexCount();
+			std::uint32_t GetVertexCount()override;
 			//get vertex size in bytes
-			std::uint32_t GetVertexSize();
+			std::uint32_t GetVertexSize()override;
 			void SetBuffer(std::uint8_t* buffer, std::uint32_t bufferSize)override;
-			GPUBufferType GetType()const override { return GPUBufferType::VERTEX; }
 		protected:
 			void CalculateVertexCount();
 			void CalculateVertexSize();
@@ -87,7 +32,6 @@ namespace LightningGE
 			bool m_vertexCountDirty;
 			bool m_vertexSizeDirty;
 		};
-		using SharedVertexBufferPtr = std::shared_ptr<VertexBuffer>;
 	}
 }
 

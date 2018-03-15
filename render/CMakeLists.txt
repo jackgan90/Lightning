@@ -13,11 +13,14 @@ set(HEADERS rendererexportdef.h
 			renderer.h
 			pipelinestate.h
 			semantics.h
+			ivertexbuffer.h
 			vertexbuffer.h
+			iindexbuffer.h
 			indexbuffer.h
 			rendererhelper.h
 			renderexception.h
 			rendererfactory.h
+			igpubuffer.h
 			gpubuffer.h
 			renderconstants.h
 			geometry.h

@@ -602,7 +602,7 @@ namespace LightningGE
 			m_pipelineDesc.NumRenderTargets = targetCount;
 		}
 
-		void D3D12Device::CommitGPUBuffer(const GPUBuffer* pBuffer)
+		void D3D12Device::CommitGPUBuffer(const IGPUBuffer* pBuffer)
 		{
 			auto it = m_bufferCommitMap.find(pBuffer);
 			auto bufferSize = pBuffer->GetBufferSize();
@@ -623,7 +623,7 @@ namespace LightningGE
 				{
 				case GPUBufferType::VERTEX:
 				{
-					auto pVertexBuffer = static_cast<VertexBuffer*>(const_cast<GPUBuffer*>(pBuffer));
+					auto pVertexBuffer = static_cast<IVertexBuffer*>(const_cast<IGPUBuffer*>(pBuffer));
 					bufferCommit.vertexBufferView.BufferLocation = bufferCommit.defaultHeap->GetGPUVirtualAddress();
 					bufferCommit.vertexBufferView.SizeInBytes = bufferSize;
 					bufferCommit.vertexBufferView.StrideInBytes = pVertexBuffer->GetVertexSize();
@@ -631,7 +631,7 @@ namespace LightningGE
 				}
 				case GPUBufferType::INDEX:
 				{
-					auto pIndexBuffer = static_cast<const IndexBuffer*>(pBuffer);
+					auto pIndexBuffer = static_cast<const IIndexBuffer*>(pBuffer);
 					bufferCommit.indexBufferView.BufferLocation = bufferCommit.defaultHeap->GetGPUVirtualAddress();
 					bufferCommit.indexBufferView.SizeInBytes = bufferSize;
 					bufferCommit.indexBufferView.Format = D3D12TypeMapper::MapIndexType(pIndexBuffer->GetIndexType());
@@ -665,7 +665,7 @@ namespace LightningGE
 					D3D12_RESOURCE_STATE_COPY_DEST, newState));
 		}
 
-		void D3D12Device::BindGPUBuffers(std::uint8_t startSlot, const std::vector<GPUBuffer*>& pBuffers)
+		void D3D12Device::BindGPUBuffers(std::uint8_t startSlot, const std::vector<IGPUBuffer*>& pBuffers)
 		{
 			if (pBuffers.empty())
 				return;

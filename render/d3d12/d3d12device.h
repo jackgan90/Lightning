@@ -31,8 +31,8 @@ namespace LightningGE
 			ID3D12GraphicsCommandList* GetGraphicsCommandList()const { return m_commandList.Get(); }
 			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)override;
 			void ApplyPipelineState(const PipelineState& state)override;
-			void CommitGPUBuffer(const GPUBuffer* pBuffer)override;
-			void BindGPUBuffers(std::uint8_t startSlot, const std::vector<GPUBuffer*>& buffers)override;
+			void CommitGPUBuffer(const IGPUBuffer* pBuffer)override;
+			void BindGPUBuffers(std::uint8_t startSlot, const std::vector<IGPUBuffer*>& buffers)override;
 			void DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset)override;
 			void DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset)override;
 			void BeginFrame(const std::size_t frameResourceIndex);
@@ -108,7 +108,7 @@ namespace LightningGE
 			D3D12_GRAPHICS_PIPELINE_STATE_DESC m_pipelineDesc;
 			PipelineCacheMap m_pipelineCache;
 			RootSignatureMap m_rootSignatures;
-			std::unordered_map<const GPUBuffer*, GPUBufferCommit> m_bufferCommitMap;
+			std::unordered_map<const IGPUBuffer*, GPUBufferCommit> m_bufferCommitMap;
 			//depth stencil buffer is a resource of Renderer and will be kept alive during rendering cycle.So the availability of
 			//this resource is ensured by Renderer.Device need not to use shared ptr to keep it valid 
 			SharedDepthStencilBufferPtr m_currentDSBuffer;

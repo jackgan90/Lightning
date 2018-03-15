@@ -6,8 +6,8 @@
 #include "irendertarget.h"
 #include "idepthstencilbuffer.h"
 #include "pipelinestate.h"
-#include "gpubuffer.h"
-#include "vertexbuffer.h"
+#include "igpubuffer.h"
+#include "ivertexbuffer.h"
 #include "ishader.h"
 #include "rect.h"
 #include "color.h"
@@ -28,9 +28,9 @@ namespace LightningGE
 			virtual SharedShaderPtr GetDefaultShader(ShaderType type) = 0;
 			virtual void ApplyPipelineState(const PipelineState& state) = 0;
 			//copy all data pointed to by pBuffer to GPU
-			virtual void CommitGPUBuffer(const GPUBuffer* pBuffer) = 0;
+			virtual void CommitGPUBuffer(const IGPUBuffer* pBuffer) = 0;
 			//bind pBuffer to a GPU slot(does not copy data,just binding), each invocation will override previous binding
-			virtual void BindGPUBuffers(std::uint8_t startSlot, const std::vector<GPUBuffer*>& buffers) = 0;
+			virtual void BindGPUBuffers(std::uint8_t startSlot, const std::vector<IGPUBuffer*>& buffers) = 0;
 			virtual void DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset) = 0;
 			virtual void DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset) = 0;
 			virtual void BeginFrame(const std::size_t frameResourceIndex) = 0;

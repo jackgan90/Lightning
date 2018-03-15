@@ -95,7 +95,7 @@ namespace LightningGE
 		void ForwardRenderPass::CommitBuffers(const SharedGeometryPtr& geometry)
 		{
 			auto pDevice = Renderer::Instance()->GetDevice();
-			std::unordered_map<std::uint8_t, std::vector<GPUBuffer*>> bufferBinding;
+			std::unordered_map<std::uint8_t, std::vector<IGPUBuffer*>> bufferBinding;
 			for (std::uint8_t i = 0; i < MAX_GEOMETRY_BUFFER_COUNT; i++)
 			{
 				if (!geometry->vbs[i])
@@ -107,7 +107,7 @@ namespace LightningGE
 				}
 				if (bufferBinding.empty())
 				{
-					bufferBinding.insert(std::make_pair(i, std::vector<GPUBuffer*>()));
+					bufferBinding.insert(std::make_pair(i, std::vector<IGPUBuffer*>()));
 					bufferBinding[i].push_back(geometry->vbs[i].get());
 				}
 				else
@@ -116,7 +116,7 @@ namespace LightningGE
 						bufferBinding[i - 1].push_back(geometry->vbs[i].get());
 					else
 					{
-						bufferBinding.insert(std::make_pair(i, std::vector<GPUBuffer*>()));
+						bufferBinding.insert(std::make_pair(i, std::vector<IGPUBuffer*>()));
 						bufferBinding[i].push_back(geometry->vbs[i].get());
 					}
 				}
@@ -128,7 +128,7 @@ namespace LightningGE
 					pDevice->CommitGPUBuffer(geometry->ib.get());
 					geometry->ib_dirty = false;
 				}
-				bufferBinding.insert(std::make_pair(MAX_GEOMETRY_BUFFER_COUNT, std::vector<GPUBuffer*>()));
+				bufferBinding.insert(std::make_pair(MAX_GEOMETRY_BUFFER_COUNT, std::vector<IGPUBuffer*>()));
 				bufferBinding[MAX_GEOMETRY_BUFFER_COUNT].push_back(geometry->ib.get());
 			}
 			for (auto it = bufferBinding.cbegin();it != bufferBinding.cend();++it)
