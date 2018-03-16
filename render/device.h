@@ -14,6 +14,7 @@ namespace LightningGE
 			Device();
 			void ApplyPipelineState(const PipelineState& state)override;
 			SharedShaderPtr GetDefaultShader(ShaderType type)override;
+			void BeginFrame(const std::size_t frameResourceIndex)override;
 		protected:
 			virtual void ApplyRasterizerState(const RasterizerState& state);
 			virtual void ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount);
@@ -25,6 +26,7 @@ namespace LightningGE
 			std::unique_ptr<IShaderManager> m_shaderMgr;
 			PipelineState m_devicePipelineState;
 			DefaultShaderMap m_defaultShaders;
+			std::size_t m_frameResourceIndex;
 		};
 	}
 }

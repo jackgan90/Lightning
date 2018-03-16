@@ -5,7 +5,7 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		Device::Device() :m_devicePipelineState{}
+		Device::Device() :m_devicePipelineState{}, m_frameResourceIndex(0)
 		{
 
 		}
@@ -48,5 +48,9 @@ namespace LightningGE
 
 		}
 
+		void Device::BeginFrame(const std::size_t frameResourceIndex)
+		{
+			m_frameResourceIndex = frameResourceIndex;
+		}
 	}
 }

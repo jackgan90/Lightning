@@ -28,8 +28,9 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDER_API D3D12Renderer : public Renderer
 		{
 		public:
-			D3D12Renderer(const SharedWindowPtr& pContext, const SharedFileSystemPtr& fs);
+			D3D12Renderer(const SharedWindowPtr& pWindow, const SharedFileSystemPtr& fs);
 			~D3D12Renderer()override;
+			IWindow* GetOutputWindow()override { return m_outputWindow.get(); }
 		protected:
 			void BeginFrame()override;
 			void DoFrame()override;
@@ -55,6 +56,7 @@ namespace LightningGE
 			ComPtr<ID3D12GraphicsCommandList> m_commandList;
 			HANDLE m_fenceEvent;
 			FrameResource m_frameResources[RENDER_FRAME_COUNT];
+			SharedWindowPtr m_outputWindow;
 #ifndef NDEBUG
 			ComPtr<ID3D12Debug> m_d3d12Debug;
 			ComPtr<IDXGIDebug> m_dxgiDebug;

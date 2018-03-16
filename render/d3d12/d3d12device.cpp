@@ -44,7 +44,7 @@ namespace LightningGE
 				"return float4(1.0f, 0.0f, 0.0f, 1.0f);\n"
 			"}\n";
 		D3D12Device::D3D12Device(IDXGIFactory4* factory, const SharedFileSystemPtr& fs)
-			:Device(), m_fs(fs), m_pipelineDesc{},  m_frameResourceIndex(0)
+			:Device(), m_fs(fs), m_pipelineDesc{}
 		{
 			CreateNativeDevice(factory);
 			D3D12_COMMAND_QUEUE_DESC desc = {};
@@ -572,7 +572,7 @@ namespace LightningGE
 
 		void D3D12Device::BeginFrame(const std::size_t frameResourceIndex)
 		{
-			m_frameResourceIndex = frameResourceIndex;
+			Device::BeginFrame(frameResourceIndex);
 			m_frameResources[frameResourceIndex].Release(true);
 			m_commandList->Reset(m_frameResources[frameResourceIndex].commandAllocator.Get(), nullptr);
 		}

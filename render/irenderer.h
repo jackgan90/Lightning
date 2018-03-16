@@ -10,11 +10,13 @@
 #include "matrix.h"
 #include "renderitem.h"
 #include "renderpass.h"
+#include "iwindow.h"
 
 namespace LightningGE
 {
 	namespace Render
 	{
+		using WindowSystem::IWindow;
 		class LIGHTNINGGE_RENDER_API DeviceInitException : public RendererException
 		{
 		public:
@@ -36,6 +38,7 @@ namespace LightningGE
 			//return the device of render system
 			virtual IDevice* GetDevice() = 0;
 			virtual ISwapChain* GetSwapChain() = 0;
+			virtual IWindow* GetOutputWindow() = 0;
 			//set default render target clear color.At the beginning of each frame,the back buffer is cleared to this color
 			virtual void SetClearColor(const ColorF& color) = 0;
 			//get the current frame index

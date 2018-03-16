@@ -26,6 +26,7 @@ namespace LightningGE
 		{
 			WaitForPreviousFrame(true);
 			ReleasePreviousFrameResources(false);
+			m_outputWindow.reset();
 			logger.Log(LogLevel::Info, "Start to clean up render resources.");
 			::CloseHandle(m_fenceEvent);
 			m_fenceEvent = nullptr;
@@ -42,7 +43,7 @@ namespace LightningGE
 			REPORT_LIVE_OBJECTS;
 		}
 
-		D3D12Renderer::D3D12Renderer(const SharedWindowPtr& pWindow, const SharedFileSystemPtr& fs) : Renderer(fs)
+		D3D12Renderer::D3D12Renderer(const SharedWindowPtr& pWindow, const SharedFileSystemPtr& fs) : Renderer(fs), m_outputWindow(pWindow)
 		{
 			ComPtr<IDXGIFactory4> dxgiFactory;
 #ifndef NDEBUG

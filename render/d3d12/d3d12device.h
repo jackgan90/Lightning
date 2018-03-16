@@ -36,7 +36,7 @@ namespace LightningGE
 			void BindGPUBuffers(std::uint8_t startSlot, const std::vector<SharedGPUBufferPtr>& buffers)override;
 			void DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset)override;
 			void DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset)override;
-			void BeginFrame(const std::size_t frameResourceIndex);
+			void BeginFrame(const std::size_t frameResourceIndex)override;
 		protected:
 			void ApplyRasterizerState(const RasterizerState& state)override;
 			void ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount)override;
@@ -94,12 +94,10 @@ namespace LightningGE
 			ComPtr<ID3D12CommandQueue> m_commandQueue;
 			ComPtr<ID3D12GraphicsCommandList> m_commandList;
 			ComPtr<ID3D12PipelineState> m_d3d12PipelineState;
-			D3D12_VIEWPORT m_viewport;
 			D3D12_GRAPHICS_PIPELINE_STATE_DESC m_pipelineDesc;
 			PipelineCacheMap m_pipelineCache;
 			RootSignatureMap m_rootSignatures;
 			SharedDepthStencilBufferPtr m_currentDSBuffer;
-			std::uint8_t m_frameResourceIndex;
 			FrameResource m_frameResources[RENDER_FRAME_COUNT];
 		};
 	}
