@@ -47,7 +47,6 @@ namespace LightningGE
 		private:
 			struct FrameResource
 			{
-				D3D12_CPU_DESCRIPTOR_HANDLE rtvHandles[MAX_RENDER_TARGET_COUNT];
 				//The reason we don't use ComPtr here is that descriptor heaps are not released during rendering
 				//so it's not necessary to hold share pointers just to prevent them from being released
 				//descriptorHeaps is more like an intermediate container because descriptor heaps are not released
@@ -63,6 +62,7 @@ namespace LightningGE
 					descriptorHeaps.clear();
 					depthStencilBuffers.clear();
 					renderTargets.clear();
+					buffers.clear();
 					if (!perFrame)
 					{
 						commandAllocator.Reset();
@@ -98,8 +98,6 @@ namespace LightningGE
 			D3D12_GRAPHICS_PIPELINE_STATE_DESC m_pipelineDesc;
 			PipelineCacheMap m_pipelineCache;
 			RootSignatureMap m_rootSignatures;
-			//depth stencil buffer is a resource of Renderer and will be kept alive during rendering cycle.So the availability of
-			//this resource is ensured by Renderer.Device need not to use shared ptr to keep it valid 
 			SharedDepthStencilBufferPtr m_currentDSBuffer;
 			std::uint8_t m_frameResourceIndex;
 			FrameResource m_frameResources[RENDER_FRAME_COUNT];

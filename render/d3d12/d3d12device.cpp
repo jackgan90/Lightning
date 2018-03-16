@@ -581,7 +581,7 @@ namespace LightningGE
 		{
 			assert(targetCount <= MAX_RENDER_TARGET_COUNT);
 			//TODO : actually should set pipeline description based on PipelineState rather than set them here
-			auto rtvHandles = m_frameResources[m_frameResourceIndex].rtvHandles;
+			auto rtvHandles = g_RenderAllocator.Allocate<D3D12_CPU_DESCRIPTOR_HANDLE>(targetCount);
 			auto& frameRenderTargets = m_frameResources[m_frameResourceIndex].renderTargets;
 			for (std::size_t i = 0; i < targetCount;++i)
 			{
