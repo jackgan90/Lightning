@@ -15,7 +15,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDER_API IIndexBuffer : public GPUBuffer
 		{
 		public:
-			IIndexBuffer(IndexType type) : m_type(type){}
+			IIndexBuffer(std::uint32_t bufferSize, IndexType type) : GPUBuffer(bufferSize), m_type(type){}
 			IndexType GetIndexType()const { return m_type; }
 			GPUBufferType GetType()const override { return GPUBufferType::INDEX; }
 			std::size_t GetIndexCount()const { return m_type == IndexType::UINT16 ? m_bufferSize / 2 : m_bufferSize / 4; }

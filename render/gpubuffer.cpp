@@ -5,7 +5,7 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		GPUBuffer::GPUBuffer() :m_buffer(nullptr), m_bufferSize(0)
+		GPUBuffer::GPUBuffer(std::uint32_t bufferSize) :m_buffer(nullptr), m_bufferSize(bufferSize), m_usedSize(0)
 		{
 
 		}
@@ -19,7 +19,7 @@ namespace LightningGE
 		{
 			assert(buffer && "buffer can't be nullptr!");
 			m_buffer = buffer;
-			m_bufferSize = bufferSize;
+			m_usedSize = bufferSize;
 		}
 
 		std::uint32_t GPUBuffer::GetBufferSize()const

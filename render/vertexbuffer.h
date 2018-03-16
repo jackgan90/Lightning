@@ -17,20 +17,16 @@ namespace LightningGE
 			//get vertex attribute count associate with this vertex buffer
 			std::uint8_t GetComponentCount()override;
 			//get vertices count contained within this vertex buffer
-			std::uint32_t GetVertexCount()override;
+			std::uint32_t GetVertexCount()const override;
 			//get vertex size in bytes
-			std::uint32_t GetVertexSize()override;
+			std::uint32_t GetVertexSize()const override;
 			void SetBuffer(std::uint8_t* buffer, std::uint32_t bufferSize)override;
 		protected:
-			VertexBuffer(const std::vector<VertexComponent>& components);
-			void CalculateVertexCount();
+			VertexBuffer(uint32_t bufferSize, const std::vector<VertexComponent>& components);
 			void CalculateVertexSize();
 			std::vector<VertexComponent> m_components;
 			std::uint32_t m_vertexCount;
 			std::uint32_t m_vertexSize;
-		private:
-			bool m_vertexCountDirty;
-			bool m_vertexSizeDirty;
 		};
 	}
 }

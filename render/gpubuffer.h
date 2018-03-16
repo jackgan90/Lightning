@@ -9,7 +9,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDER_API GPUBuffer : public IGPUBuffer, private boost::noncopyable
 		{
 		public:
-			GPUBuffer();
+			GPUBuffer(std::uint32_t bufferSize);
 			//get internal data
 			const std::uint8_t* GetBuffer()const override;
 			//set internal buffer,no copy
@@ -19,6 +19,7 @@ namespace LightningGE
 		protected:
 			std::uint8_t* m_buffer;
 			std::uint32_t m_bufferSize;
+			std::uint32_t m_usedSize;
 		};
 	}
 }

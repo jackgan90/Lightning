@@ -9,7 +9,7 @@ namespace LightningGE
 		class LIGHTNINGGE_RENDER_API IndexBuffer : public IIndexBuffer
 		{
 		protected:
-			IndexBuffer(IndexType type);
+			IndexBuffer(std::uint32_t bufferSize, IndexType type);
 		};
 	}
 }

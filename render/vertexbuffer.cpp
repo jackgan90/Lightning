@@ -7,11 +7,11 @@ namespace LightningGE
 {
 	namespace Render
 	{
-		VertexBuffer::VertexBuffer(const std::vector<VertexComponent>& components):
-			m_components(components)
-			,m_vertexSize(0), m_vertexCount(0), m_vertexCountDirty(true), m_vertexSizeDirty(true)
+		VertexBuffer::VertexBuffer(uint32_t bufferSize, const std::vector<VertexComponent>& components):
+			IVertexBuffer(bufferSize),m_components(components)
+			,m_vertexSize(0), m_vertexCount(0)
 		{
-
+			CalculateVertexSize();
 		}
 
 		const VertexComponent& VertexBuffer::GetComponentInfo(size_t componentIndex)
@@ -25,46 +25,30 @@ namespace LightningGE
 			return static_cast<std::uint8_t>(m_components.size());
 		}
 
-		std::uint32_t VertexBuffer::GetVertexCount()
+		std::uint32_t VertexBuffer::GetVertexCount()const 
 		{
-			CalculateVertexCount();
 			return m_vertexCount;
 		}
 
-		std::uint32_t VertexBuffer::GetVertexSize()
+		std::uint32_t VertexBuffer::GetVertexSize()const
 		{
-			CalculateVertexSize();
 			return m_vertexSize;
 		}
 
 
 		void VertexBuffer::SetBuffer(std::uint8_t* buffer, std::uint32_t bufferSize)
 		{
-			GPUBuffer::SetBuffer(buffer, bufferSize);
-			m_vertexCountDirty = true;
-			m_vertexSizeDirty = true;
+			IVertexBuffer::SetBuffer(buffer, bufferSize);
+			m_vertexCount = m_usedSize / m_vertexSize;
 		}
 
-		void VertexBuffer::CalculateVertexCount()
-		{
-			if (m_vertexCountDirty)
-			{
-				CalculateVertexSize();
-				m_vertexCount = m_vertexSize > 0 ? m_bufferSize / m_vertexSize : 0;
-				m_vertexCountDirty = false;
-			}
-		}
 
 		void VertexBuffer::CalculateVertexSize()
 		{
-			if (m_vertexSizeDirty)
+			m_vertexSize = 0;
+			for (const auto& component : m_components)
 			{
-				m_vertexSize = 0;
-				for (const auto& component : m_components)
-				{
-					m_vertexSize += GetVertexFormatSize(component.format);
-				}
-				m_vertexSizeDirty = false;
+				m_vertexSize += GetVertexFormatSize(component.format);
 			}
 		}
 	}
