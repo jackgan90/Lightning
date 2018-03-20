@@ -36,7 +36,7 @@ namespace LightningGE
 			"};\n"
 			"float4 main(float3 position:POSITION):SV_POSITION\n"
 			"{\n"
-				"return float4(position, 1.0f);\n"
+				"return mul(float4(position, 1.0f), wvp);\n"
 			"}\n";
 		const char* const DEFAULT_PS_SOURCE =
 			"float4 main(void):SV_TARGET\n"

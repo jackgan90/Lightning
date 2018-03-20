@@ -18,6 +18,7 @@ namespace LightningGE
 		void GPUBuffer::SetBuffer(std::uint8_t* buffer, std::uint32_t bufferSize)
 		{
 			assert(buffer && "buffer can't be nullptr!");
+			assert(bufferSize <= m_bufferSize);
 			m_buffer = buffer;
 			m_usedSize = bufferSize;
 		}

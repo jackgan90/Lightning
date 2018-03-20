@@ -62,7 +62,7 @@ namespace LightningGE
 					if (vs)
 					{
 						auto wvp = item.projectionMatrix * item.viewMatrix * item.transform.GetTransformMatrix();
-						ShaderArgument arg{ wvp };
+						ShaderArgument arg{wvp};
 						arg.name = "wvp";
 						vs->SetArgument(arg);
 					}

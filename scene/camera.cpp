@@ -10,7 +10,7 @@ namespace LightningGE
 		Camera::Camera():m_type(CameraType::Perspective), m_nearPlane(1.0f), m_farPlane(1000.0f), 
 			m_fov(DegreesToRadians(60.0f)), m_aspectRatio(1.0f),
 			m_worldPosition{0.0f, 0.0f, 0.0f}, 
-			m_xAxis{1.0f, 0.0f, 0.0f}, m_yAxis{0.0f, 0.1f, 0.0f}, m_zAxis{0.0f, 0.0f, -1.0f}
+			m_xAxis{1.0f, 0.0f, 0.0f}, m_yAxis{0.0f, 1.0f, 0.0f}, m_zAxis{0.0f, 0.0f, 1.0f}
 		{
 			UpdateViewMatrix();
 			UpdateProjectionMatrix();
