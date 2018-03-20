@@ -24,16 +24,16 @@ namespace LightningGE
 			renderer.Draw(m_renderItem);
 		}
 
-		float Cube::verticeTemplate[] = { 0.5f, 0.5f, -0.5f,  //right top front
-											0.5f, 0.5f, 0.5f,	//right top back
-											0.5f, -0.5f, -0.5f,	//right bottom front
-											0.5f, -0.5f, 0.5f,	//right bottom back
-											-0.5f, 0.5f, -0.5f,	//left top front
-											-0.5f, 0.5f, 0.5f,	//left top back
-											-0.5f, -0.5f, -0.5f,  //left bottom front
-											-0.5f, -0.5f, 0.5f };//left bottom back
+		float Cube::verticeTemplate[] = { 0.5f, 0.5f, 0.5f,  //right top front v0
+											0.5f, 0.5f, -0.5f,	//right top back v1
+											0.5f, -0.5f, 0.5f,	//right bottom front v2
+											0.5f, -0.5f, -0.5f,	//right bottom back v3
+											-0.5f, 0.5f, 0.5f,	//left top front v4
+											-0.5f, 0.5f, -0.5f,	//left top back v5
+											-0.5f, -0.5f, 0.5f,  //left bottom front v6
+											-0.5f, -0.5f, -0.5f };//left bottom back v7
 
-		std::uint16_t Cube::s_indices[36] = 
+		std::uint16_t Cube::s_indices[] = 
 		{
 			//right face
 			0, 2, 3, 0, 3, 1,
@@ -42,7 +42,7 @@ namespace LightningGE
 			//left face
 			5, 7, 6, 5, 6, 4,
 			//back face
-			1, 3, 6, 1, 6, 5,
+			1, 3, 7, 1, 7, 5,
 			//top face
 			5, 4, 0, 5, 0, 1,
 			//bottom face

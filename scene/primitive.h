@@ -33,7 +33,7 @@ namespace LightningGE
 			float m_size;
 			std::uint8_t* m_vertices;
 			static float verticeTemplate[];
-			static std::uint16_t s_indices[36];
+			static std::uint16_t s_indices[];
 		};
 	}
 }
