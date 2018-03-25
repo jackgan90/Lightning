@@ -86,7 +86,15 @@ namespace JobSystem
 			//if job schedule runs as expected,Finish should only be called within one thread
 			//so m_unfinishedJobs shouldn't be a negative value.
 			m_unfinishedJobs--;
-			if (HasCompleted())
+			int expected{ 0 };
+			//Cannot use HasCompleted because the following thread sequence may occur:
+			//1.thread1 finished executing m_unfinishedJobs-- and after that m_unfinishedJobs becomes 1
+			//2.context switch and thread2 start to execute m_unfinishedJobs with value 1.So after the execution
+			//m_unfinishedJobs is 0.Therad2 continues to execute codes inside the bracket which call Finish on parent
+			//3.context switch and thread1 start to evaluate HasCompleted and enter the bracket ,causing a call to
+			//parent's Finish.So potentially parent may execute Finish twice
+			//To ensure the code inside bracket only execute once,use CAS to perform comparison
+			if (m_unfinishedJobs.compare_exchange_strong(expected, -1))	
 			{
 				if (m_parent)
 					m_parent->Finish();
@@ -99,7 +107,7 @@ namespace JobSystem
 
 		bool HasCompleted()override
 		{
-			return m_unfinishedJobs == 0;
+			return m_unfinishedJobs <= 0;
 		}
 
 		Job(const Job<Function, Tuple>& job) = delete;

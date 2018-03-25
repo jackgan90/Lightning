@@ -77,7 +77,6 @@ namespace JobSystem
 		{
 			bool expected{ false };
 			if (m_shutdown.compare_exchange_strong(expected, true))
-				return;
 			{
 				//must lock here because worker thread may modify m_workers at the same time of ShutDown call
 				std::lock_guard<std::mutex> lock(m_mutex);
