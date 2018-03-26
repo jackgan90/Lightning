@@ -52,6 +52,7 @@ namespace JobSystem
 			m_rear = head + 1;
 			return job;
 		}
+		return nullptr;
 	}
 
 	IJob* WorkStealQueue::Steal()
