@@ -6,29 +6,32 @@
 #include <mutex>
 #include <vector>
 #include <iostream>
+#include <random>
 #include "joballocator.h"
 #include "workstealqueue.h"
 #undef min
 
 namespace JobSystem
 {
-	class JobSystem
+	class JobManager
 	{
 	public:
-		static JobSystem& Instance()
+		static JobManager& Instance()
 		{
-			static JobSystem instance;
+			static JobManager instance;
 			return instance;
 		}
-		JobSystem() : m_shutdown(false){}
-		~JobSystem()
+		JobManager() : m_shutdown(false)
+		{
+		}
+		~JobManager()
 		{
 
 		}
-		JobSystem(const JobSystem&) = delete;
-		JobSystem& operator=(const JobSystem&) = delete;
+		JobManager(const JobManager&) = delete;
+		JobManager& operator=(const JobManager&) = delete;
 		template<typename Function, typename... Args>
-		auto Allocate(JobType type, IJob* parent, Function&& func, Args&&... args)
+		auto AllocateJob(JobType type, IJob* parent, Function&& func, Args&&... args)
 		{
 			//according to C++ standard,multiple threads read from std::unordered_map is well defined.So there's
 			//no problem here
@@ -37,10 +40,11 @@ namespace JobSystem
 		}
 
 		//Only main thread can call run on JobSystem
-		void Run()
+		void Run(std::function<void()> initFunc)
 		{
 			//The calling thread is considered to be main thread.
 			m_mainThreadId = std::this_thread::get_id();
+			m_initFunc = initFunc;
 			auto coreCount = std::thread::hardware_concurrency();
 			if (coreCount > 0)
 				coreCount--;		//exclude the calling thread
@@ -68,9 +72,17 @@ namespace JobSystem
 			worker->queues[job->GetType()].Push(job);
 		}
 
+
 		void WaitForCompletion(IJob* job)
 		{
-
+			auto worker = m_workers[std::this_thread::get_id()];
+			while (!job->HasCompleted())
+			{
+				if (worker->running)
+				{
+					worker->DoRun();
+				}
+			}
 		}
 
 		void ShutDown()
@@ -103,27 +115,44 @@ namespace JobSystem
 
 			void DoRun()
 			{
-				static int i = 0;
-				i++;
-				auto func = []() {std::cout << "Thread id is " << std::this_thread::get_id() << std::endl;};
-				auto job = JobSystem::Instance().Allocate(JobType::SHORT_TERM, nullptr, func);
-				job->Execute();
-				std::cout << "i is " << i << std::endl;
-				if (i == 20000)
+				for (auto it = queues.begin(); it != queues.end();++it)
 				{
-					JobSystem::Instance().ShutDown();
-					std::cout << "Shut down!!!!" << std::endl;
+					auto queue = &it->second;
+					auto job = GetJob(it->first, queue);
+					if (job)
+					{
+						job->Execute();
+					}
 				}
+			}
+
+			IJob* GetJob(JobType type, WorkStealQueue* queue)
+			{
+				auto job = queue->Pop();
+				if (job)
+				{
+					return job;
+				}
+				queue = JobManager::Instance().RandomQueue(type, this);
+				if (queue)
+				{
+					return queue->Steal();
+				}
+				return nullptr;
 			}
 
 			void Run()
 			{
-				auto& system = JobSystem::Instance();
+				auto& system = JobManager::Instance();
 				{
 					std::lock_guard<std::mutex> lock(system.m_mutex);
 					//always emplace no matter if the system is already shut down.Delay 
 					//worker delete to main thread
 					system.m_workers.emplace(std::make_pair(std::this_thread::get_id(), this));
+				}
+				if (std::this_thread::get_id() == JobManager::Instance().m_mainThreadId)
+				{
+					JobManager::Instance().m_initFunc();
 				}
 				while (running)
 				{
@@ -133,10 +162,32 @@ namespace JobSystem
 			}
 		};
 
+		WorkStealQueue* RandomQueue(JobType type, Worker* exclude)
+		{
+			auto queueCount = m_workers.size() - 1;
+			if (queueCount <= 0)
+				return nullptr;
+			std::random_device rd;
+			std::mt19937 engine(rd());
+			std::uniform_int_distribution<int> dist(0, queueCount - 1);
+			auto value = dist(engine);
+			int i{ 0 };
+			for (auto it = m_workers.begin(); it != m_workers.end();++it)
+			{
+				if (it->second == exclude)
+					continue;
+				if (i == value)
+					return &it->second->queues[type];
+				++i;
+			}
+			return nullptr;
+		}
+
 		std::unordered_map<std::thread::id, Worker*> m_workers;
 		//only meant for initialization
 		std::mutex m_mutex;
 		std::thread::id m_mainThreadId;
 		std::atomic<bool> m_shutdown;
+		std::function<void()> m_initFunc;
 	};
 }

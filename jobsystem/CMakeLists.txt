@@ -4,7 +4,7 @@ message(STATUS "Configuring project jobsystem")
 set(HEADERS job.h
 			joballocator.h
 			workstealqueue.h
-			jobsystem.h)
+			jobmanager.h)
 set(SOURCES main.cpp
 			workstealqueue.cpp)
 
