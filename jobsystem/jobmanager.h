@@ -7,6 +7,7 @@
 #include <vector>
 #include <iostream>
 #include <random>
+#include <chrono>
 #include "joballocator.h"
 #include "workstealqueue.h"
 #undef min
@@ -21,7 +22,7 @@ namespace JobSystem
 			static JobManager instance;
 			return instance;
 		}
-		JobManager() : m_shutdown(false)
+		JobManager() : m_shutdown(false), m_sleepThreadCount(0)
 		{
 		}
 		~JobManager()
@@ -62,6 +63,7 @@ namespace JobSystem
 			auto worker = new Worker();
 			workers.push_back(worker);
 			worker->Run();
+			m_cvWake.notify_all();
 			std::for_each(threads.begin(), threads.end(), [](auto& thread) {thread.join(); });
 			std::for_each(workers.begin(), workers.end(), [](auto pWorker) {delete pWorker; });
 		}
@@ -70,6 +72,10 @@ namespace JobSystem
 		{
 			auto worker = m_workers[std::this_thread::get_id()];
 			worker->queues[job->GetType()].Push(job);
+			if (m_sleepThreadCount)
+			{
+				m_cvWake.notify_one();
+			}
 		}
 
 
@@ -80,7 +86,7 @@ namespace JobSystem
 			{
 				if (worker->running)
 				{
-					worker->DoRun();
+					worker->DoRun(false);
 				}
 			}
 		}
@@ -91,7 +97,7 @@ namespace JobSystem
 			if (m_shutdown.compare_exchange_strong(expected, true))
 			{
 				//must lock here because worker thread may modify m_workers at the same time of ShutDown call
-				std::lock_guard<std::mutex> lock(m_mutex);
+				std::lock_guard<std::mutex> lock(m_mutexWorkers);
 				std::for_each(m_workers.begin(), m_workers.end(), [](auto pair) {pair.second->running = false; });
 			}
 		}
@@ -112,16 +118,47 @@ namespace JobSystem
 			//we should always schedule short-term job before long-term job,so use map to ensure order
 			std::map<JobType, WorkStealQueue> queues;
 			bool running{ true };
+			//increment each time unable to fetch a job from one of the queues
+			//if hangCounter reach a certain value,that means the whole system has low payload
+			//thus sleep this thread for a while
+			std::size_t hangCounter{ 0 };
+			static constexpr std::size_t HANG_SLEEP_THRESHOLD{ 10 };
+			static constexpr std::size_t MAIN_THREAD_SLEEP_MILLSEC{ 100 };
 
-			void DoRun()
+			void DoRun(bool sleep)
 			{
+				bool hasJob{ false };
 				for (auto it = queues.begin(); it != queues.end();++it)
 				{
 					auto queue = &it->second;
 					auto job = GetJob(it->first, queue);
 					if (job)
 					{
+						hasJob = true;
+						hangCounter = 0;
 						job->Execute();
+					}
+				}
+				if (!hasJob)
+				{
+					hangCounter++;
+					auto& manager = JobManager::Instance();
+					if (sleep && hangCounter >= HANG_SLEEP_THRESHOLD)
+					{
+						//main thread should not wait
+						if (std::this_thread::get_id() != manager.m_mainThreadId)
+						{
+							manager.m_sleepThreadCount++;
+							std::unique_lock<std::mutex> lk(manager.m_mutexWake);
+							//Don't consider spurious wakeup because even if that happens,it's no harm to just loop again
+							manager.m_cvWake.wait(lk);
+							manager.m_sleepThreadCount--;
+						}
+						else
+						{
+							//in main thread wait a period of time
+							std::this_thread::sleep_for(std::chrono::milliseconds(MAIN_THREAD_SLEEP_MILLSEC));
+						}
 					}
 				}
 			}
@@ -145,7 +182,7 @@ namespace JobSystem
 			{
 				auto& system = JobManager::Instance();
 				{
-					std::lock_guard<std::mutex> lock(system.m_mutex);
+					std::lock_guard<std::mutex> lock(system.m_mutexWorkers);
 					//always emplace no matter if the system is already shut down.Delay 
 					//worker delete to main thread
 					system.m_workers.emplace(std::make_pair(std::this_thread::get_id(), this));
@@ -156,7 +193,7 @@ namespace JobSystem
 				}
 				while (running)
 				{
-					DoRun();
+					DoRun(true);
 				}
 				//Don't delete worker here because other threads may wait for a job allocated by this thread.Delete here will cause dangling pointer issue
 			}
@@ -185,7 +222,10 @@ namespace JobSystem
 
 		std::unordered_map<std::thread::id, Worker*> m_workers;
 		//only meant for initialization
-		std::mutex m_mutex;
+		std::mutex m_mutexWorkers;
+		std::mutex m_mutexWake;
+		std::condition_variable m_cvWake;
+		std::size_t m_sleepThreadCount;
 		std::thread::id m_mainThreadId;
 		std::atomic<bool> m_shutdown;
 		std::function<void()> m_initFunc;
