@@ -7,7 +7,8 @@ namespace JobSystem
 	class JobAllocator
 	{
 	public:
-		JobAllocator():m_pos(0)
+		JobAllocator():
+			m_pos(0)
 		{
 			m_jobPool = new std::uint8_t[PoolSize];
 		}
@@ -18,7 +19,7 @@ namespace JobSystem
 		JobAllocator(const JobAllocator&) = delete;
 		JobAllocator& operator=(const JobAllocator&) = delete;
 		template<typename Function, typename... Args>
-		auto Allocate(IJob* parent, Function&& func, Args&&... args)
+		auto Allocate(JobType type, IJob* parent, Function&& func, Args&&... args)
 		{
 			using JobType = Job<Function, decltype(std::make_tuple(std::forward<Args>(args)...))>;
 			static_assert(sizeof(JobType) <= PoolSize, "job object is too large!");
@@ -26,7 +27,7 @@ namespace JobSystem
 			{
 				m_pos = 0;
 			}
-			auto pJob = new (m_jobPool + m_pos) JobType(parent, std::forward<Function>(func), std::make_tuple(std::forward<Args>(args)...));
+			auto pJob = new (m_jobPool + m_pos) JobType(type, parent, std::forward<Function>(func), std::make_tuple(std::forward<Args>(args)...));
 			m_pos += sizeof(JobType);
 
 			return pJob;

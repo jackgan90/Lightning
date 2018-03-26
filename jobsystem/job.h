@@ -35,6 +35,15 @@ namespace JobSystem
 				(std::forward<Function>(f), std::forward<Tuple>(t));
 	}
 
+	enum class JobType
+	{
+		//each job type has its own allocation heap and work queue to prevent from race condition
+		//short-term job should be quick task,like render,physics update,animation etc
+		//long-term job should be task that runs a period of time such as asset streaming serialization/deserialization
+		SHORT_TERM,
+		LONG_TERM
+	};
+
 	class IJob
 	{
 	public:
@@ -43,6 +52,7 @@ namespace JobSystem
 		virtual void Finish() = 0;
 		virtual void IncrementCounter() = 0;
 		virtual bool HasCompleted() = 0;
+		virtual JobType GetType() = 0;
 	};
 
 	template<typename Function, typename Tuple>
@@ -51,7 +61,8 @@ namespace JobSystem
 	private:
 		friend class JobAllocator;
 		template<typename _Function, typename _Tuple>
-		Job(IJob* parent, _Function&& func, _Tuple&& args):
+		Job(JobType type, IJob* parent, _Function&& func, _Tuple&& args):
+			m_type(type),
 			m_parent(parent), 
 			m_func(std::forward<_Function>(func)), 
 			m_args(std::forward<_Tuple>(args)), 
@@ -110,6 +121,8 @@ namespace JobSystem
 			return m_unfinishedJobs <= 0;
 		}
 
+		JobType GetType()override { return m_type; }
+
 		Job(const Job<Function, Tuple>& job) = delete;
 		Job& operator=(const Job<Function, Tuple>& job) = delete;
 	private:
@@ -117,11 +130,13 @@ namespace JobSystem
 		Function m_func;
 		Tuple m_args;
 		std::atomic<std::int32_t> m_unfinishedJobs;
+		JobType m_type;
 #ifdef JOB_ASSERT
 		std::atomic<std::size_t> m_executeCount;
 #endif
 		static constexpr std::size_t MemberSize = \
-			sizeof(IJob*) + sizeof(Function) + sizeof(Tuple) + sizeof(std::atomic<std::int32_t>)
+			sizeof(IJob*) + sizeof(Function) + sizeof(Tuple) + sizeof(std::atomic<std::int32_t>) + \
+			sizeof(JobType)
 #ifdef JOB_ASSERT
 			+ sizeof(std::atomic<std::size_t>)
 #endif
