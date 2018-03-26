@@ -52,6 +52,7 @@ namespace JobSystem
 			m_rear = head + 1;
 			return job;
 		}
+		m_rear += 1;
 		return nullptr;
 	}
 
