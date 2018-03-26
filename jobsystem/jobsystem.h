@@ -125,10 +125,6 @@ namespace JobSystem
 					//worker delete to main thread
 					system.m_workers.emplace(std::make_pair(std::this_thread::get_id(), this));
 				}
-				if (system.m_shutdown)
-				{
-					running = false;
-				}
 				while (running)
 				{
 					DoRun();
