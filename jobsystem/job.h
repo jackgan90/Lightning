@@ -60,12 +60,11 @@ namespace JobSystem
 	{
 	private:
 		friend class JobAllocator;
-		template<typename _Function, typename _Tuple>
-		Job(JobType type, IJob* parent, _Function&& func, _Tuple&& args):
+		template<typename F, typename A>
+		Job(JobType type, IJob* parent, F&& func, A&& args):
 			m_type(type),
 			m_parent(parent), 
-			m_func(std::forward<_Function>(func)), 
-			m_args(std::forward<_Tuple>(args)), 
+			m_payload(std::forward<F>(func), std::forward<A>(args)),
 			m_unfinishedJobs(1)
 #ifdef JOB_ASSERT
 			, m_executeCount(0)
@@ -88,7 +87,7 @@ namespace JobSystem
 			assert(m_executeCount == 0);
 #endif // JOB_ASSERT
 
-			ApplyWithFunc(m_func, m_args);
+			ApplyWithFunc(m_payload.m_func, m_payload.m_args);
 			Finish();
 		}
 
@@ -107,6 +106,8 @@ namespace JobSystem
 			//To ensure the code inside bracket only execute once,use CAS to perform comparison
 			if (m_unfinishedJobs.compare_exchange_strong(expected, -1))	
 			{
+				//After finish execution,m_payload should be destroyed
+				m_payload.~Payload();
 				if (m_parent)
 					m_parent->Finish();
 			}
@@ -126,16 +127,22 @@ namespace JobSystem
 		Job(const Job<Function, Tuple>& job) = delete;
 		Job& operator=(const Job<Function, Tuple>& job) = delete;
 	private:
+		struct Payload
+		{
+			template<typename F, typename A>
+			Payload(F&& func, A&& args): m_func(std::forward<F>(func)), m_args(std::forward<A>(args)){}
+			Function m_func;
+			Tuple m_args;
+		};
 		IJob* m_parent;
-		Function m_func;
-		Tuple m_args;
+		Payload m_payload;
 		std::atomic<std::int32_t> m_unfinishedJobs;
 		JobType m_type;
 #ifdef JOB_ASSERT
 		std::atomic<std::size_t> m_executeCount;
 #endif
 		static constexpr std::size_t MemberSize = \
-			sizeof(IJob*) + sizeof(Function) + sizeof(Tuple) + sizeof(std::atomic<std::int32_t>) + \
+			sizeof(IJob*) + sizeof(Payload) + sizeof(std::atomic<std::int32_t>) + \
 			sizeof(JobType)
 #ifdef JOB_ASSERT
 			+ sizeof(std::atomic<std::size_t>)
