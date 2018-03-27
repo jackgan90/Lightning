@@ -11,18 +11,17 @@ namespace JobSystem
 	void WorkStealQueue::Push(IJob* job)
 	{
 		//data overwrite is an issue,but we assume it will not happen.....
-		m_jobs[m_rear & Mask] = job;
-		++m_rear;
+		auto rear = m_rear.fetch_add(1, std::memory_order_relaxed);
+		m_jobs[rear & Mask] = job;
 	}
 
 	IJob* WorkStealQueue::Pop()
 	{
 		//The following 2 lines are super important
 		//first decrease rear to make other threads read it as if the rear element is popped successfully
-		auto rear = m_rear - 1;
-		m_rear = rear;
+		auto rear = m_rear.fetch_add(-1, std::memory_order_relaxed) - 1;
 
-		auto head = m_head.load();
+		auto head = m_head.load(std::memory_order_relaxed);
 		if (head <= rear)
 		{
 			//When this line is hit,there are actually two situations:
@@ -49,17 +48,17 @@ namespace JobSystem
 			//we make m_rear = m_head to indicate queue empty
 			//Otherwise if job is not nullptr, we can pop it and the queue will also become empty.But we succeeded in compare_exchange_strong
 			//and m_head in incremented,m_head == head + 1, also make m_rear equals to m_head
-			m_rear = head + 1;
+			m_rear.store(head + 1, std::memory_order_relaxed);
 			return job;
 		}
-		m_rear += 1;
+		m_rear.fetch_add(1, std::memory_order_relaxed);
 		return nullptr;
 	}
 
 	IJob* WorkStealQueue::Steal()
 	{
-		auto head = m_head.load();
-		auto rear = m_rear;
+		auto head = m_head.load(std::memory_order_relaxed);
+		auto rear = m_rear.load(std::memory_order_relaxed);
 		if (rear > head)
 		{
 			auto job = m_jobs[head & Mask];
