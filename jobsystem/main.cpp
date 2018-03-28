@@ -9,29 +9,36 @@ using JobSystem::IJob;
 std::mutex mutex;
 
 std::thread::id mainThreadId;
+static int mainJobCount{ 0 };
+static int otherThreadJobCount{ 0 };
 void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 {
 	std::cout << "Running in thread:" << std::this_thread::get_id() << "current job:" << currentJob << ", jobCount" << jobCount << std::endl;
 	IJob * job{ nullptr };
 	JobType type = JobType::FOREGROUND;
-	if (currentJob % 2)
-		type = JobType::BACKGROUND;
+	//if (currentJob % 2)
+	//	type = JobType::BACKGROUND;
+	bool isNextLayerJob{ false };
 	if(currentJob < jobCount)
 	{
 		job = JobManager::Instance().AllocateJob(type, nullptr, job_spawn, currentJob + 1, jobCount);
 	}
 	else
 	{
+		isNextLayerJob = true;
 		std::uint64_t nextLayerJobCount = jobCount == static_cast<std::uint64_t>(-1) ? jobCount : jobCount + 1;
 		job = JobManager::Instance().AllocateJob(type, nullptr, job_spawn, 0, nextLayerJobCount);
+		JobManager::Instance().SetBackgroundWorkersCount(nextLayerJobCount % 5);
 	}
-	if (currentJob % 30)
+	if (isNextLayerJob)
 	{
-		JobManager::Instance().RunJob(job);
+		JobManager::Instance().RunJob(job, mainThreadId);
+		mainJobCount++;
 	}
 	else
 	{
-		JobManager::Instance().RunJob(job, mainThreadId);
+		JobManager::Instance().RunJob(job);
+		otherThreadJobCount++;
 	}
 }
 

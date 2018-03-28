@@ -3,10 +3,11 @@ message(STATUS "Configuring project jobsystem")
 
 set(HEADERS job.h
 			joballocator.h
-			workstealqueue.h
-			jobmanager.h)
+			jobqueue.h
+			jobmanager.h
+			concurrentqueue.h)
 set(SOURCES main.cpp
-			workstealqueue.cpp)
+			jobqueue.cpp)
 
 if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /wd4251 /wd4275 /EHsc /MDd")

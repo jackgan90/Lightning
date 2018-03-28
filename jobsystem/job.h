@@ -93,6 +93,9 @@ namespace JobSystem
 #endif // JOB_ASSERT
 
 			ApplyWithFunc(m_payload.m_func, m_payload.m_args);
+#ifdef JOB_ASSERT
+			m_executeCount++;
+#endif // JOB_ASSERT
 			Finish();
 		}
 
