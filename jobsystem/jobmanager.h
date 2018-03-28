@@ -106,16 +106,21 @@ namespace JobSystem
 		//may not return the exact background worker count,because we don't use lock
 		//so it's just a reference value
 		//This method is safe to called from any thread
-		std::size_t GetBackgroundWorkersCount()
+		inline std::size_t GetBackgroundWorkersCount()
 		{
 			std::size_t workerCount{ 0 };
 			std::for_each(m_workers.begin(), m_workers.end(), [&workerCount](auto pair) { workerCount += pair.second->background ? 1 : 0; });
 			return workerCount;
 		}
 
-		std::size_t GetWorkersCount()const
+		inline std::size_t GetWorkersCount()const
 		{
 			return m_workersCount;
+		}
+
+		inline std::thread::id GetCurrentThreadId()const
+		{
+			return std::this_thread::get_id();
 		}
 
 		//Can be called on any thread,but essentially delegate to execute in main thread.So there's no race condition
@@ -152,6 +157,11 @@ namespace JobSystem
 		{
 			job->SetTargetRunThread(threadId);
 			RunJob(job);
+		}
+
+		void RunJobOnCurrentThread(IJob* job)
+		{
+			RunJob(job, GetCurrentThreadId());
 		}
 
 		void ShutDown()
