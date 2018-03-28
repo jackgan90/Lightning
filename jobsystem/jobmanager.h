@@ -243,12 +243,32 @@ namespace JobSystem
 
 			IJob* GetJob(JobType type, WorkStealQueue* queue)
 			{
-				auto job = queue->Pop();
-				if (job)
+				static bool popFirst{ true };
+				IJob* job{ nullptr };
+				if (popFirst)
 				{
-					return job;
+					job = GetJob(queue);
+					if (!job)
+						job = GetJob(type);
 				}
-				queue = JobManager::Instance().RandomQueue(type, this);
+				else
+				{
+					job = GetJob(type);
+					if (!job)
+						job = GetJob(queue);
+				}
+				popFirst = !popFirst;
+				return job;
+			}
+
+			IJob* GetJob(WorkStealQueue* queue)
+			{
+				return queue->Pop();
+			}
+
+			IJob* GetJob(JobType type)
+			{
+				auto queue = JobManager::Instance().RandomQueue(type, this);
 				if (queue)
 				{
 					return queue->Steal();
