@@ -46,26 +46,33 @@ namespace JobSystem
 			//The calling thread is considered to be main thread.
 			m_mainThreadId = std::this_thread::get_id();
 			m_initFunc = initFunc;
-			auto coreCount = std::thread::hardware_concurrency();
+			int coreCount = std::thread::hardware_concurrency();
+			m_workersCount = coreCount > 0 ? coreCount : 1;
 			if (coreCount > 0)
 				coreCount--;		//exclude the calling thread
+			bool background{ true };
 			std::vector<std::thread> threads;
-			std::vector<Worker*> workers;
-			for (std::size_t i = 0;i < coreCount;++i)
+			//1/4 threads serve as background worker
+			for (int i = 0;i < coreCount;++i)
 			{
 				//Create per-thread resource for worker threads.The calling thread is also considered a worker thread
-				auto worker = new Worker();
-				workers.push_back(worker);
+				auto worker = new Worker(background);
+				if (i >= (coreCount + 1) / 4 - 1)
+				{
+					background = false;
+				}
+				m_workerVec.push_back(worker);
 				threads.emplace_back(&Worker::Run, worker);
 			}
 
 			//Create a worker for main thread
-			auto worker = new Worker();
-			workers.push_back(worker);
+			auto worker = new Worker(background);
+			m_workerVec.push_back(worker);
 			worker->Run();
 			m_cvWake.notify_all();
 			std::for_each(threads.begin(), threads.end(), [](auto& thread) {thread.join(); });
-			std::for_each(workers.begin(), workers.end(), [](auto pWorker) {delete pWorker; });
+			std::for_each(m_workerVec.begin(), m_workerVec.end(), [](auto pWorker) {delete pWorker; });
+			m_workerVec.clear();
 		}
 
 		void RunJob(IJob* job)
@@ -88,7 +95,63 @@ namespace JobSystem
 				{
 					worker->DoRun(false);
 				}
+				else
+				{
+					break;
+				}
 			}
+		}
+
+		//get estimated background worker count.Note this method
+		//may not return the exact background worker count,because we don't use lock
+		//so it's just a reference value
+		//This method is safe to called from any thread
+		std::size_t GetBackgroundWorkersCount()
+		{
+			std::size_t workerCount{ 0 };
+			std::for_each(m_workers.begin(), m_workers.end(), [&workerCount](auto pair) { workerCount += pair.second->background ? 1 : 0; });
+			return workerCount;
+		}
+
+		std::size_t GetWorkersCount()const
+		{
+			return m_workersCount;
+		}
+
+		//Can be called on any thread,but essentially delegate to execute in main thread.So there's no race condition
+		void SetBackgroundWorkersCount(std::size_t count)
+		{
+			auto func = [count, this]() 
+			{
+				std::vector<Worker*> foregroundWorkers;
+				std::for_each(m_workerVec.begin(), m_workerVec.end(), [&foregroundWorkers](auto pWorker) 
+				{
+					if (!pWorker->background)
+					{
+						foregroundWorkers.push_back(pWorker);
+					}
+				});
+
+				for (std::size_t i = 0;i < count - (m_workerVec.size() - foregroundWorkers.size());++i)
+				{
+					foregroundWorkers[i]->background = true;
+				}
+			};
+			if (std::this_thread::get_id() == m_mainThreadId)
+			{
+				func();
+			}
+			else
+			{
+				auto job = AllocateJob(JobType::FOREGROUND, nullptr, func);
+				RunJob(job, m_mainThreadId);
+			}
+		}
+
+		void RunJob(IJob* job, std::thread::id threadId)
+		{
+			job->SetTargetRunThread(threadId);
+			RunJob(job);
 		}
 
 		void ShutDown()
@@ -105,19 +168,20 @@ namespace JobSystem
 		friend struct Worker;
 		struct Worker
 		{
-			Worker()
+			Worker(bool bg) : background(bg)
 			{
 				//the allocators and queues must be construct in-place ,use some trick code to achieve it
-				allocators.emplace(std::piecewise_construct, std::make_tuple(JobType::SHORT_TERM), std::make_tuple());
-				allocators.emplace(std::piecewise_construct, std::make_tuple(JobType::LONG_TERM), std::make_tuple());
-				queues.emplace(std::piecewise_construct, std::make_tuple(JobType::SHORT_TERM), std::make_tuple());
-				queues.emplace(std::piecewise_construct, std::make_tuple(JobType::LONG_TERM), std::make_tuple());
+				allocators.emplace(std::piecewise_construct, std::make_tuple(JobType::FOREGROUND), std::make_tuple());
+				allocators.emplace(std::piecewise_construct, std::make_tuple(JobType::BACKGROUND), std::make_tuple());
+				queues.emplace(std::piecewise_construct, std::make_tuple(JobType::FOREGROUND), std::make_tuple());
+				queues.emplace(std::piecewise_construct, std::make_tuple(JobType::BACKGROUND), std::make_tuple());
 			}
 			//allocators only access through key ,so it doesn't matter if we use map or unordered map.For performance reason just use unordered map
 			std::unordered_map<JobType, JobAllocator> allocators;
-			//we should always schedule short-term job before long-term job,so use map to ensure order
+			//we should always schedule foreground job before background job,so use map to ensure order
 			std::map<JobType, WorkStealQueue> queues;
 			bool running{ true };
+			bool background;
 			//increment each time unable to fetch a job from one of the queues
 			//if hangCounter reach a certain value,that means the whole system has low payload
 			//thus sleep this thread for a while
@@ -130,6 +194,10 @@ namespace JobSystem
 				bool hasJob{ false };
 				for (auto it = queues.begin(); it != queues.end();++it)
 				{
+					if (background && it->first == JobType::BACKGROUND)
+					{
+						continue;
+					}
 					auto queue = &it->second;
 					auto job = GetJob(it->first, queue);
 					if (job)
@@ -221,6 +289,7 @@ namespace JobSystem
 		}
 
 		std::unordered_map<std::thread::id, Worker*> m_workers;
+		std::vector<Worker*> m_workerVec;
 		//only meant for initialization
 		std::mutex m_mutexWorkers;
 		std::mutex m_mutexWake;
@@ -229,5 +298,6 @@ namespace JobSystem
 		std::thread::id m_mainThreadId;
 		std::atomic<bool> m_shutdown;
 		std::function<void()> m_initFunc;
+		std::size_t m_workersCount;
 	};
 }

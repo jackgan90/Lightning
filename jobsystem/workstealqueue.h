@@ -16,6 +16,8 @@ namespace JobSystem
 		//Steal is called by other threads,never be called from the same thread.
 		IJob* Steal();
 	private:
+		//returns true if job can be run on current thread
+		inline bool CanRunInCurrentThread(IJob* job) { return !job->HasTargetRunThread() || std::this_thread::get_id() == job->GetTargetRunThread(); }
 		static constexpr std::size_t MaxSize = 4096;
 		static constexpr std::size_t Mask = MaxSize - 1;
 		IJob* m_jobs[MaxSize];

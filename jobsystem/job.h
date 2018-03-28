@@ -1,5 +1,6 @@
 #pragma once
 #include <functional>
+#include <thread>
 #include <atomic>
 #include <tuple>
 #include <cstdint>
@@ -38,10 +39,10 @@ namespace JobSystem
 	enum class JobType
 	{
 		//each job type has its own allocation heap and work queue to prevent from race condition
-		//short-term job should be quick task,like render,physics update,animation etc
-		//long-term job should be task that runs a period of time such as asset streaming serialization/deserialization
-		SHORT_TERM,
-		LONG_TERM
+		//foreground job should be quick task,like render,physics update,animation etc
+		//background job should be task that runs a period of time such as asset streaming serialization/deserialization
+		FOREGROUND,
+		BACKGROUND
 	};
 
 	class IJob
@@ -53,6 +54,9 @@ namespace JobSystem
 		virtual void IncrementCounter() = 0;
 		virtual bool HasCompleted() = 0;
 		virtual JobType GetType() = 0;
+		virtual void SetTargetRunThread(std::thread::id id) = 0;
+		virtual std::thread::id GetTargetRunThread() = 0;
+		virtual bool HasTargetRunThread()const = 0;
 	};
 
 	template<typename Function, typename Tuple>
@@ -65,7 +69,8 @@ namespace JobSystem
 			m_type(type),
 			m_parent(parent), 
 			m_payload(std::forward<F>(func), std::forward<A>(args)),
-			m_unfinishedJobs(1)
+			m_unfinishedJobs(1),
+			m_hasTargetRunThread(false)
 #ifdef JOB_ASSERT
 			, m_executeCount(0)
 #endif
@@ -115,6 +120,22 @@ namespace JobSystem
 			return m_unfinishedJobs <= 0;
 		}
 
+		void SetTargetRunThread(std::thread::id id)override
+		{
+			m_targetRunThreadId = id;
+			m_hasTargetRunThread = true;
+		}
+
+		std::thread::id GetTargetRunThread() override
+		{
+			return m_targetRunThreadId;
+		}
+
+		bool HasTargetRunThread()const override
+		{
+			return m_hasTargetRunThread;
+		}
+
 		JobType GetType()override { return m_type; }
 
 		Job(const Job<Function, Tuple>& job) = delete;
@@ -127,16 +148,18 @@ namespace JobSystem
 			Function m_func;
 			Tuple m_args;
 		};
+		JobType m_type;
 		IJob* m_parent;
 		Payload m_payload;
 		std::atomic<std::int32_t> m_unfinishedJobs;
-		JobType m_type;
+		bool m_hasTargetRunThread;
+		std::thread::id m_targetRunThreadId;
 #ifdef JOB_ASSERT
 		std::atomic<std::size_t> m_executeCount;
 #endif
 		static constexpr std::size_t MemberSize = \
-			sizeof(IJob*) + sizeof(Payload) + sizeof(std::atomic<std::int32_t>) + \
-			sizeof(JobType)
+			sizeof(JobType) + sizeof(IJob*) + sizeof(Payload) + sizeof(std::atomic<std::int32_t>) + \
+			sizeof(bool) + sizeof(std::thread::id)
 #ifdef JOB_ASSERT
 			+ sizeof(std::atomic<std::size_t>)
 #endif

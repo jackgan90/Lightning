@@ -32,6 +32,11 @@ namespace JobSystem
 			//has exactly one less than the actual job numbers.So in this case,it's safe to just return the last job because other threads cannot
 			//steal it from this thread.
 			auto job = m_jobs[rear & Mask];
+			if (!CanRunInCurrentThread(job))
+			{
+				m_rear.fetch_add(1, std::memory_order_relaxed);
+				return nullptr;
+			}
 			if (head != rear)
 			{
 				return job;
@@ -62,6 +67,8 @@ namespace JobSystem
 		if (rear > head)
 		{
 			auto job = m_jobs[head & Mask];
+			if (!CanRunInCurrentThread(job))
+				return nullptr;
 			if (m_head.compare_exchange_strong(head, head + 1))
 			{
 				return job;
