@@ -27,7 +27,7 @@ namespace JobSystem
 			{
 				m_pos = 0;
 			}
-			auto pJob = new (m_jobPool + m_pos) JobType(type, parent, std::forward<Function>(func), std::make_tuple(std::forward<Args>(args)...));
+			auto pJob = new (m_jobPool + m_pos) JobType(type, parent, std::forward<Function>(func), std::forward_as_tuple(std::forward<Args>(args)...));
 			m_pos += sizeof(JobType);
 
 			return pJob;
