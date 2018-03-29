@@ -142,7 +142,7 @@ namespace JobSystem
 			}
 			else
 			{
-				auto job = AllocateJob(JobType::FOREGROUND, nullptr, [this](size_t c) {ModifyBackgroundWorkersCount(c); }, count);
+				auto job = AllocateJob(JobType::FOREGROUND, nullptr, [this](std::size_t c) {ModifyBackgroundWorkersCount(c); }, count);
 				RunJobOnMainThread(job);
 			}
 		}
