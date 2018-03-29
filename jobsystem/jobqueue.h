@@ -10,8 +10,6 @@ namespace JobSystem
 		JobQueue(std::size_t size=GLOBAL_JOB_QUEUE_SIZE);
 		JobQueue(const JobQueue&) = delete;
 		JobQueue& operator=(const JobQueue&) = delete;
-		//Push and Pop work in the same thread as the caller.So there should be no 
-		//race condition
 		void Push(IJob* job);
 		IJob* Pop();
 	private:

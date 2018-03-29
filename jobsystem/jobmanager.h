@@ -63,18 +63,18 @@ namespace JobSystem
 				{
 					background = false;
 				}
-				m_workerVec.push_back(worker);
 				threads.emplace_back(&Worker::Run, worker);
+				m_workers.emplace(threads.back().get_id(), worker);
 			}
 
 			//Create a worker for main thread
 			auto worker = new Worker(background);
-			m_workerVec.push_back(worker);
+			m_workers.emplace(std::this_thread::get_id(), worker);
 			worker->Run();
-			m_cvWake.notify_all();
+			m_cvWakeUp.notify_all();
 			std::for_each(threads.begin(), threads.end(), [](auto& thread) {thread.join(); });
-			std::for_each(m_workerVec.begin(), m_workerVec.end(), [](auto pWorker) {delete pWorker; });
-			m_workerVec.clear();
+			std::for_each(m_workers.begin(), m_workers.end(), [](auto pair) {delete pair.second; });
+			m_workers.clear();
 		}
 
 		void RunJob(IJob* job)
@@ -90,7 +90,7 @@ namespace JobSystem
 			}
 			if (m_sleepThreadCount)
 			{
-				m_cvWake.notify_one();
+				m_cvWakeUp.notify_one();
 			}
 		}
 
@@ -124,7 +124,7 @@ namespace JobSystem
 
 		inline std::size_t GetWorkersCount()const
 		{
-			return m_workerVec.size();
+			return m_workers.size();
 		}
 
 		inline std::thread::id GetCurrentThreadId()const
@@ -168,8 +168,6 @@ namespace JobSystem
 			bool expected{ false };
 			if (m_shutdown.compare_exchange_strong(expected, true))
 			{
-				//must lock here because worker thread may modify m_workers at the same time of ShutDown call
-				std::lock_guard<std::mutex> lock(m_mutexWorkers);
 				std::for_each(m_workers.begin(), m_workers.end(), [](auto pair) {pair.second->running = false; });
 			}
 		}
@@ -226,9 +224,9 @@ namespace JobSystem
 						if (std::this_thread::get_id() != manager.m_mainThreadId)
 						{
 							manager.m_sleepThreadCount++;
-							std::unique_lock<std::mutex> lk(manager.m_mutexWake);
+							std::unique_lock<std::mutex> lk(manager.m_mtxWakeUp);
 							//Don't consider spurious wakeup because even if that happens,it's no harm to just loop again
-							manager.m_cvWake.wait(lk);
+							manager.m_cvWakeUp.wait(lk);
 							manager.m_sleepThreadCount--;
 						}
 						else
@@ -256,12 +254,6 @@ namespace JobSystem
 			void Run()
 			{
 				auto& system = JobManager::Instance();
-				{
-					std::lock_guard<std::mutex> lock(system.m_mutexWorkers);
-					//always emplace no matter if the system is already shut down.Delay 
-					//worker delete to main thread
-					system.m_workers.emplace(std::make_pair(std::this_thread::get_id(), this));
-				}
 				if (std::this_thread::get_id() == JobManager::Instance().m_mainThreadId)
 				{
 					JobManager::Instance().m_initFunc();
@@ -277,16 +269,16 @@ namespace JobSystem
 		void ModifyBackgroundWorkersCount(std::size_t count)
 		{
 			std::vector<Worker*> foregroundWorkers;
-			for (auto it = m_workerVec.begin();it != m_workerVec.end();++it)
+			for (auto it = m_workers.begin();it != m_workers.end();++it)
 			{
-				auto pWorker = *it;
+				auto pWorker = it->second;
 				if (!pWorker->background)
 				{
 					foregroundWorkers.push_back(pWorker);
 				}
 			}
 
-			int bgWorkerCount = static_cast<int>(m_workerVec.size()) - static_cast<int>(foregroundWorkers.size());
+			int bgWorkerCount = static_cast<int>(m_workers.size()) - static_cast<int>(foregroundWorkers.size());
 			int addedBgWorkerCount = count - bgWorkerCount;
 			for (int i = 0;i < addedBgWorkerCount;++i)
 			{
@@ -297,11 +289,8 @@ namespace JobSystem
 
 		std::unordered_map<JobType, JobQueue> m_globalJobQueues;
 		std::unordered_map<std::thread::id, Worker*> m_workers;
-		std::vector<Worker*> m_workerVec;
-		//only meant for initialization
-		std::mutex m_mutexWorkers;
-		std::mutex m_mutexWake;
-		std::condition_variable m_cvWake;
+		std::mutex m_mtxWakeUp;
+		std::condition_variable m_cvWakeUp;
 		std::size_t m_sleepThreadCount;
 		std::thread::id m_mainThreadId;
 		std::atomic<bool> m_shutdown;

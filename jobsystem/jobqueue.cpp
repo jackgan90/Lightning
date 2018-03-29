@@ -9,7 +9,8 @@ namespace JobSystem
 
 	void JobQueue::Push(IJob* job)
 	{
-		assert(m_queue.enqueue(job));
+		auto res = m_queue.enqueue(job);
+		assert(res);
 	}
 
 	IJob* JobQueue::Pop()
