@@ -7,6 +7,8 @@
 #include <cassert>
 #define JOB_ASSERT
 
+#define INVALID_JOB_HANDLE static_cast<std::uint64_t>(-1)
+
 namespace JobSystem
 {
 	template<int N>
@@ -54,6 +56,8 @@ namespace JobSystem
 		virtual bool HasCompleted() = 0;
 		virtual JobType GetType() = 0;
 	};
+
+	using JobHandle = std::uint64_t;
 
 	class Job : public IJob
 	{

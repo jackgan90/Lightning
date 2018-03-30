@@ -35,7 +35,7 @@ namespace JobSystem
 		JobManager(const JobManager&) = delete;
 		JobManager& operator=(const JobManager&) = delete;
 		template<typename Function, typename... Args>
-		auto AllocateJob(JobType type, IJob* parent, Function&& func, Args&&... args)
+		auto AllocateJob(JobType type, JobHandle parent, Function&& func, Args&&... args)
 		{
 			//according to C++ standard,multiple threads read from std::unordered_map is well defined.So there's
 			//no problem here
@@ -77,8 +77,9 @@ namespace JobSystem
 			m_workers.clear();
 		}
 
-		void RunJob(IJob* job)
+		void RunJob(JobHandle handle)
 		{
+			IJob* job = JobAllocator::JobAddrFromHandle(handle);
 			Job* pJob = static_cast<Job*>(job);
 			if (pJob->HasTargetRunThread())
 			{
@@ -96,8 +97,9 @@ namespace JobSystem
 		}
 
 
-		void WaitForCompletion(IJob* job)
+		void WaitForCompletion(JobHandle handle)
 		{
+			IJob* job = JobAllocator::JobAddrFromHandle(handle);
 			auto worker = m_workers[std::this_thread::get_id()];
 			while (!job->HasCompleted())
 			{
@@ -143,25 +145,26 @@ namespace JobSystem
 			}
 			else
 			{
-				auto job = AllocateJob(JobType::FOREGROUND, nullptr, [this](std::size_t c) {ModifyBackgroundWorkersCount(c); }, count);
-				RunJobOnMainThread(job);
+				auto handle = AllocateJob(JobType::FOREGROUND, INVALID_JOB_HANDLE, [this](std::size_t c) {ModifyBackgroundWorkersCount(c); }, count);
+				RunJobOnMainThread(handle);
 			}
 		}
 
-		void RunJob(IJob* job, std::thread::id threadId)
+		void RunJob(JobHandle handle, std::thread::id threadId)
 		{
+			IJob* job = JobAllocator::JobAddrFromHandle(handle);
 			static_cast<Job*>(job)->SetTargetRunThread(threadId);
-			RunJob(job);
+			RunJob(handle);
 		}
 
-		void RunJobOnCurrentThread(IJob* job)
+		void RunJobOnCurrentThread(JobHandle handle)
 		{
-			RunJob(job, GetCurrentThreadId());
+			RunJob(handle, GetCurrentThreadId());
 		}
 
-		void RunJobOnMainThread(IJob* job)
+		void RunJobOnMainThread(JobHandle handle)
 		{
-			RunJob(job, m_mainThreadId);
+			RunJob(handle, m_mainThreadId);
 		}
 
 		void ShutDown()

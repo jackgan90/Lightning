@@ -4,7 +4,7 @@
 
 using JobSystem::JobManager;
 using JobSystem::JobType;
-using JobSystem::IJob;
+using JobSystem::JobHandle;
 
 std::mutex mutex;
 
@@ -14,20 +14,20 @@ static int otherThreadJobCount{ 0 };
 void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 {
 	std::cout << "Running in thread:" << std::this_thread::get_id() << "current job:" << currentJob << ", jobCount" << jobCount << std::endl;
-	IJob * job{ nullptr };
+	JobHandle job = INVALID_JOB_HANDLE;
 	JobType type = JobType::FOREGROUND;
 	//if (currentJob % 2)
 	//	type = JobType::BACKGROUND;
 	bool isNextLayerJob{ false };
 	if(currentJob < jobCount)
 	{
-		job = JobManager::Instance().AllocateJob(type, nullptr, job_spawn, currentJob + 1, jobCount);
+		job = JobManager::Instance().AllocateJob(type, INVALID_JOB_HANDLE, job_spawn, currentJob + 1, jobCount);
 	}
 	else
 	{
 		isNextLayerJob = true;
 		std::uint64_t nextLayerJobCount = jobCount == static_cast<std::uint64_t>(-1) ? jobCount : jobCount + 1;
-		job = JobManager::Instance().AllocateJob(type, nullptr, job_spawn, 0, nextLayerJobCount);
+		job = JobManager::Instance().AllocateJob(type, INVALID_JOB_HANDLE, job_spawn, 0, nextLayerJobCount);
 		JobManager::Instance().SetBackgroundWorkersCount(nextLayerJobCount % 5);
 	}
 	if (isNextLayerJob)
@@ -44,8 +44,8 @@ void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 
 void task_generation_job()
 {
-	std::vector<JobSystem::IJob*> jobs;
-	auto masterJob = JobManager::Instance().AllocateJob(JobType::FOREGROUND, nullptr, []() {std::cout << "Master job created!" << std::endl; });
+	std::vector<JobHandle> jobs;
+	auto masterJob = JobManager::Instance().AllocateJob(JobType::FOREGROUND, INVALID_JOB_HANDLE, []() {std::cout << "Master job created!" << std::endl; });
 	jobs.push_back(masterJob);
 	for (int i = 0;i < 100;i++)
 	{
@@ -63,7 +63,7 @@ void task_generation_job()
 void hello()
 {
 	std::cout << "Job system initialized finished!" << std::endl;
-	auto job = JobManager::Instance().AllocateJob(JobType::FOREGROUND, nullptr, task_generation_job);
+	auto job = JobManager::Instance().AllocateJob(JobType::FOREGROUND, INVALID_JOB_HANDLE, task_generation_job);
 	JobManager::Instance().RunJob(job);
 }
 
