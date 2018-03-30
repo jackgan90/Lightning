@@ -63,7 +63,8 @@ namespace JobSystem
 			m_type(type),
 			m_parent(parent),
 			m_unfinishedJobs(1),
-			m_hasTargetRunThread(false)
+			m_hasTargetRunThread(false),
+			m_hasCompleted(false)
 #ifdef JOB_ASSERT
 			, m_executeCount(0)
 #endif
@@ -75,7 +76,7 @@ namespace JobSystem
 #ifdef JOB_ASSERT
 				assert(!m_parent->HasCompleted());
 #endif
-				static_cast<Job*>(m_parent)->m_unfinishedJobs++;
+				static_cast<Job*>(m_parent)->m_unfinishedJobs.fetch_add(1, std::memory_order_relaxed);
 			}
 		}
 		Job(const Job& job) = delete;
@@ -83,7 +84,7 @@ namespace JobSystem
 
 		bool HasCompleted()override
 		{
-			return m_unfinishedJobs <= 0;
+			return m_hasCompleted;
 		}
 
 		JobType GetType()override { return m_type; }
@@ -110,6 +111,11 @@ namespace JobSystem
 		bool m_hasTargetRunThread;
 		std::thread::id m_targetRunThreadId;
 		std::atomic<std::int32_t> m_unfinishedJobs;
+		//why don't we just compare m_unfinishedJobs with 0 to indicate completeness?
+		//Because after the job is done,there are potentially other jobs specifying this job as 
+		//their parent.It's no harm to increment m_unfinishedJobs if the job is complete.But it
+		//makes this value not accurately reflect the complete status. 
+		bool m_hasCompleted;
 #ifdef JOB_ASSERT
 		std::atomic<std::size_t> m_executeCount;
 #endif
@@ -121,7 +127,7 @@ namespace JobSystem
 	private:
 		friend class JobAllocator;
 		template<typename F, typename A>
-		JobImpl(JobType type, IJob* parent, F&& func, A&& args):
+		JobImpl(JobType type, IJob* parent, F&& func, A&& args) :
 			Job(type, parent),
 			m_payload(std::forward<F>(func), std::forward<A>(args))
 		{
@@ -142,12 +148,14 @@ namespace JobSystem
 
 		void Finish()override
 		{
+			if (HasCompleted())
+				return;
 			//if job schedule runs as expected,Finish should only be called within one thread
 			//so m_unfinishedJobs shouldn't be a negative value.
-			m_unfinishedJobs--;
-			//No concurrent call here,just compare
-			if (HasCompleted())	
+			auto jobsBefore = m_unfinishedJobs.fetch_sub(1, std::memory_order_acquire);
+			if (jobsBefore == 1)
 			{
+				m_hasCompleted = true;
 				//After finish execution,m_payload should be destroyed
 				m_payload.~Payload();
 				if (m_parent)
