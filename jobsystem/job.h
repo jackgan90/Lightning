@@ -51,24 +51,17 @@ namespace JobSystem
 		virtual ~IJob() = default;
 		virtual void Execute() = 0;
 		virtual void Finish() = 0;
-		virtual void IncrementCounter() = 0;
 		virtual bool HasCompleted() = 0;
 		virtual JobType GetType() = 0;
-		virtual void SetTargetRunThread(std::thread::id id) = 0;
-		virtual std::thread::id GetTargetRunThread() = 0;
-		virtual bool HasTargetRunThread()const = 0;
 	};
 
-	template<typename Function, typename Tuple>
 	class Job : public IJob
 	{
-	private:
-		friend class JobAllocator;
-		template<typename F, typename A>
-		Job(JobType type, IJob* parent, F&& func, A&& args):
+		friend class JobManager;
+	public:
+		Job(JobType type, IJob* parent):
 			m_type(type),
-			m_parent(parent), 
-			m_payload(std::forward<F>(func), std::forward<A>(args)),
+			m_parent(parent),
 			m_unfinishedJobs(1),
 			m_hasTargetRunThread(false)
 #ifdef JOB_ASSERT
@@ -82,8 +75,56 @@ namespace JobSystem
 #ifdef JOB_ASSERT
 				assert(!m_parent->HasCompleted());
 #endif
-				m_parent->IncrementCounter();
+				static_cast<Job*>(m_parent)->m_unfinishedJobs++;
 			}
+		}
+		Job(const Job& job) = delete;
+		Job& operator=(const Job& job) = delete;
+
+		bool HasCompleted()override
+		{
+			return m_unfinishedJobs <= 0;
+		}
+
+		JobType GetType()override { return m_type; }
+
+	protected:
+		void SetTargetRunThread(std::thread::id id)
+		{
+			m_targetRunThreadId = id;
+			m_hasTargetRunThread = true;
+		}
+
+		std::thread::id GetTargetRunThread()
+		{
+			return m_targetRunThreadId;
+		}
+
+		bool HasTargetRunThread()const
+		{
+			return m_hasTargetRunThread;
+		}
+
+		JobType m_type;
+		IJob* m_parent;
+		bool m_hasTargetRunThread;
+		std::thread::id m_targetRunThreadId;
+		std::atomic<std::int32_t> m_unfinishedJobs;
+#ifdef JOB_ASSERT
+		std::atomic<std::size_t> m_executeCount;
+#endif
+	};
+
+	template<typename Function, typename Tuple>
+	class JobImpl : public Job
+	{
+	private:
+		friend class JobAllocator;
+		template<typename F, typename A>
+		JobImpl(JobType type, IJob* parent, F&& func, A&& args):
+			Job(type, parent),
+			m_payload(std::forward<F>(func), std::forward<A>(args))
+		{
 		}
 	public:
 		void Execute()override
@@ -113,36 +154,6 @@ namespace JobSystem
 					m_parent->Finish();
 			}
 		}
-		void IncrementCounter()override
-		{
-			m_unfinishedJobs++;
-		}
-
-		bool HasCompleted()override
-		{
-			return m_unfinishedJobs <= 0;
-		}
-
-		void SetTargetRunThread(std::thread::id id)override
-		{
-			m_targetRunThreadId = id;
-			m_hasTargetRunThread = true;
-		}
-
-		std::thread::id GetTargetRunThread() override
-		{
-			return m_targetRunThreadId;
-		}
-
-		bool HasTargetRunThread()const override
-		{
-			return m_hasTargetRunThread;
-		}
-
-		JobType GetType()override { return m_type; }
-
-		Job(const Job<Function, Tuple>& job) = delete;
-		Job& operator=(const Job<Function, Tuple>& job) = delete;
 	private:
 		struct Payload
 		{
@@ -151,24 +162,10 @@ namespace JobSystem
 			Function m_func;
 			Tuple m_args;
 		};
-		JobType m_type;
-		IJob* m_parent;
-		Payload m_payload;
-		std::atomic<std::int32_t> m_unfinishedJobs;
-		bool m_hasTargetRunThread;
-		std::thread::id m_targetRunThreadId;
-#ifdef JOB_ASSERT
-		std::atomic<std::size_t> m_executeCount;
-#endif
-		static constexpr std::size_t MemberSize = \
-			sizeof(JobType) + sizeof(IJob*) + sizeof(Payload) + sizeof(std::atomic<std::int32_t>) + \
-			sizeof(bool) + sizeof(std::thread::id)
-#ifdef JOB_ASSERT
-			+ sizeof(std::atomic<std::size_t>)
-#endif
-			;
+		static constexpr std::size_t MemberSize = sizeof(Job) + sizeof(Payload);
 		//std::hardware_destructive_interference_size is defined in c++17,VS2015 doesn't support it
 		static constexpr std::size_t CacheLineSize = 64;
+		Payload m_payload;
 		std::uint8_t m_padding[CacheLineSize - MemberSize % CacheLineSize];
 	};
 }

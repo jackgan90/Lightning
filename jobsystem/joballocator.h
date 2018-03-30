@@ -21,7 +21,7 @@ namespace JobSystem
 		template<typename Function, typename... Args>
 		auto Allocate(JobType type, IJob* parent, Function&& func, Args&&... args)
 		{
-			using JobType = Job<Function, decltype(std::make_tuple(std::forward<Args>(args)...))>;
+			using JobType = JobImpl<Function, decltype(std::make_tuple(std::forward<Args>(args)...))>;
 			static_assert(sizeof(JobType) <= PoolSize, "job object is too large!");
 			if (m_pos + sizeof(JobType) >= PoolSize)
 			{
@@ -33,6 +33,12 @@ namespace JobSystem
 			return pJob;
 		}
 	private:
+		struct JobPool
+		{
+			std::uint8_t* buffer;
+			std::atomic<std::size_t> head;
+			std::size_t rear;
+		};
 		static constexpr std::size_t PoolSize = 1024 * 1024;
 		std::uint8_t* m_jobPool;
 		std::size_t m_pos;

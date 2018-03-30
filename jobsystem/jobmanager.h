@@ -79,9 +79,10 @@ namespace JobSystem
 
 		void RunJob(IJob* job)
 		{
-			if (job->HasTargetRunThread())
+			Job* pJob = static_cast<Job*>(job);
+			if (pJob->HasTargetRunThread())
 			{
-				auto worker = m_workers[job->GetTargetRunThread()];
+				auto worker = m_workers[pJob->GetTargetRunThread()];
 				worker->queues[job->GetType()].Push(job);
 			}
 			else
@@ -149,7 +150,7 @@ namespace JobSystem
 
 		void RunJob(IJob* job, std::thread::id threadId)
 		{
-			job->SetTargetRunThread(threadId);
+			static_cast<Job*>(job)->SetTargetRunThread(threadId);
 			RunJob(job);
 		}
 
