@@ -73,10 +73,12 @@ namespace JobSystem
 			//is an undefined behavior.Users should ensure parent is not completed when child job is created
 			if (m_parent)
 			{
-#ifdef JOB_ASSERT
-				assert(!m_parent->HasCompleted());
-#endif
-				static_cast<Job*>(m_parent)->m_unfinishedJobs.fetch_add(1, std::memory_order_relaxed);
+				auto pParent = static_cast<Job*>(m_parent);
+				std::int32_t expected{ 0 };
+				//pParent now may or may not be complete here.If it is complete,m_unfinishedJobs should be 0.swap it with an invalid
+				//job count,there for Finish cannot be called twice.
+				pParent->m_unfinishedJobs.compare_exchange_strong(expected, INVALID_JOB_COUNT, std::memory_order_relaxed);
+				pParent->m_unfinishedJobs.fetch_add(1, std::memory_order_release);
 			}
 		}
 		Job(const Job& job) = delete;
@@ -119,6 +121,7 @@ namespace JobSystem
 #ifdef JOB_ASSERT
 		std::atomic<std::size_t> m_executeCount;
 #endif
+		static constexpr std::int32_t INVALID_JOB_COUNT = -(0x3f << 24 | 0xff << 16 | 0xff << 8 | 0xff);
 	};
 
 	template<typename Function, typename Tuple>
