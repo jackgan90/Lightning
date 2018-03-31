@@ -99,10 +99,14 @@ namespace JobSystem
 
 		void WaitForCompletion(JobHandle handle)
 		{
-			IJob* job = JobAllocator::JobAddrFromHandle(handle);
 			auto worker = m_workers[std::this_thread::get_id()];
-			while (!job->HasCompleted())
+			while (true)
 			{
+				IJob* job = JobAllocator::JobAddrFromHandle(handle);
+				if (!job || job->HasCompleted())
+				{
+					break;
+				}
 				if (worker->running)
 				{
 					worker->DoRun(false);

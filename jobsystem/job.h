@@ -134,9 +134,10 @@ namespace JobSystem
 	private:
 		friend class JobAllocator;
 		template<typename F, typename A>
-		JobImpl(JobType type, IJob* parent, F&& func, A&& args) :
+		JobImpl(JobType type, IJob* parent, std::atomic<std::size_t>& counter, F&& func, A&& args) :
 			Job(type, parent),
-			m_payload(std::forward<F>(func), std::forward<A>(args))
+			m_payload(std::forward<F>(func), std::forward<A>(args)),
+			m_counter(counter)
 		{
 		}
 	public:
@@ -167,6 +168,9 @@ namespace JobSystem
 				m_payload.~Payload();
 				if (m_parent)
 					m_parent->Finish();
+				//Reset memory 
+				*(reinterpret_cast<std::uint8_t*>(this) - 1) = std::uint8_t(0);
+				m_counter.fetch_add(1, std::memory_order_relaxed);
 			}
 		}
 	private:
@@ -181,6 +185,7 @@ namespace JobSystem
 		//std::hardware_destructive_interference_size is defined in c++17,VS2015 doesn't support it
 		static constexpr std::size_t CacheLineSize = 64;
 		Payload m_payload;
+		std::atomic<std::size_t>& m_counter;
 		std::uint8_t m_padding[CacheLineSize - MemberSize % CacheLineSize];
 	};
 }

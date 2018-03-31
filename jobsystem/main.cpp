@@ -16,8 +16,8 @@ void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 	std::cout << "Running in thread:" << std::this_thread::get_id() << "current job:" << currentJob << ", jobCount" << jobCount << std::endl;
 	JobHandle job = INVALID_JOB_HANDLE;
 	JobType type = JobType::FOREGROUND;
-	//if (currentJob % 2)
-	//	type = JobType::BACKGROUND;
+	if (currentJob % 2)
+		type = JobType::BACKGROUND;
 	bool isNextLayerJob{ false };
 	if(currentJob < jobCount)
 	{
@@ -32,7 +32,7 @@ void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 	}
 	if (isNextLayerJob)
 	{
-		JobManager::Instance().RunJob(job, mainThreadId);
+		JobManager::Instance().RunJob(job);
 		mainJobCount++;
 	}
 	else
