@@ -6,8 +6,7 @@ set(HEADERS job.h
 			jobqueue.h
 			jobmanager.h
 			concurrentqueue.h)
-set(SOURCES main.cpp
-			jobqueue.cpp)
+set(SOURCES main.cpp)
 
 if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /wd4251 /wd4275 /EHsc /MDd")
