@@ -28,19 +28,22 @@ namespace JobSystem
 		auto Allocate(JobType type, JobHandle parent, Function&& func, Args&&... args)
 		{
 			using JobType = JobImpl<Function, decltype(std::make_tuple(std::forward<Args>(args)...))>;
-			static_assert(sizeof(JobType) + 1 <= PoolSize, "job object is too large!");
+			static_assert(sizeof(JobType) + Alignment <= PoolSize, "job object is too large!");
 			JobPool* pool = &m_pools.back();
-			if (pool->pos + sizeof(JobType) + 1 > PoolSize)
+			auto bufferStart = reinterpret_cast<std::uint64_t>(pool->buffer);
+			auto alignAddr = NextAlignAddr(bufferStart + pool->pos) - bufferStart;
+			if (alignAddr + sizeof(JobType) > PoolSize)
 			{
 				pool->locked = true;
 				ClearAndAllocatePools();
 				pool = &m_pools.back();
+				bufferStart = reinterpret_cast<std::uint64_t>(pool->buffer);
+				alignAddr = NextAlignAddr(bufferStart + pool->pos) - bufferStart;
 			}
 			IJob* parentJob = JobAddrFromHandle(parent);
-			std::uint8_t* addr = pool->buffer + pool->pos + 1;
-			*(addr - 1) = Magic;
-			auto pJob = new (addr) JobType(type, parentJob, *pool->finishedJobCount, std::forward<Function>(func), std::make_tuple(std::forward<Args>(args)...));
-			pool->pos += sizeof(JobType) + 1;
+			*(pool->buffer + alignAddr - 1) = Magic;
+			auto pJob = new (pool->buffer + alignAddr) JobType(type, parentJob, *pool->finishedJobCount, std::forward<Function>(func), std::make_tuple(std::forward<Args>(args)...));
+			pool->pos = static_cast<std::size_t>(alignAddr) + sizeof(JobType);
 			pool->allocatedJobCount++;
 
 			return JobHandleFromAddr(pJob);
@@ -59,6 +62,11 @@ namespace JobSystem
 		static JobHandle JobHandleFromAddr(IJob* job)
 		{
 			return ~reinterpret_cast<JobHandle>(job);
+		}
+
+		static std::uint64_t NextAlignAddr(std::uint64_t pos)
+		{
+			return (pos + Alignment) & (~(static_cast<std::uint64_t>(Alignment) - 1));
 		}
 
 		struct JobPool
@@ -172,6 +180,7 @@ namespace JobSystem
 		}
 		static constexpr std::size_t PoolSize = 256 * 1024;
 		static constexpr std::uint8_t Magic = 0xff;
+		static constexpr std::size_t Alignment = 16;
 		std::vector<JobPool> m_pools;
 	};
 }
