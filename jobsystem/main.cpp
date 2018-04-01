@@ -60,11 +60,76 @@ void task_generation_job()
 	//std::cout << "JobSystem shut down!" << std::endl;
 }
 
+class TestClass
+{
+public:
+	TestClass(int a):_a(a)
+	{
+		std::cout << "Constructor" << std::endl;
+	}
+	~TestClass()
+	{
+		std::cout << "Test Class destruct" << std::endl;
+	}
+	//TestClass(const TestClass& tc) :_a(tc._a)
+	//{
+	//	std::cout << "Copy constructor" << std::endl;
+	//}
+	//TestClass(TestClass&& tc) :_a(tc._a)
+	//{
+	//	std::cout << "Move constructor" << std::endl;
+	//}
+	void Print()const
+	{
+		std::cout << "thread_id" << std::this_thread::get_id() << "a is " << _a << std::endl;
+	}
+private:
+	int _a;
+};
+
+//std::function<void()> func;
+
+class CallableObject
+{
+public:
+	CallableObject(const TestClass& tc):m_tc(tc)
+	{
+		std::cout << "CallableObject constructor" << std::endl;
+	}
+	CallableObject(const CallableObject& co) :m_tc(co.m_tc)
+	{
+		std::cout << "CallableObject copy constructor" << std::endl;
+	}
+	CallableObject(CallableObject&& co) :m_tc(std::move(co.m_tc))
+	{
+		std::cout << "CallableObject move constructor" << std::endl;
+	}
+	~CallableObject()
+	{
+		std::cout << "CallableObject destruct" << std::endl;
+	}
+	void operator()()
+	{
+		m_tc.Print();
+	}
+private:
+	TestClass m_tc;
+};
+
 void hello()
 {
-	std::cout << "Job system initialized finished!" << std::endl;
-	auto job = JobManager::Instance().AllocateJob(JobType::FOREGROUND, INVALID_JOB_HANDLE, task_generation_job);
-	JobManager::Instance().RunJob(job);
+	auto masterJob = JobManager::Instance().AllocateJob(JobType::FOREGROUND, INVALID_JOB_HANDLE, []() {});
+	std::vector<JobHandle> jobs;
+	jobs.push_back(masterJob);
+	for (std::size_t i = 0;i < 100;++i)
+	{
+		auto job = JobManager::Instance().AllocateJob(JobType::FOREGROUND, masterJob, task_generation_job);
+		jobs.push_back(job);
+	}
+	for (auto handle : jobs)
+		JobManager::Instance().RunJob(handle);
+	JobManager::Instance().WaitForCompletion(masterJob);
+
 }
 
 int main(int argc, char** argv)

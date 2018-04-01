@@ -35,12 +35,12 @@ namespace JobSystem
 		JobManager(const JobManager&) = delete;
 		JobManager& operator=(const JobManager&) = delete;
 		template<typename Function, typename... Args>
-		auto AllocateJob(JobType type, JobHandle parent, Function&& func, Args&&... args)
+		auto AllocateJob(JobType type, JobHandle parent, Function func, Args&&... args)
 		{
 			//according to C++ standard,multiple threads read from std::unordered_map is well defined.So there's
 			//no problem here
 			auto worker = m_workers[std::this_thread::get_id()];
-			return worker->allocators[type].Allocate(type, parent, std::forward<Function>(func), std::forward<Args>(args)...);
+			return worker->allocators[type].Allocate(type, parent, func, std::forward<Args>(args)...);
 		}
 
 		//Only main thread can call run on JobSystem

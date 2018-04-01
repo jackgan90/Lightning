@@ -138,7 +138,7 @@ namespace JobSystem
 		template<typename F, typename A>
 		JobImpl(JobType type, IJob* parent, std::atomic<std::size_t>& counter, F&& func, A&& args) :
 			Job(type, parent, counter),
-			m_payload(std::forward<F>(func), std::forward<A>(args))
+			m_payload(std::move(func), std::forward<A>(args))
 		{
 		}
 	public:
@@ -178,7 +178,7 @@ namespace JobSystem
 		struct Payload
 		{
 			template<typename F, typename A>
-			Payload(F&& func, A&& args): m_func(std::forward<F>(func)), m_args(std::forward<A>(args)){}
+			Payload(F&& func, A&& args): m_func(std::move(func)), m_args(std::forward<A>(args)){}
 			Function m_func;
 			Tuple m_args;
 		};

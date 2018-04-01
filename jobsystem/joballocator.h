@@ -25,7 +25,7 @@ namespace JobSystem
 		JobAllocator(const JobAllocator&) = delete;
 		JobAllocator& operator=(const JobAllocator&) = delete;
 		template<typename Function, typename... Args>
-		auto Allocate(JobType type, JobHandle parent, Function&& func, Args&&... args)
+		auto Allocate(JobType type, JobHandle parent, const Function& func, Args&&... args)
 		{
 			using JobType = JobImpl<Function, decltype(std::make_tuple(std::forward<Args>(args)...))>;
 			static_assert(sizeof(JobType) + Alignment <= PoolSize, "job object is too large!");
@@ -42,7 +42,7 @@ namespace JobSystem
 			}
 			IJob* parentJob = JobAddrFromHandle(parent);
 			*(pool->buffer + alignAddr - 1) = Magic;
-			auto pJob = new (pool->buffer + alignAddr) JobType(type, parentJob, *pool->finishedJobCount, std::forward<Function>(func), std::make_tuple(std::forward<Args>(args)...));
+			auto pJob = new (pool->buffer + alignAddr) JobType(type, parentJob, *pool->finishedJobCount, std::move(func), std::make_tuple(std::forward<Args>(args)...));
 			pool->pos = static_cast<std::size_t>(alignAddr) + sizeof(JobType);
 			pool->allocatedJobCount++;
 
