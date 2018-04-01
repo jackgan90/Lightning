@@ -7,8 +7,6 @@
 #include <cassert>
 #define JOB_ASSERT
 
-#define INVALID_JOB_HANDLE static_cast<std::uint64_t>(-1)
-
 namespace JobSystem
 {
 	template<int N>
@@ -58,6 +56,11 @@ namespace JobSystem
 	};
 
 	using JobHandle = std::uint64_t;
+	struct InvalidJobHandleType
+	{
+		operator JobHandle()const { return static_cast<JobHandle>(-1); }
+	};
+	constexpr InvalidJobHandleType INVALID_JOB_HANDLE;
 
 	class Job : public IJob
 	{

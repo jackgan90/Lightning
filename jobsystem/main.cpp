@@ -5,6 +5,7 @@
 using JobSystem::JobManager;
 using JobSystem::JobType;
 using JobSystem::JobHandle;
+using JobSystem::INVALID_JOB_HANDLE;
 
 std::mutex mutex;
 
@@ -14,6 +15,7 @@ static int otherThreadJobCount{ 0 };
 void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 {
 	std::cout << "Running in thread:" << std::this_thread::get_id() << "current job:" << currentJob << ", jobCount" << jobCount << std::endl;
+
 	JobHandle job = INVALID_JOB_HANDLE;
 	JobType type = JobType::FOREGROUND;
 	if (currentJob % 2)
