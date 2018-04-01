@@ -63,11 +63,12 @@ namespace JobSystem
 	{
 		friend class JobManager;
 	public:
-		Job(JobType type, IJob* parent):
+		Job(JobType type, IJob* parent, std::atomic<std::size_t>& counter):
 			m_type(type),
 			m_parent(parent),
-			m_unfinishedJobs(1),
 			m_hasTargetRunThread(false),
+			m_unfinishedJobs(1),
+			m_counter(counter),
 			m_hasCompleted(false)
 #ifdef JOB_ASSERT
 			, m_executeCount(0)
@@ -117,6 +118,7 @@ namespace JobSystem
 		bool m_hasTargetRunThread;
 		std::thread::id m_targetRunThreadId;
 		std::atomic<std::int32_t> m_unfinishedJobs;
+		std::atomic<std::size_t>& m_counter;
 		//why don't we just compare m_unfinishedJobs with 0 to indicate completeness?
 		//Because after the job is done,there are potentially other jobs specifying this job as 
 		//their parent.It's no harm to increment m_unfinishedJobs if the job is complete.But it
@@ -135,9 +137,8 @@ namespace JobSystem
 		friend class JobAllocator;
 		template<typename F, typename A>
 		JobImpl(JobType type, IJob* parent, std::atomic<std::size_t>& counter, F&& func, A&& args) :
-			Job(type, parent),
-			m_payload(std::forward<F>(func), std::forward<A>(args)),
-			m_counter(counter)
+			Job(type, parent, counter),
+			m_payload(std::forward<F>(func), std::forward<A>(args))
 		{
 		}
 	public:
@@ -185,7 +186,6 @@ namespace JobSystem
 		//std::hardware_destructive_interference_size is defined in c++17,VS2015 doesn't support it
 		static constexpr std::size_t CacheLineSize = 64;
 		Payload m_payload;
-		std::atomic<std::size_t>& m_counter;
 		std::uint8_t m_padding[CacheLineSize - MemberSize % CacheLineSize];
 	};
 }
