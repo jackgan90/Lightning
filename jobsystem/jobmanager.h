@@ -24,9 +24,9 @@ namespace JobSystem
 		JobManager() : m_shutdown(false), m_sleepThreadCount(0)
 		{
 			m_globalJobQueues.emplace(std::piecewise_construct, 
-				std::forward_as_tuple(JobType::FOREGROUND), std::make_tuple());
+				std::forward_as_tuple(JobType::FOREGROUND), std::forward_as_tuple(GLOBAL_JOB_QUEUE_SIZE));
 			m_globalJobQueues.emplace(std::piecewise_construct, 
-				std::forward_as_tuple(JobType::BACKGROUND), std::make_tuple());
+				std::forward_as_tuple(JobType::BACKGROUND), std::forward_as_tuple(GLOBAL_JOB_QUEUE_SIZE));
 		}
 		~JobManager()
 		{
@@ -84,11 +84,13 @@ namespace JobSystem
 			if (pJob->HasTargetRunThread())
 			{
 				auto worker = m_workers[pJob->GetTargetRunThread()];
-				worker->queues[job->GetType()].Push(job);
+				auto it = worker->queues.find(job->GetType());
+				it->second.Push(job);
 			}
 			else
 			{
-				m_globalJobQueues[job->GetType()].Push(job);
+				auto it = m_globalJobQueues.find(job->GetType());
+				it->second.Push(job);
 			}
 			if (m_sleepThreadCount)
 			{
@@ -186,10 +188,10 @@ namespace JobSystem
 			Worker(bool bg) : background(bg)
 			{
 				//the allocators and queues must be construct in-place ,use some trick code to achieve it
-				allocators.emplace(std::piecewise_construct, std::make_tuple(JobType::FOREGROUND), std::make_tuple());
-				allocators.emplace(std::piecewise_construct, std::make_tuple(JobType::BACKGROUND), std::make_tuple());
-				queues.emplace(std::piecewise_construct, std::make_tuple(JobType::FOREGROUND), std::make_tuple());
-				queues.emplace(std::piecewise_construct, std::make_tuple(JobType::BACKGROUND), std::make_tuple());
+				allocators.emplace(std::piecewise_construct, std::forward_as_tuple(JobType::FOREGROUND), std::forward_as_tuple());
+				allocators.emplace(std::piecewise_construct, std::forward_as_tuple(JobType::BACKGROUND), std::forward_as_tuple());
+				queues.emplace(std::piecewise_construct, std::forward_as_tuple(JobType::FOREGROUND), std::forward_as_tuple(LOCAL_JOB_QUEUE_SIZE));
+				queues.emplace(std::piecewise_construct, std::forward_as_tuple(JobType::BACKGROUND), std::forward_as_tuple(LOCAL_JOB_QUEUE_SIZE));
 			}
 			//allocators only access through key ,so it doesn't matter if we use map or unordered map.For performance reason just use unordered map
 			std::unordered_map<JobType, JobAllocator> allocators;
@@ -202,6 +204,7 @@ namespace JobSystem
 			//thus sleep this thread for a while
 			std::size_t hangCounter{ 0 };
 			static constexpr std::size_t HANG_SLEEP_THRESHOLD{ 10 };
+			static constexpr std::size_t LOCAL_JOB_QUEUE_SIZE{ 4096 };
 			static constexpr std::size_t MAIN_THREAD_SLEEP_MILLSEC{ 100 };
 
 			void DoRun(bool sleep)
@@ -250,11 +253,12 @@ namespace JobSystem
 			{
 				auto& manager = JobManager::Instance();
 				IJob* job{ nullptr };
-				auto& queue = queues[type];
-				job = queue.Pop();
+				auto it = queues.find(type);
+				job = it->second.Pop();
 				if (job)
 					return job;
-				job = manager.m_globalJobQueues[type].Pop();
+				auto itGlobal = manager.m_globalJobQueues.find(type);
+				job = itGlobal->second.Pop();
 				return job;
 			}
 
@@ -294,7 +298,7 @@ namespace JobSystem
 			}
 		}
 
-
+		static constexpr std::size_t GLOBAL_JOB_QUEUE_SIZE{ 8192 };
 		std::unordered_map<JobType, JobQueue> m_globalJobQueues;
 		std::unordered_map<std::thread::id, Worker*> m_workers;
 		std::mutex m_mtxWakeUp;
