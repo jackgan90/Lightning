@@ -281,6 +281,7 @@ namespace JobSystem
 		void ModifyBackgroundWorkersCount(std::size_t count)
 		{
 			std::vector<Worker*> foregroundWorkers;
+			std::vector<Worker*> backgroundWorkers;
 			if (count > m_workers.size())
 				count = m_workers.size();
 			for (auto it = m_workers.begin();it != m_workers.end();++it)
@@ -290,13 +291,32 @@ namespace JobSystem
 				{
 					foregroundWorkers.push_back(pWorker);
 				}
+				else
+				{
+					backgroundWorkers.push_back(pWorker);
+				}
 			}
 
-			int bgWorkerCount = static_cast<int>(m_workers.size()) - static_cast<int>(foregroundWorkers.size());
-			int addedBgWorkerCount = count - bgWorkerCount;
-			for (int i = 0;i < addedBgWorkerCount;++i)
+			bool changed{ false };
+			if (backgroundWorkers.size() < count)
 			{
-				foregroundWorkers[i]->background = true;
+				for (std::size_t i = 0;i < count - backgroundWorkers.size();++i)
+				{
+					foregroundWorkers[i]->background = true;
+					changed = true;
+				}
+			}
+			else if(backgroundWorkers.size() > count)
+			{
+				for (std::size_t i = 0;i < backgroundWorkers.size() - count;++i)
+				{
+					backgroundWorkers[i]->background = false;
+					changed = true;
+				}
+			}
+			if (changed)
+			{
+				m_cvWakeUp.notify_all();
 			}
 		}
 

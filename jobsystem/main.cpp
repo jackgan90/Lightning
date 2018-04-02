@@ -30,7 +30,7 @@ void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 		isNextLayerJob = true;
 		std::uint64_t nextLayerJobCount = jobCount == static_cast<std::uint64_t>(-1) ? jobCount : jobCount + 1;
 		job = JobManager::Instance().AllocateJob(type, INVALID_JOB_HANDLE, job_spawn, 0, nextLayerJobCount);
-		JobManager::Instance().SetBackgroundWorkersCount(nextLayerJobCount % 5);
+		JobManager::Instance().SetBackgroundWorkersCount(nextLayerJobCount % 5 + 1);
 	}
 	if (isNextLayerJob)
 	{
@@ -49,7 +49,7 @@ void task_generation_job()
 	std::vector<JobHandle> jobs;
 	auto masterJob = JobManager::Instance().AllocateJob(JobType::FOREGROUND, INVALID_JOB_HANDLE, []() {std::cout << "Master job created!" << std::endl; });
 	jobs.push_back(masterJob);
-	for (int i = 0;i < 100;i++)
+	for (int i = 0;i < 2;i++)
 	{
 		auto job = JobManager::Instance().AllocateJob(JobType::FOREGROUND, masterJob, job_spawn, 0, 2);
 		jobs.push_back(job);
@@ -123,7 +123,7 @@ void hello()
 	auto masterJob = JobManager::Instance().AllocateJob(JobType::FOREGROUND, INVALID_JOB_HANDLE, []() {});
 	std::vector<JobHandle> jobs;
 	jobs.push_back(masterJob);
-	for (std::size_t i = 0;i < 100;++i)
+	for (std::size_t i = 0;i < 2;++i)
 	{
 		auto job = JobManager::Instance().AllocateJob(JobType::FOREGROUND, masterJob, task_generation_job);
 		jobs.push_back(job);
