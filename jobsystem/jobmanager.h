@@ -212,7 +212,7 @@ namespace JobSystem
 				bool hasJob{ false };
 				for (auto it = queues.begin(); it != queues.end();++it)
 				{
-					if (background && it->first == JobType::BACKGROUND)
+					if (!background && it->first == JobType::BACKGROUND)
 					{
 						continue;
 					}
