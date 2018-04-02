@@ -281,6 +281,8 @@ namespace JobSystem
 		void ModifyBackgroundWorkersCount(std::size_t count)
 		{
 			std::vector<Worker*> foregroundWorkers;
+			if (count > m_workers.size())
+				count = m_workers.size();
 			for (auto it = m_workers.begin();it != m_workers.end();++it)
 			{
 				auto pWorker = it->second;
