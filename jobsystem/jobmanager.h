@@ -204,7 +204,7 @@ namespace JobSystem
 			//thus sleep this thread for a while
 			std::size_t hangCounter{ 0 };
 			static constexpr std::size_t HANG_SLEEP_THRESHOLD{ 10 };
-			static constexpr std::size_t LOCAL_JOB_QUEUE_SIZE{ 4096 };
+			static constexpr std::size_t LOCAL_JOB_QUEUE_SIZE{ 2048 };
 			static constexpr std::size_t MAIN_THREAD_SLEEP_MILLSEC{ 100 };
 
 			void DoRun(bool sleep)
@@ -320,7 +320,7 @@ namespace JobSystem
 			}
 		}
 
-		static constexpr std::size_t GLOBAL_JOB_QUEUE_SIZE{ 8192 };
+		static constexpr std::size_t GLOBAL_JOB_QUEUE_SIZE{ 4096 };
 		std::unordered_map<JobType, JobQueue> m_globalJobQueues;
 		std::unordered_map<std::thread::id, Worker*> m_workers;
 		std::mutex m_mtxWakeUp;
