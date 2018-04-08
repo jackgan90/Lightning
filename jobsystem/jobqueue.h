@@ -54,15 +54,21 @@ namespace JobSystem
 				return job;
 			}
 #else
-			auto head = m_head.load(std::memory_order_relaxed);
-			auto tail = m_tail.load(std::memory_order_relaxed);
 			auto anchor = m_tailAnchor.load(std::memory_order_relaxed);
-			if (tail > head && tail == anchor)
+			if (anchor > 0)
 			{
-				auto job = GetJob(head);
-				if (m_head.compare_exchange_strong(head, head + 1, std::memory_order_relaxed))
+				auto tail = m_tail.load(std::memory_order_relaxed);
+				if (tail == anchor)
 				{
-					return job;
+					auto head = m_head.load(std::memory_order_relaxed);
+					if (tail > head)
+					{
+						auto job = GetJob(head);
+						if (m_head.compare_exchange_strong(head, head + 1, std::memory_order_relaxed))
+						{
+							return job;
+						}
+					}
 				}
 			}
 #endif
