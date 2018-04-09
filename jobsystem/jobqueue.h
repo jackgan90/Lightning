@@ -38,7 +38,7 @@ namespace JobSystem
 			assert(res);
 #else
 			auto slot = m_tailAnchor.fetch_add(1, std::memory_order_release);
-			Assign(slot, job);
+			AddJobToQueue(slot, job);
 			m_tail.fetch_add(1, std::memory_order_relaxed);
 #endif
 		}
@@ -63,7 +63,7 @@ namespace JobSystem
 					auto head = m_head.load(std::memory_order_relaxed);
 					if (tail > head)
 					{
-						auto job = GetJob(head);
+						auto job = RemoveJobFromQueue(head);
 						if (m_head.compare_exchange_strong(head, head + 1, std::memory_order_relaxed))
 						{
 							return job;
@@ -113,7 +113,7 @@ namespace JobSystem
 			std::int64_t end;
 			IJob** queue;
 		};
-		void Assign(std::int64_t index, IJob* job)
+		void AddJobToQueue(std::int64_t index, IJob* job)
 		{
 			while (true)
 			{
@@ -143,7 +143,7 @@ namespace JobSystem
 			}
 		}
 
-		IJob* GetJob(std::int64_t index)
+		IJob* RemoveJobFromQueue(std::int64_t index)
 		{
 			for (auto& block : m_blocks)
 			{
