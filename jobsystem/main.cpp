@@ -48,7 +48,7 @@ void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 		otherThreadJobCount++;
 	}
 	auto newJobCount = dist(engine) % 100;
-	for (std::size_t i = 0;i < newJobCount;++i)
+	for (int i = 0;i < newJobCount;++i)
 	{
 		job = JobManager::Instance().AllocateJob(type, INVALID_JOB_HANDLE, []() {std::cout << "This is extra job!"; });
 		JobManager::Instance().RunJob(job);

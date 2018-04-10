@@ -6,6 +6,9 @@
 #include <cstdint>
 #include <cassert>
 #define JOB_ASSERT
+#ifdef NDEBUG
+#undef JOB_ASSERT
+#endif
 
 namespace JobSystem
 {
@@ -53,6 +56,10 @@ namespace JobSystem
 		virtual void Finish() = 0;
 		virtual bool HasCompleted() = 0;
 		virtual JobType GetType() = 0;
+#ifdef JOB_ASSERT
+		virtual void SetSchedule() = 0;
+		virtual bool IsScheduled()const = 0;
+#endif
 	};
 
 	using JobHandle = std::uint64_t;
@@ -75,6 +82,7 @@ namespace JobSystem
 			m_hasCompleted(false)
 #ifdef JOB_ASSERT
 			, m_executeCount(0)
+			, m_hasScheduled(false)
 #endif
 		{
 			//Don't check parent job's finish status.Specify parent job while the job may potentially be completed
@@ -98,6 +106,11 @@ namespace JobSystem
 		}
 
 		JobType GetType()override { return m_type; }
+#ifdef JOB_ASSERT
+		bool IsScheduled()const override{ return m_hasScheduled; }
+		void SetSchedule()override { m_hasScheduled = true; }
+#endif // JOB_ASSERT
+
 
 	protected:
 		void SetTargetRunThread(std::thread::id id)
@@ -129,6 +142,7 @@ namespace JobSystem
 		bool m_hasCompleted;
 #ifdef JOB_ASSERT
 		std::atomic<std::size_t> m_executeCount;
+		bool m_hasScheduled;
 #endif
 		static constexpr std::int32_t INVALID_JOB_COUNT = -(0x3f << 24 | 0xff << 16 | 0xff << 8 | 0xff);
 	};

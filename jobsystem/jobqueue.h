@@ -5,6 +5,10 @@
 #ifndef USE_CUSTOM_CONCURRENT_QUEUE
 #include "concurrentqueue.h"
 #endif // !USE_CUSTOM_CONCURRENT_QUEUE
+#ifdef JOB_ASSERT
+#include <cstring>
+#endif // JOB_ASSERT
+
 
 
 namespace JobSystem
@@ -21,6 +25,9 @@ namespace JobSystem
 		{
 #ifdef USE_CUSTOM_CONCURRENT_QUEUE
 			m_queue = new IJob*[size];
+#ifdef JOB_ASSERT
+			std::memset(m_queue, 0, size * sizeof(IJob*));
+#endif
 #endif
 		}
 		JobQueue(const JobQueue&) = delete;
@@ -51,6 +58,9 @@ namespace JobSystem
 				auto success = m_queue.try_dequeue(job);
 				if (!success)
 					return nullptr;
+#ifdef JOB_ASSERT
+				job->SetSchedule();
+#endif
 				return job;
 			}
 #else
@@ -80,11 +90,21 @@ namespace JobSystem
 #else
 		void AddJobToQueue(std::int64_t index, IJob* job)
 		{
+#ifdef JOB_ASSERT
+			auto oldJob = m_queue[index % m_queueSize];
+			if (oldJob)
+			{
+				assert(oldJob->IsScheduled());
+			}
+#endif
 			m_queue[index % m_queueSize] = job;
 		}
 
 		IJob* RemoveJobFromQueue(std::int64_t index)
 		{
+#ifdef JOB_ASSERT
+			m_queue[index % m_queueSize]->SetSchedule();
+#endif
 			return m_queue[index % m_queueSize];
 		}
 
