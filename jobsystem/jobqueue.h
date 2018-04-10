@@ -1,6 +1,6 @@
 #pragma once
 #include "job.h"
-//#define USE_CUSTOM_CONCURRENT_QUEUE
+#define USE_CUSTOM_CONCURRENT_QUEUE
 
 #ifndef USE_CUSTOM_CONCURRENT_QUEUE
 #include "concurrentqueue.h"
@@ -16,21 +16,21 @@ namespace JobSystem
 #ifndef USE_CUSTOM_CONCURRENT_QUEUE
 			:m_queue(size) 
 #else
-			:m_tail(0), m_head(0), m_tailAnchor(0), m_blockQueueSize(size / 2)
+			:m_tail(0), m_head(0), m_tailAnchor(0), m_queueSize(size)
 #endif
 		{
 #ifdef USE_CUSTOM_CONCURRENT_QUEUE
-			for (std::size_t i = 0;i < 2;++i)
-			{
-				m_blocks.emplace_back(m_blockQueueSize);
-				auto& block = m_blocks.back();
-				block.start = i * m_blockQueueSize;
-				block.end = (i + 1) * m_blockQueueSize;
-			}
+			m_queue = new IJob*[size];
 #endif
 		}
 		JobQueue(const JobQueue&) = delete;
 		JobQueue& operator=(const JobQueue&) = delete;
+		~JobQueue()
+		{
+#ifdef USE_CUSTOM_CONCURRENT_QUEUE
+			delete[] m_queue;
+#endif
+		}
 		void Push(IJob* job)
 		{
 #ifndef USE_CUSTOM_CONCURRENT_QUEUE
@@ -78,125 +78,22 @@ namespace JobSystem
 #ifndef USE_CUSTOM_CONCURRENT_QUEUE
 		moodycamel::ConcurrentQueue<IJob*> m_queue;
 #else
-		struct Block
-		{
-			Block(std::uint32_t size)
-			{
-				queue = new IJob*[size];
-			}
-			Block(const Block&) = delete;
-			Block& operator=(const Block&) = delete;
-			Block(Block&& b):start(b.start), end(b.end), queue(b.queue)
-			{
-				b.queue = nullptr;
-			}
-			Block& operator=(Block&& b)
-			{
-				if (&b != this)
-				{
-					start = b.start;
-					end = b.end;
-					queue = b.queue;
-					b.queue = nullptr;
-				}
-				return *this;
-			}
-			~Block()
-			{
-				if (queue)
-				{
-					delete[] queue;
-					queue = nullptr;
-				}
-			}
-			std::int64_t start;
-			std::int64_t end;
-			IJob** queue;
-		};
 		void AddJobToQueue(std::int64_t index, IJob* job)
 		{
-			while (true)
-			{
-				bool success{ false };
-				for (auto& block : m_blocks)
-				{
-					if (index >= block.start && index < block.end)
-					{
-						block.queue[index % m_blockQueueSize] = job;
-						success = true;
-						break;
-					}
-				}
-				if (success)
-					break;
-				else
-				{
-					if (index % m_blockQueueSize == 0)
-					{
-						AddOrRecycleBlock(index);
-					}
-					else
-					{
-						std::this_thread::yield();
-					}
-				}
-			}
+			m_queue[index % m_queueSize] = job;
 		}
 
 		IJob* RemoveJobFromQueue(std::int64_t index)
 		{
-			for (auto& block : m_blocks)
-			{
-				if (index >= block.start && index < block.end)
-				{
-					auto job = block.queue[index % m_blockQueueSize];
-					job->GetType();
-					return job;
-				}
-			}
-			return nullptr;
+			return m_queue[index % m_queueSize];
 		}
 
-		void AddOrRecycleBlock(std::int64_t index)
-		{
-			Block* pTargetBlock{ nullptr };
-			auto head = m_head.load(std::memory_order_relaxed);
-			for (auto it = m_blocks.begin();it != m_blocks.end();)
-			{
-				if (head >= it->end)
-				{
-					if(!pTargetBlock)
-						pTargetBlock = &(*it);
-					else
-					{
-						if (m_blocks.size() > 2)
-						{
-							it = m_blocks.erase(it);
-							continue;
-						}
-					}
-				}
-				++it;
-			}
-			if (!pTargetBlock)
-			{
-				m_blocks.emplace_back(m_blockQueueSize);
-				auto& block = m_blocks.back();
-				block.start = index;
-				block.end = index + m_blockQueueSize;
-			}
-			else
-			{
-				pTargetBlock->start = index;
-				pTargetBlock->end = index + m_blockQueueSize;
-			}
-		}
 
 		std::atomic<std::int64_t> m_head;
 		std::atomic<std::int64_t> m_tail;
 		std::atomic<std::int64_t> m_tailAnchor;
-		std::uint32_t m_blockQueueSize;
-		std::vector<Block> m_blocks;
+		std::uint32_t m_queueSize;
+		IJob** m_queue;
 #endif
 	};
 }
