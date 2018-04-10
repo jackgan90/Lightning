@@ -58,9 +58,6 @@ namespace JobSystem
 				auto success = m_queue.try_dequeue(job);
 				if (!success)
 					return nullptr;
-#ifdef JOB_ASSERT
-				job->SetSchedule();
-#endif
 				return job;
 			}
 #else
@@ -92,20 +89,18 @@ namespace JobSystem
 		{
 #ifdef JOB_ASSERT
 			auto oldJob = m_queue[index % m_queueSize];
-			if (oldJob)
-			{
-				assert(oldJob->IsScheduled());
-			}
+			assert(!oldJob);
 #endif
 			m_queue[index % m_queueSize] = job;
 		}
 
 		IJob* RemoveJobFromQueue(std::int64_t index)
 		{
+			auto job = m_queue[index % m_queueSize];
 #ifdef JOB_ASSERT
-			m_queue[index % m_queueSize]->SetSchedule();
+			m_queue[index % m_queueSize] = nullptr;
 #endif
-			return m_queue[index % m_queueSize];
+			return job;
 		}
 
 
