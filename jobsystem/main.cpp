@@ -1,6 +1,7 @@
 #include<cstdlib>
 #include <iostream>
 #include "jobmanager.h"
+#include <random>
 
 using JobSystem::JobManager;
 using JobSystem::JobType;
@@ -12,6 +13,10 @@ std::mutex mutex;
 std::thread::id mainThreadId;
 static int mainJobCount{ 0 };
 static int otherThreadJobCount{ 0 };
+std::random_device rd;
+std::default_random_engine engine(rd());
+std::uniform_int_distribution<int> dist(0, 99999999);
+
 void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 {
 	std::cout << "Running in thread:" << std::this_thread::get_id() << "current job:" << currentJob << ", jobCount" << jobCount << std::endl;
@@ -41,6 +46,18 @@ void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 	{
 		JobManager::Instance().RunJob(job);
 		otherThreadJobCount++;
+	}
+	auto newJobCount = dist(engine) % 100;
+	for (std::size_t i = 0;i < newJobCount;++i)
+	{
+		job = JobManager::Instance().AllocateJob(type, INVALID_JOB_HANDLE, []() {std::cout << "This is extra job!"; });
+		JobManager::Instance().RunJob(job);
+	}
+	int a = 0;
+	auto loopCount = dist(engine);
+	for (int i = 0;i < loopCount;++i)
+	{
+		a += i;
 	}
 }
 
