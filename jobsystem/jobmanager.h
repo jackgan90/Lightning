@@ -203,7 +203,7 @@ namespace JobSystem
 			//if hangCounter reach a certain value,that means the whole system has low payload
 			//thus sleep this thread for a while
 			std::size_t hangCounter{ 0 };
-			static constexpr std::size_t HANG_SLEEP_THRESHOLD{ 10 };
+			static constexpr std::size_t HANG_SLEEP_THRESHOLD{ 100 };
 			static constexpr std::size_t LOCAL_JOB_QUEUE_SIZE{ 2048 };
 			static constexpr std::size_t MAIN_THREAD_SLEEP_MILLSEC{ 100 };
 

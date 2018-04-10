@@ -46,7 +46,8 @@ namespace JobSystem
 #else
 			auto slot = m_tailAnchor.fetch_add(1, std::memory_order_release);
 			AddJobToQueue(slot, job);
-			m_tail.fetch_add(1, std::memory_order_relaxed);
+			//m_tail.fetch_add(1, std::memory_order_relaxed);
+			while (!m_tail.compare_exchange_strong(slot, slot + 1));
 #endif
 		}
 		IJob* Pop()
@@ -61,20 +62,19 @@ namespace JobSystem
 				return job;
 			}
 #else
-			auto anchor = m_tailAnchor.load(std::memory_order_relaxed);
-			if (anchor > 0)
+			auto tail = m_tail.load(std::memory_order_relaxed);
+			if (tail > 0)
 			{
-				auto tail = m_tail.load(std::memory_order_relaxed);
-				if (tail == anchor)
+				auto head = m_head.load(std::memory_order_relaxed);
+				if (tail > head)
 				{
-					auto head = m_head.load(std::memory_order_relaxed);
-					if (tail > head)
+					auto job = RemoveJobFromQueue(head);
+					if (m_head.compare_exchange_strong(head, head + 1, std::memory_order_relaxed))
 					{
-						auto job = RemoveJobFromQueue(head);
-						if (m_head.compare_exchange_strong(head, head + 1, std::memory_order_relaxed))
-						{
-							return job;
-						}
+#ifdef JOB_ASSERT
+						assert(job);
+#endif
+						return job;
 					}
 				}
 			}
@@ -88,19 +88,14 @@ namespace JobSystem
 		void AddJobToQueue(std::int64_t index, IJob* job)
 		{
 #ifdef JOB_ASSERT
-			auto oldJob = m_queue[index % m_queueSize];
-			assert(!oldJob);
+			assert(job);
 #endif
 			m_queue[index % m_queueSize] = job;
 		}
 
 		IJob* RemoveJobFromQueue(std::int64_t index)
 		{
-			auto job = m_queue[index % m_queueSize];
-#ifdef JOB_ASSERT
-			m_queue[index % m_queueSize] = nullptr;
-#endif
-			return job;
+			return m_queue[index % m_queueSize];
 		}
 
 
