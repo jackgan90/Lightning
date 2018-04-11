@@ -23,15 +23,17 @@ namespace JobSystem
 		}
 		JobManager() : m_shutdown(false), m_sleepThreadCount(0)
 		{
-			std::uint8_t* mem = new std::uint8_t[sizeof(JobQueue) * JOB_TYPE_COUNT];
-			m_globalJobQueues = reinterpret_cast<JobQueue*>(mem);
-			new (&m_globalJobQueues[JOB_TYPE_FOREGROUND]) JobQueue(GLOBAL_JOB_QUEUE_SIZE);
-			new (&m_globalJobQueues[JOB_TYPE_BACKGROUND]) JobQueue(GLOBAL_JOB_QUEUE_SIZE);
+			m_globalJobQueues = m_queueAllocator.allocate(JOB_TYPE_COUNT);
+			m_queueAllocator.construct(&m_globalJobQueues[JOB_TYPE_FOREGROUND], GLOBAL_JOB_QUEUE_SIZE);
+			m_queueAllocator.construct(&m_globalJobQueues[JOB_TYPE_BACKGROUND], GLOBAL_JOB_QUEUE_SIZE);
 		}
 		~JobManager()
 		{
-			std::uint8_t* mem = reinterpret_cast<std::uint8_t*>(m_globalJobQueues);
-			delete[] mem;
+			for (std::size_t i = 0; i < JOB_TYPE_COUNT;++i)
+			{
+				m_queueAllocator.destroy(&m_globalJobQueues[i]);
+			}
+			m_queueAllocator.deallocate(m_globalJobQueues, JOB_TYPE_COUNT);
 		}
 		JobManager(const JobManager&) = delete;
 		JobManager& operator=(const JobManager&) = delete;
@@ -94,8 +96,7 @@ namespace JobSystem
 			if (pJob->HasTargetRunThread())
 			{
 				auto worker = m_workers[GetWorkerIndex(pJob->GetTargetRunThread())];
-				auto it = worker->queues.find(job->GetType());
-				it->second.Push(job);
+				worker->queues[job->GetType()].Push(job);
 			}
 			else
 			{
@@ -206,16 +207,29 @@ namespace JobSystem
 		{
 			Worker(bool bg) : background(bg)
 			{
-				//the allocators and queues must be construct in-place ,use some trick code to achieve it
-				allocators.emplace(std::piecewise_construct, std::forward_as_tuple(JobType::JOB_TYPE_FOREGROUND), std::forward_as_tuple());
-				allocators.emplace(std::piecewise_construct, std::forward_as_tuple(JobType::JOB_TYPE_BACKGROUND), std::forward_as_tuple());
-				queues.emplace(std::piecewise_construct, std::forward_as_tuple(JobType::JOB_TYPE_FOREGROUND), std::forward_as_tuple(LOCAL_JOB_QUEUE_SIZE));
-				queues.emplace(std::piecewise_construct, std::forward_as_tuple(JobType::JOB_TYPE_BACKGROUND), std::forward_as_tuple(LOCAL_JOB_QUEUE_SIZE));
+				allocators = jobAllocator.allocate(JOB_TYPE_COUNT);
+				jobAllocator.construct(&allocators[JOB_TYPE_FOREGROUND]);
+				jobAllocator.construct(&allocators[JOB_TYPE_BACKGROUND]);
+				queues = queueAllocator.allocate(JOB_TYPE_COUNT);
+				queueAllocator.construct(&queues[JOB_TYPE_FOREGROUND], LOCAL_JOB_QUEUE_SIZE);
+				queueAllocator.construct(&queues[JOB_TYPE_BACKGROUND], LOCAL_JOB_QUEUE_SIZE);
+			}
+			~Worker()
+			{
+				for (std::size_t i = 0;i < JOB_TYPE_COUNT;++i)
+				{
+					jobAllocator.destroy(&allocators[i]);
+					queueAllocator.destroy(&queues[i]);
+				}
+				jobAllocator.deallocate(allocators, JOB_TYPE_COUNT);
+				queueAllocator.deallocate(queues, JOB_TYPE_COUNT);
 			}
 			//allocators only access through key ,so it doesn't matter if we use map or unordered map.For performance reason just use unordered map
-			std::unordered_map<JobType, JobAllocator> allocators;
+			JobAllocator* allocators;
 			//we should always schedule foreground job before background job,so use map to ensure order
-			std::map<JobType, JobQueue> queues;
+			JobQueue* queues;
+			std::allocator<JobAllocator> jobAllocator;
+			std::allocator<JobQueue> queueAllocator;
 			//The thread this worker runs.Set by JobManager
 			std::thread::id boundThreadId;
 			bool running{ true };
@@ -231,14 +245,14 @@ namespace JobSystem
 			void DoRun(bool sleep)
 			{
 				bool hasJob{ false };
-				for (auto it = queues.begin(); it != queues.end();++it)
+				for (std::size_t i = 0;i < JOB_TYPE_COUNT;++i)
 				{
-					if (!background && it->first == JobType::JOB_TYPE_BACKGROUND)
+					if (!background && i == JOB_TYPE_BACKGROUND)
 					{
 						continue;
 					}
-					auto queue = &it->second;
-					auto job = GetJob(it->first);
+					auto& queue = queues[i];
+					auto job = GetJob(static_cast<JobType>(i));
 					if (job)
 					{
 						hasJob = true;
@@ -274,8 +288,7 @@ namespace JobSystem
 			{
 				auto& manager = JobManager::Instance();
 				IJob* job{ nullptr };
-				auto it = queues.find(type);
-				job = it->second.Pop();
+				job = queues[type].Pop();
 				if (job)
 					return job;
 				job = manager.m_globalJobQueues[type].Pop();
@@ -364,6 +377,7 @@ namespace JobSystem
 
 		static constexpr std::size_t GLOBAL_JOB_QUEUE_SIZE{ 4096 };
 		JobQueue* m_globalJobQueues;
+		std::allocator<JobQueue> m_queueAllocator;
 		Worker** m_workers;
 		std::size_t m_workersCount;
 		std::mutex m_mtxWakeUp;
