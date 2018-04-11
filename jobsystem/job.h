@@ -39,13 +39,14 @@ namespace JobSystem
 				(std::forward<Function>(f), std::forward<Tuple>(t));
 	}
 
-	enum class JobType
+	enum JobType
 	{
 		//each job type has its own allocation heap and work queue to prevent from race condition
 		//foreground job should be quick task,like render,physics update,animation etc
 		//background job should be task that runs a period of time such as asset streaming serialization/deserialization
-		FOREGROUND,
-		BACKGROUND
+		JOB_TYPE_FOREGROUND,
+		JOB_TYPE_BACKGROUND,
+		JOB_TYPE_COUNT
 	};
 
 	class IJob

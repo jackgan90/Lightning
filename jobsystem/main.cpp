@@ -22,9 +22,9 @@ void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 	std::cout << "Running in thread:" << std::this_thread::get_id() << "current job:" << currentJob << ", jobCount" << jobCount << std::endl;
 
 	JobHandle job = INVALID_JOB_HANDLE;
-	JobType type = JobType::FOREGROUND;
+	JobType type = JobType::JOB_TYPE_FOREGROUND;
 	if (currentJob % 2)
-		type = JobType::BACKGROUND;
+		type = JobType::JOB_TYPE_BACKGROUND;
 	bool isNextLayerJob{ false };
 	if(currentJob < jobCount)
 	{
@@ -64,11 +64,11 @@ void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 void task_generation_job()
 {
 	std::vector<JobHandle> jobs;
-	auto masterJob = JobManager::Instance().AllocateJob(JobType::FOREGROUND, INVALID_JOB_HANDLE, []() {std::cout << "Master job created!" << std::endl; });
+	auto masterJob = JobManager::Instance().AllocateJob(JobType::JOB_TYPE_FOREGROUND, INVALID_JOB_HANDLE, []() {std::cout << "Master job created!" << std::endl; });
 	jobs.push_back(masterJob);
 	for (int i = 0;i < 2;i++)
 	{
-		auto job = JobManager::Instance().AllocateJob(JobType::FOREGROUND, masterJob, job_spawn, 0, 2);
+		auto job = JobManager::Instance().AllocateJob(JobType::JOB_TYPE_FOREGROUND, masterJob, job_spawn, 0, 2);
 		jobs.push_back(job);
 	}
 	for (auto job : jobs)
@@ -137,12 +137,12 @@ private:
 
 void hello()
 {
-	auto masterJob = JobManager::Instance().AllocateJob(JobType::FOREGROUND, INVALID_JOB_HANDLE, []() {});
+	auto masterJob = JobManager::Instance().AllocateJob(JobType::JOB_TYPE_FOREGROUND, INVALID_JOB_HANDLE, []() {});
 	std::vector<JobHandle> jobs;
 	jobs.push_back(masterJob);
 	for (std::size_t i = 0;i < 2;++i)
 	{
-		auto job = JobManager::Instance().AllocateJob(JobType::FOREGROUND, masterJob, task_generation_job);
+		auto job = JobManager::Instance().AllocateJob(JobType::JOB_TYPE_FOREGROUND, masterJob, task_generation_job);
 		jobs.push_back(job);
 	}
 	for (auto handle : jobs)
@@ -151,10 +151,50 @@ void hello()
 
 }
 
+
+void calc_sum(std::uint64_t start, std::uint64_t end, std::uint64_t* result)
+{
+	if (end == start)
+	{
+		*result = end;
+	}
+	else if (end - start == 1)
+	{
+		*result = start + end;
+	}
+	else
+	{
+		auto mid = (start + end) / 2;
+		std::uint64_t* halfResult = new std::uint64_t[2];
+		auto job1 = JobManager::Instance().AllocateJob(JobType::JOB_TYPE_FOREGROUND, INVALID_JOB_HANDLE, calc_sum, start, mid, &halfResult[0]);
+		auto job2 = JobManager::Instance().AllocateJob(JobType::JOB_TYPE_FOREGROUND, INVALID_JOB_HANDLE, calc_sum, mid + 1 > end ? end : mid + 1, end, &halfResult[1]);
+		JobManager::Instance().RunJob(job1);
+		JobManager::Instance().RunJob(job2);
+		JobManager::Instance().WaitForCompletion(job1);
+		JobManager::Instance().WaitForCompletion(job2);
+		*result = halfResult[0] + halfResult[1];
+		delete[] halfResult;
+	}
+}
+
+void start_calc_sum()
+{
+	std::uint64_t end{ 19999 };
+	std::cout << "start to calculate sum from 1 to " << end << std::endl;
+	std::uint64_t* result = new std::uint64_t;
+	auto job = JobManager::Instance().AllocateJob(JobType::JOB_TYPE_FOREGROUND, INVALID_JOB_HANDLE, calc_sum, 1, end, result);
+	JobManager::Instance().RunJob(job);
+	JobManager::Instance().WaitForCompletion(job);
+	std::cout << "The result of the sum is " << *result << std::endl;
+	std::cout << "Finish all jobs.shutting down job system" << std::endl;
+	JobManager::Instance().ShutDown();
+}
+
 int main(int argc, char** argv)
 {
 	mainThreadId = std::this_thread::get_id();
 	JobManager::Instance().Run(hello);
+	//JobManager::Instance().Run(start_calc_sum);
 	system("pause");
 	return 0;
 }

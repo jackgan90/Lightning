@@ -23,14 +23,15 @@ namespace JobSystem
 		}
 		JobManager() : m_shutdown(false), m_sleepThreadCount(0)
 		{
-			m_globalJobQueues.emplace(std::piecewise_construct, 
-				std::forward_as_tuple(JobType::FOREGROUND), std::forward_as_tuple(GLOBAL_JOB_QUEUE_SIZE));
-			m_globalJobQueues.emplace(std::piecewise_construct, 
-				std::forward_as_tuple(JobType::BACKGROUND), std::forward_as_tuple(GLOBAL_JOB_QUEUE_SIZE));
+			std::uint8_t* mem = new std::uint8_t[sizeof(JobQueue) * JOB_TYPE_COUNT];
+			m_globalJobQueues = reinterpret_cast<JobQueue*>(mem);
+			new (&m_globalJobQueues[JOB_TYPE_FOREGROUND]) JobQueue(GLOBAL_JOB_QUEUE_SIZE);
+			new (&m_globalJobQueues[JOB_TYPE_BACKGROUND]) JobQueue(GLOBAL_JOB_QUEUE_SIZE);
 		}
 		~JobManager()
 		{
-
+			std::uint8_t* mem = reinterpret_cast<std::uint8_t*>(m_globalJobQueues);
+			delete[] mem;
 		}
 		JobManager(const JobManager&) = delete;
 		JobManager& operator=(const JobManager&) = delete;
@@ -39,7 +40,7 @@ namespace JobSystem
 		{
 			//according to C++ standard,multiple threads read from std::unordered_map is well defined.So there's
 			//no problem here
-			auto worker = m_workers[std::this_thread::get_id()];
+			auto worker = m_workers[GetWorkerIndex(std::this_thread::get_id())];
 			return worker->allocators[type].Allocate(type, parent, func, std::forward<Args>(args)...);
 		}
 
@@ -52,6 +53,9 @@ namespace JobSystem
 			int coreCount = std::thread::hardware_concurrency();
 			if (coreCount > 0)
 				coreCount--;		//exclude the calling thread
+			m_workers = new Worker*[coreCount + 1];
+			m_workersCount = coreCount + 1;
+			std::memset(m_workers, 0, sizeof(Worker*)*(coreCount + 1));
 			bool background{ true };
 			std::vector<std::thread> threads;
 			//1/4 threads serve as background worker
@@ -64,17 +68,23 @@ namespace JobSystem
 					background = false;
 				}
 				threads.emplace_back(&Worker::Run, worker);
-				m_workers.emplace(threads.back().get_id(), worker);
+				worker->boundThreadId = threads.back().get_id();
+				m_workers[GetWorkerIndex(worker->boundThreadId)] = worker;
 			}
 
 			//Create a worker for main thread
 			auto worker = new Worker(background);
-			m_workers.emplace(std::this_thread::get_id(), worker);
+			worker->boundThreadId = std::this_thread::get_id();
+			m_workers[GetWorkerIndex(worker->boundThreadId)] = worker;
 			worker->Run();
 			m_cvWakeUp.notify_all();
 			std::for_each(threads.begin(), threads.end(), [](auto& thread) {thread.join(); });
-			std::for_each(m_workers.begin(), m_workers.end(), [](auto pair) {delete pair.second; });
-			m_workers.clear();
+			for (std::size_t i = 0;i < m_workersCount;++i)
+			{
+				delete m_workers[i];
+			}
+			delete[] m_workers;
+			m_workers = nullptr;
 		}
 
 		void RunJob(JobHandle handle)
@@ -83,14 +93,13 @@ namespace JobSystem
 			Job* pJob = static_cast<Job*>(job);
 			if (pJob->HasTargetRunThread())
 			{
-				auto worker = m_workers[pJob->GetTargetRunThread()];
+				auto worker = m_workers[GetWorkerIndex(pJob->GetTargetRunThread())];
 				auto it = worker->queues.find(job->GetType());
 				it->second.Push(job);
 			}
 			else
 			{
-				auto it = m_globalJobQueues.find(job->GetType());
-				it->second.Push(job);
+				m_globalJobQueues[job->GetType()].Push(job);
 			}
 			if (m_sleepThreadCount)
 			{
@@ -101,7 +110,7 @@ namespace JobSystem
 
 		void WaitForCompletion(JobHandle handle)
 		{
-			auto worker = m_workers[std::this_thread::get_id()];
+			auto worker = m_workers[GetWorkerIndex(std::this_thread::get_id())];
 			while (true)
 			{
 				IJob* job = JobAllocator::JobAddrFromHandle(handle);
@@ -127,13 +136,20 @@ namespace JobSystem
 		inline std::size_t GetBackgroundWorkersCount()
 		{
 			std::size_t workerCount{ 0 };
-			std::for_each(m_workers.begin(), m_workers.end(), [&workerCount](auto pair) { workerCount += pair.second->background ? 1 : 0; });
+			for (std::size_t i = 0;i < m_workersCount;++i)
+			{
+				auto worker = m_workers[i];
+				if (worker->background)
+				{
+					workerCount++;
+				}
+			}
 			return workerCount;
 		}
 
 		inline std::size_t GetWorkersCount()const
 		{
-			return m_workers.size();
+			return m_workersCount;
 		}
 
 		inline std::thread::id GetCurrentThreadId()const
@@ -151,7 +167,7 @@ namespace JobSystem
 			}
 			else
 			{
-				auto handle = AllocateJob(JobType::FOREGROUND, INVALID_JOB_HANDLE, [this](std::size_t c) {ModifyBackgroundWorkersCount(c); }, count);
+				auto handle = AllocateJob(JobType::JOB_TYPE_FOREGROUND, INVALID_JOB_HANDLE, [this](std::size_t c) {ModifyBackgroundWorkersCount(c); }, count);
 				RunJobOnMainThread(handle);
 			}
 		}
@@ -178,7 +194,10 @@ namespace JobSystem
 			bool expected{ false };
 			if (m_shutdown.compare_exchange_strong(expected, true))
 			{
-				std::for_each(m_workers.begin(), m_workers.end(), [](auto pair) {pair.second->running = false; });
+				for (std::size_t i = 0;i < m_workersCount;++i)
+				{
+					m_workers[i]->running = false;
+				}
 			}
 		}
 	private:
@@ -188,15 +207,17 @@ namespace JobSystem
 			Worker(bool bg) : background(bg)
 			{
 				//the allocators and queues must be construct in-place ,use some trick code to achieve it
-				allocators.emplace(std::piecewise_construct, std::forward_as_tuple(JobType::FOREGROUND), std::forward_as_tuple());
-				allocators.emplace(std::piecewise_construct, std::forward_as_tuple(JobType::BACKGROUND), std::forward_as_tuple());
-				queues.emplace(std::piecewise_construct, std::forward_as_tuple(JobType::FOREGROUND), std::forward_as_tuple(LOCAL_JOB_QUEUE_SIZE));
-				queues.emplace(std::piecewise_construct, std::forward_as_tuple(JobType::BACKGROUND), std::forward_as_tuple(LOCAL_JOB_QUEUE_SIZE));
+				allocators.emplace(std::piecewise_construct, std::forward_as_tuple(JobType::JOB_TYPE_FOREGROUND), std::forward_as_tuple());
+				allocators.emplace(std::piecewise_construct, std::forward_as_tuple(JobType::JOB_TYPE_BACKGROUND), std::forward_as_tuple());
+				queues.emplace(std::piecewise_construct, std::forward_as_tuple(JobType::JOB_TYPE_FOREGROUND), std::forward_as_tuple(LOCAL_JOB_QUEUE_SIZE));
+				queues.emplace(std::piecewise_construct, std::forward_as_tuple(JobType::JOB_TYPE_BACKGROUND), std::forward_as_tuple(LOCAL_JOB_QUEUE_SIZE));
 			}
 			//allocators only access through key ,so it doesn't matter if we use map or unordered map.For performance reason just use unordered map
 			std::unordered_map<JobType, JobAllocator> allocators;
 			//we should always schedule foreground job before background job,so use map to ensure order
 			std::map<JobType, JobQueue> queues;
+			//The thread this worker runs.Set by JobManager
+			std::thread::id boundThreadId;
 			bool running{ true };
 			bool background;
 			//increment each time unable to fetch a job from one of the queues
@@ -212,7 +233,7 @@ namespace JobSystem
 				bool hasJob{ false };
 				for (auto it = queues.begin(); it != queues.end();++it)
 				{
-					if (!background && it->first == JobType::BACKGROUND)
+					if (!background && it->first == JobType::JOB_TYPE_BACKGROUND)
 					{
 						continue;
 					}
@@ -257,8 +278,7 @@ namespace JobSystem
 				job = it->second.Pop();
 				if (job)
 					return job;
-				auto itGlobal = manager.m_globalJobQueues.find(type);
-				job = itGlobal->second.Pop();
+				job = manager.m_globalJobQueues[type].Pop();
 				return job;
 			}
 
@@ -278,15 +298,37 @@ namespace JobSystem
 			}
 		};
 
+		std::size_t GetWorkerIndex(const std::thread::id& threadId)
+		{
+			std::hash<std::thread::id> hasher;
+			auto hashValue = hasher(threadId);
+			std::int32_t index = static_cast<std::int32_t>(hashValue % m_workersCount);
+			std::int32_t backIndex = index;
+			while (backIndex < static_cast<std::int32_t>(m_workersCount) && m_workers[backIndex] && m_workers[backIndex]->boundThreadId != threadId)
+			{
+				++backIndex;
+			}
+			if (backIndex < static_cast<std::int32_t>(m_workersCount))
+			{
+				return backIndex;
+			}
+			std::int32_t frontIndex = index - 1;
+			while (frontIndex >= 0 && m_workers[frontIndex] && m_workers[frontIndex]->boundThreadId != threadId)
+			{
+				--frontIndex;
+			}
+			return frontIndex;
+		}
+
 		void ModifyBackgroundWorkersCount(std::size_t count)
 		{
 			std::vector<Worker*> foregroundWorkers;
 			std::vector<Worker*> backgroundWorkers;
-			if (count > m_workers.size())
-				count = m_workers.size();
-			for (auto it = m_workers.begin();it != m_workers.end();++it)
+			if (count > m_workersCount)
+				count = m_workersCount;
+			for (std::size_t i = 0;i < m_workersCount;++i)
 			{
-				auto pWorker = it->second;
+				auto pWorker = m_workers[i];
 				if (!pWorker->background)
 				{
 					foregroundWorkers.push_back(pWorker);
@@ -321,8 +363,9 @@ namespace JobSystem
 		}
 
 		static constexpr std::size_t GLOBAL_JOB_QUEUE_SIZE{ 4096 };
-		std::unordered_map<JobType, JobQueue> m_globalJobQueues;
-		std::unordered_map<std::thread::id, Worker*> m_workers;
+		JobQueue* m_globalJobQueues;
+		Worker** m_workers;
+		std::size_t m_workersCount;
 		std::mutex m_mtxWakeUp;
 		std::condition_variable m_cvWakeUp;
 		std::size_t m_sleepThreadCount;
