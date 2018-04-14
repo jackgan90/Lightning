@@ -44,10 +44,14 @@ namespace JobSystem
 			auto res = m_queue.enqueue(job);
 			assert(res);
 #else
-			auto slot = m_tailAnchor.fetch_add(1, std::memory_order_release);
+			auto slot = m_tailAnchor.fetch_add(1, std::memory_order_relaxed);
 			AddJobToQueue(slot, job);
-			//m_tail.fetch_add(1, std::memory_order_relaxed);
-			while (!m_tail.compare_exchange_strong(slot, slot + 1));
+			do 
+			{
+				auto expected = slot;
+				if (m_tail.compare_exchange_strong(expected, slot + 1, std::memory_order_relaxed))
+					break;
+			} while (true);
 #endif
 		}
 		IJob* Pop()
@@ -68,9 +72,9 @@ namespace JobSystem
 				auto head = m_head.load(std::memory_order_relaxed);
 				if (tail > head)
 				{
-					auto job = RemoveJobFromQueue(head);
 					if (m_head.compare_exchange_strong(head, head + 1, std::memory_order_relaxed))
 					{
+						auto job = RemoveJobFromQueue(head);
 #ifdef JOB_ASSERT
 						assert(job);
 #endif
