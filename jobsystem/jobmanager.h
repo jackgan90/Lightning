@@ -21,19 +21,12 @@ namespace JobSystem
 			static JobManager instance;
 			return instance;
 		}
-		JobManager() : m_shutdown(false), m_sleepThreadCount(0)
+		JobManager() : m_globalJobQueues(nullptr), m_shutdown(false), m_sleepThreadCount(0)
 		{
-			m_globalJobQueues = m_queueAllocator.allocate(JOB_TYPE_COUNT);
-			m_queueAllocator.construct(&m_globalJobQueues[JOB_TYPE_FOREGROUND], GLOBAL_JOB_QUEUE_SIZE);
-			m_queueAllocator.construct(&m_globalJobQueues[JOB_TYPE_BACKGROUND], GLOBAL_JOB_QUEUE_SIZE);
 		}
 		~JobManager()
 		{
-			for (std::size_t i = 0; i < JOB_TYPE_COUNT;++i)
-			{
-				m_queueAllocator.destroy(&m_globalJobQueues[i]);
-			}
-			m_queueAllocator.deallocate(m_globalJobQueues, JOB_TYPE_COUNT);
+			DestroyGlobalJobQueues();
 		}
 		JobManager(const JobManager&) = delete;
 		JobManager& operator=(const JobManager&) = delete;
@@ -47,9 +40,12 @@ namespace JobSystem
 		}
 
 		//Only main thread can call run on JobSystem
-		void Run(std::function<void()> initFunc)
+		void Run(std::function<void()> initFunc, std::size_t jobQueueSize)
 		{
 			//The calling thread is considered to be main thread.
+			m_globalJobQueues = m_queueAllocator.allocate(JOB_TYPE_COUNT);
+			m_queueAllocator.construct(&m_globalJobQueues[JOB_TYPE_FOREGROUND], jobQueueSize);
+			m_queueAllocator.construct(&m_globalJobQueues[JOB_TYPE_BACKGROUND], jobQueueSize);
 			m_mainThreadId = std::this_thread::get_id();
 			m_initFunc = initFunc;
 			int coreCount = std::thread::hardware_concurrency();
@@ -64,7 +60,7 @@ namespace JobSystem
 			for (int i = 0;i < coreCount;++i)
 			{
 				//Create per-thread resource for worker threads.The calling thread is also considered a worker thread
-				auto worker = new Worker(background);
+				auto worker = new Worker(background, jobQueueSize);
 				if (i >= (coreCount + 1) / 4 - 1)
 				{
 					background = false;
@@ -75,7 +71,7 @@ namespace JobSystem
 			}
 
 			//Create a worker for main thread
-			auto worker = new Worker(background);
+			auto worker = new Worker(background, jobQueueSize);
 			worker->boundThreadId = std::this_thread::get_id();
 			m_workers[GetWorkerIndex(worker->boundThreadId)] = worker;
 			worker->Run();
@@ -87,6 +83,7 @@ namespace JobSystem
 			}
 			delete[] m_workers;
 			m_workers = nullptr;
+			DestroyGlobalJobQueues();
 		}
 
 		void RunJob(JobHandle handle)
@@ -205,14 +202,14 @@ namespace JobSystem
 		friend struct Worker;
 		struct Worker
 		{
-			Worker(bool bg) : background(bg)
+			Worker(bool bg, std::size_t localJobQueueSize) : background(bg)
 			{
 				allocators = jobAllocator.allocate(JOB_TYPE_COUNT);
 				jobAllocator.construct(&allocators[JOB_TYPE_FOREGROUND]);
 				jobAllocator.construct(&allocators[JOB_TYPE_BACKGROUND]);
 				queues = queueAllocator.allocate(JOB_TYPE_COUNT);
-				queueAllocator.construct(&queues[JOB_TYPE_FOREGROUND], LOCAL_JOB_QUEUE_SIZE);
-				queueAllocator.construct(&queues[JOB_TYPE_BACKGROUND], LOCAL_JOB_QUEUE_SIZE);
+				queueAllocator.construct(&queues[JOB_TYPE_FOREGROUND], localJobQueueSize);
+				queueAllocator.construct(&queues[JOB_TYPE_BACKGROUND], localJobQueueSize);
 			}
 			~Worker()
 			{
@@ -239,7 +236,6 @@ namespace JobSystem
 			//thus sleep this thread for a while
 			std::size_t hangCounter{ 0 };
 			static constexpr std::size_t HANG_SLEEP_THRESHOLD{ 100 };
-			static constexpr std::size_t LOCAL_JOB_QUEUE_SIZE{ 2048 };
 			static constexpr std::size_t MAIN_THREAD_SLEEP_MILLSEC{ 100 };
 
 			void DoRun(bool sleep)
@@ -375,7 +371,19 @@ namespace JobSystem
 			}
 		}
 
-		static constexpr std::size_t GLOBAL_JOB_QUEUE_SIZE{ 4096 };
+		void DestroyGlobalJobQueues()
+		{
+			if (m_globalJobQueues)
+			{
+				for (std::size_t i = 0; i < JOB_TYPE_COUNT;++i)
+				{
+					m_queueAllocator.destroy(&m_globalJobQueues[i]);
+				}
+				m_queueAllocator.deallocate(m_globalJobQueues, JOB_TYPE_COUNT);
+				m_globalJobQueues = nullptr;
+			}
+		}
+
 		JobQueue* m_globalJobQueues;
 		std::allocator<JobQueue> m_queueAllocator;
 		Worker** m_workers;

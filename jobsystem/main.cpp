@@ -194,8 +194,8 @@ void start_calc_sum()
 int main(int argc, char** argv)
 {
 	mainThreadId = std::this_thread::get_id();
-	JobManager::Instance().Run(hello);
-	//JobManager::Instance().Run(start_calc_sum);
+	JobManager::Instance().Run(hello, 8192);
+	//JobManager::Instance().Run(start_calc_sum, 8192);
 	/*
 	constexpr int max_int = 99999999;
 	std::atomic<int> ai(0);
