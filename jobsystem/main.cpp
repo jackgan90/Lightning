@@ -47,6 +47,7 @@ void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 		JobManager::Instance().RunJob(job);
 		otherThreadJobCount++;
 	}
+	/*
 	auto newJobCount = dist(engine) % 100;
 	for (int i = 0;i < newJobCount;++i)
 	{
@@ -58,7 +59,7 @@ void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 	for (int i = 0;i < loopCount;++i)
 	{
 		a += i;
-	}
+	}*/
 }
 
 void task_generation_job()
@@ -195,6 +196,29 @@ int main(int argc, char** argv)
 	mainThreadId = std::this_thread::get_id();
 	JobManager::Instance().Run(hello);
 	//JobManager::Instance().Run(start_calc_sum);
+	/*
+	constexpr int max_int = 99999999;
+	std::atomic<int> ai(0);
+	int i = 0;
+	auto time_before = std::chrono::high_resolution_clock::now();
+	for (; i < max_int; ++i);
+	auto time_after = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(time_after - time_before);
+	std::cout << "Time increment normal int is " << duration.count() << std::endl;
+
+	time_before = std::chrono::high_resolution_clock::now();
+	for (; ai < max_int;ai.fetch_add(1, std::memory_order_relaxed));
+	time_after = std::chrono::high_resolution_clock::now();
+	duration = std::chrono::duration_cast<std::chrono::milliseconds>(time_after - time_before);
+	std::cout << "Time increment atomic relaxed int is " << duration.count() << std::endl;
+
+	ai = 0;
+	time_before = std::chrono::high_resolution_clock::now();
+	for (; ai < max_int;ai.fetch_add(1, std::memory_order_seq_cst));
+	time_after = std::chrono::high_resolution_clock::now();
+	duration = std::chrono::duration_cast<std::chrono::milliseconds>(time_after - time_before);
+	std::cout << "Time increment atomic sequence int is " << duration.count() << std::endl;
+	*/
 	system("pause");
 	return 0;
 }

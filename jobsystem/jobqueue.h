@@ -72,9 +72,9 @@ namespace JobSystem
 				auto head = m_head.load(std::memory_order_relaxed);
 				if (tail > head)
 				{
+					auto job = RemoveJobFromQueue(head);
 					if (m_head.compare_exchange_strong(head, head + 1, std::memory_order_relaxed))
 					{
-						auto job = RemoveJobFromQueue(head);
 #ifdef JOB_ASSERT
 						assert(job);
 #endif
@@ -93,6 +93,16 @@ namespace JobSystem
 		{
 #ifdef JOB_ASSERT
 			assert(job);
+			//check if this write may overwrite any existing job that has not scheduled yet
+			//The overwrite happens when the job queue is considered full (too many jobs crammed in
+			//queue and CPU has no ability to finish them in time.Normally applications should decide
+			//the queue size before hand)
+			auto head = m_head.load(std::memory_order_relaxed);
+			auto readGeneration = head / m_queueSize;
+			auto readIndex = head % m_queueSize;
+			auto writeGeneration = index / m_queueSize;
+			auto writeIndex = index % m_queueSize;
+			assert(writeGeneration == readGeneration || (writeGeneration - readGeneration == 1 && readIndex >= writeIndex));
 #endif
 			m_queue[index % m_queueSize] = job;
 		}
