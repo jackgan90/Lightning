@@ -74,8 +74,7 @@ namespace JobSystem
 			JobPool(std::size_t size, bool primary):
 				allocatedJobCount(0), 
 				pos(0),
-				locked(false),
-				isPrimary(primary)
+				locked(false)
 			{
 				finishedJobCount = new std::atomic<std::size_t>(0);
 				buffer = new std::uint8_t[size];
@@ -103,7 +102,6 @@ namespace JobSystem
 				pos = pool.pos;
 				locked = pool.locked;
 				allocatedJobCount = pool.allocatedJobCount;
-				isPrimary = pool.isPrimary;
 				pool.buffer = nullptr;
 			}
 			JobPool& operator=(JobPool&& pool)noexcept
@@ -116,7 +114,6 @@ namespace JobSystem
 					pos = pool.pos;
 					locked = pool.locked;
 					allocatedJobCount = pool.allocatedJobCount;
-					isPrimary = pool.isPrimary;
 					pool.buffer = nullptr;
 				}
 				return *this;
@@ -126,7 +123,6 @@ namespace JobSystem
 			std::size_t allocatedJobCount;
 			std::size_t pos;
 			bool locked;
-			bool isPrimary;
 		};
 		void ClearAndAllocatePools()
 		{
@@ -138,18 +134,10 @@ namespace JobSystem
 				auto finishedCount = pool.finishedJobCount->load(std::memory_order_relaxed);
 				if (pool.locked && finishedCount >= pool.allocatedJobCount)
 				{
-					if (pool.isPrimary)	//primary pool
-					{
-						pool.finishedJobCount->store(0, std::memory_order_relaxed);
-						pool.locked = false;
-						pool.pos = 0;
-						pool.allocatedJobCount = 0;
-					}
-					else
-					{
-						it = m_pools.erase(it);
-						continue;
-					}
+					pool.finishedJobCount->store(0, std::memory_order_relaxed);
+					pool.locked = false;
+					pool.pos = 0;
+					pool.allocatedJobCount = 0;
 				}
 				++it;
 			}
@@ -162,7 +150,7 @@ namespace JobSystem
 				for (auto it = m_pools.begin(); it != m_pools.end();++it)
 				{
 					auto& pool = *it;
-					if (!pool.locked && pool.isPrimary && pool.pos == 0 && pool.allocatedJobCount == 0)
+					if (!pool.locked &&  pool.pos == 0 && pool.allocatedJobCount == 0)
 					{
 						itEmpty = it;
 						break;
@@ -178,7 +166,7 @@ namespace JobSystem
 				}
 			}
 		}
-		static constexpr std::size_t PoolSize = 256 * 1024;
+		static constexpr std::size_t PoolSize = 1024 * 64;
 		static constexpr std::uint8_t Magic = 0xff;
 		static constexpr std::size_t Alignment = 16;
 		std::vector<JobPool> m_pools;

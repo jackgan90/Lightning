@@ -47,7 +47,7 @@ void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 		JobManager::Instance().RunJob(job);
 		otherThreadJobCount++;
 	}
-	/*
+	
 	auto newJobCount = dist(engine) % 100;
 	for (int i = 0;i < newJobCount;++i)
 	{
@@ -59,7 +59,7 @@ void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 	for (int i = 0;i < loopCount;++i)
 	{
 		a += i;
-	}*/
+	}
 }
 
 void task_generation_job()
