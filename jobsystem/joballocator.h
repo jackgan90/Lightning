@@ -8,7 +8,7 @@ namespace JobSystem
 	{
 	public:
 		friend class JobManager;
-		JobAllocator()
+		JobAllocator() : m_currentPoolIndex(0)
 		{
 			//Create two primary pools,these pools are not deleted
 			//during the lifetime of JobAllocator
@@ -29,14 +29,14 @@ namespace JobSystem
 		{
 			using JobType = JobImpl<Function, decltype(std::make_tuple(std::forward<Args>(args)...))>;
 			static_assert(sizeof(JobType) + Alignment <= PoolSize, "job object is too large!");
-			JobPool* pool = &m_pools.back();
+			JobPool* pool = &m_pools[m_currentPoolIndex];
 			auto bufferStart = reinterpret_cast<std::uint64_t>(pool->buffer);
 			auto alignAddr = NextAlignAddr(bufferStart + pool->pos) - bufferStart;
 			if (alignAddr + sizeof(JobType) > PoolSize)
 			{
 				pool->locked = true;
 				ClearAndAllocatePools();
-				pool = &m_pools.back();
+				pool = &m_pools[m_currentPoolIndex];
 				bufferStart = reinterpret_cast<std::uint64_t>(pool->buffer);
 				alignAddr = NextAlignAddr(bufferStart + pool->pos) - bufferStart;
 			}
@@ -127,10 +127,10 @@ namespace JobSystem
 		void ClearAndAllocatePools()
 		{
 			//clear full pool if necessary.The primary pools are not deleted
-			std::size_t i{ 0 };
-			for (auto it = m_pools.begin();it != m_pools.end();++i)
+			int firstEmptyPool = -1;
+			for (std::size_t i = 0;i < m_pools.size();++i)
 			{
-				auto& pool = *it;
+				auto& pool = m_pools[i];
 				auto finishedCount = pool.finishedJobCount->load(std::memory_order_relaxed);
 				if (pool.locked && finishedCount >= pool.allocatedJobCount)
 				{
@@ -139,36 +139,29 @@ namespace JobSystem
 					pool.pos = 0;
 					pool.allocatedJobCount = 0;
 				}
-				++it;
-			}
-			//try to allocate new pool if requirements are not met
-			auto& pool = m_pools.back();
-			if (pool.pos != 0)
-			{
-				//try to swap an empty primary pool to back
-				auto itEmpty = m_pools.end();
-				for (auto it = m_pools.begin(); it != m_pools.end();++it)
+				if (firstEmptyPool == -1)
 				{
-					auto& pool = *it;
-					if (!pool.locked &&  pool.pos == 0 && pool.allocatedJobCount == 0)
+					if (!pool.locked && pool.pos == 0 && pool.allocatedJobCount == 0)
 					{
-						itEmpty = it;
-						break;
+						firstEmptyPool = static_cast<int>(i);
 					}
 				}
-				if (itEmpty != m_pools.end())
-				{
-					std::iter_swap(itEmpty, m_pools.begin() + m_pools.size() - 1);
-				}
-				else
-				{
-					m_pools.emplace_back(PoolSize, false);
-				}
+			}
+			//try to allocate new pool if requirements are not met
+			if (firstEmptyPool == -1)
+			{
+				m_pools.emplace_back(PoolSize, false);
+				m_currentPoolIndex = m_pools.size() - 1;
+			}
+			else
+			{
+				m_currentPoolIndex = static_cast<std::size_t>(firstEmptyPool);
 			}
 		}
 		static constexpr std::size_t PoolSize = 1024 * 64;
 		static constexpr std::uint8_t Magic = 0xff;
 		static constexpr std::size_t Alignment = 16;
 		std::vector<JobPool> m_pools;
+		std::size_t m_currentPoolIndex;
 	};
 }
