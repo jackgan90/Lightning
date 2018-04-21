@@ -315,6 +315,9 @@ namespace
 		Matrix4x4f fm4{ 5, 0, -1, 1, 4, 1, -1, 1, 2, -1, 3, -1, 1, -1, 0, 2 };
 		REQUIRE(fm4.Invertible());
 
+		Matrix<float, 5, 5> fmm5{ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1};
+		REQUIRE(fmm5.Invertible());
+
 		auto inv_fm2 = fm2.Inverse();
 		REQUIRE(inv_fm2 * fm2 == Matrix2x2f::Identity());
 

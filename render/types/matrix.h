@@ -28,11 +28,11 @@ namespace LightningGE
 				Set(data); 
 			}
 			template<typename ScalarPointerType, typename SizeType, typename = 
-				typename std::enable_if<std::is_integral<typename std::decay<SizeType>::type>::value	//ensure the second argument is an integral type
-				&& std::is_pointer<typename std::decay<ScalarPointerType>::type>::value	//ensure the first argument is a pointer
-				&& std::is_convertible<typename std::decay<typename std::remove_pointer<ScalarPointerType>::type>::type, //ensure data pointed to by first argument can be converted to _Scalar
-				typename std::decay<_Scalar>::type>::value
-				>::type
+				std::enable_if_t<std::is_integral<std::decay_t<SizeType>>::value	//ensure the second argument is an integral type
+				&& std::is_pointer<std::decay_t<ScalarPointerType>>::value	//ensure the first argument is a pointer
+				&& std::is_convertible<std::decay_t<std::remove_pointer_t<ScalarPointerType>>, //ensure data pointed to by first argument can be converted to _Scalar
+				std::decay_t<_Scalar>>::value
+				>
 			>
 			Matrix(const ScalarPointerType arr, const SizeType size)
 			{
@@ -49,7 +49,7 @@ namespace LightningGE
 				SetInternal<S, _Rows, _Columns>(std::move(m));
 			}
 			template<typename S, int R, template<typename, int> typename _Vector1, template<typename, int> typename... _Vector2>
-			typename std::enable_if<std::is_base_of<VectorBaseType, typename std::decay<_Vector1<S, R>>::type>::value>::type
+			std::enable_if_t<std::is_base_of<VectorBaseType, std::decay_t<_Vector1<S, R>>>::value>
 			SetColumns(int i, const _Vector1<S, R>& col, const _Vector2<S, R>&... columns)
 			{
 				m_value.col(i) = col.m_value;
@@ -57,7 +57,7 @@ namespace LightningGE
 			}
 
 			template<typename S, int R, template<typename, int> typename _Vector1, template<typename, int> typename... _Vector2>
-			typename std::enable_if<std::is_base_of<VectorBaseType, typename std::decay<_Vector1<S, R>>::type>::value>::type
+			std::enable_if_t<std::is_base_of<VectorBaseType, std::decay_t<_Vector1<S, R>>>::value>
 			SetRows(int i, const _Vector1<S, R>& col, const _Vector2<S, R>&... rows)
 			{
 				m_value.row(i) = col.m_value;
@@ -139,10 +139,10 @@ namespace LightningGE
 			}
 			template<typename Iterable>
 			auto Set(const Iterable& data) ->
-				typename std::enable_if<
-				std::is_convertible<typename std::decay<decltype(*std::cbegin(data))>::type, typename std::decay<_Scalar>::type>::value
-				&& std::is_convertible<typename std::decay<decltype(*std::cend(data))>::type, typename std::decay<_Scalar>::type>::value
-				>::type
+				std::enable_if_t<
+				std::is_convertible<std::decay_t<decltype(*std::cbegin(data))>, std::decay_t<_Scalar>>::value
+				&& std::is_convertible<std::decay_t<decltype(*std::cend(data))>, std::decay_t<_Scalar>>::value
+				>
 			{
 				int idx = 0;
 				for (auto it = std::cbegin(data); it != std::cend(data);++it)
@@ -153,14 +153,14 @@ namespace LightningGE
 			}
 			template<typename ScalarPointerType, typename SizeType>
 			auto Set(const ScalarPointerType arr, const SizeType size) ->
-				typename std::enable_if<std::is_integral<typename std::decay<SizeType>::type>::value	//ensure the second argument is an integral type
-				&& std::is_pointer<typename std::decay<ScalarPointerType>::type>::value	//ensure the first argument is a pointer
-				&& std::is_convertible<typename std::decay<typename std::remove_pointer<ScalarPointerType>::type>::type, //ensure data pointed to by first argument can be converted to _Scalar
-				typename std::decay<_Scalar>::type>::value
-				>::type
+				std::enable_if_t<std::is_integral<std::decay_t<SizeType>>::value	//ensure the second argument is an integral type
+				&& std::is_pointer<std::decay_t<ScalarPointerType>>::value	//ensure the first argument is a pointer
+				&& std::is_convertible<std::decay_t<std::remove_pointer_t<ScalarPointerType>>, //ensure data pointed to by first argument can be converted to _Scalar
+				std::decay_t<_Scalar>>::value
+				>
 			{
 				int idx = 0;
-				for (typename std::decay<SizeType>::type i = 0;i < size;++i)
+				for (std::decay_t<SizeType> i = 0;i < size;++i)
 				{
 					m_value(idx % Rows, idx / Rows) = arr[i];
 					++idx;
@@ -169,9 +169,9 @@ namespace LightningGE
 			_Scalar& operator()(const int row, const int column) { return m_value(row, column); }
 			_Scalar operator()(const int row, const int column)const { return m_value(row, column); }
 			template<int _Rows = Rows>
-			bool Invertible(typename std::enable_if<(_Rows <= 4), void*>::type = nullptr)const;
+			bool Invertible(std::enable_if_t<(_Rows <= 4), void*> = nullptr)const;
 			template<int _Rows = Rows>
-			bool Invertible(typename std::enable_if<(_Rows > 4), void*>::type = nullptr)const;
+			bool Invertible(std::enable_if_t<(_Rows > 4), void*> = nullptr)const;
 			Matrix<_Scalar, Rows, Columns> Inverse()const
 			{
 				static_assert(Rows == Columns, "Only square matrices are invertible!");
@@ -197,48 +197,45 @@ namespace LightningGE
 			Matrix(const InternalMatrixType& m):m_value(m){}
 			Matrix(InternalMatrixType&& m):m_value(std::move(m)){}
 			template<typename S, int _Rows, int _Columns, typename T>
-			auto SetInternal(T&& m) ->
-				typename std::enable_if<std::is_convertible<
-					typename std::decay<T>::type,
-					Matrix<typename std::decay<S>::type, _Rows, Columns>>::value
-				>::type
+			auto SetInternal(T&& m) -> 
+				std::enable_if_t<std::is_convertible< std::decay_t<T>, Matrix<std::decay_t<S>, _Rows, Columns>>::value>
 			{
 				SetInternalImpl<S, _Rows, _Columns>(std::forward<T>(m));
 			}
 
 			template<typename S, int _Rows, int _Columns>
 			auto SetInternalImpl(Matrix<S, _Rows, _Columns>&& m) ->
-				typename std::enable_if<!(_Rows == Rows && _Columns == Columns) && (_Rows <= Rows && _Columns <= Columns)>::type
+				std::enable_if_t<!(_Rows == Rows && _Columns == Columns) && (_Rows <= Rows && _Columns <= Columns)>
 			{
 				m_value.block<_Rows, _Columns>(0, 0) = std::move(m.m_value);
 			}
 			template<typename S, int _Rows, int _Columns>
 			auto SetInternalImpl(const Matrix<S, _Rows, _Columns>& m) ->
-				typename std::enable_if<!(_Rows == Rows && _Columns == Columns) && (_Rows <= Rows && _Columns <= Columns)>::type
+				std::enable_if_t<!(_Rows == Rows && _Columns == Columns) && (_Rows <= Rows && _Columns <= Columns)>
 			{
 				m_value.block<_Rows, _Columns>(0, 0) = m.m_value;
 			}
 			template<typename S, int _Rows, int _Columns>
 			auto SetInternalImpl(Matrix<S, _Rows, _Columns>&& m) ->
-				typename std::enable_if<!(_Rows == Rows && _Columns == Columns) && (_Rows >= Rows && _Columns >= Columns)>::type
+				std::enable_if_t<!(_Rows == Rows && _Columns == Columns) && (_Rows >= Rows && _Columns >= Columns)>
 			{
 				m_value = std::move(m.m_value.block<Rows, Columns>(0, 0));
 			}
 			template<typename S, int _Rows, int _Columns>
 			auto SetInternalImpl(const Matrix<S, _Rows, _Columns>& m) ->
-				typename std::enable_if<(!(_Rows == Rows && _Columns == Columns) && _Rows >= Rows && _Columns >= Columns)>::type
+				std::enable_if_t<(!(_Rows == Rows && _Columns == Columns) && _Rows >= Rows && _Columns >= Columns)>
 			{
 				m_value = m.m_value.block<Rows, Columns>(0, 0);
 			}
 			template<typename S, int _Rows, int _Columns>
 			auto SetInternalImpl(const Matrix<S, _Rows, _Columns>& m) ->
-				typename std::enable_if<(_Rows == Rows && _Columns == Columns)>::type
+				std::enable_if_t<(_Rows == Rows && _Columns == Columns)>
 			{
 				m_value = m.m_value;
 			}
 			template<typename S, int _Rows, int _Columns>
 			auto SetInternalImpl(Matrix<S, _Rows, _Columns>&& m) ->
-				typename std::enable_if<(_Rows == Rows && _Columns == Columns)>::type
+				std::enable_if_t<(_Rows == Rows && _Columns == Columns)>
 			{
 				m_value = std::move(m.m_value);
 			}
@@ -249,7 +246,7 @@ namespace LightningGE
 
 		template<typename _Scalar, int Rows, int Columns>
 		template<int _Rows>
-		bool Matrix<_Scalar, Rows, Columns>::Invertible(typename std::enable_if<(_Rows <= 4), void*>::type)const
+		bool Matrix<_Scalar, Rows, Columns>::Invertible(std::enable_if_t<(_Rows <= 4), void*>)const
 		{
 			if (Rows != Columns)
 				return false;
@@ -263,7 +260,7 @@ namespace LightningGE
 
 		template<typename _Scalar, int Rows, int Columns>
 		template<int _Rows>
-		bool Matrix<_Scalar, Rows, Columns>::Invertible(typename std::enable_if < (_Rows > 4), void*>::type)const
+		bool Matrix<_Scalar, Rows, Columns>::Invertible(std::enable_if_t< (_Rows > 4), void*>)const
 		{
 			if (Rows != Columns)
 				return false;
