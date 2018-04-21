@@ -1,4 +1,5 @@
 #include "camera.h"
+#include "renderer.h"
 #define EPSILON 0.0001
 
 namespace LightningGE
@@ -61,8 +62,11 @@ namespace LightningGE
 
 		void Camera::LookAt(const Vector3f& worldPosition, const Vector3f& worldUp)
 		{
+			auto normalizedUp = worldUp.Normalized();
 			m_zAxis = m_worldPosition - worldPosition;
-			m_xAxis = worldUp.Cross(m_zAxis);
+			m_zAxis.Normalize();
+			m_xAxis = normalizedUp.Cross(m_zAxis);
+			m_xAxis.Normalize();
 			m_yAxis = m_zAxis.Cross(m_xAxis);
 			UpdateViewMatrix();
 		}
@@ -97,22 +101,28 @@ namespace LightningGE
 
 		void Camera::UpdateProjectionMatrix()
 		{
+			m_projectionMatrix.SetZero();
+			auto ndcNear = Render::Renderer::Instance()->GetNDCNearPlane();
 			switch (m_type)
 			{
 			case CameraType::Perspective:
+			{
 				m_projectionMatrix(0, 0) = static_cast<float>(1.0 / (tan(m_fov / 2.0) * m_aspectRatio));
 				m_projectionMatrix(1, 1) = static_cast<float>(1.0 / tan(m_fov / 2.0));
-				m_projectionMatrix(2, 2) = -(m_farPlane + m_nearPlane) / (m_farPlane - m_nearPlane);
-				m_projectionMatrix(2, 3) = -2 * m_nearPlane * m_farPlane / (m_farPlane - m_nearPlane);
+				m_projectionMatrix(2, 2) = (m_nearPlane * ndcNear - m_farPlane) / (m_farPlane - m_nearPlane);
+				m_projectionMatrix(2, 3) = (ndcNear - 1.0f) * m_nearPlane * m_farPlane / (m_farPlane - m_nearPlane);
 				m_projectionMatrix(3, 2) = -1;
 				break;
+			}
 			case CameraType::Orthographic:
+			{
 				m_projectionMatrix(0, 0) = static_cast<float>(1.0 / (tan(m_fov / 2.0) * m_aspectRatio * m_nearPlane));
 				m_projectionMatrix(1, 1) = static_cast<float>(1.0 / (tan(m_fov / 2.0) * m_nearPlane));
 				m_projectionMatrix(2, 2) = static_cast<float>(-2.0 / (m_farPlane - m_nearPlane));
 				m_projectionMatrix(2, 3) = -(m_farPlane + m_nearPlane) / (m_farPlane - m_nearPlane);
 				m_projectionMatrix(3, 2) = 0;
 				break;
+			}
 			default:
 				break;
 			}

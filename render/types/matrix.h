@@ -121,6 +121,10 @@ namespace LightningGE
 				static_assert(Rows == Columns, "Only square matrices can transpose in place!");
 				m_value.transposeInPlace();
 			}
+			void SetZero()
+			{
+				m_value.setZero();
+			}
 			template<int SubRows, int SubColumns> 
 			Matrix<_Scalar, SubRows, SubColumns> SubMatrix(const int r, const int c)
 			{

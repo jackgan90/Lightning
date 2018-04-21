@@ -46,6 +46,11 @@ namespace LightningGE
 			virtual std::size_t GetFrameResourceIndex()const = 0;
 			virtual void AddRenderPass(RenderPassType type) = 0;
 			virtual void Draw(const RenderItem& item) = 0;
+			//get near plane value corresponding to normalized device coordinate
+			//different render API may have different near plane definition
+			//for example OpenGL clips coordinates to [-1, 1] and DirectX clips coordinates to [0, 1]
+			//This method returns 0 for DirectX and -1 for OpenGL
+			virtual float GetNDCNearPlane()const = 0;
 		};
 	}
 }

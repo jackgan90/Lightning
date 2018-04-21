@@ -41,7 +41,7 @@ namespace LightningGE
 			auto cube = std::make_shared<Scene::Cube>(0.5);
 			auto camera = scene->GetMainCamera();
 			camera->MoveTo(Render::Vector3f({2.0f, 2.0f, 2.0f}));
-			//camera->LookAt(Render::Vector3f({ 0.0f, 0.0f, 0.0f }));
+			camera->LookAt(Render::Vector3f({ 0.0f, 0.0f, 0.0f }));
 			scene->AddDrawable(cube);
 			//End of scene creation
 			RegisterWindowHandlers();

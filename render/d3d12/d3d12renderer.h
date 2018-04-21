@@ -31,6 +31,7 @@ namespace LightningGE
 			D3D12Renderer(const SharedWindowPtr& pWindow, const SharedFileSystemPtr& fs);
 			~D3D12Renderer()override;
 			IWindow* GetOutputWindow()override { return m_outputWindow.get(); }
+			float GetNDCNearPlane()const override { return 0.0f; }
 		protected:
 			void BeginFrame()override;
 			void DoFrame()override;

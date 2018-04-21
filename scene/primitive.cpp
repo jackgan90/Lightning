@@ -107,7 +107,7 @@ namespace LightningGE
 			auto device = Renderer::Instance()->GetDevice();
 			m_renderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::VERTEX));
 			m_renderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::FRAGMENT));
-			m_renderItem.transform = Render::Transform(Render::Vector3f({ 0.0f, 0.0f, -1.0f }), Render::Vector3f({ 2.0f, 2.0f, 2.0f }));
+			m_renderItem.transform = Render::Transform(Render::Vector3f({ 0.0f, 0.0f, 0.0f }), Render::Vector3f({ 1.0f, 1.0f, 1.0f }));
 		}
 
 		Cube::~Cube()
