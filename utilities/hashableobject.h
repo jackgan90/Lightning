@@ -1,7 +1,7 @@
 #pragma once
 #include "utilitiesexportdef.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Utility
 	{

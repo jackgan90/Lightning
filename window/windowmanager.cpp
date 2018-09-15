@@ -1,9 +1,9 @@
 #include "windowmanager.h"
-#ifdef LIGHTNINGGE_WIN32
+#ifdef LIGHTNING_WIN32
 #include "winwindow.h"
 #endif
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace WindowSystem
 	{
@@ -14,7 +14,7 @@ namespace LightningGE
 
 		SharedWindowPtr WindowManager::MakeWindow()
 		{
-		#ifdef LIGHTNINGGE_WIN32
+		#ifdef LIGHTNING_WIN32
 			m_windows.insert(std::make_pair(m_currentID++, SharedWindowPtr(new WinWindow())));
 			return m_windows[m_currentID-1];
 		#endif

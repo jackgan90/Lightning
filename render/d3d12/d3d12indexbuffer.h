@@ -2,11 +2,11 @@
 #include "d3d12bufferresource.h"
 #include "indexbuffer.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNINGGE_RENDER_API D3D12IndexBuffer : public IndexBuffer
+		class LIGHTNING_RENDER_API D3D12IndexBuffer : public IndexBuffer
 		{
 		public:
 			D3D12IndexBuffer(ID3D12Device* pDevice, std::uint32_t bufferSize, IndexType type);

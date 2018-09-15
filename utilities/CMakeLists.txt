@@ -14,13 +14,13 @@ set(SOURCES enginealgo.cpp)
 include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/foundation/memory
 					${CMAKE_CURRENT_SOURCE_DIR}
-					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost)
+					${LIGHTNING_DEPENDENCIES_DIR}/boost)
 
 if (WIN32)
-	add_definitions(-DLIGHTNINGGE_WIN32)
+	add_definitions(-DLIGHTNING_WIN32)
 endif()
-if(LIGHTNINGGE_USE_D3D12)
-	add_definitions(-DLIGHTNINGGE_USE_D3D12)
+if(LIGHTNING_USE_D3D12)
+	add_definitions(-DLIGHTNING_USE_D3D12)
 endif()
 define_dll_export_macro(UTILITIES)
 

@@ -2,7 +2,7 @@
 #include <functional>
 #include "iwindow.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace WindowSystem
 	{

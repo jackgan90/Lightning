@@ -4,7 +4,7 @@
 #include "rendererexportdef.h"
 #include "renderconstants.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
@@ -15,7 +15,7 @@ namespace LightningGE
 		};
 		
 
-		class LIGHTNINGGE_RENDER_API IGPUBuffer
+		class LIGHTNING_RENDER_API IGPUBuffer
 		{
 		public:
 			virtual ~IGPUBuffer(){}

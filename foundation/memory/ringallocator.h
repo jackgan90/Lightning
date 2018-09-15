@@ -6,12 +6,12 @@
 #include <unordered_map>
 #include "foundationexportdef.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{
 		//threaded-unsafe ring allocator.Typycal use in allocation of frame's temp resources
-		class LIGHTNINGGE_FOUNDATION_API RingAllocator
+		class LIGHTNING_FOUNDATION_API RingAllocator
 		{
 		public:
 			RingAllocator();

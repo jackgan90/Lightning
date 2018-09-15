@@ -8,7 +8,7 @@
 #include "singleton.h"
 #include "enumoperation.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{
@@ -33,7 +33,7 @@ namespace LightningGE
 			WRITE = 0x02,
 		};
 		ENABLE_ENUM_BITMASK_OPERATORS(FileAccess)
-		class LIGHTNINGGE_FOUNDATION_API IFile
+		class LIGHTNING_FOUNDATION_API IFile
 		{
 		public:
 			virtual ~IFile() = default;
@@ -46,7 +46,7 @@ namespace LightningGE
 		};
 		using SharedFilePtr = std::shared_ptr<IFile>;
 
-		class LIGHTNINGGE_FOUNDATION_API IFileSystem
+		class LIGHTNING_FOUNDATION_API IFileSystem
 		{
 		public:
 			virtual ~IFileSystem() = default;
@@ -56,7 +56,7 @@ namespace LightningGE
 		};
 		using SharedFileSystemPtr = std::shared_ptr<IFileSystem>;
 
-		class LIGHTNINGGE_FOUNDATION_API GeneralFileSystem : public IFileSystem
+		class LIGHTNING_FOUNDATION_API GeneralFileSystem : public IFileSystem
 		{
 		public:
 			GeneralFileSystem();

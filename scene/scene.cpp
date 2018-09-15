@@ -1,7 +1,7 @@
 #include "scene.h"
 #include "renderer.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Scene
 	{

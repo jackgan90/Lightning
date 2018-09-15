@@ -9,14 +9,14 @@
 #include "d3d12rendertargetmanager.h"
 #include "d3d12typemapper.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
 		using WindowSystem::IWindow;
 		class D3D12Renderer;
-		class LIGHTNINGGE_RENDER_API D3D12SwapChain : public ISwapChain
+		class LIGHTNING_RENDER_API D3D12SwapChain : public ISwapChain
 		{
 		public:
 			//we have to use raw pointer,because at the time the swap chain is created, D3D12Renderer is not constructed successfully yet

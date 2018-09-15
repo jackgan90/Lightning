@@ -6,14 +6,14 @@ set(CMAKE_MODULE_PATH
 include(helpers)
 
 # options start
-option(LIGHTNINGGE_USE_D3D12 "Enable DirectX 12 renderer." ON)
-set(LIGHTNINGGE_DEPENDENCIES_DIR "${CMAKE_SOURCE_DIR}/dependencies" CACHE PATH "Dependencies directory")
-get_filename_component(LIGHTNINGGE_DEPENDENCIES_DIR ${LIGHTNINGGE_DEPENDENCIES_DIR} ABSOLUTE)
-message(STATUS "Dependencies directory is ${LIGHTNINGGE_DEPENDENCIES_DIR}")
+option(LIGHTNING_USE_D3D12 "Enable DirectX 12 renderer." ON)
+set(LIGHTNING_DEPENDENCIES_DIR "${CMAKE_SOURCE_DIR}/dependencies" CACHE PATH "Dependencies directory")
+get_filename_component(LIGHTNING_DEPENDENCIES_DIR ${LIGHTNING_DEPENDENCIES_DIR} ABSOLUTE)
+message(STATUS "Dependencies directory is ${LIGHTNING_DEPENDENCIES_DIR}")
 # options end
 
-project(LightningGE)
-message(STATUS "Configuring project LightningGE")
+project(Lightning)
+message(STATUS "Configuring project Lightning")
 add_subdirectory(foundation)
 add_subdirectory(utilities)
 add_subdirectory(platform)
@@ -28,24 +28,24 @@ add_subdirectory(jobsystem)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 if (WIN32)
-	add_definitions(-DLIGHTNINGGE_WIN32)
+	add_definitions(-DLIGHTNING_WIN32)
 endif()
-if(LIGHTNINGGE_USE_D3D12)
-	add_definitions(-DLIGHTNINGGE_USE_D3D12)
+if(LIGHTNING_USE_D3D12)
+	add_definitions(-DLIGHTNING_USE_D3D12)
 endif()
 
 set(SOURCE_FILES entry.cpp)
 
-set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${LIGHTNINGGE_LINKER_FLAGS})
+set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${LIGHTNING_LINKER_FLAGS})
 
 include_directories(${CMAKE_SOURCE_DIR}/foundation 
 					${CMAKE_SOURCE_DIR}/foundation/memory
 					${CMAKE_SOURCE_DIR}/platform 
 					${CMAKE_SOURCE_DIR}/platform/application 
 					${CMAKE_SOURCE_DIR}/window
-					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
+					${LIGHTNING_DEPENDENCIES_DIR}/boost
 					${CMAKE_SOURCE_DIR}/utilities
-					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen)
+					${LIGHTNING_DEPENDENCIES_DIR}/eigen)
 add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} foundation platform)
 target_link_libraries(${PROJECT_NAME} platform)

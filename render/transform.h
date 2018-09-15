@@ -2,11 +2,11 @@
 #include "rendererexportdef.h"
 #include "types/vector.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNINGGE_RENDER_API Transform
+		class LIGHTNING_RENDER_API Transform
 		{
 		public:
 			Transform();

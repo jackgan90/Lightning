@@ -6,14 +6,14 @@
 
 #define DECLARE_ALLOCATOR_INSTANCE_MEMBER(className) className m_Instance##className;
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{
-		class LIGHTNINGGE_FOUNDATION_API AllocatorManager : public LightningGE::Foundation::Singleton<AllocatorManager>
+		class LIGHTNING_FOUNDATION_API AllocatorManager : public Lightning::Foundation::Singleton<AllocatorManager>
 		{
 		public:
-			friend class LightningGE::Foundation::Singleton<AllocatorManager>;
+			friend class Lightning::Foundation::Singleton<AllocatorManager>;
 			IMemoryAllocator* GetAllocator(const AllocatorID allocatorId);
 			~AllocatorManager(){}
 		private:

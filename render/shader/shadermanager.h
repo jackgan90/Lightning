@@ -3,7 +3,7 @@
 #include "filesystem.h"
 #include "ishadermanager.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

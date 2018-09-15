@@ -2,7 +2,7 @@
 #include "ishader.h"
 #include "vertexbuffer.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

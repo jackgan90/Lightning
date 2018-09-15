@@ -9,7 +9,7 @@
 #include "renderconstants.h"
 #include "types/rect.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
@@ -439,9 +439,9 @@ namespace std
 		return std::hash<T>{}(*oObject);
 	}
 
-	template<> struct hash<LightningGE::Render::RasterizerState>
+	template<> struct hash<Lightning::Render::RasterizerState>
 	{
-		std::size_t operator()(const LightningGE::Render::RasterizerState& state)const noexcept
+		std::size_t operator()(const Lightning::Render::RasterizerState& state)const noexcept
 		{
 			std::size_t seed = 0;
 			boost::hash_combine(seed, state.cullMode);
@@ -451,9 +451,9 @@ namespace std
 		}
 	};
 
-	template<> struct hash<LightningGE::Render::BlendState>
+	template<> struct hash<Lightning::Render::BlendState>
 	{
-		std::size_t operator()(const LightningGE::Render::BlendState& state)const noexcept
+		std::size_t operator()(const Lightning::Render::BlendState& state)const noexcept
 		{
 			std::size_t seed = 0;
 			boost::hash_combine(seed, state.alphaOp);
@@ -467,9 +467,9 @@ namespace std
 		}
 	};
 
-	template<> struct hash<LightningGE::Render::DepthStencilState>
+	template<> struct hash<Lightning::Render::DepthStencilState>
 	{
-		std::size_t operator()(const LightningGE::Render::DepthStencilState& state)const noexcept
+		std::size_t operator()(const Lightning::Render::DepthStencilState& state)const noexcept
 		{
 			std::size_t seed = 0;
 			boost::hash_combine(seed, state.backFace.cmpFunc);
@@ -491,9 +491,9 @@ namespace std
 		}
 	};
 
-	template<> struct hash<LightningGE::Render::VertexInputLayout>
+	template<> struct hash<Lightning::Render::VertexInputLayout>
 	{
-		std::size_t operator()(const LightningGE::Render::VertexInputLayout& layout)const noexcept
+		std::size_t operator()(const Lightning::Render::VertexInputLayout& layout)const noexcept
 		{
 			std::size_t seed = 0;
 			boost::hash_combine(seed, layout.slot);
@@ -507,9 +507,9 @@ namespace std
 	};
 	
 	
-	template<> struct hash<LightningGE::Render::Viewport>
+	template<> struct hash<Lightning::Render::Viewport>
 	{
-		std::size_t operator()(const LightningGE::Render::Viewport& viewPort)const noexcept
+		std::size_t operator()(const Lightning::Render::Viewport& viewPort)const noexcept
 		{
 			std::size_t seed = 0;
 			boost::hash_combine(seed, viewPort.left());
@@ -520,9 +520,9 @@ namespace std
 		}
 	};
 
-	template<> struct hash<LightningGE::Render::ScissorRect>
+	template<> struct hash<Lightning::Render::ScissorRect>
 	{
-		std::size_t operator()(const LightningGE::Render::ScissorRect& scissorRect)const noexcept
+		std::size_t operator()(const Lightning::Render::ScissorRect& scissorRect)const noexcept
 		{
 			std::size_t seed = 0;
 			boost::hash_combine(seed, scissorRect.left());
@@ -533,9 +533,9 @@ namespace std
 		}
 	};
 
-	template<> struct hash<LightningGE::Render::PipelineState>
+	template<> struct hash<Lightning::Render::PipelineState>
 	{
-		std::size_t operator()(const LightningGE::Render::PipelineState& state)const noexcept
+		std::size_t operator()(const Lightning::Render::PipelineState& state)const noexcept
 		{
 			std::size_t seed = 0;
 			boost::hash_combine(seed, state.primType);

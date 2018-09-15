@@ -1,6 +1,6 @@
 #include "asyncloader.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Serialization
 	{

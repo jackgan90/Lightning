@@ -3,7 +3,7 @@
 #include "configmanager.h"
 #include "logger.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{

@@ -1,6 +1,6 @@
 #include "bindablebuffer.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

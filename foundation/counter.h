@@ -1,7 +1,7 @@
 #pragma once
 #include <cassert>
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{

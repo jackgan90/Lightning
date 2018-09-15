@@ -8,10 +8,10 @@ set(SOURCES main.cpp
 			helperstubtest.cpp)
 
 if (WIN32)
-	add_definitions(-DLIGHTNINGGE_WIN32)
+	add_definitions(-DLIGHTNING_WIN32)
 endif()
-if(LIGHTNINGGE_USE_D3D12)
-	add_definitions(-DLIGHTNINGGE_USE_D3D12)
+if(LIGHTNING_USE_D3D12)
+	add_definitions(-DLIGHTNING_USE_D3D12)
 endif()
 
 add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
@@ -20,8 +20,8 @@ include_directories( ${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/render/types
 					${CMAKE_SOURCE_DIR}/utilities
 					${CMAKE_SOURCE_DIR}/foundation/memory
-					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen
-					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost)
+					${LIGHTNING_DEPENDENCIES_DIR}/eigen
+					${LIGHTNING_DEPENDENCIES_DIR}/boost)
 if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /wd4251 /wd4275 /EHsc /MDd")
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_DEBUG} /wd4251 /wd4275 /EHsc /MD")

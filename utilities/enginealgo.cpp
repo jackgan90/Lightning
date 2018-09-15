@@ -2,7 +2,7 @@
 #include <functional>
 #include "enginealgo.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Utility
 	{

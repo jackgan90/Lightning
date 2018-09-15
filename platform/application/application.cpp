@@ -8,7 +8,7 @@
 #include "primitive.h"
 
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace App
 	{

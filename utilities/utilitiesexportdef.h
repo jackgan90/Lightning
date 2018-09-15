@@ -1,11 +1,11 @@
 #pragma once
 
-#ifdef LIGHTNINGGE_WIN32
-#ifdef LIGHTNINGGE_UTILITIES_EXPORT
-#define LIGHTNINGGE_UTILITIES_API __declspec(dllexport)
+#ifdef LIGHTNING_WIN32
+#ifdef LIGHTNING_UTILITIES_EXPORT
+#define LIGHTNING_UTILITIES_API __declspec(dllexport)
 #else
-#define LIGHTNINGGE_UTILITIES_API __declspec(dllimport)
+#define LIGHTNING_UTILITIES_API __declspec(dllimport)
 #endif
 #else
-#define LIGHTNINGGE_UTILITIES_API
+#define LIGHTNING_UTILITIES_API
 #endif

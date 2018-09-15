@@ -2,7 +2,7 @@
 #include "d3d12rendertarget.h"
 #include "d3d12swapchain.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

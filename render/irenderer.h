@@ -12,24 +12,24 @@
 #include "renderpass.h"
 #include "iwindow.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
 		using WindowSystem::IWindow;
-		class LIGHTNINGGE_RENDER_API DeviceInitException : public RendererException
+		class LIGHTNING_RENDER_API DeviceInitException : public RendererException
 		{
 		public:
 			DeviceInitException(const char*const w):RendererException(w){}
 		};
 
-		class LIGHTNINGGE_RENDER_API SwapChainInitException : public RendererException
+		class LIGHTNING_RENDER_API SwapChainInitException : public RendererException
 		{
 		public:
 			SwapChainInitException(const char*const w):RendererException(w){}
 		};
 
-		class LIGHTNINGGE_RENDER_API IRenderer
+		class LIGHTNING_RENDER_API IRenderer
 		{
 		public:
 			virtual ~IRenderer() = default;

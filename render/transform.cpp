@@ -1,6 +1,6 @@
 #include "transform.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

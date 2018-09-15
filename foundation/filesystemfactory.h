@@ -3,11 +3,11 @@
 #include "filesystem.h"
 #include "singleton.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{
-		class LIGHTNINGGE_FOUNDATION_API FileSystemFactory : public Singleton<FileSystemFactory>
+		class LIGHTNING_FOUNDATION_API FileSystemFactory : public Singleton<FileSystemFactory>
 		{
 		public:
 			SharedFileSystemPtr CreateFileSystem();

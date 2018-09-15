@@ -2,7 +2,7 @@
 #include "imemoryallocator.h"
 //#define ENABLE_MEMORY_LOG
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{

@@ -6,13 +6,13 @@
 #include "irendertargetmanager.h"
 #include "d3d12device.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
 		class D3D12SwapChain;
-		class LIGHTNINGGE_RENDER_API D3D12RenderTargetManager : public RenderTargetManager<D3D12RenderTargetManager>
+		class LIGHTNING_RENDER_API D3D12RenderTargetManager : public RenderTargetManager<D3D12RenderTargetManager>
 		{
 		public:
 			D3D12RenderTargetManager();

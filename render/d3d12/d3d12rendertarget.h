@@ -5,12 +5,12 @@
 #include "irendertarget.h"
 #include "d3d12descriptorheapmanager.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
-		class LIGHTNINGGE_RENDER_API D3D12RenderTarget : public IRenderTarget
+		class LIGHTNING_RENDER_API D3D12RenderTarget : public IRenderTarget
 		{
 		public:
 			friend class D3D12RenderTargetManager;

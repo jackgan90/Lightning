@@ -2,7 +2,7 @@
 #include <vector>
 #include "iblendstate.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Renderer
 	{

@@ -4,12 +4,12 @@
 #include "idepthstencilbuffer.h"
 #include "d3d12descriptorheapmanager.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
-		class LIGHTNINGGE_RENDER_API D3D12DepthStencilBuffer : public IDepthStencilBuffer
+		class LIGHTNING_RENDER_API D3D12DepthStencilBuffer : public IDepthStencilBuffer
 		{
 		public:
 			D3D12DepthStencilBuffer(const std::uint32_t width, const std::uint32_t height);

@@ -4,12 +4,12 @@
 #include <cstdint>
 #include "rendererexportdef.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
-		class LIGHTNINGGE_RENDER_API D3D12BufferResource
+		class LIGHTNING_RENDER_API D3D12BufferResource
 		{
 		public:
 			D3D12BufferResource(ID3D12Device* pDevice, uint32_t bufferSize, D3D12_RESOURCE_STATES resourceState);

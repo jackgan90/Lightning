@@ -2,11 +2,11 @@
 #include <string>
 #include "foundationexportdef.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{
-		class LIGHTNINGGE_FOUNDATION_API Time
+		class LIGHTNING_FOUNDATION_API Time
 		{
 		public:
 			static std::string currentTimeString();

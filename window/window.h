@@ -1,11 +1,11 @@
 #pragma once
 #include "iwindow.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace WindowSystem
 	{
-		class LIGHTNINGGE_WINDOW_API Window : public IWindow
+		class LIGHTNING_WINDOW_API Window : public IWindow
 		{
 			void RegisterWindowMessageHandler(WindowMessage msg, WindowMessageHandler handler)override;
 		protected:

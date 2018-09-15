@@ -5,11 +5,11 @@
 #include "irendertarget.h"
 #include "singleton.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNINGGE_RENDER_API IRenderTargetManager
+		class LIGHTNING_RENDER_API IRenderTargetManager
 		{
 		public:
 			//create a render target

@@ -10,7 +10,7 @@
 #include "timesystem.h"
 #include "foundationexportdef.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{
@@ -22,7 +22,7 @@ namespace LightningGE
 			Error
 		};
 
-		class LIGHTNINGGE_FOUNDATION_API Logger
+		class LIGHTNING_FOUNDATION_API Logger
 		{
 		public:
 			Logger();
@@ -46,8 +46,8 @@ namespace LightningGE
 			std::string LogLevelToPrefix(LogLevel level)const;
 			std::fstream m_fs;
 		};
-#ifndef LIGHTNINGGE_INTERNAL_LOGGER
-		LIGHTNINGGE_FOUNDATION_API Logger logger;
+#ifndef LIGHTNING_INTERNAL_LOGGER
+		LIGHTNING_FOUNDATION_API Logger logger;
 #endif
 	}
 } 

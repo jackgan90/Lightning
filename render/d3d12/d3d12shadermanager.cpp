@@ -2,7 +2,7 @@
 #include "d3d12shadermanager.h"
 #include "d3d12shader.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

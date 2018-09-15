@@ -2,7 +2,7 @@
 #include "enginealgo.h"
 #include "ishader.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

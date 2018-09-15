@@ -10,11 +10,11 @@
 #include "renderexception.h"
 #include "types/vector.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNINGGE_RENDER_API ShaderCompileException : public RendererException
+		class LIGHTNING_RENDER_API ShaderCompileException : public RendererException
 		{
 		public:
 			ShaderCompileException(const char*const w):RendererException(w){}
@@ -48,7 +48,7 @@ namespace LightningGE
 		using ShaderArgumentRegister = std::uint8_t;
 		using ShaderArgumentSpace = std::uint8_t;
 
-		struct LIGHTNINGGE_RENDER_API ShaderArgument
+		struct LIGHTNING_RENDER_API ShaderArgument
 		{
 			ShaderArgumentType type;
 			ShaderArgumentRegister registerIndex;
@@ -88,7 +88,7 @@ namespace LightningGE
 			Matrix4x4f GetMatrix4()const { return m4; }
 		};
 
-		class LIGHTNINGGE_RENDER_API IShader : public HashableObject
+		class LIGHTNING_RENDER_API IShader : public HashableObject
 		{
 		public:
 			virtual std::string GetEntryPoint()const = 0; 
@@ -106,7 +106,7 @@ namespace LightningGE
 
 		using SharedShaderPtr = std::shared_ptr<IShader>;
 
-		class LIGHTNINGGE_RENDER_API Shader : public IShader
+		class LIGHTNING_RENDER_API Shader : public IShader
 		{
 		public:
 			static size_t Hash(const ShaderType& type, const std::string& shaderName, const ShaderDefine& defineMap);
@@ -134,11 +134,11 @@ namespace LightningGE
 
 namespace std
 {
-	template<> struct hash<LightningGE::Render::IShader>
+	template<> struct hash<Lightning::Render::IShader>
 	{
-		std::size_t operator()(const LightningGE::Render::IShader& shader)const noexcept
+		std::size_t operator()(const Lightning::Render::IShader& shader)const noexcept
 		{
-			return LightningGE::Render::Shader::Hash(shader.GetType(), shader.GetName(), shader.GetMacros());
+			return Lightning::Render::Shader::Hash(shader.GetType(), shader.GetName(), shader.GetMacros());
 		}
 	};
 }

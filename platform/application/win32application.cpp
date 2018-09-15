@@ -4,7 +4,7 @@
 #include "logger.h"
 #include "windowmanager.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace App
 	{

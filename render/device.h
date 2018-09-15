@@ -3,11 +3,11 @@
 #include "idevice.h"
 #include "ishadermanager.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNINGGE_RENDER_API Device : public IDevice
+		class LIGHTNING_RENDER_API Device : public IDevice
 		{
 		public:
 			friend class Renderer;

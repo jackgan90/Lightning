@@ -1,6 +1,6 @@
 <lightning_game_engine_configuration>
 	<resource>
-		<root>E:\LightningGE_res</root>
+		<root>E:\Lightning_res</root>
 	</resource>
 	<render>
 		<msaa_enable>true</msaa_enable>

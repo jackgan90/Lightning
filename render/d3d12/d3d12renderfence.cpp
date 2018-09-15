@@ -1,7 +1,7 @@
 #include <cassert>
 #include "d3d12renderfence.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

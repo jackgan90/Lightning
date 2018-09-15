@@ -1,6 +1,6 @@
 #include "window.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace WindowSystem
 	{

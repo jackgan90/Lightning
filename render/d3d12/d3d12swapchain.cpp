@@ -10,7 +10,7 @@
 #include "d3d12descriptorheapmanager.h"
 #include "configmanager.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

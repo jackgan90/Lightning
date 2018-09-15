@@ -13,22 +13,22 @@
 
 namespace
 {
-	using LightningGE::Render::Matrix;
-	using LightningGE::Render::Matrix4x4f;
-	using LightningGE::Render::Matrix3x3f;
-	using LightningGE::Render::Matrix2x2f;
-	using LightningGE::Render::Matrix4x4i;
-	using LightningGE::Render::Matrix3x3i;
-	using LightningGE::Render::Matrix2x2i;
-	using LightningGE::Render::VectorList;
-	using LightningGE::Render::Vector4f;
-	using LightningGE::Render::Vector4i;
-	using LightningGE::Render::Vector3f;
-	using LightningGE::Render::Vector2f;
-	using LightningGE::Render::Vector;
-	using LightningGE::Render::RectF;
-	using LightningGE::Render::ColorF;
-	using LightningGE::Render::MatrixList;
+	using Lightning::Render::Matrix;
+	using Lightning::Render::Matrix4x4f;
+	using Lightning::Render::Matrix3x3f;
+	using Lightning::Render::Matrix2x2f;
+	using Lightning::Render::Matrix4x4i;
+	using Lightning::Render::Matrix3x3i;
+	using Lightning::Render::Matrix2x2i;
+	using Lightning::Render::VectorList;
+	using Lightning::Render::Vector4f;
+	using Lightning::Render::Vector4i;
+	using Lightning::Render::Vector3f;
+	using Lightning::Render::Vector2f;
+	using Lightning::Render::Vector;
+	using Lightning::Render::RectF;
+	using Lightning::Render::ColorF;
+	using Lightning::Render::MatrixList;
 	template<typename _Scalar, int Rows, int Columns>
 	std::ostream& operator<<(std::ostream& out, Matrix<_Scalar, Rows, Columns>& m)
 	{

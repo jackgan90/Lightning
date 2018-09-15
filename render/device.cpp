@@ -1,7 +1,7 @@
 #include <cassert>
 #include "device.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

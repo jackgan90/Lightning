@@ -1,11 +1,11 @@
 #include "logger.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{
 		const char* LogFileName = "log.txt";
-		LIGHTNINGGE_FOUNDATION_API Logger logger;
+		LIGHTNING_FOUNDATION_API Logger logger;
 		Logger::Logger()
 		{
 			m_fs.open(LogFileName, std::fstream::out);

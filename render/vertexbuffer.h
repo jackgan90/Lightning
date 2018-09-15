@@ -5,12 +5,12 @@
 #include "ivertexbuffer.h"
 #include "gpubuffer.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
 
-		class LIGHTNINGGE_RENDER_API VertexBuffer : public IVertexBuffer
+		class LIGHTNING_RENDER_API VertexBuffer : public IVertexBuffer
 		{
 		public:
 			const VertexComponent& GetComponentInfo(size_t attributeIndex)override;
@@ -33,9 +33,9 @@ namespace LightningGE
 
 namespace std
 {
-	template<> struct hash<LightningGE::Render::VertexComponent>
+	template<> struct hash<Lightning::Render::VertexComponent>
 	{
-		size_t operator()(const LightningGE::Render::VertexComponent& component)const noexcept
+		size_t operator()(const Lightning::Render::VertexComponent& component)const noexcept
 		{
 			size_t seed = 0;
 			boost::hash_combine(seed, component.format);

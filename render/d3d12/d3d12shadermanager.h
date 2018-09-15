@@ -1,7 +1,7 @@
 #pragma once
 #include "shadermanager.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

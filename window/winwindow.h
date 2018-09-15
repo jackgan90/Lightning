@@ -3,11 +3,11 @@
 #include <Windows.h>
 #include "window.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace WindowSystem
 	{
-		class LIGHTNINGGE_WINDOW_API WinWindow : public Window
+		class LIGHTNING_WINDOW_API WinWindow : public Window
 		{
 		public:
 			WinWindow();

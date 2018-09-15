@@ -2,7 +2,7 @@
 #include "shaderdefine.h"
 #include "enginealgo.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

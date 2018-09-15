@@ -8,7 +8,7 @@
 #include "rendererhelper.h"
 #include "ringallocator.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

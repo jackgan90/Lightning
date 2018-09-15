@@ -8,7 +8,7 @@
 #include "d3d12descriptorheapmanager.h"
 #include "ishader.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

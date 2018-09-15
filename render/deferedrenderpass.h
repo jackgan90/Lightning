@@ -1,11 +1,11 @@
 #pragma once
 #include "renderpass.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNINGGE_RENDER_API DeferedRenderPass : public RenderPass
+		class LIGHTNING_RENDER_API DeferedRenderPass : public RenderPass
 		{
 		public:	
 			DeferedRenderPass():RenderPass(RenderPassType::DEFERED){}

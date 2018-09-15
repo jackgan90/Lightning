@@ -3,11 +3,11 @@
 #include <exception>
 #include "irendertarget.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNINGGE_RENDER_API ISwapChain
+		class LIGHTNING_RENDER_API ISwapChain
 		{
 		public:
 			virtual ~ISwapChain() = default;

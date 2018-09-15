@@ -17,18 +17,18 @@ set(SOURCES	window.cpp
 if(WIN32)
 	list(APPEND HEADERS	winwindow.h)
 	list(APPEND SOURCES winwindow.cpp)
-	add_definitions(-DLIGHTNINGGE_WIN32)
+	add_definitions(-DLIGHTNING_WIN32)
 endif()
-if(LIGHTNINGGE_USE_D3D12)
-	add_definitions(-DLIGHTNINGGE_USE_D3D12)
+if(LIGHTNING_USE_D3D12)
+	add_definitions(-DLIGHTNING_USE_D3D12)
 endif()
 
 define_dll_export_macro(WINDOW)
 
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 
-include_directories(${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
-					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen
+include_directories(${LIGHTNING_DEPENDENCIES_DIR}/boost
+					${LIGHTNING_DEPENDENCIES_DIR}/eigen
 					${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/utilities
 					${CMAKE_SOURCE_DIR}/foundation/memory)

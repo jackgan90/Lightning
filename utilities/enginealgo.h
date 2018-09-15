@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include "utilitiesexportdef.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Utility
 	{
@@ -25,7 +25,7 @@ namespace LightningGE
 			return it;
 		}
 
-		LIGHTNINGGE_UTILITIES_API std::size_t CalculateHash(const std::string& str, const std::unordered_map<std::string, std::string>& map);
+		LIGHTNING_UTILITIES_API std::size_t CalculateHash(const std::string& str, const std::unordered_map<std::string, std::string>& map);
 
 	}
 }

@@ -6,11 +6,11 @@
 #include "drawable.h"
 #include "scenerenderdata.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Scene
 	{
-		class LIGHTNINGGE_SCENE_API Scene
+		class LIGHTNING_SCENE_API Scene
 		{
 		public:
 			Scene(std::uint32_t id);

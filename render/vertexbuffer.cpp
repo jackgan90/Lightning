@@ -3,7 +3,7 @@
 #include "vertexbuffer.h"
 #include "rendererhelper.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

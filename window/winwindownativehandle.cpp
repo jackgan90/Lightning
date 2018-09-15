@@ -1,6 +1,6 @@
 #include "winwindownativehandle.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace WindowSystem
 	{

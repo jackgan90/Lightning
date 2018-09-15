@@ -6,7 +6,7 @@
 #include "windowmessage.h"
 #include "logger.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace WindowSystem
 	{
@@ -19,7 +19,7 @@ namespace LightningGE
 				Foundation::logger.Log(Foundation::LogLevel::Error, w, args...);
 			}
 		};
-		class LIGHTNINGGE_WINDOW_API IWindow
+		class LIGHTNING_WINDOW_API IWindow
 		{
 		public:
 			friend class WindowManager;

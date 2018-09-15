@@ -3,12 +3,12 @@
 #include "allocatorid.h"
 #include "imemoryallocator.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{
 		//just a simple wrapper of system allocator,mainly design for hook allocation process
-		class LIGHTNINGGE_FOUNDATION_API BaseMemoryAllocator : public IMemoryAllocator
+		class LIGHTNING_FOUNDATION_API BaseMemoryAllocator : public IMemoryAllocator
 		{
 		public:
 			static const AllocatorID ClassID = AllocatorID::BASE;

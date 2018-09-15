@@ -10,14 +10,14 @@
 #include "filesystem.h"
 #include "d3d12shadermanager.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
 		using Foundation::SharedFileSystemPtr;
 		using Foundation::StackAllocator;
-		class LIGHTNINGGE_RENDER_API D3D12Device : public Device
+		class LIGHTNING_RENDER_API D3D12Device : public Device
 		{
 		public:
 			friend class D3D12Renderer;

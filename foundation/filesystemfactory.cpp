@@ -1,7 +1,7 @@
 #include <memory>
 #include "filesystemfactory.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{

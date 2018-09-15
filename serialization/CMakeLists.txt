@@ -14,7 +14,7 @@ set(SOURCES asyncloader.cpp
 			shaderserializer.cpp)
 
 if (WIN32)
-	add_definitions(-DLIGHTNINGGE_WIN32)
+	add_definitions(-DLIGHTNING_WIN32)
 endif()
 
 include_directories(${CMAKE_SOURCE_DIR}/foundation )

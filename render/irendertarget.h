@@ -4,12 +4,12 @@
 #include "rendererexportdef.h"
 #include "renderconstants.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
 		using RenderTargetID = int;
-		class LIGHTNINGGE_RENDER_API IRenderTarget
+		class LIGHTNING_RENDER_API IRenderTarget
 		{
 		public:
 			//return if the render target representing a swap chain buffer(a back buffer)

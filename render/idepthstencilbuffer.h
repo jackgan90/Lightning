@@ -4,11 +4,11 @@
 #include "rendererexportdef.h"
 #include "renderconstants.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNINGGE_RENDER_API IDepthStencilBuffer
+		class LIGHTNING_RENDER_API IDepthStencilBuffer
 		{
 		public:
 			virtual ~IDepthStencilBuffer() = default;

@@ -12,10 +12,10 @@
 #include "poolallocator.h"
 #include "ringallocator.h"
 
-using LightningGE::Foundation::IMemoryAllocator;
-using LightningGE::Foundation::PoolAllocator;
-using LightningGE::Foundation::StackAllocator;
-using LightningGE::Foundation::RingAllocator;
+using Lightning::Foundation::IMemoryAllocator;
+using Lightning::Foundation::PoolAllocator;
+using Lightning::Foundation::StackAllocator;
+using Lightning::Foundation::RingAllocator;
 
 namespace 
 {

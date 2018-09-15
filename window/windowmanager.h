@@ -6,11 +6,11 @@
 #include "iwindow.h"
 #include "windowexportdef.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace WindowSystem
 	{
-		class LIGHTNINGGE_WINDOW_API WindowManager
+		class LIGHTNING_WINDOW_API WindowManager
 		{
 		public:
 			WindowManager();

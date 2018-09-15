@@ -1,6 +1,6 @@
 #pragma once
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

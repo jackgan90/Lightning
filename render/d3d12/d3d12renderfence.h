@@ -4,7 +4,7 @@
 #include "irenderfence.h"
 #include "renderexception.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

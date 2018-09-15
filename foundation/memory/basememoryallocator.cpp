@@ -1,7 +1,7 @@
 #include <cassert>
 #include "basememoryallocator.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{

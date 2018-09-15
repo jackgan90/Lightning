@@ -1,6 +1,6 @@
 #include "scenerenderdata.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Scene
 	{

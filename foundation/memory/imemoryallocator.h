@@ -11,11 +11,11 @@
 #define DEALLOC(allocator, pointer) \
 	(allocator)->Deallocate((pointer))
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{
-		struct LIGHTNINGGE_FOUNDATION_API MemoryInfo
+		struct LIGHTNING_FOUNDATION_API MemoryInfo
 		{
 			void* address;
 			size_t size;
@@ -25,7 +25,7 @@ namespace LightningGE
 			size_t line;
 #endif
 		};
-		class LIGHTNINGGE_FOUNDATION_API IMemoryAllocator
+		class LIGHTNING_FOUNDATION_API IMemoryAllocator
 		{
 		public:
 			IMemoryAllocator() :m_allocatedSize(0), m_allocatedCount(0){}

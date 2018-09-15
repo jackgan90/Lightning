@@ -6,12 +6,12 @@
 #include "semantics.h"
 #include "ishader.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
 		using SemanticSet = std::unordered_set<RenderSemantics>;
-		class LIGHTNINGGE_RENDER_API Material
+		class LIGHTNING_RENDER_API Material
 		{
 		public:
 			void RequireSemantic(RenderSemantics semantic) { m_semantics.emplace(semantic); }

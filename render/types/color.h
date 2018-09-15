@@ -2,7 +2,7 @@
 #include <cstdint>
 #include "vector.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

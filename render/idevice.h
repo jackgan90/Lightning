@@ -13,11 +13,11 @@
 #include "rect.h"
 #include "color.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNINGGE_RENDER_API IDevice
+		class LIGHTNING_RENDER_API IDevice
 		{
 		public:
 			virtual ~IDevice() = default;

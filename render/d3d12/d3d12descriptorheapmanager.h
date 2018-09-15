@@ -10,7 +10,7 @@
 #include "singleton.h"
 #include "d3d12device.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

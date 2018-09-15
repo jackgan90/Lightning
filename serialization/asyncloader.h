@@ -1,7 +1,7 @@
 #pragma once
 #include "serializationexportdef.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Serialization
 	{

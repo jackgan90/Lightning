@@ -4,7 +4,7 @@
 #include "filesystem.h"
 #include "windowmanager.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
@@ -16,7 +16,7 @@ namespace LightningGE
 		using WindowSystem::WindowManager;
 		using WindowSystem::SharedWindowPtr;
 		using UniqueRendererPtr = std::unique_ptr<Render::IRenderer>;
-		class LIGHTNINGGE_PLATFORM_API IApplication
+		class LIGHTNING_PLATFORM_API IApplication
 		{
 		public:
 			virtual void Start() = 0;
@@ -24,7 +24,7 @@ namespace LightningGE
 			virtual ~IApplication() = default;
 		};
 
-		class LIGHTNINGGE_PLATFORM_API Application : public IApplication
+		class LIGHTNING_PLATFORM_API Application : public IApplication
 		{
 		public:
 			Application();

@@ -4,7 +4,7 @@
 #include "singleton.h"
 #include "foundationexportdef.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{
@@ -15,7 +15,7 @@ namespace LightningGE
 			unsigned int MSAASampleCount;	// msaa sample count
 		};
 
-		class LIGHTNINGGE_FOUNDATION_API ConfigManager : public Singleton<ConfigManager>
+		class LIGHTNING_FOUNDATION_API ConfigManager : public Singleton<ConfigManager>
 		{
 		public:
 			friend class Singleton<ConfigManager>;

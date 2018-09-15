@@ -2,7 +2,7 @@
 #include "rendererexportdef.h"
 #include "renderitem.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
@@ -12,7 +12,7 @@ namespace LightningGE
 			DEFERED
 		};
 
-		class LIGHTNINGGE_RENDER_API RenderPass
+		class LIGHTNING_RENDER_API RenderPass
 		{
 		public:
 			virtual ~RenderPass(){}

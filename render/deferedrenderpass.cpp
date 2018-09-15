@@ -1,6 +1,6 @@
 #include "deferedrenderpass.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

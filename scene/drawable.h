@@ -4,12 +4,12 @@
 #include "renderer.h"
 #include "scenerenderdata.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Scene
 	{
 		using Render::Renderer;
-		class LIGHTNINGGE_SCENE_API IDrawable
+		class LIGHTNING_SCENE_API IDrawable
 		{
 		public:
 			virtual ~IDrawable() = default;

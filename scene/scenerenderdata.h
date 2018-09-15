@@ -2,11 +2,11 @@
 #include "sceneexportdef.h"
 #include "camera.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Scene
 	{
-		struct LIGHTNINGGE_SCENE_API SceneRenderData
+		struct LIGHTNING_SCENE_API SceneRenderData
 		{
 			Camera* camera;
 		};

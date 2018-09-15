@@ -2,11 +2,11 @@
 #include <cstdint>
 #include "gpubuffer.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNINGGE_RENDER_API BindableBuffer : public GPUBuffer
+		class LIGHTNING_RENDER_API BindableBuffer : public GPUBuffer
 		{
 		public:
 			BindableBuffer();

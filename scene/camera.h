@@ -3,9 +3,9 @@
 #include "sceneexportdef.h"
 #include "vector.h"
 
-#define LIGHTNINGGE_PI 3.14159265358979
+#define LIGHTNING_PI 3.14159265358979
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Scene
 	{
@@ -16,16 +16,16 @@ namespace LightningGE
 		};
 		inline float DegreesToRadians(const float degree)
 		{
-			return static_cast<float>(degree * LIGHTNINGGE_PI / 180.0);
+			return static_cast<float>(degree * LIGHTNING_PI / 180.0);
 		}
 		inline float RadiansToDegrees(const float radians)
 		{
-			return static_cast<float>(radians * 180.0 / LIGHTNINGGE_PI);
+			return static_cast<float>(radians * 180.0 / LIGHTNING_PI);
 		}
 		using Render::Vector3f;
 		using Render::Matrix4x4f;
 		//Use right-handed coordinate system
-		class LIGHTNINGGE_SCENE_API Camera
+		class LIGHTNING_SCENE_API Camera
 		{
 		public:
 			Camera();

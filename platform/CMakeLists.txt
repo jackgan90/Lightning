@@ -17,10 +17,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 if(WIN32)
-	add_definitions(-DLIGHTNINGGE_WIN32)
+	add_definitions(-DLIGHTNING_WIN32)
 endif()
-if(LIGHTNINGGE_USE_D3D12)
-	add_definitions(-DLIGHTNINGGE_USE_D3D12)
+if(LIGHTNING_USE_D3D12)
+	add_definitions(-DLIGHTNING_USE_D3D12)
 	include_directories(${CMAKE_SOURCE_DIR}/render/d3d12)
 endif()
 
@@ -46,8 +46,8 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/utilities
 					${CMAKE_SOURCE_DIR}/scene
 					${CMAKE_SOURCE_DIR}/entities
-					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen
-					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost)
+					${LIGHTNING_DEPENDENCIES_DIR}/eigen
+					${LIGHTNING_DEPENDENCIES_DIR}/boost)
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 add_dependencies(${PROJECT_NAME} foundation window render scene)

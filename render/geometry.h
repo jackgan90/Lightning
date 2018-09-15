@@ -5,12 +5,12 @@
 #include "indexbuffer.h"
 #include "renderconstants.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
 		//a wrapper class for vb/ib 
-		struct LIGHTNINGGE_RENDER_API Geometry
+		struct LIGHTNING_RENDER_API Geometry
 		{
 			SharedVertexBufferPtr vbs[MAX_GEOMETRY_BUFFER_COUNT];
 			bool vbs_dirty[MAX_GEOMETRY_BUFFER_COUNT];

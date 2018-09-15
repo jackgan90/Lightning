@@ -7,7 +7,7 @@
 #include "renderpass.h"
 #include "iwindow.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
@@ -30,7 +30,7 @@ namespace LightningGE
 			}
 		};
 
-		class LIGHTNINGGE_RENDER_API Renderer : public IRenderer
+		class LIGHTNING_RENDER_API Renderer : public IRenderer
 		{
 		public:
 			~Renderer()override;

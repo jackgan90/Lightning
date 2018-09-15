@@ -1,7 +1,7 @@
 #include <d3d12typemapper.h>
 #include "d3d12indexbuffer.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

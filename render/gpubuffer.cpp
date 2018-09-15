@@ -1,7 +1,7 @@
 #include <gpubuffer.h>
 #include <cassert>
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

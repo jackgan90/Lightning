@@ -4,7 +4,7 @@
 #include "d3d12typemapper.h"
 #include "renderer.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

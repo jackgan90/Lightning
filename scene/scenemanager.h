@@ -4,12 +4,12 @@
 #include "singleton.h"
 #include "scene.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Scene
 	{
 		using Foundation::Singleton;
-		class LIGHTNINGGE_SCENE_API SceneManager : public Singleton<SceneManager>
+		class LIGHTNING_SCENE_API SceneManager : public Singleton<SceneManager>
 		{
 		public:
 			~SceneManager();

@@ -6,13 +6,13 @@
 #include "filesystem.h"
 #include "memorysystem.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace App
 	{
 		using WindowSystem::SharedWindowPtr;
 		using WindowSystem::WindowManager;
-		class LIGHTNINGGE_PLATFORM_API Win32Application : public Application
+		class LIGHTNING_PLATFORM_API Win32Application : public Application
 		{
 		public:
 			Win32Application();

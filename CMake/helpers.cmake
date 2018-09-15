@@ -1,5 +1,5 @@
 macro(define_dll_export_macro DLLNAME)
-	add_definitions(-DLIGHTNINGGE_${DLLNAME}_EXPORT)
+	add_definitions(-DLIGHTNING_${DLLNAME}_EXPORT)
 endmacro()
 
 function(get_msvc_postfix postfix)

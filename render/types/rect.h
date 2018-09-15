@@ -1,7 +1,7 @@
 #pragma once
 #include "vector.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

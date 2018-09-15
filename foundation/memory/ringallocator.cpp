@@ -1,7 +1,7 @@
 #include <algorithm>
 #include "ringallocator.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{
@@ -136,7 +136,7 @@ namespace LightningGE
 			for (std::size_t i = 0;i < m_buffers.size();++i)
 			{
 				m_buffers[i].buffer.ReleaseFramesBefore(frame);
-				if (i == numBuffersToDelete && i < m_buffers.size() - 1 && m_buffers[i].buffer.Empty())//at lease keep one
+				if (i < m_buffers.size() - 1 && m_buffers[i].buffer.Empty())//at lease keep one
 				{
 					numBuffersToDelete++;
 				}

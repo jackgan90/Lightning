@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

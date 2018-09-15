@@ -1,7 +1,7 @@
 #include "allocatormanager.h"
 
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{

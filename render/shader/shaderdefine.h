@@ -5,12 +5,12 @@
 #include "rendererexportdef.h"
 
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
 		using DefineMap = std::unordered_map<std::string, std::string>;
-		class LIGHTNINGGE_RENDER_API ShaderDefine
+		class LIGHTNING_RENDER_API ShaderDefine
 		{
 		public:
 			ShaderDefine();

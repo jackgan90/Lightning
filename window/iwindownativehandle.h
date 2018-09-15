@@ -2,7 +2,7 @@
 #include <memory>
 #include "windowexportdef.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace WindowSystem
 	{
@@ -10,7 +10,7 @@ namespace LightningGE
 		{
 			IDENTIFIER_WINDOWS_HANDLE,
 		};
-		class LIGHTNINGGE_WINDOW_API IWindowNativeHandle
+		class LIGHTNING_WINDOW_API IWindowNativeHandle
 		{
 		public:
 			virtual bool operator==(const IWindowNativeHandle& handle) = 0;

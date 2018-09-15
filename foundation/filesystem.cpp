@@ -4,7 +4,7 @@
 #include "common.h"
 #include "configmanager.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{

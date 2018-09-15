@@ -20,13 +20,13 @@
 #define REPORT_LIVE_OBJECTS
 #endif
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
 		using WindowSystem::SharedWindowPtr;
 		using Microsoft::WRL::ComPtr;
-		class LIGHTNINGGE_RENDER_API D3D12Renderer : public Renderer
+		class LIGHTNING_RENDER_API D3D12Renderer : public Renderer
 		{
 		public:
 			D3D12Renderer(const SharedWindowPtr& pWindow, const SharedFileSystemPtr& fs);

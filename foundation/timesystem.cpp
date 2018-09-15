@@ -4,7 +4,7 @@
 #include <iomanip>
 #include "timesystem.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Foundation
 	{

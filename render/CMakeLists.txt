@@ -67,14 +67,14 @@ source_group("shader" FILES
 							${SHADER_SOURCES})
 
 if (WIN32)
-	add_definitions(-DLIGHTNINGGE_WIN32)
+	add_definitions(-DLIGHTNING_WIN32)
 endif()
-if(LIGHTNINGGE_USE_D3D12)
-	add_definitions(-DLIGHTNINGGE_USE_D3D12)
+if(LIGHTNING_USE_D3D12)
+	add_definitions(-DLIGHTNING_USE_D3D12)
 endif()
 
-if(LIGHTNINGGE_USE_D3D12)
-	add_definitions(-DLIGHTNINGGE_USE_D3D12)
+if(LIGHTNING_USE_D3D12)
+	add_definitions(-DLIGHTNING_USE_D3D12)
 	set(D3D12_HEADERS	d3d12/d3d12device.h
 						d3d12/d3d12swapchain.h
 						d3d12/d3d12rendertarget.h
@@ -119,11 +119,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/utilities
 					${CMAKE_SOURCE_DIR}/platform 
 					${CMAKE_SOURCE_DIR}/window
-					${LIGHTNINGGE_DEPENDENCIES_DIR}/boost
-					${LIGHTNINGGE_DEPENDENCIES_DIR}/eigen)
-if(LIGHTNINGGE_USE_D3D12)
+					${LIGHTNING_DEPENDENCIES_DIR}/boost
+					${LIGHTNING_DEPENDENCIES_DIR}/eigen)
+if(LIGHTNING_USE_D3D12)
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/d3d12
-						${LIGHTNINGGE_DEPENDENCIES_DIR}/d3d12)
+						${LIGHTNING_DEPENDENCIES_DIR}/d3d12)
 endif()
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
@@ -136,7 +136,7 @@ if(MSVC)
 endif()
 add_dependencies(${PROJECT_NAME} foundation window utilities)
 target_link_libraries(${PROJECT_NAME} foundation window utilities)
-if(LIGHTNINGGE_USE_D3D12)
+if(LIGHTNING_USE_D3D12)
 	target_link_libraries(${PROJECT_NAME} dxgi.lib d3d12.lib d3dcompiler.lib)
 	target_link_libraries(${PROJECT_NAME} dxguid.lib)
 endif()

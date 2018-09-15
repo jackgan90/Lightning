@@ -1,7 +1,7 @@
 #include <d3dx12.h>
 #include "d3d12bufferresource.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

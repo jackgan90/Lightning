@@ -3,7 +3,7 @@
 #include "renderer.h"
 #include "logger.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

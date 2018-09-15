@@ -1,7 +1,7 @@
 #pragma once
 #include "scenemanager.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Scene
 	{

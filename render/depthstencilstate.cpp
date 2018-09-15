@@ -1,7 +1,7 @@
 #include <boost/functional/hash.hpp>
 #include "idepthstencilstate.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Renderer
 	{

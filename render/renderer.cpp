@@ -5,7 +5,7 @@
 #include "deferedrenderpass.h"
 #include "ringallocator.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
@@ -40,9 +40,9 @@ namespace LightningGE
 		void Renderer::BeginFrame()
 		{
 			WaitForPreviousFrame(false);
+			m_frameCount++;
 			ReleasePreviousFrameResources(true);
 			m_currentBackBufferIndex = m_swapChain->GetCurrentBackBufferIndex();
-			m_frameCount++;
 			m_device->BeginFrame(m_currentBackBufferIndex);
 		}
 

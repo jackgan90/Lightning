@@ -3,7 +3,7 @@
 #include "pipelinestate.h"
 #include "indexbuffer.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

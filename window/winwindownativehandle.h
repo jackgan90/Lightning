@@ -2,11 +2,11 @@
 #include <Windows.h>
 #include "iwindownativehandle.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace WindowSystem
 	{
-		class LIGHTNINGGE_WINDOW_API WinWindowNativeHandle : public IWindowNativeHandle
+		class LIGHTNING_WINDOW_API WinWindowNativeHandle : public IWindowNativeHandle
 		{
 		public:
 			friend class WinWindow;

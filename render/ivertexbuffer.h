@@ -3,7 +3,7 @@
 #include "gpubuffer.h"
 #include "semantics.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
@@ -61,7 +61,7 @@ namespace LightningGE
 
 		};
 
-		class LIGHTNINGGE_RENDER_API IVertexBuffer : public GPUBuffer
+		class LIGHTNING_RENDER_API IVertexBuffer : public GPUBuffer
 		{
 		public:
 			IVertexBuffer(std::uint32_t bufferSize):GPUBuffer(bufferSize){}

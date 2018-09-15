@@ -3,11 +3,11 @@
 #include "renderpass.h"
 #include "pipelinestate.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNINGGE_RENDER_API ForwardRenderPass : public RenderPass
+		class LIGHTNING_RENDER_API ForwardRenderPass : public RenderPass
 		{
 		public:	
 			ForwardRenderPass():RenderPass(RenderPassType::FORWARD){}

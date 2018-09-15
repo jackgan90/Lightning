@@ -2,11 +2,11 @@
 #include <boost/core/noncopyable.hpp>
 #include "igpubuffer.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNINGGE_RENDER_API GPUBuffer : public IGPUBuffer, private boost::noncopyable
+		class LIGHTNING_RENDER_API GPUBuffer : public IGPUBuffer, private boost::noncopyable
 		{
 		public:
 			GPUBuffer(std::uint32_t bufferSize);

@@ -1,7 +1,7 @@
 #pragma once
 #include "matrix.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

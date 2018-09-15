@@ -8,12 +8,12 @@
 #include "renderconstants.h"
 #include "renderitem.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Scene
 	{
 		using Render::PrimitiveType;
-		class LIGHTNINGGE_SCENE_API Primitive : public IDrawable
+		class LIGHTNING_SCENE_API Primitive : public IDrawable
 		{
 		public:
 			Primitive();
@@ -24,7 +24,7 @@ namespace LightningGE
 			Render::RenderItem m_renderItem;
 		};
 
-		class LIGHTNINGGE_SCENE_API Cube : public Primitive
+		class LIGHTNING_SCENE_API Cube : public Primitive
 		{
 		public:
 			Cube(float size);

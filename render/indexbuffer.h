@@ -2,11 +2,11 @@
 #include <memory>
 #include "iindexbuffer.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNINGGE_RENDER_API IndexBuffer : public IIndexBuffer
+		class LIGHTNING_RENDER_API IndexBuffer : public IIndexBuffer
 		{
 		protected:
 			IndexBuffer(std::uint32_t bufferSize, IndexType type);

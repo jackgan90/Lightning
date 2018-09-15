@@ -3,12 +3,12 @@
 #include "logger.h"
 #include <vector>
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace WindowSystem
 	{
-		using LightningGE::Foundation::logger;
-		using LightningGE::Foundation::LogLevel;
+		using Lightning::Foundation::logger;
+		using Lightning::Foundation::LogLevel;
 		using std::vector;
 		char* WinWindow::s_WindowClassName = "DefaultWin32Window";
 		

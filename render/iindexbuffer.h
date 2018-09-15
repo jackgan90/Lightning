@@ -2,7 +2,7 @@
 #include <memory>
 #include "gpubuffer.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
@@ -12,7 +12,7 @@ namespace LightningGE
 			UINT32,
 		};
 
-		class LIGHTNINGGE_RENDER_API IIndexBuffer : public GPUBuffer
+		class LIGHTNING_RENDER_API IIndexBuffer : public GPUBuffer
 		{
 		public:
 			IIndexBuffer(std::uint32_t bufferSize, IndexType type) : GPUBuffer(bufferSize), m_type(type){}

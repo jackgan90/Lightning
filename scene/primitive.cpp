@@ -1,7 +1,7 @@
 #include <cassert>
 #include "primitive.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Scene
 	{

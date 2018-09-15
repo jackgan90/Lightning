@@ -2,11 +2,11 @@
 #include "vertexbuffer.h"
 #include "d3d12bufferresource.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNINGGE_RENDER_API D3D12VertexBuffer : public VertexBuffer
+		class LIGHTNING_RENDER_API D3D12VertexBuffer : public VertexBuffer
 		{
 		public:
 			D3D12VertexBuffer(ID3D12Device* pDevice, std::uint32_t bufferSize, const std::vector<VertexComponent>& components);

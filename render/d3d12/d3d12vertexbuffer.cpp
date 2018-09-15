@@ -1,6 +1,6 @@
 #include "d3d12vertexbuffer.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

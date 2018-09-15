@@ -2,7 +2,7 @@
 #include "forwardrenderpass.h"
 #include "renderer.h"
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Render
 	{

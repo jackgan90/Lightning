@@ -2,7 +2,7 @@
 #include "renderer.h"
 #define EPSILON 0.0001
 
-namespace LightningGE
+namespace Lightning
 {
 	namespace Scene
 	{
