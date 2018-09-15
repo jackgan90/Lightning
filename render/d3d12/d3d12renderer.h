@@ -6,6 +6,7 @@
 #include <dxgidebug.h>
 #endif
 #include "iwindow.h"
+#include "irenderfence.h"
 #include "renderer.h"
 #include "filesystem.h"
 #include "d3d12descriptorheapmanager.h"
@@ -39,23 +40,24 @@ namespace LightningGE
 		private:
 			struct FrameResource
 			{
-				ComPtr<ID3D12Fence> fence;
-				UINT64 fenceValue;
-
+				IRenderFence *fence;
 				void Release(bool perFrame)
 				{
 					if (!perFrame)
 					{
-						fence.Reset();
+						if (fence)
+						{
+							delete fence;
+							fence = nullptr;
+						}
 					}
 				}
 			};
 			void WaitForPreviousFrame(bool waitAll);
 			void ReleasePreviousFrameResources(bool perFrame);
 			void CreateFences();
-			ComPtr<ID3D12CommandQueue> m_commandQueue;
-			ComPtr<ID3D12GraphicsCommandList> m_commandList;
-			HANDLE m_fenceEvent;
+			ID3D12CommandQueue* GetCommandQueue();
+			ID3D12GraphicsCommandList* GetGraphicsCommandList();
 			FrameResource m_frameResources[RENDER_FRAME_COUNT];
 			SharedWindowPtr m_outputWindow;
 #ifndef NDEBUG

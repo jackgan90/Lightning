@@ -10,6 +10,7 @@ set(HEADERS rendererexportdef.h
 			irendertargetmanager.h
 			idepthstencilbuffer.h
 			irenderer.h
+			irenderfence.h
 			renderer.h
 			pipelinestate.h
 			semantics.h
@@ -80,6 +81,7 @@ if(LIGHTNINGGE_USE_D3D12)
 						d3d12/d3d12depthstencilbuffer.h
 						d3d12/d3d12rendertargetmanager.h
 						d3d12/d3d12renderer.h
+						d3d12/d3d12renderfence.h
 						d3d12/d3d12descriptorheapmanager.h
 						d3d12/d3d12typemapper.h
 						d3d12/d3d12shader.h
@@ -93,6 +95,7 @@ if(LIGHTNINGGE_USE_D3D12)
 						d3d12/d3d12depthstencilbuffer.cpp
 						d3d12/d3d12rendertargetmanager.cpp
 						d3d12/d3d12renderer.cpp
+						d3d12/d3d12renderfence.cpp
 						d3d12/d3d12descriptorheapmanager.cpp
 						d3d12/d3d12shader.cpp
 						d3d12/d3d12shadermanager.cpp
