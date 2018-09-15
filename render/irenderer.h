@@ -51,6 +51,10 @@ namespace LightningGE
 			//for example OpenGL clips coordinates to [-1, 1] and DirectX clips coordinates to [0, 1]
 			//This method returns 0 for DirectX and -1 for OpenGL
 			virtual float GetNDCNearPlane()const = 0;
+			//start the renderer
+			virtual void Start() = 0;
+			//Shut down the renderer
+			virtual void ShutDown() = 0;
 		};
 	}
 }

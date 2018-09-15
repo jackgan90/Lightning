@@ -2,14 +2,34 @@
 #include <memory>
 #include <vector>
 #include "irenderer.h"
+#include "irenderfence.h"
 #include "filesystem.h"
 #include "renderpass.h"
+#include "iwindow.h"
 
 namespace LightningGE
 {
 	namespace Render
 	{
 		using Foundation::SharedFileSystemPtr;
+		using WindowSystem::SharedWindowPtr;
+
+		struct FrameResource
+		{
+			IRenderFence *fence;
+			void Release(bool perFrame)
+			{
+				if (!perFrame)
+				{
+					if (fence)
+					{
+						delete fence;
+						fence = nullptr;
+					}
+				}
+			}
+		};
+
 		class LIGHTNINGGE_RENDER_API Renderer : public IRenderer
 		{
 		public:
@@ -25,17 +45,25 @@ namespace LightningGE
 			//TODO there can be multiple render passes in effect simultaneously,shoulc change it
 			void AddRenderPass(RenderPassType type)override;
 			std::size_t GetFrameResourceIndex()const override;
+			void Start()override;
+			void ShutDown()override;
 			static Renderer* Instance() { return s_instance; }
+			IWindow* GetOutputWindow()override { return m_outputWindow.get(); }
 		protected:
-			struct FrameResource
-			{
-
-			};
-			Renderer(const SharedFileSystemPtr& fs, RenderPassType renderPassType = RenderPassType::FORWARD);
+			Renderer(const SharedFileSystemPtr& fs, const SharedWindowPtr& pWindow, RenderPassType renderPassType = RenderPassType::FORWARD);
+			void WaitForPreviousFrame(bool waitAll);
+			void ReleasePreviousFrameResources(bool perFrame);
 			virtual void BeginFrame();
 			virtual void DoFrame();
 			virtual void EndFrame();
 			virtual void ApplyRenderPass();
+			//CreateRenderFence is called in Start after the creation of device and swap chain
+			virtual IRenderFence* CreateRenderFence() = 0;
+			//CreateDevice is called first in Start
+			virtual IDevice* CreateDevice() = 0;
+			//CreateSwapChain is called in Start,ensuring the device is already created
+			virtual ISwapChain* CreateSwapChain() = 0;
+			virtual IDepthStencilBuffer* CreateDepthStencilBuffer(std::size_t width, std::size_t height) = 0;
 			static Renderer* s_instance;
 			std::uint64_t m_frameCount;
 			SharedFileSystemPtr m_fs;
@@ -45,6 +73,8 @@ namespace LightningGE
 			std::size_t m_currentBackBufferIndex;
 			ColorF m_clearColor;
 			SharedDepthStencilBufferPtr m_depthStencilBuffer;
+			FrameResource m_frameResources[RENDER_FRAME_COUNT];
+			SharedWindowPtr m_outputWindow;
 		};
 	}
 }

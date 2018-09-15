@@ -31,35 +31,21 @@ namespace LightningGE
 		public:
 			D3D12Renderer(const SharedWindowPtr& pWindow, const SharedFileSystemPtr& fs);
 			~D3D12Renderer()override;
-			IWindow* GetOutputWindow()override { return m_outputWindow.get(); }
 			float GetNDCNearPlane()const override { return 0.0f; }
+			void ShutDown()override;
+			void Start()override;
 		protected:
 			void BeginFrame()override;
 			void DoFrame()override;
 			void EndFrame()override;
+			IRenderFence* CreateRenderFence()override;
+			IDevice* CreateDevice()override;
+			ISwapChain* CreateSwapChain()override;
+			IDepthStencilBuffer* CreateDepthStencilBuffer(std::size_t width, std::size_t height)override;
 		private:
-			struct FrameResource
-			{
-				IRenderFence *fence;
-				void Release(bool perFrame)
-				{
-					if (!perFrame)
-					{
-						if (fence)
-						{
-							delete fence;
-							fence = nullptr;
-						}
-					}
-				}
-			};
-			void WaitForPreviousFrame(bool waitAll);
-			void ReleasePreviousFrameResources(bool perFrame);
-			void CreateFences();
 			ID3D12CommandQueue* GetCommandQueue();
 			ID3D12GraphicsCommandList* GetGraphicsCommandList();
-			FrameResource m_frameResources[RENDER_FRAME_COUNT];
-			SharedWindowPtr m_outputWindow;
+			ComPtr<IDXGIFactory4> m_dxgiFactory;
 #ifndef NDEBUG
 			ComPtr<ID3D12Debug> m_d3d12Debug;
 			ComPtr<IDXGIDebug> m_dxgiDebug;

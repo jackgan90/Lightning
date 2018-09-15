@@ -27,6 +27,8 @@ namespace LightningGE
 		Application::~Application()
 		{
 			SceneManager::Instance()->DestroyAll();
+			if (m_renderer)
+				m_renderer->ShutDown();
 			m_renderer.reset();
 			m_windowMgr.reset();
 			logger.Log(LogLevel::Info, "Application quit.");
@@ -36,6 +38,8 @@ namespace LightningGE
 		{
 			m_window = CreateMainWindow();
 			m_renderer = CreateRenderer();
+			if (m_renderer)
+				m_renderer->Start();
 			//Create a simple scene here just for test
 			auto scene = SceneManager::Instance()->CreateScene();
 			auto cube = std::make_shared<Scene::Cube>(0.5);
