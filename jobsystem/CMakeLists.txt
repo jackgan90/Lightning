@@ -5,6 +5,7 @@ set(HEADERS job.h
 			joballocator.h
 			jobqueue.h
 			jobmanager.h
+			jobinterface.h
 			concurrentqueue.h)
 set(SOURCES main.cpp)
 

@@ -1,6 +1,6 @@
 #include<cstdlib>
 #include <iostream>
-#include "jobmanager.h"
+#include "jobinterface.h"
 #include <random>
 
 using JobSystem::JobManager;
@@ -22,37 +22,50 @@ void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 	std::cout << "Running in thread:" << std::this_thread::get_id() << "current job:" << currentJob << ", jobCount" << jobCount << std::endl;
 
 	JobHandle job = INVALID_JOB_HANDLE;
-	JobType type = JobType::JOB_TYPE_FOREGROUND;
+	bool foreground = true;
 	if (currentJob % 2)
-		type = JobType::JOB_TYPE_BACKGROUND;
+		foreground = false;
 	bool isNextLayerJob{ false };
 	if(currentJob < jobCount)
 	{
-		job = JobManager::Instance().AllocateJob(type, INVALID_JOB_HANDLE, job_spawn, currentJob + 1, jobCount);
+		//job = JobManager::Instance().AllocateJob(type, INVALID_JOB_HANDLE, job_spawn, currentJob + 1, jobCount);
+		if (foreground)
+			job = NEW_QUICK_JOB(INVALID_JOB_HANDLE, job_spawn, currentJob + 1, jobCount);
+		else
+			job = NEW_SLOW_JOB(INVALID_JOB_HANDLE, job_spawn, currentJob + 1, jobCount);
 	}
 	else
 	{
 		isNextLayerJob = true;
 		std::uint64_t nextLayerJobCount = jobCount == static_cast<std::uint64_t>(-1) ? jobCount : jobCount + 1;
-		job = JobManager::Instance().AllocateJob(type, INVALID_JOB_HANDLE, job_spawn, 0, nextLayerJobCount);
+		if (foreground)
+			job = NEW_QUICK_JOB(INVALID_JOB_HANDLE, job_spawn, 0, nextLayerJobCount);
+		else
+			job = NEW_SLOW_JOB(INVALID_JOB_HANDLE, job_spawn, 0, nextLayerJobCount);
 		JobManager::Instance().SetBackgroundWorkersCount(nextLayerJobCount % 5 + 1);
 	}
 	if (isNextLayerJob)
 	{
-		JobManager::Instance().RunJob(job);
+		JOB_START(job);
 		mainJobCount++;
 	}
 	else
 	{
-		JobManager::Instance().RunJob(job);
+		JOB_START(job);
 		otherThreadJobCount++;
 	}
 	
 	auto newJobCount = dist(engine) % 100;
 	for (int i = 0;i < newJobCount;++i)
 	{
-		job = JobManager::Instance().AllocateJob(type, INVALID_JOB_HANDLE, []() {std::cout << "This is extra job!"; });
-		JobManager::Instance().RunJob(job);
+		if (foreground)
+		{
+			QUICK_JOB_RUN(SpawnExtraJob, []() {std::cout << "This is extra job!"; });
+		}
+		else
+		{
+			SLOW_JOB_RUN(SpawnExtraJob, []() {std::cout << "This is extra job!"; });
+		}
 	}
 	int a = 0;
 	auto loopCount = dist(engine);
@@ -65,16 +78,16 @@ void job_spawn(std::uint64_t currentJob, std::uint64_t jobCount)
 void task_generation_job()
 {
 	std::vector<JobHandle> jobs;
-	auto masterJob = JobManager::Instance().AllocateJob(JobType::JOB_TYPE_FOREGROUND, INVALID_JOB_HANDLE, []() {std::cout << "Master job created!" << std::endl; });
+	auto masterJob = NEW_QUICK_JOB(INVALID_JOB_HANDLE, []() {std::cout << "Master job created!" << std::endl; });
 	jobs.push_back(masterJob);
 	for (int i = 0;i < 2;i++)
 	{
-		auto job = JobManager::Instance().AllocateJob(JobType::JOB_TYPE_FOREGROUND, masterJob, job_spawn, 0, 2);
+		auto job = NEW_QUICK_JOB(masterJob, job_spawn, 0, 2);
 		jobs.push_back(job);
 	}
 	for (auto job : jobs)
-		JobManager::Instance().RunJob(job);
-	JobManager::Instance().WaitForCompletion(masterJob);
+		JOB_START(job);
+	JOB_WAIT(masterJob);
 	std::cout << "All calculation job done!shutting up job system!" << std::endl;
 	//JobManager::Instance().ShutDown();
 	//std::cout << "JobSystem shut down!" << std::endl;
@@ -138,17 +151,18 @@ private:
 
 void hello()
 {
-	auto masterJob = JobManager::Instance().AllocateJob(JobType::JOB_TYPE_FOREGROUND, INVALID_JOB_HANDLE, []() {});
+	//auto masterJob = JobManager::Instance().AllocateJob(JobType::JOB_TYPE_FOREGROUND, INVALID_JOB_HANDLE, []() {});
+	auto masterJob = NEW_QUICK_JOB(INVALID_JOB_HANDLE, []() {});
 	std::vector<JobHandle> jobs;
 	jobs.push_back(masterJob);
 	for (std::size_t i = 0;i < 2;++i)
 	{
-		auto job = JobManager::Instance().AllocateJob(JobType::JOB_TYPE_FOREGROUND, masterJob, task_generation_job);
+		auto job = NEW_QUICK_JOB(masterJob, task_generation_job);
 		jobs.push_back(job);
 	}
-	for (auto handle : jobs)
-		JobManager::Instance().RunJob(handle);
-	JobManager::Instance().WaitForCompletion(masterJob);
+	for (auto job : jobs)
+		JOB_START(job);
+	JOB_WAIT(masterJob);
 
 }
 
