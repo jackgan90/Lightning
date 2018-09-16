@@ -3,7 +3,19 @@
 #include <cstdint>
 #include <random>
 #include <type_traits>
+#include <functional>
 #include "murmurhash3.h"
+
+#define PLAIN_OBJECT_HASH_SPECILIZATION(Class)\
+namespace std{\
+	template<> struct std::hash<Class>\
+	{\
+		std::size_t operator()(const Class& state)const noexcept\
+		{\
+			return state.GetHash();\
+		}\
+	};\
+}\
 
 namespace Lightning
 {

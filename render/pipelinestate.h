@@ -1,5 +1,4 @@
 #pragma once
-#include <functional>
 #include <unordered_map>
 #include <cstdint>
 #include <boost/functional/hash.hpp>
@@ -9,19 +8,6 @@
 #include "vertexbuffer.h"
 #include "renderconstants.h"
 #include "types/rect.h"
-
-#define CUSTOM_HASH_SPEC(Class)\
-namespace std\
-{\
-	template<> struct hash<Lightning::Render::##Class>\
-	{\
-		std::size_t operator()(const Lightning::Render::##Class& state)const noexcept\
-		{\
-			return state.GetHash();\
-		}\
-	};\
-}\
-
 
 namespace Lightning
 {
@@ -182,11 +168,11 @@ namespace Lightning
 
 	}
 }
-
-CUSTOM_HASH_SPEC(RasterizerState)
-CUSTOM_HASH_SPEC(BlendState)
-CUSTOM_HASH_SPEC(DepthStencilState)
-CUSTOM_HASH_SPEC(VertexInputLayout)
-CUSTOM_HASH_SPEC(Viewport)
-CUSTOM_HASH_SPEC(ScissorRect)
-CUSTOM_HASH_SPEC(PipelineState)
+PLAIN_OBJECT_HASH_SPECILIZATION(Lightning::Render::BlendState)
+PLAIN_OBJECT_HASH_SPECILIZATION(Lightning::Render::RasterizerState)
+PLAIN_OBJECT_HASH_SPECILIZATION(Lightning::Render::PipelineState)
+PLAIN_OBJECT_HASH_SPECILIZATION(Lightning::Render::ScissorRect)
+PLAIN_OBJECT_HASH_SPECILIZATION(Lightning::Render::Viewport)
+PLAIN_OBJECT_HASH_SPECILIZATION(Lightning::Render::VertexInputLayout)
+PLAIN_OBJECT_HASH_SPECILIZATION(Lightning::Render::DepthStencilState)
+PLAIN_OBJECT_HASH_SPECILIZATION(Lightning::Render::StencilFace)
