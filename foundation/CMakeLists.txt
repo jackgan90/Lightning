@@ -2,19 +2,12 @@ project(foundation)
 message(STATUS "Configuring project foundation")
 
 set(MEMORY_HEADERS	memory/imemoryallocator.h
-					memory/basememoryallocator.h
-					memory/allocatormanager.h
-					memory/memorysystem.h
-					memory/leakfreeobject.h
-					memory/allocatorid.h
 					memory/poolallocator.h
 					memory/stackallocator.h
 					memory/ringallocator.h
 					memory/memorypool.h)
 
-set(MEMORY_SOURCES	memory/basememoryallocator.cpp
-					memory/allocatormanager.cpp
-					memory/ringallocator.cpp)
+set(MEMORY_SOURCES	memory/ringallocator.cpp)
 
 set(HEADERS	common.h
 			timesystem.h

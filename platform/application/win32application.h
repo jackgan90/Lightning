@@ -4,7 +4,6 @@
 #include "iwindow.h"
 #include "windowmanager.h"
 #include "filesystem.h"
-#include "memorysystem.h"
 
 namespace Lightning
 {

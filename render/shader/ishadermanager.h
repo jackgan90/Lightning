@@ -2,14 +2,12 @@
 #include <string>
 #include <unordered_map>
 #include <memory>
-#include "imemoryallocator.h"
 #include "ishader.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::IMemoryAllocator;
 		class IShaderManager
 		{
 		public:

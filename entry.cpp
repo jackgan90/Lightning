@@ -3,7 +3,6 @@
 #include "win32application.h"
 #endif
 #include "logger.h" //for logging
-#include "memorysystem.h"
 
 using Lightning::Foundation::logger;
 using Lightning::Foundation::LogLevel;
