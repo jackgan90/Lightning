@@ -190,7 +190,12 @@ namespace Lightning
 
 		SharedVertexBufferPtr D3D12Device::CreateVertexBuffer(std::uint32_t bufferSize, const std::vector<VertexComponent>& components)
 		{
-			return std::make_shared<D3D12VertexBuffer>(m_device.Get(), bufferSize, components);
+			const VertexComponent *comps{ nullptr };
+			if (!components.empty())
+			{
+				comps = &components[0];
+			}
+			return std::make_shared<D3D12VertexBuffer>(m_device.Get(), bufferSize, comps, components.size());
 		}
 
 		SharedIndexBufferPtr D3D12Device::CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)
@@ -406,7 +411,7 @@ namespace Lightning
 				shaders.push_back(state.hs);
 			if (state.ds)
 				shaders.push_back(state.ds);
-			UpdatePSOInputLayout(state.inputLayouts);
+			UpdatePSOInputLayout(state.inputLayouts, state.layoutCount);
 			auto rootSignature = GetRootSignature(shaders);
 			m_pipelineDesc.pRootSignature = rootSignature.Get();
 			m_pipelineDesc.PrimitiveTopologyType = D3D12TypeMapper::MapPrimitiveType(state.primType);
@@ -441,11 +446,13 @@ namespace Lightning
 			m_defaultShaders[ShaderType::VERTEX] = m_shaderMgr->CreateShaderFromSource(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
 			m_defaultShaders[ShaderType::FRAGMENT] = m_shaderMgr->CreateShaderFromSource(ShaderType::FRAGMENT, "[Built-in]default.ps", DEFAULT_PS_SOURCE, ShaderDefine()); 
 			m_devicePipelineState.vs = m_defaultShaders[ShaderType::VERTEX].get();
-			VertexComponent defaultComponent{ EngineSemantics[0], 0, RenderFormat::R32G32B32_FLOAT, 0, false, 0};
+			VertexComponent defaultComponent;
 			VertexInputLayout layout;
 			layout.slot = 0;
-			layout.components.push_back(defaultComponent);
-			m_devicePipelineState.inputLayouts.push_back(layout);
+			layout.components = &defaultComponent;
+			layout.componentCount = 1;
+			m_devicePipelineState.inputLayouts = &layout;
+			m_devicePipelineState.layoutCount = 1;
 			m_devicePipelineState.depthStencilState.depthTestEnable = false;
 			m_devicePipelineState.primType = PrimitiveType::TRIANGLE_LIST;
 			m_devicePipelineState.outputRenderTargetCount = 0;
@@ -493,26 +500,28 @@ namespace Lightning
 			}
 		}
 
-		void D3D12Device::UpdatePSOInputLayout(const std::vector<VertexInputLayout>& inputLayouts)
+		void D3D12Device::UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::uint8_t  layoutCount)
 		{
 			D3D12_INPUT_LAYOUT_DESC& inputLayoutDesc = m_pipelineDesc.InputLayout;
-			if (inputLayouts.empty())
+			if (layoutCount == 0)
 			{
 				inputLayoutDesc.NumElements = 0;
 				inputLayoutDesc.pInputElementDescs = nullptr;
 				return;
 			}
 			std::size_t inputElementCount{ 0 };
-			for (const auto& inputLayout : inputLayouts)
+			for (std::size_t i = 0;i < layoutCount;++i)
 			{
-				inputElementCount += inputLayout.components.size();
+				inputElementCount += inputLayouts[i].componentCount;
 			}
 			auto pInputElementDesc = g_RenderAllocator.Allocate<D3D12_INPUT_ELEMENT_DESC>(inputElementCount);
 			std::size_t i = 0;
-			for (const auto& inputLayout : inputLayouts)
+			for (int j = 0;j < layoutCount;++j)
 			{
-				for (const auto& component : inputLayout.components)
+				auto& inputLayout = inputLayouts[j];
+				for (int k = 0;k < inputLayouts[j].componentCount;++k)
 				{
+					auto& component = inputLayouts[j].components[k];
 					pInputElementDesc[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
 					pInputElementDesc[i].Format = D3D12TypeMapper::MapRenderFormat(component.format);
 					pInputElementDesc[i].InputSlot = inputLayout.slot;

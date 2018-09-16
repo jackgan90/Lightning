@@ -9,7 +9,8 @@ set(MEMORY_HEADERS	memory/imemoryallocator.h
 					memory/allocatorid.h
 					memory/poolallocator.h
 					memory/stackallocator.h
-					memory/ringallocator.h)
+					memory/ringallocator.h
+					memory/memorypool.h)
 
 set(MEMORY_SOURCES	memory/basememoryallocator.cpp
 					memory/allocatormanager.cpp
@@ -24,12 +25,15 @@ set(HEADERS	common.h
 			foundationexportdef.h
 			singleton.h
 			counter.h
+			plainobject.h
+			murmurhash3.h
 			enumoperation.h)
 set(SOURCES common.cpp
 			filesystem.cpp
 			logger.cpp
 			configmanager.cpp
 			filesystemfactory.cpp
+			murmurhash3.cpp
 			timesystem.cpp)
 
 list(APPEND HEADERS ${MEMORY_HEADERS})

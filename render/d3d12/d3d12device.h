@@ -78,7 +78,7 @@ namespace Lightning
 			using RootSignatureMap = std::unordered_map<std::size_t, ComPtr<ID3D12RootSignature>>;
 			void CreateNativeDevice(IDXGIFactory4* factory);
 			void ApplyShader(IShader* pShader);
-			void UpdatePSOInputLayout(const std::vector<VertexInputLayout>& inputLayouts);
+			void UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::uint8_t  layoutCount);
 			void SetUpDefaultPipelineStates();
 			ComPtr<ID3D12RootSignature> GetRootSignature(const std::vector<IShader*>& shaders);
 			ComPtr<ID3D12PipelineState> CreateAndCachePipelineState(const PipelineState& pState, std::size_t hashValue);

@@ -176,7 +176,6 @@ namespace Lightning
 
 		void Renderer::WaitForPreviousFrame(bool waitAll)
 		{
-			HRESULT hr;
 			std::vector<UINT> bufferIndice;
 			if (!waitAll)
 			{

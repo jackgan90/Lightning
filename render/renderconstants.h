@@ -1,11 +1,12 @@
 #pragma once
+#include <cstdint>
 #include "enumoperation.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		enum class RenderFormat
+		enum class RenderFormat : std::uint8_t
 		{
 			UNDEFINED,
 			R32G32B32_FLOAT,
@@ -15,7 +16,7 @@ namespace Lightning
 			//TODO : there're more formats to add here...
 		};
 
-		enum class PrimitiveType
+		enum class PrimitiveType : std::uint8_t
 		{
 			POINT_LIST,
 			LINE_LIST,
@@ -24,7 +25,7 @@ namespace Lightning
 			TRIANGLE_STRIP
 		};
 
-		enum class DepthStencilClearFlags : unsigned int
+		enum class DepthStencilClearFlags : std::uint8_t
 		{
 			CLEAR_DEPTH = 0x01,
 			CLEAR_STENCIL = 0x02,

@@ -19,9 +19,6 @@ namespace Lightning
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
 		using WindowSystem::WinWindow;
-		using Foundation::RingAllocator;
-
-		extern RingAllocator g_RenderAllocator;
 
 		D3D12Renderer::~D3D12Renderer()
 		{

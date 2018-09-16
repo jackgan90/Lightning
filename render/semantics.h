@@ -1,11 +1,12 @@
 #pragma once
+#include <cstdint>
 
 namespace Lightning
 {
 	namespace Render
 	{
 		using SemanticIndex = unsigned int;
-		enum class RenderSemantics
+		enum class RenderSemantics : std::uint8_t
 		{
 			UNKNOWN,
 			POSITION,
@@ -21,7 +22,7 @@ namespace Lightning
 		struct SemanticItem
 		{
 			RenderSemantics semantic;
-			char name[32];
+			char* name;
 		};
 
 		const SemanticItem EngineSemantics[] = {

@@ -26,6 +26,7 @@ namespace Lightning
 
 		void ForwardRenderPass::CommitPipelineStates(const RenderItem& item)
 		{
+			static std::vector<VertexInputLayout> layouts;
 			PipelineState state{};
 			//TODO : set render target count based on model setting
 			state.outputRenderTargetCount = 1;
@@ -42,7 +43,18 @@ namespace Lightning
 			state.primType = item.geometry->primType;
 			//TODO : Apply other pipeline states(blend state, rasterizer state etc)
 			auto pDevice = Renderer::Instance()->GetDevice();
-			state.inputLayouts = GetInputLayouts(item.geometry);
+			layouts.clear();
+			GetInputLayouts(item.geometry, layouts);
+			if (!layouts.empty())
+			{
+				state.inputLayouts = &layouts[0];
+				state.layoutCount = static_cast<std::uint8_t>(layouts.size());
+			}
+			else
+			{
+				state.inputLayouts = nullptr;
+				state.layoutCount = 0;
+			}
 			pDevice->ApplyPipelineState(state);
 		}
 
@@ -74,22 +86,32 @@ namespace Lightning
 			}
 		}
 
-		std::vector<VertexInputLayout> ForwardRenderPass::GetInputLayouts(const SharedGeometryPtr& geometry)
+		void ForwardRenderPass::GetInputLayouts(const SharedGeometryPtr& geometry, std::vector<VertexInputLayout>& layouts)
 		{
-			std::vector<VertexInputLayout> layouts;
+			static std::array<std::vector<VertexComponent>, MAX_GEOMETRY_BUFFER_COUNT> components;
 			for (std::size_t i = 0;i < MAX_GEOMETRY_BUFFER_COUNT;i++)
 			{
 				if (!geometry->vbs[i])
 					continue;
+				components[i].clear();
 				VertexInputLayout layout;
 				layout.slot = i;
 				for (std::size_t j = 0;j < geometry->vbs[i]->GetComponentCount();++j)
 				{
-					layout.components.push_back(geometry->vbs[i]->GetComponentInfo(j));
+					components[i].push_back(geometry->vbs[i]->GetComponentInfo(j));
+				}
+				if (!components[i].empty())
+				{
+					layout.components = &components[i][0];
+					layout.componentCount = static_cast<std::uint8_t>(components[i].size());
+				}
+				else
+				{
+					layout.components = nullptr;
+					layout.componentCount = 0;
 				}
 				layouts.push_back(layout);
 			}
-			return layouts;
 		}
 
 		void ForwardRenderPass::CommitBuffers(const SharedGeometryPtr& geometry)

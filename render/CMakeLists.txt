@@ -58,13 +58,17 @@ set(SHADER_SOURCES	shader/shaderdefine.cpp
 					shader/shadermanager.cpp
 					shader/shader.cpp)
 
-list(APPEND HEADERS ${TYPES_HEADERS} ${SHADER_HEADERS})
-list(APPEND SOURCES ${SHADER_SOURCES})
+set(UTILITY_HEADERS renderallocator.h)
+set(UTILITY_SOURCES renderallocator.cpp)
+
+list(APPEND HEADERS ${TYPES_HEADERS} ${SHADER_HEADERS} ${UTILITY_HEADERS})
+list(APPEND SOURCES ${SHADER_SOURCES} ${UTILITY_SOURCES})
 
 source_group("types" FILES ${TYPES_HEADERS})
 source_group("shader" FILES 
 							${SHADER_HEADERS}
 							${SHADER_SOURCES})
+source_group("utility" FILES ${UTILITY_HEADERS} ${UTILITY_SOURCES})
 
 if (WIN32)
 	add_definitions(-DLIGHTNING_WIN32)

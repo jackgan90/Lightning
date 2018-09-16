@@ -1,5 +1,6 @@
 #pragma once
 #include <boost/functional/hash.hpp>
+#include "plainobject.h"
 #include "gpubuffer.h"
 #include "semantics.h"
 
@@ -7,8 +8,18 @@ namespace Lightning
 {
 	namespace Render
 	{
-		struct VertexComponent
+		struct VertexComponent : Foundation::PlainObject<VertexComponent>
 		{
+			VertexComponent():
+				semanticItem(EngineSemantics[0]),
+				semanticIndex(0),
+				format(RenderFormat::R32G32B32_FLOAT),
+				offset(0),
+				isInstance(false),
+				instanceStepRate(0)
+			{
+
+			}
 			SemanticItem semanticItem;
 			SemanticIndex semanticIndex;
 			RenderFormat format;
@@ -18,46 +29,6 @@ namespace Lightning
 			bool isInstance;
 			//if this attribute is an instance attribute,specify after drawing how many instances should the attribute move to next value
 			unsigned int instanceStepRate;
-
-			bool operator==(const VertexComponent& component)const noexcept
-			{
-				if (semanticItem.semantic != component.semanticItem.semantic)
-				{
-					return false;
-				}
-
-				if (semanticIndex != component.semanticIndex)
-				{
-					return false;
-				}
-
-				if (format != component.format)
-				{
-					return false;
-				}
-
-				if (offset != component.offset)
-				{
-					return false;
-				}
-
-				if (isInstance != component.isInstance)
-				{
-					return false;
-				}
-
-				if (instanceStepRate != component.instanceStepRate)
-				{
-					return false;
-				}
-
-				return true;
-			}
-
-			bool operator!=(const VertexComponent& component)const noexcept
-			{
-				return !(*this == component);
-			}
 
 		};
 

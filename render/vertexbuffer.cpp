@@ -7,22 +7,35 @@ namespace Lightning
 {
 	namespace Render
 	{
-		VertexBuffer::VertexBuffer(uint32_t bufferSize, const std::vector<VertexComponent>& components):
-			IVertexBuffer(bufferSize),m_components(components)
+		VertexBuffer::VertexBuffer(uint32_t bufferSize, const VertexComponent *components, std::uint8_t componentCount):
+			IVertexBuffer(bufferSize), m_components(nullptr), m_componentCount(componentCount)
 			,m_vertexSize(0), m_vertexCount(0)
 		{
+			if (m_componentCount)
+			{
+				m_components = new VertexComponent[m_componentCount];
+				std::memcpy(m_components, components, m_componentCount * sizeof(VertexComponent));
+			}
 			CalculateVertexSize();
+		}
+
+		VertexBuffer::~VertexBuffer()
+		{
+			if (m_components)
+			{
+				delete[] m_components;
+			}
 		}
 
 		const VertexComponent& VertexBuffer::GetComponentInfo(size_t componentIndex)
 		{
-			assert(componentIndex < m_components.size());
+			assert(componentIndex < m_componentCount);
 			return m_components[componentIndex];
 		}
 
 		std::uint8_t VertexBuffer::GetComponentCount()
 		{
-			return static_cast<std::uint8_t>(m_components.size());
+			return m_componentCount;
 		}
 
 		std::uint32_t VertexBuffer::GetVertexCount()const 
@@ -46,9 +59,9 @@ namespace Lightning
 		void VertexBuffer::CalculateVertexSize()
 		{
 			m_vertexSize = 0;
-			for (const auto& component : m_components)
+			for (std::size_t i = 0;i < m_componentCount;++i)
 			{
-				m_vertexSize += GetVertexFormatSize(component.format);
+				m_vertexSize += GetVertexFormatSize(m_components[i].format);
 			}
 		}
 	}

@@ -9,7 +9,7 @@ namespace Lightning
 		class LIGHTNING_RENDER_API D3D12VertexBuffer : public VertexBuffer
 		{
 		public:
-			D3D12VertexBuffer(ID3D12Device* pDevice, std::uint32_t bufferSize, const std::vector<VertexComponent>& components);
+			D3D12VertexBuffer(ID3D12Device* pDevice, std::uint32_t bufferSize, const VertexComponent *components, std::uint8_t componentCount);
 			D3D12_VERTEX_BUFFER_VIEW GetBufferView() { return m_bufferView; }
 			ComPtr<ID3D12Resource> GetResource() { return m_resource.GetDefaultHeap(); }
 			ComPtr<ID3D12Resource> GetIntermediateResource() { return m_resource.GetUploadHeap(); }
