@@ -12,16 +12,14 @@ namespace Lightning
 {
 	namespace App
 	{
-		using Foundation::logger;
-		using Foundation::LogLevel;
 		using Foundation::FileSystemFactory;
 		using Scene::SceneManager;
 		Application::Application()
 		{
 			mFileSystem = FileSystemFactory::Instance()->CreateFileSystem();
 			mWindowMgr = std::make_unique<WindowManager>();
-			logger.Log(LogLevel::Info, "File system created!Current working directory:%s", mFileSystem->GetRoot().c_str());
-			logger.Log(LogLevel::Info, "Application initialized successfully!");
+			LOG_INFO("File system created!Current working directory:%s", mFileSystem->GetRoot().c_str());
+			LOG_INFO("Application initialized successfully!");
 		}
 
 		Application::~Application()
@@ -31,7 +29,7 @@ namespace Lightning
 				mRenderer->ShutDown();
 			mRenderer.reset();
 			mWindowMgr.reset();
-			logger.Log(LogLevel::Info, "Application quit.");
+			LOG_INFO("Application quit.");
 		}
 
 		void Application::Start()

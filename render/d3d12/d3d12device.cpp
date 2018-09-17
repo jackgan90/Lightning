@@ -22,8 +22,6 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::LogLevel;
-		using Foundation::logger;
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
 		using Foundation::RingAllocator;
@@ -433,7 +431,7 @@ namespace Lightning
 			auto hr = mDevice->CreateGraphicsPipelineState(&mPipelineDesc, IID_PPV_ARGS(&pipelineState));
 			if (FAILED(hr))
 			{
-				logger.Log(LogLevel::Error, "Failed to apply pipeline state!");
+				LOG_ERROR("Failed to apply pipeline state!");
 				return pipelineState;
 			} 
 			mPipelineCache.emplace(hashValue, pipelineState);

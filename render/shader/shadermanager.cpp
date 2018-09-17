@@ -16,8 +16,6 @@ namespace Lightning
 		using Foundation::FilePointerType;
 		using Foundation::FileAccess;
 		using Foundation::FileAnchor;
-		using Foundation::logger;
-		using Foundation::LogLevel;
 		using Foundation::RingAllocator;
 
 		extern RingAllocator g_RenderAllocator;
@@ -38,7 +36,7 @@ namespace Lightning
 			SharedShaderPtr pShader = CreateConcreteShader(type, shaderName, shaderSource, defineMap);
 			if(pShader)
 			{
-				logger.Log(LogLevel::Info, "Succeeded in compiling shader:%s", pShader->GetName().c_str());
+				LOG_INFO("Succeeded in compiling shader:%s", pShader->GetName().c_str());
 				mShaders[hash] = pShader;
 			}
 			return pShader;
@@ -53,13 +51,13 @@ namespace Lightning
 			SharedFilePtr shaderFile = mFs->FindFile(shaderFileName, FileAccess::READ);
 			if (!shaderFile)
 			{
-				logger.Log(LogLevel::Error, "Shader file is missing!filename:%s", shaderFileName.c_str());
+				LOG_ERROR("Shader file is missing!filename:%s", shaderFileName.c_str());
 				return SharedShaderPtr();
 			}
 			auto size = shaderFile->GetSize();
 			if (size <= 0)
 			{
-				logger.Log(LogLevel::Error, "Shader file is empty!file:", shaderFile->GetPath().c_str());
+				LOG_ERROR("Shader file is empty!file:", shaderFile->GetPath().c_str());
 				return SharedShaderPtr();
 			}
 			shaderFile->SetFilePointer(FilePointerType::Read, FileAnchor::Begin, 0);
@@ -67,7 +65,7 @@ namespace Lightning
 			auto readSize = shaderFile->Read(buffer, size);
 			if (readSize < size)
 			{
-				logger.Log(LogLevel::Error, "Failed to read shader file.Shader name:%s, file size:%d, read size:%d", shaderFile->GetPath().c_str(), size, readSize);
+				LOG_ERROR("Failed to read shader file.Shader name:%s, file size:%d, read size:%d", shaderFile->GetPath().c_str(), size, readSize);
 				return SharedShaderPtr();
 			}
 			buffer[size] = 0;

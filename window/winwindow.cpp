@@ -7,8 +7,6 @@ namespace Lightning
 {
 	namespace WindowSystem
 	{
-		using Lightning::Foundation::logger;
-		using Lightning::Foundation::LogLevel;
 		using std::vector;
 		char* WinWindow::sWindowClassName = "DefaultWin32Window";
 		
@@ -36,10 +34,10 @@ namespace Lightning
 				break;
 			}
 			case WM_CREATE:
-				logger.Log(LogLevel::Info, "Win32 window created!");
+				LOG_INFO("Win32 window created!");
 				break;
 			case WM_DESTROY:
-				logger.Log(LogLevel::Info, "WM_DESTROY received!");
+				LOG_INFO("WM_DESTROY received!");
 				PostQuitMessage(0);
 				break;
 			default:
@@ -54,7 +52,7 @@ namespace Lightning
 			HINSTANCE hInstance = ::GetModuleHandle(NULL);
 			RegisterWindowClass(hInstance);
 			CreateWindowInternal(hInstance);
-			logger.Log(LogLevel::Info, "Create window succeed!");
+			LOG_INFO("Create window succeed!");
 		}
 
 		void WinWindow::RegisterWindowClass(HINSTANCE hInstance)
@@ -77,7 +75,7 @@ namespace Lightning
 			{
 				throw WindowInitException("Register window class failed!ErrorCode : 0x%x", ::GetLastError());
 			}
-			logger.Log(LogLevel::Info, "Register window class succeed!");
+			LOG_INFO("Register window class succeed!");
 		}
 
 		void WinWindow::CreateWindowInternal(HINSTANCE hInstance)
@@ -88,7 +86,7 @@ namespace Lightning
 			windowRect.top = 0;
 			windowRect.bottom = mHeight;
 			::AdjustWindowRectEx(&windowRect, WS_OVERLAPPEDWINDOW, FALSE, NULL);
-			logger.Log(LogLevel::Debug, "Window width:%d, window height:%d", windowRect.right - windowRect.left, windowRect.bottom - windowRect.top);
+			LOG_DEBUG("Window width:%d, window height:%d", windowRect.right - windowRect.left, windowRect.bottom - windowRect.top);
 			HWND hWnd = ::CreateWindowEx(0, sWindowClassName, mCaption.c_str(), 
 				WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 
 				windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, NULL, NULL, hInstance, static_cast<LPVOID>(this));
@@ -107,7 +105,7 @@ namespace Lightning
 				::DestroyWindow(mHwnd);
 				mHwnd = nullptr;
 			}
-			logger.Log(LogLevel::Info, "Win32 window destructed!");
+			LOG_INFO("Win32 window destructed!");
 		}
 
 		bool WinWindow::Show(bool show)

@@ -8,8 +8,6 @@ namespace Lightning
 {
 	namespace App
 	{
-		using Foundation::LogLevel;
-		using Foundation::logger;
 		using Render::RendererFactory;
 		Win32Application::Win32Application():Application()
 		{
@@ -23,7 +21,7 @@ namespace Lightning
 		{
 			if (mWindow)
 			{
-				logger.Log(LogLevel::Info, "Win32Application start running!");
+				LOG_INFO("Win32Application start running!");
 				//the call will block
 				if(!mWindow->Show(true))
 					return 0;

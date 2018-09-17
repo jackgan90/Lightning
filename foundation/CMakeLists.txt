@@ -5,9 +5,11 @@ set(MEMORY_HEADERS	memory/imemoryallocator.h
 					memory/poolallocator.h
 					memory/stackallocator.h
 					memory/ringallocator.h
-					memory/memorypool.h)
+					memory/memorypool.h
+					memory/memorymonitor.h)
 
-set(MEMORY_SOURCES	memory/ringallocator.cpp)
+set(MEMORY_SOURCES	memory/ringallocator.cpp
+					memory/memorymonitor.cpp)
 
 set(HEADERS	common.h
 			timesystem.h
@@ -43,8 +45,7 @@ endif()
 if(LIGHTNING_USE_D3D12)
 	add_definitions(-DLIGHTNING_USE_D3D12)
 endif()
-add_definitions(-DLIGHTNING_INTERNAL_LOGGER
-				-DBOOST_FILESYSTEM_NO_DEPRECATED)
+add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
 
 define_dll_export_macro(FOUNDATION)
 

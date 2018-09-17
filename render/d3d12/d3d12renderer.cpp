@@ -14,15 +14,13 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::logger;
-		using Foundation::LogLevel;
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
 		using WindowSystem::WinWindow;
 
 		D3D12Renderer::~D3D12Renderer()
 		{
-			logger.Log(LogLevel::Info, "Start to clean up render resources.");
+			LOG_INFO("Start to clean up render resources.");
 			//Note:we should release resources in advance to make REPORT_LIVE_OBJECTS work correctly because if we let the share pointer
 			//destructor run out of the scope,we cannot trace the objects 
 			//device , swap chain and depth stencil buffer are parent class's members but we still release them here because we need to track alive resources
@@ -40,7 +38,7 @@ namespace Lightning
 			{
 				throw DeviceInitException("Failed to create DXGI factory!");
 			}
-			logger.Log(LogLevel::Info, "Initialize D3D12 render context succeeded!");
+			LOG_INFO("Initialize D3D12 render context succeeded!");
 		}
 
 #ifndef NDEBUG
@@ -49,7 +47,7 @@ namespace Lightning
 			auto res = ::D3D12GetDebugInterface(IID_PPV_ARGS(&mD3D12Debug));
 			if (FAILED(res))
 			{
-				logger.Log(LogLevel::Warning, "Failed to get d3d12 debug interface!You should enable Graphics Tools optional feature!ErrorCode : 0x%x", res);
+				LOG_WARNING("Failed to get d3d12 debug interface!You should enable Graphics Tools optional feature!ErrorCode : 0x%x", res);
 			}
 			else
 			{
@@ -115,7 +113,7 @@ namespace Lightning
 			HMODULE dxgiDebugHandle = ::LoadLibrary("Dxgidebug.dll");
 			if (!dxgiDebugHandle)
 			{
-				logger.Log(LogLevel::Warning, "Can't get dxgidebug.dll module,errorCode:0x%x", ::GetLastError());
+				LOG_WARNING("Can't get dxgidebug.dll module,errorCode:0x%x", ::GetLastError());
 				return;
 			}
 			//the __stdcall declaration is required because windows APIs conform to stdcall convention
@@ -124,7 +122,7 @@ namespace Lightning
 			DXGIGetDebugInterfaceFunc pDXGIGetDebugInterface = reinterpret_cast<DXGIGetDebugInterfaceFunc>(::GetProcAddress(dxgiDebugHandle, "DXGIGetDebugInterface"));
 			if (!pDXGIGetDebugInterface)
 			{
-				logger.Log(LogLevel::Warning, "Failed to get debug interface!");
+				LOG_WARNING("Failed to get debug interface!");
 				return;
 			}
 			pDXGIGetDebugInterface(IID_PPV_ARGS(&mDXGIDebug));

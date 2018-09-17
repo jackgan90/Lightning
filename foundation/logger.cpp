@@ -5,7 +5,6 @@ namespace Lightning
 	namespace Foundation
 	{
 		const char* LogFileName = "log.txt";
-		LIGHTNING_FOUNDATION_API Logger logger;
 		Logger::Logger()
 		{
 			mFs.open(LogFileName, std::fstream::out);

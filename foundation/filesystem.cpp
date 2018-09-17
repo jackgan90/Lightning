@@ -8,7 +8,6 @@ namespace Lightning
 {
 	namespace Foundation
 	{
-		extern Logger logger;
 		GeneralFile::GeneralFile():mSizeDirty(true), mFile(nullptr), mAccess(FileAccess::READ)
 		{
 
@@ -178,7 +177,7 @@ namespace Lightning
 			}
 			catch (const boost::filesystem::filesystem_error& e)
 			{
-				logger.Log(LogLevel::Error, e.what());
+				LOG_ERROR(e.what());
 			}
 			return SharedFilePtr();
 		}

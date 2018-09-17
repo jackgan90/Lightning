@@ -7,8 +7,6 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::logger;
-		using Foundation::LogLevel;
 		D3D12DescriptorHeapManager::D3D12DescriptorHeapManager() :mCurrentID(0)
 		{
 
@@ -16,7 +14,7 @@ namespace Lightning
 
 		D3D12DescriptorHeapManager::~D3D12DescriptorHeapManager()
 		{
-			logger.Log(LogLevel::Info, "Descriptor heap manager destruct!");
+			LOG_INFO("Descriptor heap manager destruct!");
 		}
 
 		ID3D12Device* D3D12DescriptorHeapManager::GetNativeDevice()
@@ -55,7 +53,7 @@ namespace Lightning
 			auto hr = pDevice->CreateDescriptorHeap(&heapInfo.desc, IID_PPV_ARGS(&heapInfo.heap));
 			if (FAILED(hr))
 			{
-				logger.Log(LogLevel::Error, "Failed to create d3d12 descriptor heap!type:%d, flags:%d, number of descriptors:%d", 
+				LOG_ERROR("Failed to create d3d12 descriptor heap!type:%d, flags:%d, number of descriptors:%d", 
 					heapInfo.desc.Type, heapInfo.desc.Flags, heapInfo.desc.NumDescriptors);
 				return res;
 			}

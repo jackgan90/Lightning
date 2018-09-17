@@ -169,7 +169,7 @@ namespace Lightning
 		{
 			if (argument.type == ShaderArgumentType::UNKNOWN)
 			{
-				logger.Log(LogLevel::Warning, "Unknown shader argument type when set shader %s", mName.c_str());
+				LOG_WARNING("Unknown shader argument type when set shader %s", mName.c_str());
 				return;
 			}
 			switch (argument.type)
@@ -350,7 +350,7 @@ namespace Lightning
 				std::memcpy(compileErrorBuffer, errorLog->GetBufferPointer(), compileErrorBufferSize);
 				compileErrorBuffer[compileErrorBufferSize] = 0;
 				ss << compileErrorBuffer;
-				logger.Log(LogLevel::Error, "%s", ss.str().c_str());
+				LOG_ERROR("%s", ss.str().c_str());
 				throw ShaderCompileException("Failed to compile shader!");
 			}
 		}

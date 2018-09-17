@@ -14,8 +14,6 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::logger;
-		using Foundation::LogLevel;
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
 		using WindowSystem::WinWindow;

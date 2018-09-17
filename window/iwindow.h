@@ -16,7 +16,7 @@ namespace Lightning
 			template<typename... Args>
 			WindowInitException(const char*const w, const Args&... args) : exception(w)
 			{
-				Foundation::logger.Log(Foundation::LogLevel::Error, w, args...);
+				LOG_ERROR(w, args...);
 			}
 		};
 		class LIGHTNING_WINDOW_API IWindow

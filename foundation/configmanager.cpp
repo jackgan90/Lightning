@@ -9,7 +9,6 @@ namespace Lightning
 	{
 		namespace pt = boost::property_tree;
 		const char* ConfigManager::CONFIG_FILE_NAME = "config.xml";
-		extern Logger logger;
 
 		std::string ConfigManager::GetConfigString(const std::string& node_path)
 		{
@@ -28,7 +27,7 @@ namespace Lightning
 			}
 			catch (pt::xml_parser_error e)
 			{
-				logger.Log(LogLevel::Error, "Error in creating ConfigManager %s", e.what());
+				LOG_ERROR("Error in creating ConfigManager %s", e.what());
 				std::exit(EXIT_FAILURE);
 			}
 

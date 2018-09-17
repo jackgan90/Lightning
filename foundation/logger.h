@@ -7,8 +7,18 @@
 //that's not the intent.at any rate when we need to use min semantic we should use std::min
 #undef min
 #endif
+#include "singleton.h"
 #include "timesystem.h"
 #include "foundationexportdef.h"
+
+#define LOG_INFO(text, ...)\
+	Lightning::Foundation::Logger::Instance()->Log(Lightning::Foundation::LogLevel::Info, text, __VA_ARGS__)
+#define LOG_DEBUG(text, ...)\
+	Lightning::Foundation::Logger::Instance()->Log(Lightning::Foundation::LogLevel::Debug, text, __VA_ARGS__)
+#define LOG_WARNING(text, ...)\
+	Lightning::Foundation::Logger::Instance()->Log(Lightning::Foundation::LogLevel::Warning, text, __VA_ARGS__)
+#define LOG_ERROR(text, ...)\
+	Lightning::Foundation::Logger::Instance()->Log(Lightning::Foundation::LogLevel::Error, text, __VA_ARGS__)
 
 namespace Lightning
 {
@@ -22,10 +32,10 @@ namespace Lightning
 			Error
 		};
 
-		class LIGHTNING_FOUNDATION_API Logger
+		class LIGHTNING_FOUNDATION_API Logger : public Singleton<Logger>
 		{
+			friend class Singleton<Logger>;
 		public:
-			Logger();
 			~Logger();
 			template<typename... Args>
 			void Log(LogLevel level, const std::string& text, Args... args)
@@ -42,12 +52,11 @@ namespace Lightning
 				::OutputDebugString(outputBuffer);
 #endif
 			}
+		protected:
+			Logger();
 		private:
 			std::string LogLevelToPrefix(LogLevel level)const;
 			std::fstream mFs;
 		};
-#ifndef LIGHTNING_INTERNAL_LOGGER
-		LIGHTNING_FOUNDATION_API Logger logger;
-#endif
 	}
 } 
