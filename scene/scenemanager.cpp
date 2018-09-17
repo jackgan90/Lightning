@@ -7,17 +7,17 @@ namespace Lightning
 	{
 		void SceneManager::Update()
 		{
-			for (auto& scene : m_scenes)
+			for (auto& scene : mScenes)
 				scene.second->Update();
 		}
 
 		void SceneManager::DestroyScene(const std::uint32_t sceneId)
 		{
-			auto it = m_scenes.find(sceneId);
-			if (it != m_scenes.end())
+			auto it = mScenes.find(sceneId);
+			if (it != mScenes.end())
 			{
 				delete it->second;
-				m_scenes.erase(it);
+				mScenes.erase(it);
 			}
 		}
 
@@ -28,11 +28,11 @@ namespace Lightning
 
 		void SceneManager::DestroyAll()
 		{
-			for (auto it = m_scenes.begin();it != m_scenes.end();++it)
+			for (auto it = mScenes.begin();it != mScenes.end();++it)
 			{
 				delete it->second;
 			}
-			m_scenes.clear();
+			mScenes.clear();
 		}
 
 

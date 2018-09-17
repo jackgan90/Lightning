@@ -24,12 +24,12 @@ namespace Lightning
 
 		ShaderManager::ShaderManager(const SharedFileSystemPtr& fs)
 		{
-			m_fs = fs;
+			mFs = fs;
 		}
 
 		ShaderManager::~ShaderManager()
 		{
-			m_shaders.clear();
+			mShaders.clear();
 		}
 
 		SharedShaderPtr ShaderManager::CreateShaderFromSource(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)
@@ -39,7 +39,7 @@ namespace Lightning
 			if(pShader)
 			{
 				logger.Log(LogLevel::Info, "Succeeded in compiling shader:%s", pShader->GetName().c_str());
-				m_shaders[hash] = pShader;
+				mShaders[hash] = pShader;
 			}
 			return pShader;
 		}
@@ -47,10 +47,10 @@ namespace Lightning
 		SharedShaderPtr ShaderManager::CreateShaderFromFile(ShaderType type, const std::string& shaderFileName, const ShaderDefine& defineMap)
 		{
 			auto hash = Shader::Hash(type, shaderFileName, defineMap);
-			auto it = m_shaders.find(hash);
-			if (it != m_shaders.end())
+			auto it = mShaders.find(hash);
+			if (it != mShaders.end())
 				return it->second;
-			SharedFilePtr shaderFile = m_fs->FindFile(shaderFileName, FileAccess::READ);
+			SharedFilePtr shaderFile = mFs->FindFile(shaderFileName, FileAccess::READ);
 			if (!shaderFile)
 			{
 				logger.Log(LogLevel::Error, "Shader file is missing!filename:%s", shaderFileName.c_str());
@@ -77,8 +77,8 @@ namespace Lightning
 
 		SharedShaderPtr ShaderManager::GetShader(size_t shaderHash)
 		{
-			auto it = m_shaders.find(shaderHash);
-			if (it != m_shaders.end())
+			auto it = mShaders.find(shaderHash);
+			if (it != mShaders.end())
 				return it->second;
 			return SharedShaderPtr();
 		}

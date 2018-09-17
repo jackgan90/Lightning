@@ -11,8 +11,8 @@ namespace Lightning
 		public:
 			Vector() : Matrix < _Scalar, Dimension, 1>({0, 0, 0}) {}
 			Vector(const std::initializer_list<_Scalar>& data) : Matrix<_Scalar, Dimension, 1>(data){}
-			Vector(const Matrix<_Scalar, 1, Dimension>& m): Matrix<_Scalar, Dimension, 1>(m.m_value){}
-			Vector(Matrix<_Scalar, 1, Dimension>&& m): Matrix<_Scalar, Dimension, 1>(std::move(m.m_value)){}
+			Vector(const Matrix<_Scalar, 1, Dimension>& m): Matrix<_Scalar, Dimension, 1>(m.mValue){}
+			Vector(Matrix<_Scalar, 1, Dimension>&& m): Matrix<_Scalar, Dimension, 1>(std::move(m.mValue)){}
 			template<typename S, int Rows, int Columns>
 			Vector(const Matrix<S, Rows, Columns>& v) : Matrix<_Scalar, Dimension, 1>(v){}
 			template<typename S, int Rows, int Columns>
@@ -27,7 +27,7 @@ namespace Lightning
 			Vector(const ScalarPointerType arr, const SizeType size):Matrix<_Scalar, Dimension, 1>(arr, size){}
 			bool operator==(const Matrix<_Scalar, 1, Dimension>& mv)const
 			{
-				return m_value.isApprox(mv.m_value.transpose());
+				return mValue.isApprox(mv.mValue.transpose());
 			}
 			bool operator!=(const Matrix<_Scalar, 1, Dimension>& mv)const
 			{
@@ -35,7 +35,7 @@ namespace Lightning
 			}
 			bool operator==(const Vector<_Scalar, Dimension>& v)const
 			{
-				return m_value.isApprox(v.m_value);
+				return mValue.isApprox(v.mValue);
 			}
 			bool operator!=(const Vector<_Scalar, Dimension>& v)const
 			{
@@ -43,11 +43,11 @@ namespace Lightning
 			}
 			_Scalar& operator[](const int comp) { return Matrix<_Scalar, Dimension, 1>::operator()(comp, 0); }
 			_Scalar operator[](const int comp)const { return Matrix<_Scalar, Dimension, 1>::operator()(comp, 0); }
-			_Scalar Dot(const Vector<_Scalar, Dimension>& v)const { return m_value.dot(v.m_value); }
-			Vector<_Scalar, Dimension> Cross(const Vector<_Scalar, Dimension>& v)const { return Vector(m_value.cross(v.m_value)); }
-			_Scalar Length(){ return m_value.norm(); }
-			void Normalize() { m_value.normalize(); }
-			Vector<_Scalar, Dimension> Normalized()const { return Vector<_Scalar, Dimension>(m_value.normalized()); }
+			_Scalar Dot(const Vector<_Scalar, Dimension>& v)const { return mValue.dot(v.mValue); }
+			Vector<_Scalar, Dimension> Cross(const Vector<_Scalar, Dimension>& v)const { return Vector(mValue.cross(v.mValue)); }
+			_Scalar Length(){ return mValue.norm(); }
+			void Normalize() { mValue.normalize(); }
+			Vector<_Scalar, Dimension> Normalized()const { return Vector<_Scalar, Dimension>(mValue.normalized()); }
 			static const Vector<_Scalar, Dimension> Zero()
 			{
 				static const Vector<_Scalar, Dimension> v;

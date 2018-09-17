@@ -11,21 +11,21 @@ namespace Lightning
 
 		}
 
-		ShaderDefine::ShaderDefine(const DefineMap& map)
+		ShaderDefine::ShaderDefine(const MacroContainer& map)
 		{
-			m_define = map;
-			Utility::erase_if(m_define, m_define.begin(), m_define.end(),
+			mMacros = map;
+			Utility::erase_if(mMacros, mMacros.begin(), mMacros.end(),
 				[&](const std::pair<const std::string, const std::string>& macro) {return macro.first.length() <= 0; });
 		}
 
 		bool ShaderDefine::operator==(const ShaderDefine& define)const
 		{
-			if (m_define.size() != define.m_define.size())
+			if (mMacros.size() != define.mMacros.size())
 				return false;
-			for (auto it = m_define.begin(); it != m_define.end(); ++it)
+			for (auto it = mMacros.begin(); it != mMacros.end(); ++it)
 			{
-				auto it1 = define.m_define.find(it->first);
-				if (it1 == define.m_define.end())
+				auto it1 = define.mMacros.find(it->first);
+				if (it1 == define.mMacros.end())
 					return false;
 				if (it->second != it1->second)
 					return false;
@@ -64,43 +64,43 @@ namespace Lightning
 
 		void ShaderDefine::Combine(const ShaderDefine& define)
 		{
-			std::for_each(define.m_define.begin(), define.m_define.end(), 
-				[&](const std::pair<std::string, std::string>& macro) {if(macro.first.length())m_define[macro.first] = macro.second; });
+			std::for_each(define.mMacros.begin(), define.mMacros.end(), 
+				[&](const std::pair<std::string, std::string>& macro) {if(macro.first.length())mMacros[macro.first] = macro.second; });
 		}
 
 		void ShaderDefine::Exclude(const ShaderDefine& define)
 		{
-			Utility::erase_if(m_define, m_define.begin(), m_define.end(),
+			Utility::erase_if(mMacros, mMacros.begin(), mMacros.end(),
 				[&](const std::pair<const std::string, const std::string>& macro) {return define.HasMacro(macro.first); });
 		}
 
 
 		bool ShaderDefine::HasMacro(const std::string& macroName)const
 		{
-			return m_define.find(macroName) != m_define.end();
+			return mMacros.find(macroName) != mMacros.end();
 		}
 
 		size_t ShaderDefine::GetMacroCount()const
 		{
-			return m_define.size();
+			return mMacros.size();
 		}
 
 
-		const std::string ShaderDefine::GetMacros(const std::string& macroName)const
+		const std::string ShaderDefine::GetMacroValue(const std::string& macroName)const
 		{
-			auto it = m_define.find(macroName);
-			return it == m_define.end() ? "" : it->second;
+			auto it = mMacros.find(macroName);
+			return it == mMacros.end() ? "" : it->second;
 		}
 
 		void ShaderDefine::Define(const std::string& macroName, const std::string& macroValue)
 		{
 			if(macroName.length())
-				m_define[macroName] = macroValue;
+				mMacros[macroName] = macroValue;
 		}
 
-		const DefineMap& ShaderDefine::GetAllDefine()const
+		const MacroContainer& ShaderDefine::GetAllMacros()const
 		{
-			return m_define;
+			return mMacros;
 		}
 	}
 }

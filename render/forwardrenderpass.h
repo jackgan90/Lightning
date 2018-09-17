@@ -21,7 +21,7 @@ namespace Lightning
 			void Draw(const SharedGeometryPtr& geometry);
 			void GetInputLayouts(const SharedGeometryPtr& geometry, std::vector<VertexInputLayout>& layouts);
 			using RenderItemList = std::vector<RenderItem>;
-			RenderItemList m_renderItems;
+			RenderItemList mRenderItems;
 		};
 	}
 }

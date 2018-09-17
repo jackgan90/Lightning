@@ -42,13 +42,13 @@ namespace Lightning
 				size_t index;
 			};
 			InternalStack* CreateInternalStack();
-			const size_t m_internalMemoryNodeStep;
-			InternalStack** m_stacks;
-			size_t m_currentStack;
-			size_t m_maxStack;
-			size_t m_reallocStep;
-			const size_t m_internalStackAllocStep = 100;
-			const size_t m_reallocStackFactor = 2;
+			const size_t mInternalMemoryNodeStep;
+			InternalStack** mStacks;
+			size_t mCurrentStack;
+			size_t mMaxStack;
+			size_t mReallocStep;
+			const size_t mInternalStackAllocStep = 100;
+			const size_t mReallocStackFactor = 2;
 		};
 
 	#ifdef ENABLE_MEMORY_LOG
@@ -56,32 +56,32 @@ namespace Lightning
 	#endif
 		template<bool AlignedAlloc, const size_t Alignment, const size_t BlockSize>
 		StackAllocator<AlignedAlloc, Alignment, BlockSize>::StackAllocator(size_t blockAllocCount):IMemoryAllocator()
-			,m_internalMemoryNodeStep(blockAllocCount > 0 ? std::min(BlockSize, blockAllocCount) : BlockSize)
+			,mInternalMemoryNodeStep(blockAllocCount > 0 ? std::min(BlockSize, blockAllocCount) : BlockSize)
 		{
 			//alignment should be a power of 2
 			static_assert(Alignment > 0 && (Alignment & (Alignment - 1)) == 0, "Use of Non-power-of-2 alignment is forbidden.");
-			m_stacks = new InternalStack*[m_internalStackAllocStep];
-			m_maxStack = m_currentStack = 0;
-			m_reallocStep = m_internalStackAllocStep;
+			mStacks = new InternalStack*[mInternalStackAllocStep];
+			mMaxStack = mCurrentStack = 0;
+			mReallocStep = mInternalStackAllocStep;
 			CreateInternalStack();
 		}
 
 		template<bool AlignedAlloc, const size_t Alignment, const size_t BlockSize>
 		void StackAllocator<AlignedAlloc, Alignment, BlockSize>::ReallocStacks()
 		{
-			auto originalStackSize = m_reallocStep;
-			m_reallocStep *= m_reallocStackFactor;
-			auto newStacks = new InternalStack*[m_reallocStep];
-			std::memcpy(newStacks, m_stacks, originalStackSize * sizeof(InternalStack*));
-			delete[] m_stacks;
-			m_stacks = newStacks;
+			auto originalStackSize = mReallocStep;
+			mReallocStep *= mReallocStackFactor;
+			auto newStacks = new InternalStack*[mReallocStep];
+			std::memcpy(newStacks, mStacks, originalStackSize * sizeof(InternalStack*));
+			delete[] mStacks;
+			mStacks = newStacks;
 		}
 
 		template<bool AlignedAlloc, const size_t Alignment, const size_t BlockSize>
 		typename StackAllocator<AlignedAlloc, Alignment, BlockSize>::InternalStack* StackAllocator<AlignedAlloc, Alignment, BlockSize>::CreateInternalStack()
 		{
 			//TODO resolve situation where there's not enough stack
-			if (m_maxStack >= m_reallocStep)
+			if (mMaxStack >= mReallocStep)
 			{
 				ReallocStacks();
 			}
@@ -89,7 +89,7 @@ namespace Lightning
 			stack->buffer = new char[BlockSize];
 			stack->bufferEnd = reinterpret_cast<size_t>(stack->buffer) + BlockSize;
 			stack->allocCount = 0;
-			stack->nodes = new MemoryNode[m_internalMemoryNodeStep];
+			stack->nodes = new MemoryNode[mInternalMemoryNodeStep];
 			//according to c++ standard,the returned pointer of new always ensures enough space for a pointer decrement,so just
 			//MakeAlign won't cause heap corruption
 			if (AlignedAlloc)
@@ -97,22 +97,22 @@ namespace Lightning
 			else
 				stack->basePointer = reinterpret_cast<size_t>(stack->buffer) + sizeof(MemoryNode**);
 			stack->topPointer = stack->basePointer;
-			stack->index = m_maxStack;
-			m_currentStack = m_maxStack;
-			m_stacks[m_maxStack++] = stack;
+			stack->index = mMaxStack;
+			mCurrentStack = mMaxStack;
+			mStacks[mMaxStack++] = stack;
 			return stack;
 		}
 
 		template<bool AlignedAlloc, const size_t Alignment, const size_t BlockSize>
 		StackAllocator<AlignedAlloc, Alignment, BlockSize>::~StackAllocator()
 		{
-			for (unsigned int i = 0;i < m_maxStack;++i)
+			for (unsigned int i = 0;i < mMaxStack;++i)
 			{
-				delete[] m_stacks[i]->buffer;
-				delete[] m_stacks[i]->nodes;
-				delete m_stacks[i];
+				delete[] mStacks[i]->buffer;
+				delete[] mStacks[i]->nodes;
+				delete mStacks[i];
 			}
-			delete[] m_stacks;
+			delete[] mStacks;
 		}
 
 		template<bool AlignedAlloc, const size_t Alignment, const size_t BlockSize>
@@ -120,8 +120,8 @@ namespace Lightning
 		{
 			assert(size > 0);
 			assert(size <= BlockSize - Alignment && "StackAllocator is not able to allocate memory which size is bigger than BlockSize - Alignment");
-			unsigned int stackIndex = m_currentStack;
-			auto stack = m_stacks[stackIndex];
+			unsigned int stackIndex = mCurrentStack;
+			auto stack = mStacks[stackIndex];
 			size_t anchor;
 			if(!AlignedAlloc)
 				anchor = stack->topPointer;
@@ -138,12 +138,12 @@ namespace Lightning
 						anchor = MakeAlign(anchor, Alignment);
 				}
 			}
-			while (stackIndex < m_maxStack && (anchor + size >= stack->bufferEnd || stack->allocCount >= m_internalMemoryNodeStep))
+			while (stackIndex < mMaxStack && (anchor + size >= stack->bufferEnd || stack->allocCount >= mInternalMemoryNodeStep))
 			{
 				++stackIndex;
-				if (stackIndex >= m_maxStack)
+				if (stackIndex >= mMaxStack)
 					break;
-				stack = m_stacks[stackIndex];
+				stack = mStacks[stackIndex];
 				if (AlignedAlloc)
 				{
 					anchor = stack->topPointer == stack->basePointer ? stack->topPointer : MakeAlign(stack->topPointer, Alignment);
@@ -153,15 +153,15 @@ namespace Lightning
 					anchor = stack->topPointer;
 				}
 			}
-			if (stackIndex >= m_maxStack)
+			if (stackIndex >= mMaxStack)
 			{
 				stack = CreateInternalStack();
 				anchor = stack->topPointer;
 			}
 			else
 			{
-				stack = m_stacks[stackIndex];
-				m_currentStack = stackIndex;
+				stack = mStacks[stackIndex];
+				mCurrentStack = stackIndex;
 			}
 
 			assert(anchor + size < stack->bufferEnd && "Can't allocate memory of size size due to low block size!You should specify a bigger block size!");
@@ -181,8 +181,8 @@ namespace Lightning
 			node.nodeIndex = stack->allocCount;
 			++stack->allocCount;
 			stack->topPointer = anchor + size + sizeof(MemoryNode**);
-			m_allocatedSize += size;
-			++m_allocatedCount;
+			mAllocatedSize += size;
+			++mAllocatedCount;
 #ifdef ENABLE_MEMORY_LOG
 			LogMemory("Allocate", &node);
 #endif
@@ -196,12 +196,12 @@ namespace Lightning
 		{
 			auto node = *(reinterpret_cast<MemoryNode**>(p) - 1);
 			node->used = false;
-			auto stack = m_stacks[node->stackIndex];
+			auto stack = mStacks[node->stackIndex];
 			while (node->nodeIndex == stack->allocCount - 1 && !node->used)
 			{
 				--stack->allocCount;
-				--m_allocatedCount;
-				m_allocatedSize -= node->basicInfo.size;
+				--mAllocatedCount;
+				mAllocatedSize -= node->basicInfo.size;
 				stack->topPointer = reinterpret_cast<size_t>(node->basicInfo.address);
 #ifdef ENABLE_MEMORY_LOG
 				LogMemory("Deallocate", node);
@@ -213,7 +213,7 @@ namespace Lightning
 				else
 				{
 					assert(stack->topPointer == stack->basePointer);
-					m_currentStack = stack->index;
+					mCurrentStack = stack->index;
 					break;
 				}
 			}
@@ -223,9 +223,9 @@ namespace Lightning
 		const size_t StackAllocator<AlignedAlloc, Alignment, BlockSize>::GetNonEmptyBlockCount()const
 		{
 			size_t count{0};
-			for (unsigned int i = 0; i < m_maxStack; ++i)
+			for (unsigned int i = 0; i < mMaxStack; ++i)
 			{
-				count += m_stacks[i]->topPointer == m_stacks[i]->basePointer ? 0 : 1;
+				count += mStacks[i]->topPointer == mStacks[i]->basePointer ? 0 : 1;
 			}
 			return count;
 		}
@@ -250,13 +250,13 @@ namespace Lightning
 
 		void StackAllocator::LogBlockUsage()const
 		{
-			for (unsigned int i = 0;i < m_maxStack;++i)
+			for (unsigned int i = 0;i < mMaxStack;++i)
 			{
-				size_t usedBytes = m_stacks[i]->topPointer - m_stacks[i]->basePointer;
+				size_t usedBytes = mStacks[i]->topPointer - mStacks[i]->basePointer;
 
-				logger.Log(LogLevel::Debug, "Block 0x%x use %d bytes.", reinterpret_cast<size_t>(m_stacks[i]->buffer), usedBytes);
+				logger.Log(LogLevel::Debug, "Block 0x%x use %d bytes.", reinterpret_cast<size_t>(mStacks[i]->buffer), usedBytes);
 			}
-			logger.Log(LogLevel::Debug, "Total block count:%d", m_maxStack);
+			logger.Log(LogLevel::Debug, "Total block count:%d", mMaxStack);
 		}
 	#endif
 	}

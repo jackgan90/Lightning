@@ -21,7 +21,7 @@ namespace JobSystem
 			static JobManager instance;
 			return instance;
 		}
-		JobManager() : m_globalJobQueues(nullptr), m_shutdown(false), m_sleepThreadCount(0)
+		JobManager() : mGlobalJobQueues(nullptr), mShutdown(false), mSleepThreadCount(0)
 		{
 		}
 		~JobManager()
@@ -35,7 +35,7 @@ namespace JobSystem
 		{
 			//according to C++ standard,multiple threads read from std::unordered_map is well defined.So there's
 			//no problem here
-			auto worker = m_workers[GetWorkerIndex(std::this_thread::get_id())];
+			auto worker = mWorkers[GetWorkerIndex(std::this_thread::get_id())];
 			return worker->allocators[type].Allocate(type, parent, func, std::forward<Args>(args)...);
 		}
 
@@ -43,17 +43,17 @@ namespace JobSystem
 		void Run(std::function<void()> initFunc, std::size_t jobQueueSize)
 		{
 			//The calling thread is considered to be main thread.
-			m_globalJobQueues = m_queueAllocator.allocate(JOB_TYPE_COUNT);
-			m_queueAllocator.construct(&m_globalJobQueues[JOB_TYPE_FOREGROUND], jobQueueSize);
-			m_queueAllocator.construct(&m_globalJobQueues[JOB_TYPE_BACKGROUND], jobQueueSize);
-			m_mainThreadId = std::this_thread::get_id();
-			m_initFunc = initFunc;
+			mGlobalJobQueues = mQueueAllocator.allocate(JOB_TYPE_COUNT);
+			mQueueAllocator.construct(&mGlobalJobQueues[JOB_TYPE_FOREGROUND], jobQueueSize);
+			mQueueAllocator.construct(&mGlobalJobQueues[JOB_TYPE_BACKGROUND], jobQueueSize);
+			mMainThreadId = std::this_thread::get_id();
+			mInitFunc = initFunc;
 			int coreCount = std::thread::hardware_concurrency();
 			if (coreCount > 0)
 				coreCount--;		//exclude the calling thread
-			m_workers = new Worker*[coreCount + 1];
-			m_workersCount = coreCount + 1;
-			std::memset(m_workers, 0, sizeof(Worker*)*(coreCount + 1));
+			mWorkers = new Worker*[coreCount + 1];
+			mWorkersCount = coreCount + 1;
+			std::memset(mWorkers, 0, sizeof(Worker*)*(coreCount + 1));
 			bool background{ true };
 			std::vector<std::thread> threads;
 			//1/4 threads serve as background worker
@@ -67,22 +67,22 @@ namespace JobSystem
 				}
 				threads.emplace_back(&Worker::Run, worker);
 				worker->boundThreadId = threads.back().get_id();
-				m_workers[GetWorkerIndex(worker->boundThreadId)] = worker;
+				mWorkers[GetWorkerIndex(worker->boundThreadId)] = worker;
 			}
 
 			//Create a worker for main thread
 			auto worker = new Worker(background, jobQueueSize);
 			worker->boundThreadId = std::this_thread::get_id();
-			m_workers[GetWorkerIndex(worker->boundThreadId)] = worker;
+			mWorkers[GetWorkerIndex(worker->boundThreadId)] = worker;
 			worker->Run();
-			m_cvWakeUp.notify_all();
+			mWakeUp.notify_all();
 			std::for_each(threads.begin(), threads.end(), [](auto& thread) {thread.join(); });
-			for (std::size_t i = 0;i < m_workersCount;++i)
+			for (std::size_t i = 0;i < mWorkersCount;++i)
 			{
-				delete m_workers[i];
+				delete mWorkers[i];
 			}
-			delete[] m_workers;
-			m_workers = nullptr;
+			delete[] mWorkers;
+			mWorkers = nullptr;
 			DestroyGlobalJobQueues();
 		}
 
@@ -92,23 +92,23 @@ namespace JobSystem
 			Job* pJob = static_cast<Job*>(job);
 			if (pJob->HasTargetRunThread())
 			{
-				auto worker = m_workers[GetWorkerIndex(pJob->GetTargetRunThread())];
+				auto worker = mWorkers[GetWorkerIndex(pJob->GetTargetRunThread())];
 				worker->queues[job->GetType()].Push(job);
 			}
 			else
 			{
-				m_globalJobQueues[job->GetType()].Push(job);
+				mGlobalJobQueues[job->GetType()].Push(job);
 			}
-			if (m_sleepThreadCount)
+			if (mSleepThreadCount)
 			{
-				m_cvWakeUp.notify_one();
+				mWakeUp.notify_one();
 			}
 		}
 
 
 		void WaitForCompletion(JobHandle handle)
 		{
-			auto worker = m_workers[GetWorkerIndex(std::this_thread::get_id())];
+			auto worker = mWorkers[GetWorkerIndex(std::this_thread::get_id())];
 			while (true)
 			{
 				IJob* job = JobAllocator::JobAddrFromHandle(handle);
@@ -134,9 +134,9 @@ namespace JobSystem
 		inline std::size_t GetBackgroundWorkersCount()
 		{
 			std::size_t workerCount{ 0 };
-			for (std::size_t i = 0;i < m_workersCount;++i)
+			for (std::size_t i = 0;i < mWorkersCount;++i)
 			{
-				auto worker = m_workers[i];
+				auto worker = mWorkers[i];
 				if (worker->background)
 				{
 					workerCount++;
@@ -147,7 +147,7 @@ namespace JobSystem
 
 		inline std::size_t GetWorkersCount()const
 		{
-			return m_workersCount;
+			return mWorkersCount;
 		}
 
 		inline std::thread::id GetCurrentThreadId()const
@@ -158,7 +158,7 @@ namespace JobSystem
 		//Can be called on any thread,but essentially delegate to execute in main thread.So there's no race condition
 		void SetBackgroundWorkersCount(std::size_t count)
 		{
-			if (std::this_thread::get_id() == m_mainThreadId)
+			if (std::this_thread::get_id() == mMainThreadId)
 			{
 				//func();
 				ModifyBackgroundWorkersCount(count);
@@ -184,17 +184,17 @@ namespace JobSystem
 
 		void RunJobOnMainThread(JobHandle handle)
 		{
-			RunJob(handle, m_mainThreadId);
+			RunJob(handle, mMainThreadId);
 		}
 
 		void ShutDown()
 		{
 			bool expected{ false };
-			if (m_shutdown.compare_exchange_strong(expected, true))
+			if (mShutdown.compare_exchange_strong(expected, true))
 			{
-				for (std::size_t i = 0;i < m_workersCount;++i)
+				for (std::size_t i = 0;i < mWorkersCount;++i)
 				{
-					m_workers[i]->running = false;
+					mWorkers[i]->running = false;
 				}
 			}
 		}
@@ -263,13 +263,13 @@ namespace JobSystem
 					if (sleep && hangCounter >= HANG_SLEEP_THRESHOLD)
 					{
 						//main thread should not wait
-						if (std::this_thread::get_id() != manager.m_mainThreadId)
+						if (std::this_thread::get_id() != manager.mMainThreadId)
 						{
-							manager.m_sleepThreadCount++;
-							std::unique_lock<std::mutex> lk(manager.m_mtxWakeUp);
+							manager.mSleepThreadCount++;
+							std::unique_lock<std::mutex> lk(manager.mMutexWakeUp);
 							//Don't consider spurious wakeup because even if that happens,it's no harm to just loop again
-							manager.m_cvWakeUp.wait(lk);
-							manager.m_sleepThreadCount--;
+							manager.mWakeUp.wait(lk);
+							manager.mSleepThreadCount--;
 						}
 						else
 						{
@@ -287,7 +287,7 @@ namespace JobSystem
 				job = queues[type].Pop();
 				if (job)
 					return job;
-				job = manager.m_globalJobQueues[type].Pop();
+				job = manager.mGlobalJobQueues[type].Pop();
 				return job;
 			}
 
@@ -295,9 +295,9 @@ namespace JobSystem
 			void Run()
 			{
 				auto& system = JobManager::Instance();
-				if (std::this_thread::get_id() == JobManager::Instance().m_mainThreadId)
+				if (std::this_thread::get_id() == JobManager::Instance().mMainThreadId)
 				{
-					JobManager::Instance().m_initFunc();
+					JobManager::Instance().mInitFunc();
 				}
 				while (running)
 				{
@@ -311,18 +311,18 @@ namespace JobSystem
 		{
 			std::hash<std::thread::id> hasher;
 			auto hashValue = hasher(threadId);
-			std::int32_t index = static_cast<std::int32_t>(hashValue % m_workersCount);
+			std::int32_t index = static_cast<std::int32_t>(hashValue % mWorkersCount);
 			std::int32_t backIndex = index;
-			while (backIndex < static_cast<std::int32_t>(m_workersCount) && m_workers[backIndex] && m_workers[backIndex]->boundThreadId != threadId)
+			while (backIndex < static_cast<std::int32_t>(mWorkersCount) && mWorkers[backIndex] && mWorkers[backIndex]->boundThreadId != threadId)
 			{
 				++backIndex;
 			}
-			if (backIndex < static_cast<std::int32_t>(m_workersCount))
+			if (backIndex < static_cast<std::int32_t>(mWorkersCount))
 			{
 				return backIndex;
 			}
 			std::int32_t frontIndex = index - 1;
-			while (frontIndex >= 0 && m_workers[frontIndex] && m_workers[frontIndex]->boundThreadId != threadId)
+			while (frontIndex >= 0 && mWorkers[frontIndex] && mWorkers[frontIndex]->boundThreadId != threadId)
 			{
 				--frontIndex;
 			}
@@ -333,11 +333,11 @@ namespace JobSystem
 		{
 			std::vector<Worker*> foregroundWorkers;
 			std::vector<Worker*> backgroundWorkers;
-			if (count > m_workersCount)
-				count = m_workersCount;
-			for (std::size_t i = 0;i < m_workersCount;++i)
+			if (count > mWorkersCount)
+				count = mWorkersCount;
+			for (std::size_t i = 0;i < mWorkersCount;++i)
 			{
-				auto pWorker = m_workers[i];
+				auto pWorker = mWorkers[i];
 				if (!pWorker->background)
 				{
 					foregroundWorkers.push_back(pWorker);
@@ -367,32 +367,32 @@ namespace JobSystem
 			}
 			if (changed)
 			{
-				m_cvWakeUp.notify_all();
+				mWakeUp.notify_all();
 			}
 		}
 
 		void DestroyGlobalJobQueues()
 		{
-			if (m_globalJobQueues)
+			if (mGlobalJobQueues)
 			{
 				for (std::size_t i = 0; i < JOB_TYPE_COUNT;++i)
 				{
-					m_queueAllocator.destroy(&m_globalJobQueues[i]);
+					mQueueAllocator.destroy(&mGlobalJobQueues[i]);
 				}
-				m_queueAllocator.deallocate(m_globalJobQueues, JOB_TYPE_COUNT);
-				m_globalJobQueues = nullptr;
+				mQueueAllocator.deallocate(mGlobalJobQueues, JOB_TYPE_COUNT);
+				mGlobalJobQueues = nullptr;
 			}
 		}
 
-		JobQueue* m_globalJobQueues;
-		std::allocator<JobQueue> m_queueAllocator;
-		Worker** m_workers;
-		std::size_t m_workersCount;
-		std::mutex m_mtxWakeUp;
-		std::condition_variable m_cvWakeUp;
-		std::size_t m_sleepThreadCount;
-		std::thread::id m_mainThreadId;
-		std::atomic<bool> m_shutdown;
-		std::function<void()> m_initFunc;
+		JobQueue* mGlobalJobQueues;
+		std::allocator<JobQueue> mQueueAllocator;
+		Worker** mWorkers;
+		std::size_t mWorkersCount;
+		std::mutex mMutexWakeUp;
+		std::condition_variable mWakeUp;
+		std::size_t mSleepThreadCount;
+		std::thread::id mMainThreadId;
+		std::atomic<bool> mShutdown;
+		std::function<void()> mInitFunc;
 	};
 }

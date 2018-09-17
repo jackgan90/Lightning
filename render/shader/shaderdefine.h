@@ -9,12 +9,12 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using DefineMap = std::unordered_map<std::string, std::string>;
+		using MacroContainer = std::unordered_map<std::string, std::string>;
 		class LIGHTNING_RENDER_API ShaderDefine
 		{
 		public:
 			ShaderDefine();
-			ShaderDefine(const DefineMap& map);
+			ShaderDefine(const MacroContainer& map);
 			bool operator==(const ShaderDefine& define)const;
 			ShaderDefine operator+(const ShaderDefine& define)const;
 			ShaderDefine operator-(const ShaderDefine& define)const;
@@ -24,11 +24,11 @@ namespace Lightning
 			void Exclude(const ShaderDefine& define);
 			bool HasMacro(const std::string& macroName)const;
 			void Define(const std::string& macroName, const std::string& macroValue);
-			const std::string GetMacros(const std::string& macroName)const;
-			const DefineMap& GetAllDefine()const;
+			const std::string GetMacroValue(const std::string& macroName)const;
+			const MacroContainer& GetAllMacros()const;
 			size_t GetMacroCount()const;
 		private:
-			DefineMap m_define;
+			MacroContainer mMacros;
 		};
 	}
 }

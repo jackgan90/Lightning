@@ -18,32 +18,32 @@ namespace Lightning
 		using Scene::SceneManager;
 		Application::Application()
 		{
-			m_fs = FileSystemFactory::Instance()->CreateFileSystem();
-			m_windowMgr = std::make_unique<WindowManager>();
-			logger.Log(LogLevel::Info, "File system created!Current working directory:%s", m_fs->GetRoot().c_str());
+			mFileSystem = FileSystemFactory::Instance()->CreateFileSystem();
+			mWindowMgr = std::make_unique<WindowManager>();
+			logger.Log(LogLevel::Info, "File system created!Current working directory:%s", mFileSystem->GetRoot().c_str());
 			logger.Log(LogLevel::Info, "Application initialized successfully!");
 		}
 
 		Application::~Application()
 		{
 			SceneManager::Instance()->DestroyAll();
-			if (m_renderer)
-				m_renderer->ShutDown();
-			m_renderer.reset();
-			m_windowMgr.reset();
+			if (mRenderer)
+				mRenderer->ShutDown();
+			mRenderer.reset();
+			mWindowMgr.reset();
 			logger.Log(LogLevel::Info, "Application quit.");
 		}
 
 		void Application::Start()
 		{
-			m_window = CreateMainWindow();
-			m_renderer = CreateRenderer();
-			if (m_renderer)
-				m_renderer->Start();
+			mWindow = CreateMainWindow();
+			mRenderer = CreateRenderer();
+			if (mRenderer)
+				mRenderer->Start();
 			//Create a simple scene here just for test
 			auto scene = SceneManager::Instance()->CreateScene();
 			auto cube = std::make_shared<Scene::Cube>(0.5);
-			auto camera = scene->GetMainCamera();
+			auto camera = scene->GetActiveCamera();
 			camera->MoveTo(Render::Vector3f({2.0f, 2.0f, 2.0f}));
 			camera->LookAt(Render::Vector3f({ 0.0f, 0.0f, 0.0f }));
 			scene->AddDrawable(cube);
@@ -65,8 +65,8 @@ namespace Lightning
 		void Application::OnWindowIdle(const WindowSystem::WindowIdleParam& param)
 		{
 			SceneManager::Instance()->Update();
-			if(m_renderer)
-				m_renderer->Render();
+			if(mRenderer)
+				mRenderer->Render();
 		}
 
 

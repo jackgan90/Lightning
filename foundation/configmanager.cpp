@@ -13,7 +13,7 @@ namespace Lightning
 
 		std::string ConfigManager::GetConfigString(const std::string& node_path)
 		{
-			return m_tree.get<std::string>(node_path);
+			return mTree.get<std::string>(node_path);
 		}
 
 		ConfigManager::ConfigManager()
@@ -21,10 +21,10 @@ namespace Lightning
 			//TODO : resolve exception
 			try
 			{
-				pt::read_xml(CONFIG_FILE_NAME, m_tree);
-				m_config.ResourceRoot = m_tree.get<std::string>("lightning_game_engine_configuration.resource.root");
-				m_config.MSAAEnabled = m_tree.get<bool>("lightning_game_engine_configuration.render.msaa_enable");
-				m_config.MSAASampleCount = m_tree.get<unsigned int>("lightning_game_engine_configuration.render.msaa_sample_count");
+				pt::read_xml(CONFIG_FILE_NAME, mTree);
+				mConfig.ResourceRoot = mTree.get<std::string>("lightning_game_engine_configuration.resource.root");
+				mConfig.MSAAEnabled = mTree.get<bool>("lightning_game_engine_configuration.render.msaa_enable");
+				mConfig.MSAASampleCount = mTree.get<unsigned int>("lightning_game_engine_configuration.render.msaa_sample_count");
 			}
 			catch (pt::xml_parser_error e)
 			{

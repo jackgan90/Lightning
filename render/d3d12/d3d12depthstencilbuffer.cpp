@@ -9,15 +9,15 @@ namespace Lightning
 	namespace Render
 	{
 		D3D12DepthStencilBuffer::D3D12DepthStencilBuffer(const std::uint32_t width, const std::uint32_t height):
-			m_depthClearValue(1.0f), m_stencilClearValue(0), m_format(RenderFormat::D24_S8), m_width(width), m_height(height)
+			mDepthClearValue(1.0f), mStencilClearValue(0), mFormat(RenderFormat::D24_S8), mWidth(width), mHeight(height)
 		{
 			CreateResource();
 		}
 
 		D3D12DepthStencilBuffer::D3D12DepthStencilBuffer(const std::uint32_t width, const std::uint32_t height,
 			RenderFormat format, const float depthClearValue, const std::uint32_t stencilClearValue):
-			m_depthClearValue(depthClearValue), m_stencilClearValue(stencilClearValue), m_format(format) 
-			,m_width(width), m_height(height)
+			mDepthClearValue(depthClearValue), mStencilClearValue(stencilClearValue), mFormat(format) 
+			,mWidth(width), mHeight(height)
 		{
 			CreateResource();
 		}
@@ -25,9 +25,9 @@ namespace Lightning
 		void D3D12DepthStencilBuffer::CreateResource()
 		{
 			//create heap
-			m_heap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, false, 1);
+			mHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, false, 1);
 
-			auto nativeFormat = D3D12TypeMapper::MapRenderFormat(m_format);
+			auto nativeFormat = D3D12TypeMapper::MapRenderFormat(mFormat);
 			//create resource
 			D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};
 			dsvDesc.Format = nativeFormat;
@@ -36,20 +36,20 @@ namespace Lightning
 
 			D3D12_CLEAR_VALUE dsClearValue{};
 			dsClearValue.Format = nativeFormat;
-			dsClearValue.DepthStencil.Depth = m_depthClearValue;
-			dsClearValue.DepthStencil.Stencil = m_stencilClearValue;
+			dsClearValue.DepthStencil.Depth = mDepthClearValue;
+			dsClearValue.DepthStencil.Stencil = mStencilClearValue;
 
 			auto nativeDevice = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNative();
 			nativeDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE,
-				&CD3DX12_RESOURCE_DESC::Tex2D(nativeFormat, m_width, m_height, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL),
-				D3D12_RESOURCE_STATE_DEPTH_WRITE, &dsClearValue, IID_PPV_ARGS(&m_resource));
-			nativeDevice->CreateDepthStencilView(m_resource.Get(), &dsvDesc, m_heap.cpuHandle);
+				&CD3DX12_RESOURCE_DESC::Tex2D(nativeFormat, mWidth, mHeight, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL),
+				D3D12_RESOURCE_STATE_DEPTH_WRITE, &dsClearValue, IID_PPV_ARGS(&mResource));
+			nativeDevice->CreateDepthStencilView(mResource.Get(), &dsvDesc, mHeap.cpuHandle);
 		}
 
 		D3D12DepthStencilBuffer::~D3D12DepthStencilBuffer()
 		{
-			m_resource.Reset();
-			D3D12DescriptorHeapManager::Instance()->Deallocate(m_heap.cpuHandle);
+			mResource.Reset();
+			D3D12DescriptorHeapManager::Instance()->Deallocate(mHeap.cpuHandle);
 		}
 
 		void D3D12DepthStencilBuffer::SetClearValue(float depthValue, std::uint32_t stencilValue)
@@ -59,17 +59,17 @@ namespace Lightning
 
 		float D3D12DepthStencilBuffer::GetDepthClearValue()const
 		{
-			return m_depthClearValue;
+			return mDepthClearValue;
 		}
 
 		std::uint32_t D3D12DepthStencilBuffer::GetStencilClearValue()const
 		{
-			return m_stencilClearValue;
+			return mStencilClearValue;
 		}
 
 		RenderFormat D3D12DepthStencilBuffer::GetRenderFormat()const
 		{
-			return m_format;
+			return mFormat;
 		}
 	}
 }

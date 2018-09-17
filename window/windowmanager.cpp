@@ -7,7 +7,7 @@ namespace Lightning
 {
 	namespace WindowSystem
 	{
-		WindowManager::WindowManager():m_currentID(0)
+		WindowManager::WindowManager():mCurrentID(0)
 		{
 			
 		}
@@ -15,8 +15,8 @@ namespace Lightning
 		SharedWindowPtr WindowManager::MakeWindow()
 		{
 		#ifdef LIGHTNING_WIN32
-			m_windows.insert(std::make_pair(m_currentID++, SharedWindowPtr(new WinWindow())));
-			return m_windows[m_currentID-1];
+			mWindows.insert(std::make_pair(mCurrentID++, SharedWindowPtr(new WinWindow())));
+			return mWindows[mCurrentID-1];
 		#endif
 			return SharedWindowPtr();
 		}
@@ -24,7 +24,7 @@ namespace Lightning
 		std::vector<SharedWindowPtr> WindowManager::GetAllWindows()const
 		{
 			std::vector<SharedWindowPtr> windows;
-			for (auto w : m_windows)
+			for (auto w : mWindows)
 				windows.push_back(w.second);
 			return windows;
 		}

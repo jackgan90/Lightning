@@ -9,12 +9,12 @@ namespace Lightning
 	namespace Foundation
 	{
 		extern Logger logger;
-		GeneralFile::GeneralFile():m_sizeDirty(true), m_file(nullptr), m_access(FileAccess::READ)
+		GeneralFile::GeneralFile():mSizeDirty(true), mFile(nullptr), mAccess(FileAccess::READ)
 		{
 
 		}
 
-		GeneralFile::GeneralFile(const std::string& path, FileAccess bitmask):m_path(path), m_sizeDirty(true), m_file(nullptr), m_access(bitmask)
+		GeneralFile::GeneralFile(const std::string& path, FileAccess bitmask):mPath(path), mSizeDirty(true), mFile(nullptr), mAccess(bitmask)
 		{
 
 		}
@@ -40,31 +40,31 @@ namespace Lightning
 
 		void GeneralFile::MoveFrom(GeneralFile&& f)
 		{
-			m_size = f.m_size;
-			m_path = f.m_path;
-			m_sizeDirty = f.m_sizeDirty;
-			m_file = std::move(f.m_file);
-			m_access = f.m_access;
-			f.m_file = nullptr;
+			mSize = f.mSize;
+			mPath = f.mPath;
+			mSizeDirty = f.mSizeDirty;
+			mFile = std::move(f.mFile);
+			mAccess = f.mAccess;
+			f.mFile = nullptr;
 		}
 		
 
 		void GeneralFile::Close()
 		{
-			if (m_file)
+			if (mFile)
 			{
-				m_file->close();
+				mFile->close();
 			}
 		}
 
 		FileSize GeneralFile::GetSize()
 		{
-			if (m_sizeDirty)
+			if (mSizeDirty)
 			{
 				CalculateFileSize();
-				m_sizeDirty = false;
+				mSizeDirty = false;
 			}
-			return m_size;
+			return mSize;
 		}
 
 		void GeneralFile::SetFilePointer(FilePointerType type, FileAnchor anchor, FileSize offset)
@@ -76,13 +76,13 @@ namespace Lightning
 				switch (anchor)
 				{
 				case FileAnchor::Begin:
-					m_file->seekg(offset, std::ios_base::beg);
+					mFile->seekg(offset, std::ios_base::beg);
 					break;
 				case FileAnchor::Current:
-					m_file->seekg(offset, std::ios_base::cur);
+					mFile->seekg(offset, std::ios_base::cur);
 					break;
 				case FileAnchor::End:
-					m_file->seekg(offset, std::ios_base::end);
+					mFile->seekg(offset, std::ios_base::end);
 					break;
 				}
 				break;
@@ -90,13 +90,13 @@ namespace Lightning
 				switch (anchor)
 				{
 				case FileAnchor::Begin:
-					m_file->seekp(offset, std::ios_base::beg);
+					mFile->seekp(offset, std::ios_base::beg);
 					break;
 				case FileAnchor::Current:
-					m_file->seekp(offset, std::ios_base::cur);
+					mFile->seekp(offset, std::ios_base::cur);
 					break;
 				case FileAnchor::End:
-					m_file->seekp(offset, std::ios_base::end);
+					mFile->seekp(offset, std::ios_base::end);
 					break;
 				}
 				break;
@@ -107,22 +107,22 @@ namespace Lightning
 		void GeneralFile::CalculateFileSize()
 		{
 			OpenFile();
-			auto fp = m_file->tellg();
-			m_file->seekg(0, std::ios_base::end);
-			m_size = m_file->tellg();
-			m_file->seekg(fp, std::ios_base::beg);
+			auto fp = mFile->tellg();
+			mFile->seekg(0, std::ios_base::end);
+			mSize = mFile->tellg();
+			mFile->seekg(fp, std::ios_base::beg);
 		}
 
 		void GeneralFile::OpenFile()
 		{
-			if (!m_file)
+			if (!mFile)
 			{
 				int mode = 0;
-				if ((m_access & FileAccess::READ) == FileAccess::READ)
+				if ((mAccess & FileAccess::READ) == FileAccess::READ)
 					mode |= std::fstream::in;
-				if ((m_access & FileAccess::WRITE) == FileAccess::WRITE)
+				if ((mAccess & FileAccess::WRITE) == FileAccess::WRITE)
 					mode |= std::fstream::out;
-				m_file = std::make_unique<boost::filesystem::fstream>(m_path.string(), std::fstream::binary | mode);
+				mFile = std::make_unique<boost::filesystem::fstream>(mPath.string(), std::fstream::binary | mode);
 			}
 		}
 
@@ -131,25 +131,25 @@ namespace Lightning
 		{
 			FileSize size = GetSize();
 			FileSize readSize = std::min(size, length);
-			m_file->read(buf, readSize);
-			return *m_file ? readSize : m_file->gcount();
+			mFile->read(buf, readSize);
+			return *mFile ? readSize : mFile->gcount();
 		}
 
 		const std::string GeneralFile::GetPath()const
 		{
-			return m_path.string();
+			return mPath.string();
 		}
 
 		const std::string GeneralFile::GetName()const
 		{
-			return m_path.filename().string();
+			return mPath.filename().string();
 		}
 
 
 		GeneralFileSystem::GeneralFileSystem()
 		{
 			//path p = boost::filesystem::current_path();
-			m_root = ConfigManager::Instance()->GetConfig().ResourceRoot;
+			mRoot = ConfigManager::Instance()->GetConfig().ResourceRoot;
 		}
 		
 		GeneralFileSystem::~GeneralFileSystem()
@@ -160,20 +160,20 @@ namespace Lightning
 		SharedFilePtr GeneralFileSystem::FindFile(const std::string& filename, FileAccess bitmask)
 		{
 			//TODO : multithreaded access must be resolved
-			auto cachedFile = m_cachedFiles.find(filename);
-			if (cachedFile != m_cachedFiles.end())
+			auto cachedFile = mCachedFiles.find(filename);
+			if (cachedFile != mCachedFiles.end())
 				return cachedFile->second;
 			const boost::filesystem::recursive_directory_iterator end;
 			try
 			{
-				const auto it = std::find_if(boost::filesystem::recursive_directory_iterator(m_root), end, 
+				const auto it = std::find_if(boost::filesystem::recursive_directory_iterator(mRoot), end, 
 					[&filename](const boost::filesystem::directory_entry& e) {
 					return e.path().filename() == filename;
 				});
 				if (it != end)
 				{
-					m_cachedFiles.insert(std::make_pair(filename, SharedFilePtr(new GeneralFile(it->path().string(), bitmask))));
-					return m_cachedFiles[filename];
+					mCachedFiles.insert(std::make_pair(filename, SharedFilePtr(new GeneralFile(it->path().string(), bitmask))));
+					return mCachedFiles[filename];
 				}
 			}
 			catch (const boost::filesystem::filesystem_error& e)
@@ -185,7 +185,7 @@ namespace Lightning
 
 		bool GeneralFileSystem::SetRoot(std::string root_path)
 		{
-			m_root = root_path;
+			mRoot = root_path;
 			return true;
 		}
 

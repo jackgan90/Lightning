@@ -20,7 +20,7 @@ namespace Lightning
 			SharedRenderTargetPtr CreateRenderTarget()override;
 			SharedRenderTargetPtr CreateSwapChainRenderTarget(const ComPtr<ID3D12Resource>& resource, ID3D12Device* pDevice, D3D12SwapChain* pSwapChain);
 		private:
-			RenderTargetID m_currentID;
+			RenderTargetID mCurrentID;
 		};
 	}
 }

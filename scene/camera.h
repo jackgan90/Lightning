@@ -35,37 +35,37 @@ namespace Lightning
 				const Vector3f& lookDir = Vector3f{0.0f, 0.0f, -1.0f},
 				const Vector3f& worldUp = Vector3f{0.0f, 1.0f, 0.0f});
 			virtual ~Camera();
-			Matrix4x4f GetViewMatrix()const { return m_viewMatrix; }
-			Matrix4x4f GetProjectionMatrix()const { return m_projectionMatrix; }
+			Matrix4x4f GetViewMatrix()const { return mViewMatrix; }
+			Matrix4x4f GetProjectionMatrix()const { return mProjectionMatrix; }
 			void MoveTo(const Vector3f& worldPosition);
 			void LookAt(const Vector3f& worldPosition, const Vector3f& worldUp = Vector3f{0.0f, 1.0f, 0.0f});
 			void SetNear(const float nearPlane);
 			void SetFar(const float farPlane);
-			float GetNear()const { return m_nearPlane; }
-			float GetFar()const { return m_farPlane; }
+			float GetNear()const { return mNearPlane; }
+			float GetFar()const { return mFarPlane; }
 			void SetCameraType(CameraType type);
-			CameraType GetCameraType()const { return m_type; }
+			CameraType GetCameraType()const { return mType; }
 			//Set vertical field of view in degrees
 			void SetFOV(const float fov);
-			float GetFOV()const { return RadiansToDegrees(m_fov); }
+			float GetFOV()const { return RadiansToDegrees(mFov); }
 			void SetAspectRatio(const float aspectRatio);
-			float GetAspectRatio()const { return m_aspectRatio; }
+			float GetAspectRatio()const { return mAspectRatio; }
 		protected:
 			void UpdateViewMatrix();
 			void UpdateProjectionMatrix();
-			CameraType m_type;
-			float m_nearPlane;
-			float m_farPlane;
+			CameraType mType;
+			float mNearPlane;
+			float mFarPlane;
 			//vertical fov
-			float m_fov;
+			float mFov;
 			//ratio of near plane width / near plane height
-			float m_aspectRatio;
-			Vector3f m_worldPosition;
-			Vector3f m_xAxis;
-			Vector3f m_yAxis;
-			Vector3f m_zAxis;
-			Matrix4x4f m_viewMatrix;
-			Matrix4x4f m_projectionMatrix;
+			float mAspectRatio;
+			Vector3f mWorldPosition;
+			Vector3f mXAxis;
+			Vector3f mYAxis;
+			Vector3f mZAxis;
+			Matrix4x4f mViewMatrix;
+			Matrix4x4f mProjectionMatrix;
 		};
 	}
 }

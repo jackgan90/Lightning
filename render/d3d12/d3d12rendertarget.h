@@ -17,21 +17,21 @@ namespace Lightning
 			D3D12RenderTarget(const RenderTargetID rtID, const ComPtr<ID3D12Resource>& resource, ID3D12Device* pNativeDevice, ISwapChain* pSwapChain);
 			~D3D12RenderTarget()override;
 			bool IsSwapChainRenderTarget()const override;
-			RenderTargetID GetID() const override { return m_ID; }
-			ComPtr<ID3D12Resource> GetNative()const { return m_resource; }
-			const D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return m_heap.cpuHandle; }
-			const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle()const { return m_heap.gpuHandle; }
-			std::size_t GetSampleCount()override { return m_sampleCount; }
-			int GetSampleQuality()override { return m_sampleQuality; }
-			RenderFormat GetRenderFormat()const override { return m_format; }
+			RenderTargetID GetID() const override { return mID; }
+			ComPtr<ID3D12Resource> GetNative()const { return mResource; }
+			const D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return mHeap.cpuHandle; }
+			const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle()const { return mHeap.gpuHandle; }
+			std::size_t GetSampleCount()override { return mSampleCount; }
+			int GetSampleQuality()override { return mSampleQuality; }
+			RenderFormat GetRenderFormat()const override { return mFormat; }
 		private:
-			ComPtr<ID3D12Resource> m_resource;
-			bool m_isSwapChainTarget;
-			RenderTargetID m_ID;
-			DescriptorHeap m_heap;
-			std::size_t m_sampleCount;
-			int m_sampleQuality;
-			RenderFormat m_format;
+			ComPtr<ID3D12Resource> mResource;
+			bool mIsSwapChainTarget;
+			RenderTargetID mID;
+			DescriptorHeap mHeap;
+			std::size_t mSampleCount;
+			int mSampleQuality;
+			RenderFormat mFormat;
 		};
 	}
 }

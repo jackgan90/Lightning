@@ -18,15 +18,15 @@ namespace JobSystem
 	public:
 		explicit JobQueue::JobQueue(std::size_t size)
 #ifndef USE_CUSTOM_CONCURRENT_QUEUE
-			:m_queue(size) 
+			:mQueue(size) 
 #else
-			:m_tail(0), m_head(0), m_tailAnchor(0), m_queueSize(size)
+			:mTail(0), mHead(0), mTailAnchor(0), mQueueSize(size)
 #endif
 		{
 #ifdef USE_CUSTOM_CONCURRENT_QUEUE
-			m_queue = new IJob*[size];
+			mQueue = new IJob*[size];
 #ifdef JOB_ASSERT
-			std::memset(m_queue, 0, size * sizeof(IJob*));
+			std::memset(mQueue, 0, size * sizeof(IJob*));
 #endif
 #endif
 		}
@@ -35,21 +35,21 @@ namespace JobSystem
 		~JobQueue()
 		{
 #ifdef USE_CUSTOM_CONCURRENT_QUEUE
-			delete[] m_queue;
+			delete[] mQueue;
 #endif
 		}
 		void Push(IJob* job)
 		{
 #ifndef USE_CUSTOM_CONCURRENT_QUEUE
-			auto res = m_queue.enqueue(job);
+			auto res = mQueue.enqueue(job);
 			assert(res);
 #else
-			auto slot = m_tailAnchor.fetch_add(1, std::memory_order_relaxed);
+			auto slot = mTailAnchor.fetch_add(1, std::memory_order_relaxed);
 			AddJobToQueue(slot, job);
 			do 
 			{
 				auto expected = slot;
-				if (m_tail.compare_exchange_strong(expected, slot + 1, std::memory_order_relaxed))
+				if (mTail.compare_exchange_strong(expected, slot + 1, std::memory_order_relaxed))
 					break;
 			} while (true);
 #endif
@@ -57,23 +57,23 @@ namespace JobSystem
 		IJob* Pop()
 		{
 #ifndef USE_CUSTOM_CONCURRENT_QUEUE
-			if (m_queue.size_approx() > 0)
+			if (mQueue.size_approx() > 0)
 			{
 				IJob* job{ nullptr };
-				auto success = m_queue.try_dequeue(job);
+				auto success = mQueue.try_dequeue(job);
 				if (!success)
 					return nullptr;
 				return job;
 			}
 #else
-			auto tail = m_tail.load(std::memory_order_relaxed);
+			auto tail = mTail.load(std::memory_order_relaxed);
 			if (tail > 0)
 			{
-				auto head = m_head.load(std::memory_order_relaxed);
+				auto head = mHead.load(std::memory_order_relaxed);
 				if (tail > head)
 				{
 					auto job = RemoveJobFromQueue(head);
-					if (m_head.compare_exchange_strong(head, head + 1, std::memory_order_relaxed))
+					if (mHead.compare_exchange_strong(head, head + 1, std::memory_order_relaxed))
 					{
 #ifdef JOB_ASSERT
 						assert(job);
@@ -87,7 +87,7 @@ namespace JobSystem
 		}
 	private:
 #ifndef USE_CUSTOM_CONCURRENT_QUEUE
-		moodycamel::ConcurrentQueue<IJob*> m_queue;
+		moodycamel::ConcurrentQueue<IJob*> mQueue;
 #else
 		void AddJobToQueue(std::int64_t index, IJob* job)
 		{
@@ -97,27 +97,27 @@ namespace JobSystem
 			//The overwrite happens when the job queue is considered full (too many jobs crammed in
 			//queue and CPU has no ability to finish them in time.Normally applications should decide
 			//the queue size before hand)
-			auto head = m_head.load(std::memory_order_relaxed);
-			auto readGeneration = head / m_queueSize;
-			auto readIndex = head % m_queueSize;
-			auto writeGeneration = index / m_queueSize;
-			auto writeIndex = index % m_queueSize;
+			auto head = mHead.load(std::memory_order_relaxed);
+			auto readGeneration = head / mQueueSize;
+			auto readIndex = head % mQueueSize;
+			auto writeGeneration = index / mQueueSize;
+			auto writeIndex = index % mQueueSize;
 			assert(writeGeneration == readGeneration || (writeGeneration - readGeneration == 1 && readIndex >= writeIndex));
 #endif
-			m_queue[index % m_queueSize] = job;
+			mQueue[index % mQueueSize] = job;
 		}
 
 		IJob* RemoveJobFromQueue(std::int64_t index)
 		{
-			return m_queue[index % m_queueSize];
+			return mQueue[index % mQueueSize];
 		}
 
 
-		std::atomic<std::int64_t> m_head;
-		std::atomic<std::int64_t> m_tail;
-		std::atomic<std::int64_t> m_tailAnchor;
-		std::uint32_t m_queueSize;
-		IJob** m_queue;
+		std::atomic<std::int64_t> mHead;
+		std::atomic<std::int64_t> mTail;
+		std::atomic<std::int64_t> mTailAnchor;
+		std::uint32_t mQueueSize;
+		IJob** mQueue;
 #endif
 	};
 }

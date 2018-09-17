@@ -9,7 +9,7 @@ namespace Lightning
 		class LIGHTNING_FOUNDATION_API Time
 		{
 		public:
-			static std::string currentTimeString();
+			static std::string GetCurrentTimeString();
 		};
 	}
 }

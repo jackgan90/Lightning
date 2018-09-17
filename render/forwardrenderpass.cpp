@@ -8,20 +8,20 @@ namespace Lightning
 	{
 		void ForwardRenderPass::Draw(const RenderItem& item)
 		{
-			m_renderItems.push_back(item);
+			mRenderItems.push_back(item);
 		}
 
 		//Apply is called by renderer once per frame.Subclasses should commit render resources to device in this method.
 		void ForwardRenderPass::Apply()
 		{
-			for (auto& renderItem : m_renderItems)
+			for (auto& renderItem : mRenderItems)
 			{
 				CommitPipelineStates(renderItem);
 				CommitShaderArguments(renderItem);
 				CommitBuffers(renderItem.geometry);
 				Draw(renderItem.geometry);
 			}
-			m_renderItems.clear();
+			mRenderItems.clear();
 		}
 
 		void ForwardRenderPass::CommitPipelineStates(const RenderItem& item)

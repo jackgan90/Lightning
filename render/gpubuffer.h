@@ -17,9 +17,9 @@ namespace Lightning
 			//get internal buffer size in bytes
 			std::uint32_t GetBufferSize()const override;
 		protected:
-			std::uint8_t* m_buffer;
-			std::uint32_t m_bufferSize;
-			std::uint32_t m_usedSize;
+			std::uint8_t* mBuffer;
+			std::uint32_t mBufferSize;
+			std::uint32_t mUsedSize;
 		};
 	}
 }

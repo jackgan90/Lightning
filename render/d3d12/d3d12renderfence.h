@@ -25,10 +25,10 @@ namespace Lightning
 			std::uint64_t GetCurrentValue()override;
 			void WaitForTarget()override;
 		private:
-			D3D12Device *m_device;
-			ComPtr<ID3D12Fence> m_fence;
-			HANDLE m_event;
-			std::uint64_t m_targetValue;
+			D3D12Device *mDevice;
+			ComPtr<ID3D12Fence> mFence;
+			HANDLE mEvent;
+			std::uint64_t mTargetValue;
 		};
 	}
 }

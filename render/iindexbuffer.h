@@ -15,12 +15,12 @@ namespace Lightning
 		class LIGHTNING_RENDER_API IIndexBuffer : public GPUBuffer
 		{
 		public:
-			IIndexBuffer(std::uint32_t bufferSize, IndexType type) : GPUBuffer(bufferSize), m_type(type){}
-			IndexType GetIndexType()const { return m_type; }
+			IIndexBuffer(std::uint32_t bufferSize, IndexType type) : GPUBuffer(bufferSize), mType(type){}
+			IndexType GetIndexType()const { return mType; }
 			GPUBufferType GetType()const override { return GPUBufferType::INDEX; }
-			std::size_t GetIndexCount()const { return m_type == IndexType::UINT16 ? m_bufferSize / 2 : m_bufferSize / 4; }
+			std::size_t GetIndexCount()const { return mType == IndexType::UINT16 ? mBufferSize / 2 : mBufferSize / 4; }
 		protected:
-			IndexType m_type;
+			IndexType mType;
 		};
 		using SharedIndexBufferPtr = std::shared_ptr<IIndexBuffer>;
 	}

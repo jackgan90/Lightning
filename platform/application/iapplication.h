@@ -35,11 +35,11 @@ namespace Lightning
 			virtual SharedWindowPtr CreateMainWindow() = 0;
 			virtual UniqueRendererPtr CreateRenderer() = 0;
 			virtual void RegisterWindowHandlers();
-			WindowSystem::SharedWindowPtr GetMainWindow() const { return m_window; }
-			SharedFileSystemPtr m_fs;
-			UniqueRendererPtr m_renderer;
-			std::unique_ptr<WindowManager> m_windowMgr;
-			SharedWindowPtr m_window;
+			WindowSystem::SharedWindowPtr GetMainWindow() const { return mWindow; }
+			SharedFileSystemPtr mFileSystem;
+			UniqueRendererPtr mRenderer;
+			std::unique_ptr<WindowManager> mWindowMgr;
+			SharedWindowPtr mWindow;
 		};
 
 	}

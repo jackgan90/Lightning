@@ -32,9 +32,9 @@ namespace Lightning
 		{
 #ifndef NDEBUG
 			EnableDebugLayer();
-			HRESULT hr = CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&m_dxgiFactory));
+			HRESULT hr = CreateDXGIFactory2(DXGI_CREATE_FACTORY_DEBUG, IID_PPV_ARGS(&mDXGIFactory));
 #else
-			HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(&m_dxgiFactory));
+			HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(&mDXGIFactory));
 #endif
 			if (FAILED(hr))
 			{
@@ -46,14 +46,14 @@ namespace Lightning
 #ifndef NDEBUG
 		void D3D12Renderer::EnableDebugLayer()
 		{
-			auto res = ::D3D12GetDebugInterface(IID_PPV_ARGS(&m_d3d12Debug));
+			auto res = ::D3D12GetDebugInterface(IID_PPV_ARGS(&mD3D12Debug));
 			if (FAILED(res))
 			{
 				logger.Log(LogLevel::Warning, "Failed to get d3d12 debug interface!You should enable Graphics Tools optional feature!ErrorCode : 0x%x", res);
 			}
 			else
 			{
-				m_d3d12Debug->EnableDebugLayer();
+				mD3D12Debug->EnableDebugLayer();
 			}
 		}
 #endif
@@ -71,34 +71,34 @@ namespace Lightning
 			Renderer::ShutDown();
 			D3D12RenderTargetManager::Instance()->Clear();
 			D3D12DescriptorHeapManager::Instance()->Clear();
-			m_dxgiFactory.Reset();
+			mDXGIFactory.Reset();
 			REPORT_LIVE_OBJECTS;
 		}
 
 		ID3D12CommandQueue* D3D12Renderer::GetCommandQueue()
 		{
-			return static_cast<D3D12Device*>(m_device.get())->GetCommandQueue();
+			return static_cast<D3D12Device*>(mDevice.get())->GetCommandQueue();
 		}
 
 		ID3D12GraphicsCommandList* D3D12Renderer::GetGraphicsCommandList()
 		{
-			return static_cast<D3D12Device*>(m_device.get())->GetGraphicsCommandList();
+			return static_cast<D3D12Device*>(mDevice.get())->GetGraphicsCommandList();
 		}
 
 		IRenderFence* D3D12Renderer::CreateRenderFence()
 		{
-			return new D3D12RenderFence(static_cast<D3D12Device*>(m_device.get()), 0);
+			return new D3D12RenderFence(static_cast<D3D12Device*>(mDevice.get()), 0);
 		}
 
 		IDevice* D3D12Renderer::CreateDevice()
 		{
-			return new D3D12Device(m_dxgiFactory.Get(), m_fs);
+			return new D3D12Device(mDXGIFactory.Get(), mFs);
 		}
 
 		ISwapChain* D3D12Renderer::CreateSwapChain()
 		{
-			auto nativeDevice = static_cast<D3D12Device*>(m_device.get())->GetNative();
-			return new D3D12SwapChain(m_dxgiFactory.Get(), nativeDevice, GetCommandQueue(), m_outputWindow.get());
+			auto nativeDevice = static_cast<D3D12Device*>(mDevice.get())->GetNative();
+			return new D3D12SwapChain(mDXGIFactory.Get(), nativeDevice, GetCommandQueue(), mOutputWindow.get());
 		}
 
 		IDepthStencilBuffer* D3D12Renderer::CreateDepthStencilBuffer(std::size_t width, std::size_t height)
@@ -127,7 +127,7 @@ namespace Lightning
 				logger.Log(LogLevel::Warning, "Failed to get debug interface!");
 				return;
 			}
-			pDXGIGetDebugInterface(IID_PPV_ARGS(&m_dxgiDebug));
+			pDXGIGetDebugInterface(IID_PPV_ARGS(&mDXGIDebug));
 		}
 #endif
 
@@ -143,7 +143,7 @@ namespace Lightning
 
 		void D3D12Renderer::EndFrame()
 		{
-			auto currentSwapChainRT = m_swapChain->GetBufferRenderTarget(m_currentBackBufferIndex);
+			auto currentSwapChainRT = mSwapChain->GetBufferRenderTarget(mCurrentBackBufferIndex);
 			auto nativeRT = static_cast<D3D12RenderTarget*>(currentSwapChainRT.get());
 			auto commandList = GetGraphicsCommandList();
 			commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRT->GetNative().Get(),

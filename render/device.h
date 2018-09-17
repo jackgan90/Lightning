@@ -23,10 +23,10 @@ namespace Lightning
 			virtual void ApplyScissorRects(const RectFList& scissorRects);
 			virtual void ApplyRenderTargets(const SharedRenderTargetPtr* renderTargets, const std::uint8_t targetCount, const SharedDepthStencilBufferPtr& dsBuffer) = 0;
 			using DefaultShaderMap = std::unordered_map<ShaderType, SharedShaderPtr>;
-			std::unique_ptr<IShaderManager> m_shaderMgr;
-			PipelineState m_devicePipelineState;
-			DefaultShaderMap m_defaultShaders;
-			std::size_t m_frameResourceIndex;
+			std::unique_ptr<IShaderManager> mShaderMgr;
+			PipelineState mDevicePipelineState;
+			DefaultShaderMap mDefaultShaders;
+			std::size_t mFrameResourceIndex;
 		};
 	}
 }

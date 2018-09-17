@@ -25,18 +25,18 @@ namespace Lightning
 			~D3D12SwapChain()override;
 			bool Present()override;
 			SharedRenderTargetPtr GetBufferRenderTarget(unsigned int bufferIndex)override;
-			std::size_t GetSampleCount()const override { return m_desc.SampleDesc.Count; }
-			int GetSampleQuality()const override { return m_desc.SampleDesc.Quality; }
-			RenderFormat GetRenderFormat()const override{ return D3D12TypeMapper::MapRenderFormat(m_desc.BufferDesc.Format); }
-			IDXGISwapChain3* GetNative() { return m_swapChain.Get(); }
+			std::size_t GetSampleCount()const override { return mDesc.SampleDesc.Count; }
+			int GetSampleQuality()const override { return mDesc.SampleDesc.Quality; }
+			RenderFormat GetRenderFormat()const override{ return D3D12TypeMapper::MapRenderFormat(mDesc.BufferDesc.Format); }
+			IDXGISwapChain3* GetNative() { return mSwapChain.Get(); }
 			std::size_t GetCurrentBackBufferIndex()const override;
 			SharedRenderTargetPtr GetPrimaryRenderTarget()override;
 		private:
 			void BindRenderTargets(ID3D12Device* pDevice);
 			void CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow);
-			ComPtr<IDXGISwapChain3> m_swapChain;
-			std::unordered_map<UINT, RenderTargetID> m_renderTargets;
-			DXGI_SWAP_CHAIN_DESC m_desc;
+			ComPtr<IDXGISwapChain3> mSwapChain;
+			std::unordered_map<UINT, RenderTargetID> mRenderTargets;
+			DXGI_SWAP_CHAIN_DESC mDesc;
 		};
 	}
 }

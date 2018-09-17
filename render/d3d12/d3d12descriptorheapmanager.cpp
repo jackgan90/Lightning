@@ -9,7 +9,7 @@ namespace Lightning
 	{
 		using Foundation::logger;
 		using Foundation::LogLevel;
-		D3D12DescriptorHeapManager::D3D12DescriptorHeapManager() :m_currentID(0)
+		D3D12DescriptorHeapManager::D3D12DescriptorHeapManager() :mCurrentID(0)
 		{
 
 		}
@@ -28,11 +28,11 @@ namespace Lightning
 		{
 			auto nativeDevice = pDevice ? pDevice : GetNativeDevice();
 			auto typeHash = HeapTypeHash(type, shaderVisible);
-			auto it = m_heaps.find(typeHash);
-			if (it == m_heaps.end())
+			auto it = mHeaps.find(typeHash);
+			if (it == mHeaps.end())
 			{
 				CreateHeapInternal(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE, nativeDevice);
-				it = m_heaps.find(typeHash);
+				it = mHeaps.find(typeHash);
 			}
 			auto res = TryAllocateInternal(it->second, count);
 			if (std::get<0>(res))
@@ -64,16 +64,16 @@ namespace Lightning
 			heapInfo.cpuHandle = heapInfo.heap->GetCPUDescriptorHandleForHeapStart();
 			heapInfo.gpuHandle = heapInfo.heap->GetGPUDescriptorHandleForHeapStart();
 			heapInfo.incrementSize = GetIncrementSize(type, pDevice);
-			heapInfo.heapID = m_currentID;
+			heapInfo.heapID = mCurrentID;
 			
 			auto typeHash = HeapTypeHash(type, shaderVisible);
-			if (m_heaps.find(typeHash) == m_heaps.end())
+			if (mHeaps.find(typeHash) == mHeaps.end())
 			{
-				m_heaps.insert(std::make_pair(typeHash, std::vector<_DescriptorHeapInternal>()));
+				mHeaps.insert(std::make_pair(typeHash, std::vector<_DescriptorHeapInternal>()));
 			}
-			m_heaps[typeHash].push_back(heapInfo);
-			m_heapIDToHeaps[m_currentID] = heapInfo.heap;
-			m_currentID++;
+			mHeaps[typeHash].push_back(heapInfo);
+			mHeapIDToHeaps[mCurrentID] = heapInfo.heap;
+			mCurrentID++;
 			std::get<0>(res) =  true;
 			return res;
 		}
@@ -121,8 +121,8 @@ namespace Lightning
 					CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(heapInfo.gpuHandle);
 					cpuHandle.Offset(leftEndPoint * heapInfo.incrementSize);
 					gpuHandle.Offset(leftEndPoint * heapInfo.incrementSize);
-					m_cpuHandleToInternal[cpuHandle.ptr] = &heapInfo;
-					m_gpuHandleToInternal[gpuHandle.ptr] = &heapInfo;
+					mCPUHandles[cpuHandle.ptr] = &heapInfo;
+					mGPUHandles[gpuHandle.ptr] = &heapInfo;
 					heapInfo.locationToSizes[leftEndPoint] = count;
 					info.heapID = heapInfo.heapID;
 					info.cpuHandle = cpuHandle;
@@ -135,25 +135,25 @@ namespace Lightning
 
 		void D3D12DescriptorHeapManager::Deallocate(D3D12_CPU_DESCRIPTOR_HANDLE handle)
 		{
-			auto it = m_cpuHandleToInternal.find(handle.ptr);
-			assert(it != m_cpuHandleToInternal.end());
+			auto it = mCPUHandles.find(handle.ptr);
+			assert(it != mCPUHandles.end());
 			//calculate handle offset in heap
 			auto offset = (handle.ptr - it->second->cpuHandle.ptr) / it->second->incrementSize;
 			Deallocate(*it->second, offset);
 			//erase gpu handle as well
-			m_gpuHandleToInternal.erase(it->second->gpuHandle.ptr + offset * it->second->incrementSize);
-			m_cpuHandleToInternal.erase(it);
+			mGPUHandles.erase(it->second->gpuHandle.ptr + offset * it->second->incrementSize);
+			mCPUHandles.erase(it);
 		}
 
 		void D3D12DescriptorHeapManager::Deallocate(D3D12_GPU_DESCRIPTOR_HANDLE handle)
 		{
-			auto it = m_gpuHandleToInternal.find(handle.ptr);
-			assert(it != m_gpuHandleToInternal.end());
+			auto it = mGPUHandles.find(handle.ptr);
+			assert(it != mGPUHandles.end());
 			auto offset = (handle.ptr - it->second->cpuHandle.ptr) / it->second->incrementSize;
 			Deallocate(*it->second, offset);
 			//erase cpu handle as well
-			m_cpuHandleToInternal.erase(it->second->cpuHandle.ptr + offset * it->second->incrementSize);
-			m_gpuHandleToInternal.erase(it);
+			mCPUHandles.erase(it->second->cpuHandle.ptr + offset * it->second->incrementSize);
+			mGPUHandles.erase(it);
 		}
 
 		void D3D12DescriptorHeapManager::Deallocate(_DescriptorHeapInternal& heapInfo, const UINT64 offset)
@@ -214,26 +214,26 @@ namespace Lightning
 
 		UINT D3D12DescriptorHeapManager::GetIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type, ID3D12Device* pDevice)
 		{
-			if (m_incrementSizes.find(type) == m_incrementSizes.end())
+			if (mIncrementSizes.find(type) == mIncrementSizes.end())
 			{
 				auto nativeDevice = pDevice ? pDevice : GetNativeDevice();
-				m_incrementSizes[type] = nativeDevice->GetDescriptorHandleIncrementSize(type);
+				mIncrementSizes[type] = nativeDevice->GetDescriptorHandleIncrementSize(type);
 			}
-			return m_incrementSizes[type];
+			return mIncrementSizes[type];
 		}
 
 		void D3D12DescriptorHeapManager::Clear()
 		{
-			m_heaps.clear();
-			m_heapIDToHeaps.clear();
-			m_cpuHandleToInternal.clear();
-			m_gpuHandleToInternal.clear();
+			mHeaps.clear();
+			mHeapIDToHeaps.clear();
+			mCPUHandles.clear();
+			mGPUHandles.clear();
 		}
 
 		ComPtr<ID3D12DescriptorHeap> D3D12DescriptorHeapManager::GetHeap(UINT heapID)const
 		{
-			auto it = m_heapIDToHeaps.find(heapID);
-			if (it == m_heapIDToHeaps.end())
+			auto it = mHeapIDToHeaps.find(heapID);
+			if (it == mHeapIDToHeaps.end())
 			{
 				return ComPtr<ID3D12DescriptorHeap>();
 			}

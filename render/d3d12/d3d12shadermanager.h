@@ -13,7 +13,7 @@ namespace Lightning
 		protected:
 			SharedShaderPtr CreateConcreteShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)override;
 		private:
-			D3D12Device* m_device;
+			D3D12Device* mDevice;
 		};
 	}
 }

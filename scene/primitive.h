@@ -19,9 +19,9 @@ namespace Lightning
 			Primitive();
 			virtual ~Primitive();
 			void Draw(Render::Renderer& renderer, const SceneRenderData& sceneRenderData) override;
-			PrimitiveType GetPrimitiveType()const { return m_renderItem.geometry->primType; }
+			PrimitiveType GetPrimitiveType()const { return mRenderItem.geometry->primType; }
 		protected:
-			Render::RenderItem m_renderItem;
+			Render::RenderItem mRenderItem;
 		};
 
 		class LIGHTNING_SCENE_API Cube : public Primitive
@@ -30,10 +30,10 @@ namespace Lightning
 			Cube(float size);
 			~Cube()override;
 		protected:
-			float m_size;
-			std::uint8_t* m_vertices;
-			static float verticeTemplate[];
-			static std::uint16_t s_indices[];
+			float mSize;
+			std::uint8_t* mVertices;
+			static float sVerticeTemplate[];
+			static std::uint16_t sIndices[];
 		};
 	}
 }

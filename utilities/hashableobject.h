@@ -8,26 +8,26 @@ namespace Lightning
 		class HashableObject
 		{
 		public:
-			HashableObject() : m_hashDirty(true), m_hashValue(0){}
+			HashableObject() : mHashDirty(true), mHashValue(0){}
 			virtual ~HashableObject() = default;
-			size_t GetHashValue() { UpdateHash(); return m_hashValue; }
+			size_t GetHashValue() { UpdateHash(); return mHashValue; }
 		protected:
 			virtual size_t CalculateHashInternal() = 0;
 			void UpdateHash()
 			{
-				if (m_hashDirty)
+				if (mHashDirty)
 				{
-					m_hashValue = CalculateHashInternal();
-					m_hashDirty = false;
+					mHashValue = CalculateHashInternal();
+					mHashDirty = false;
 				}
 			}
 			void SetHashDirty()
 			{
-				m_hashDirty = true;
+				mHashDirty = true;
 			}
 		private:
-			bool m_hashDirty;
-			size_t m_hashValue;
+			bool mHashDirty;
+			size_t mHashValue;
 		};
 	}
 }

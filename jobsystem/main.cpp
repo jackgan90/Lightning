@@ -125,15 +125,15 @@ private:
 class CallableObject
 {
 public:
-	CallableObject(const TestClass& tc):m_tc(tc)
+	CallableObject(const TestClass& tc):mTC(tc)
 	{
 		std::cout << "CallableObject constructor" << std::endl;
 	}
-	CallableObject(const CallableObject& co) :m_tc(co.m_tc)
+	CallableObject(const CallableObject& co) :mTC(co.mTC)
 	{
 		std::cout << "CallableObject copy constructor" << std::endl;
 	}
-	CallableObject(CallableObject&& co) :m_tc(std::move(co.m_tc))
+	CallableObject(CallableObject&& co) :mTC(std::move(co.mTC))
 	{
 		std::cout << "CallableObject move constructor" << std::endl;
 	}
@@ -143,10 +143,10 @@ public:
 	}
 	void operator()()
 	{
-		m_tc.Print();
+		mTC.Print();
 	}
 private:
-	TestClass m_tc;
+	TestClass mTC;
 };
 
 void hello()

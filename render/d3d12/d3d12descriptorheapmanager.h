@@ -50,12 +50,12 @@ namespace Lightning
 			std::tuple<bool, DescriptorHeap> TryAllocateInternal(_DescriptorHeapInternal& heapInfo, UINT count);
 			std::tuple<bool, DescriptorHeap> TryAllocateInternal(std::vector<_DescriptorHeapInternal>& heapList, UINT count);
 			void Deallocate(_DescriptorHeapInternal& heapInfo, const UINT64 offset);
-			std::unordered_map<UINT, std::vector<_DescriptorHeapInternal>> m_heaps;
-			std::unordered_map<UINT, ComPtr<ID3D12DescriptorHeap>> m_heapIDToHeaps;
-			std::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, UINT> m_incrementSizes;
-			std::unordered_map<UINT64, _DescriptorHeapInternal*> m_cpuHandleToInternal;
-			std::unordered_map<UINT64, _DescriptorHeapInternal*> m_gpuHandleToInternal;
-			UINT m_currentID;
+			std::unordered_map<UINT, std::vector<_DescriptorHeapInternal>> mHeaps;
+			std::unordered_map<UINT, ComPtr<ID3D12DescriptorHeap>> mHeapIDToHeaps;
+			std::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, UINT> mIncrementSizes;
+			std::unordered_map<UINT64, _DescriptorHeapInternal*> mCPUHandles;
+			std::unordered_map<UINT64, _DescriptorHeapInternal*> mGPUHandles;
+			UINT mCurrentID;
 		};
 	}
 }

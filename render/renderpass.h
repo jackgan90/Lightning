@@ -19,10 +19,10 @@ namespace Lightning
 			virtual void Draw(const RenderItem& item) = 0;
 			//Apply is called by renderer once per frame.Subclasses should commit render resources to device in this method.
 			virtual void Apply() = 0;
-			RenderPassType GetType()const { return m_type; }
+			RenderPassType GetType()const { return mType; }
 		protected:
-			RenderPass(RenderPassType type):m_type(type){}
-			RenderPassType m_type;
+			RenderPass(RenderPassType type):mType(type){}
+			RenderPassType mType;
 		};
 	}
 }

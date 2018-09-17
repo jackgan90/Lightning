@@ -15,15 +15,15 @@ namespace Lightning
 		public:
 			Scene(std::uint32_t id);
 			virtual ~Scene();
-			std::uint32_t GetID()const { return m_id; }
+			std::uint32_t GetID()const { return mID; }
 			virtual void Update();
 			void AddDrawable(const SharedDrawablePtr& drawable);
-			Camera* GetMainCamera() { return m_mainCamera; }
+			Camera* GetActiveCamera() { return mActiveCamera; }
 		protected:
-			Camera* m_mainCamera;
-			std::uint32_t m_id;
-			std::vector<SharedDrawablePtr> m_drawables;
-			SceneRenderData m_renderData;
+			Camera* mActiveCamera;
+			std::uint32_t mID;
+			std::vector<SharedDrawablePtr> mDrawables;
+			SceneRenderData mRenderData;
 		};
 	}
 }

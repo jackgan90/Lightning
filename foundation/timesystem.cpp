@@ -8,7 +8,7 @@ namespace Lightning
 {
 	namespace Foundation
 	{
-		std::string Time::currentTimeString()
+		std::string Time::GetCurrentTimeString()
 		{
 			auto now = std::chrono::system_clock::now();
 			auto tt = std::chrono::system_clock::to_time_t(now);

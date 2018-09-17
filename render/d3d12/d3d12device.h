@@ -27,9 +27,9 @@ namespace Lightning
 			void ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr)override;
 			SharedVertexBufferPtr CreateVertexBuffer(std::uint32_t bufferSize, const std::vector<VertexComponent>& components)override;
 			SharedIndexBufferPtr CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;
-			ID3D12Device* GetNative()const { return m_device.Get(); }
-			ID3D12CommandQueue* GetCommandQueue()const { return m_commandQueue.Get(); }
-			ID3D12GraphicsCommandList* GetGraphicsCommandList()const { return m_commandList.Get(); }
+			ID3D12Device* GetNative()const { return mDevice.Get(); }
+			ID3D12CommandQueue* GetCommandQueue()const { return mCommandQueue.Get(); }
+			ID3D12GraphicsCommandList* GetGraphicsCommandList()const { return mCommandList.Get(); }
 			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)override;
 			void ApplyPipelineState(const PipelineState& state)override;
 			void CommitGPUBuffer(const SharedGPUBufferPtr& pBuffer)override;
@@ -89,16 +89,16 @@ namespace Lightning
 			void CacheResourceReference(const SharedDepthStencilBufferPtr& resource);
 			void CacheResourceReference(const SharedRenderTargetPtr& resource);
 			void CacheResourceReference(const SharedGPUBufferPtr& resource);
-			SharedFileSystemPtr m_fs;
-			ComPtr<ID3D12Device> m_device;
-			ComPtr<ID3D12CommandQueue> m_commandQueue;
-			ComPtr<ID3D12GraphicsCommandList> m_commandList;
-			ComPtr<ID3D12PipelineState> m_d3d12PipelineState;
-			D3D12_GRAPHICS_PIPELINE_STATE_DESC m_pipelineDesc;
-			PipelineCacheMap m_pipelineCache;
-			RootSignatureMap m_rootSignatures;
-			SharedDepthStencilBufferPtr m_currentDSBuffer;
-			FrameResource m_frameResources[RENDER_FRAME_COUNT];
+			SharedFileSystemPtr mFs;
+			ComPtr<ID3D12Device> mDevice;
+			ComPtr<ID3D12CommandQueue> mCommandQueue;
+			ComPtr<ID3D12GraphicsCommandList> mCommandList;
+			ComPtr<ID3D12PipelineState> mD3D12PipelineState;
+			D3D12_GRAPHICS_PIPELINE_STATE_DESC mPipelineDesc;
+			PipelineCacheMap mPipelineCache;
+			RootSignatureMap mRootSignatures;
+			SharedDepthStencilBufferPtr mCurrentDSBuffer;
+			FrameResource mFrameResources[RENDER_FRAME_COUNT];
 		};
 	}
 }

@@ -22,7 +22,7 @@ namespace Lightning
 		D3D12SwapChain::D3D12SwapChain(IDXGIFactory4* factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow)
 		{
 			CreateNativeSwapChain(factory, pDevice, pCommandQueue, pWindow);
-			m_swapChain->GetDesc(&m_desc);
+			mSwapChain->GetDesc(&mDesc);
 			BindRenderTargets(pDevice);
 		}
 
@@ -68,17 +68,17 @@ namespace Lightning
 
 			auto hr = factory->CreateSwapChain(pCommandQueue, &swapChainDesc, &tempSwapChain);
 			ComPtr<IDXGISwapChain3> swapChain;
-			tempSwapChain.As(&m_swapChain);
+			tempSwapChain.As(&mSwapChain);
 		}
 
 		D3D12SwapChain::~D3D12SwapChain()
 		{
-			m_renderTargets.clear();
+			mRenderTargets.clear();
 		}
 
 		bool D3D12SwapChain::Present()
 		{
-			HRESULT hr = m_swapChain->Present(0, 0);
+			HRESULT hr = mSwapChain->Present(0, 0);
 			return SUCCEEDED(hr);
 		}
 
@@ -88,27 +88,27 @@ namespace Lightning
 			auto rtMgr = D3D12RenderTargetManager::Instance();
 			for (int i = 0; i < RENDER_FRAME_COUNT; i++)
 			{
-				auto hr = m_swapChain->GetBuffer(i, IID_PPV_ARGS(&resources[i]));
+				auto hr = mSwapChain->GetBuffer(i, IID_PPV_ARGS(&resources[i]));
 				if (FAILED(hr))
 				{
 					throw SwapChainInitException("Failed to get d3d12 swap chain buffer.");
 				}
 				auto renderTarget = rtMgr->CreateSwapChainRenderTarget(resources[i], pDevice, this);
-				m_renderTargets[i] = renderTarget->GetID();
+				mRenderTargets[i] = renderTarget->GetID();
 			}
 		}
 
 		SharedRenderTargetPtr D3D12SwapChain::GetBufferRenderTarget(unsigned int bufferIndex)
 		{
-			auto it = m_renderTargets.find(bufferIndex);
-			if (it == m_renderTargets.end())
+			auto it = mRenderTargets.find(bufferIndex);
+			if (it == mRenderTargets.end())
 				return SharedRenderTargetPtr();
 			return D3D12RenderTargetManager::Instance()->GetRenderTarget(it->second);
 		}
 
 		std::size_t D3D12SwapChain::GetCurrentBackBufferIndex()const
 		{
-			return m_swapChain->GetCurrentBackBufferIndex();
+			return mSwapChain->GetCurrentBackBufferIndex();
 		}
 
 		SharedRenderTargetPtr D3D12SwapChain::GetPrimaryRenderTarget()

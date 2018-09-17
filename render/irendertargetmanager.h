@@ -34,8 +34,8 @@ namespace Lightning
 			}
 			SharedRenderTargetPtr GetRenderTarget(const RenderTargetID targetID) override
 			{
-				auto it = m_renderTargets.find(targetID);
-				if (it == m_renderTargets.end())
+				auto it = mRenderTargets.find(targetID);
+				if (it == mRenderTargets.end())
 				{
 					return SharedRenderTargetPtr();
 				}
@@ -43,16 +43,16 @@ namespace Lightning
 			}
 			void Clear()
 			{
-				m_renderTargets.clear();
+				mRenderTargets.clear();
 			}
 			void DestroyRenderTarget(const RenderTargetID rtID)
 			{
-				auto it = m_renderTargets.find(rtID);
-				if (it != m_renderTargets.end())
-					m_renderTargets.erase(it);
+				auto it = mRenderTargets.find(rtID);
+				if (it != mRenderTargets.end())
+					mRenderTargets.erase(it);
 			}
 		protected:
-			RenderTargetMap m_renderTargets;
+			RenderTargetMap mRenderTargets;
 		};
 	}
 }

@@ -6,16 +6,16 @@ namespace Lightning
 	namespace Render
 	{
 		D3D12RenderFence::D3D12RenderFence(D3D12Device* device, std::uint64_t initial_value) : 
-			m_device(device), m_targetValue(initial_value)
+			mDevice(device), mTargetValue(initial_value)
 		{
 			auto nativeDevice = device->GetNative();
-			auto hr = nativeDevice->CreateFence(initial_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_fence));
+			auto hr = nativeDevice->CreateFence(initial_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
 			if (FAILED(hr))
 			{
 				throw FenceInitDexception("Failed to create d3d12 fence!");
 			}
-			m_event = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
-			if (!m_event)
+			mEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
+			if (!mEvent)
 			{
 				throw FenceInitDexception("Failed to create fence event!");
 			}
@@ -23,39 +23,39 @@ namespace Lightning
 
 		D3D12RenderFence::~D3D12RenderFence()
 		{
-			m_fence.Reset();
-			::CloseHandle(m_event);
+			mFence.Reset();
+			::CloseHandle(mEvent);
 		}
 
 		void D3D12RenderFence::SetTargetValue(std::uint64_t value)
 		{
-			if (value > m_fence->GetCompletedValue())
+			if (value > mFence->GetCompletedValue())
 			{
-				m_targetValue = value;
-				auto commandQueue = m_device->GetCommandQueue();
-				commandQueue->Signal(m_fence.Get(), value);
-				m_fence->SetEventOnCompletion(value, m_event);
+				mTargetValue = value;
+				auto commandQueue = mDevice->GetCommandQueue();
+				commandQueue->Signal(mFence.Get(), value);
+				mFence->SetEventOnCompletion(value, mEvent);
 			}
 		}
 
 		std::uint64_t D3D12RenderFence::GetTargetValue()
 		{
-			return m_targetValue;
+			return mTargetValue;
 		}
 
 		std::uint64_t D3D12RenderFence::GetCurrentValue()
 		{
-			return m_fence->GetCompletedValue();
+			return mFence->GetCompletedValue();
 		}
 
 
 		void D3D12RenderFence::WaitForTarget()
 		{
-			auto completed_value = m_fence->GetCompletedValue();
-			while (m_targetValue > completed_value)
+			auto completed_value = mFence->GetCompletedValue();
+			while (mTargetValue > completed_value)
 			{
-				::WaitForSingleObject(m_event, INFINITE);
-				completed_value = m_fence->GetCompletedValue();
+				::WaitForSingleObject(mEvent, INFINITE);
+				completed_value = mFence->GetCompletedValue();
 			}
 		}
 	}

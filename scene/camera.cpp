@@ -8,20 +8,20 @@ namespace Lightning
 	{
 		using Render::Matrix3x3f;
 		using Render::Vector4f;
-		Camera::Camera():m_type(CameraType::Perspective), m_nearPlane(1.0f), m_farPlane(1000.0f), 
-			m_fov(DegreesToRadians(60.0f)), m_aspectRatio(1.0f),
-			m_worldPosition{0.0f, 0.0f, 0.0f}, 
-			m_xAxis{1.0f, 0.0f, 0.0f}, m_yAxis{0.0f, 1.0f, 0.0f}, m_zAxis{0.0f, 0.0f, 1.0f}
+		Camera::Camera():mType(CameraType::Perspective), mNearPlane(1.0f), mFarPlane(1000.0f), 
+			mFov(DegreesToRadians(60.0f)), mAspectRatio(1.0f),
+			mWorldPosition{0.0f, 0.0f, 0.0f}, 
+			mXAxis{1.0f, 0.0f, 0.0f}, mYAxis{0.0f, 1.0f, 0.0f}, mZAxis{0.0f, 0.0f, 1.0f}
 		{
 			UpdateViewMatrix();
 			UpdateProjectionMatrix();
 		}
 
 		Camera::Camera(const Vector3f& worldPosition, const Vector3f& lookDir, const Vector3f& worldUp):
-			m_type(CameraType::Perspective), m_nearPlane(1.0f), m_farPlane(1000.0f),
-			m_fov(DegreesToRadians(60.0f)), m_aspectRatio(1.0f),
-			m_worldPosition(worldPosition), 
-			m_zAxis(-lookDir), m_xAxis(worldUp.Cross(m_zAxis)), m_yAxis(m_zAxis.Cross(m_xAxis))
+			mType(CameraType::Perspective), mNearPlane(1.0f), mFarPlane(1000.0f),
+			mFov(DegreesToRadians(60.0f)), mAspectRatio(1.0f),
+			mWorldPosition(worldPosition), 
+			mZAxis(-lookDir), mXAxis(worldUp.Cross(mZAxis)), mYAxis(mZAxis.Cross(mXAxis))
 		{
 			UpdateViewMatrix();
 			UpdateProjectionMatrix();
@@ -31,10 +31,10 @@ namespace Lightning
 			const Vector3f& worldPosition, 
 			const Vector3f& lookDir,
 			const Vector3f& worldUp):
-			m_type(CameraType::Perspective), m_nearPlane(1.0f), m_farPlane(1000.0f), 
-			m_fov(DegreesToRadians(fov)),m_aspectRatio(aspectRatio),
-			m_worldPosition(worldPosition), 
-			m_zAxis(-lookDir), m_xAxis(worldUp.Cross(m_zAxis)), m_yAxis(m_zAxis.Cross(m_xAxis))
+			mType(CameraType::Perspective), mNearPlane(1.0f), mFarPlane(1000.0f), 
+			mFov(DegreesToRadians(fov)),mAspectRatio(aspectRatio),
+			mWorldPosition(worldPosition), 
+			mZAxis(-lookDir), mXAxis(worldUp.Cross(mZAxis)), mYAxis(mZAxis.Cross(mXAxis))
 		{
 			UpdateViewMatrix();
 			UpdateProjectionMatrix();
@@ -48,79 +48,79 @@ namespace Lightning
 
 		void Camera::SetCameraType(CameraType type)
 		{
-			if (type == m_type)
+			if (type == mType)
 				return;
-			m_type = type;
+			mType = type;
 			UpdateProjectionMatrix();
 		}
 
 		void Camera::MoveTo(const Vector3f& worldPosition)
 		{
-			m_worldPosition = worldPosition;
+			mWorldPosition = worldPosition;
 			UpdateViewMatrix();
 		}
 
 		void Camera::LookAt(const Vector3f& worldPosition, const Vector3f& worldUp)
 		{
 			auto normalizedUp = worldUp.Normalized();
-			m_zAxis = m_worldPosition - worldPosition;
-			m_zAxis.Normalize();
-			m_xAxis = normalizedUp.Cross(m_zAxis);
-			m_xAxis.Normalize();
-			m_yAxis = m_zAxis.Cross(m_xAxis);
+			mZAxis = mWorldPosition - worldPosition;
+			mZAxis.Normalize();
+			mXAxis = normalizedUp.Cross(mZAxis);
+			mXAxis.Normalize();
+			mYAxis = mZAxis.Cross(mXAxis);
 			UpdateViewMatrix();
 		}
 
 		void Camera::SetNear(const float nearPlane)
 		{
-			m_nearPlane = nearPlane;
+			mNearPlane = nearPlane;
 			UpdateProjectionMatrix();
 		}
 
 		void Camera::SetFar(const float farPlane)
 		{
-			m_farPlane = farPlane;
+			mFarPlane = farPlane;
 			UpdateProjectionMatrix();
 		}
 
 		void Camera::SetFOV(const float fov)
 		{
-			if (std::abs(fov - m_fov) < EPSILON)
+			if (std::abs(fov - mFov) < EPSILON)
 				return;
-			m_fov = DegreesToRadians(fov);
+			mFov = DegreesToRadians(fov);
 			UpdateProjectionMatrix();
 		}
 
 		void Camera::SetAspectRatio(const float aspectRatio)
 		{
-			if (std::abs(aspectRatio - m_aspectRatio) < EPSILON)
+			if (std::abs(aspectRatio - mAspectRatio) < EPSILON)
 				return;
-			m_aspectRatio = DegreesToRadians(aspectRatio);
+			mAspectRatio = DegreesToRadians(aspectRatio);
 			UpdateProjectionMatrix();
 		}
 
 		void Camera::UpdateProjectionMatrix()
 		{
-			m_projectionMatrix.SetZero();
+			mProjectionMatrix.SetZero();
 			auto ndcNear = Render::Renderer::Instance()->GetNDCNearPlane();
-			switch (m_type)
+			switch (mType)
 			{
 			case CameraType::Perspective:
 			{
-				m_projectionMatrix(0, 0) = static_cast<float>(1.0 / (tan(m_fov / 2.0) * m_aspectRatio));
-				m_projectionMatrix(1, 1) = static_cast<float>(1.0 / tan(m_fov / 2.0));
-				m_projectionMatrix(2, 2) = (m_nearPlane * ndcNear - m_farPlane) / (m_farPlane - m_nearPlane);
-				m_projectionMatrix(2, 3) = (ndcNear - 1.0f) * m_nearPlane * m_farPlane / (m_farPlane - m_nearPlane);
-				m_projectionMatrix(3, 2) = -1;
+				mProjectionMatrix(0, 0) = static_cast<float>(1.0 / (tan(mFov / 2.0) * mAspectRatio));
+				mProjectionMatrix(1, 1) = static_cast<float>(1.0 / tan(mFov / 2.0));
+				mProjectionMatrix(2, 2) = (mNearPlane * ndcNear - mFarPlane) / (mFarPlane - mNearPlane);
+				mProjectionMatrix(2, 3) = (ndcNear - 1.0f) * mNearPlane * mFarPlane / (mFarPlane - mNearPlane);
+				mProjectionMatrix(3, 2) = -1;
 				break;
 			}
 			case CameraType::Orthographic:
 			{
-				m_projectionMatrix(0, 0) = static_cast<float>(1.0 / (tan(m_fov / 2.0) * m_aspectRatio * m_nearPlane));
-				m_projectionMatrix(1, 1) = static_cast<float>(1.0 / (tan(m_fov / 2.0) * m_nearPlane));
-				m_projectionMatrix(2, 2) = static_cast<float>(-2.0 / (m_farPlane - m_nearPlane));
-				m_projectionMatrix(2, 3) = -(m_farPlane + m_nearPlane) / (m_farPlane - m_nearPlane);
-				m_projectionMatrix(3, 2) = 0;
+				mProjectionMatrix(0, 0) = static_cast<float>(1.0 / (tan(mFov / 2.0) * mAspectRatio * mNearPlane));
+				mProjectionMatrix(1, 1) = static_cast<float>(1.0 / (tan(mFov / 2.0) * mNearPlane));
+				mProjectionMatrix(2, 2) = static_cast<float>(-2.0 / (mFarPlane - mNearPlane));
+				mProjectionMatrix(2, 3) = -(mFarPlane + mNearPlane) / (mFarPlane - mNearPlane);
+				mProjectionMatrix(3, 2) = 0;
 				break;
 			}
 			default:
@@ -139,14 +139,14 @@ namespace Lightning
 					| R RA|
 					| 0 1 |
 			*/	
-			Vector3f translation{ -m_worldPosition[0], -m_worldPosition[1], -m_worldPosition[2] };
-			Vector4f row0(m_xAxis);
-			row0[3] = m_xAxis.Dot(translation);
-			Vector4f row1(m_yAxis);
-			row1[3] = m_yAxis.Dot(translation);
-			Vector4f row2(m_zAxis);
-			row2[3] = m_zAxis.Dot(translation);
-			m_viewMatrix.SetRows(0, row0, row1, row2, Vector4f({0.0f, 0.0f, 0.0f, 1.0f}));
+			Vector3f translation{ -mWorldPosition[0], -mWorldPosition[1], -mWorldPosition[2] };
+			Vector4f row0(mXAxis);
+			row0[3] = mXAxis.Dot(translation);
+			Vector4f row1(mYAxis);
+			row1[3] = mYAxis.Dot(translation);
+			Vector4f row2(mZAxis);
+			row2[3] = mZAxis.Dot(translation);
+			mViewMatrix.SetRows(0, row0, row1, row2, Vector4f({0.0f, 0.0f, 0.0f, 1.0f}));
 
 		}
 	}

@@ -8,13 +8,13 @@ namespace JobSystem
 	{
 	public:
 		friend class JobManager;
-		JobAllocator() : m_currentPoolIndex(0)
+		JobAllocator() : mCurrentPoolIndex(0)
 		{
 			//Create two primary pools,these pools are not deleted
 			//during the lifetime of JobAllocator
 			for (std::size_t i = 0;i < 2;++i)
 			{
-				m_pools.emplace_back(PoolSize, true);
+				mPools.emplace_back(PoolSize, true);
 			}
 		}
 
@@ -29,14 +29,14 @@ namespace JobSystem
 		{
 			using JobType = JobImpl<Function, decltype(std::make_tuple(std::forward<Args>(args)...))>;
 			static_assert(sizeof(JobType) + Alignment <= PoolSize, "job object is too large!");
-			JobPool* pool = &m_pools[m_currentPoolIndex];
+			JobPool* pool = &mPools[mCurrentPoolIndex];
 			auto bufferStart = reinterpret_cast<std::uint64_t>(pool->buffer);
 			auto alignAddr = NextAlignAddr(bufferStart + pool->pos) - bufferStart;
 			if (alignAddr + sizeof(JobType) > PoolSize)
 			{
 				pool->locked = true;
 				ClearAndAllocatePools();
-				pool = &m_pools[m_currentPoolIndex];
+				pool = &mPools[mCurrentPoolIndex];
 				bufferStart = reinterpret_cast<std::uint64_t>(pool->buffer);
 				alignAddr = NextAlignAddr(bufferStart + pool->pos) - bufferStart;
 			}
@@ -128,9 +128,9 @@ namespace JobSystem
 		{
 			//clear full pool if necessary.The primary pools are not deleted
 			int firstEmptyPool = -1;
-			for (std::size_t i = 0;i < m_pools.size();++i)
+			for (std::size_t i = 0;i < mPools.size();++i)
 			{
-				auto& pool = m_pools[i];
+				auto& pool = mPools[i];
 				auto finishedCount = pool.finishedJobCount->load(std::memory_order_relaxed);
 				if (pool.locked && finishedCount >= pool.allocatedJobCount)
 				{
@@ -150,18 +150,18 @@ namespace JobSystem
 			//try to allocate new pool if requirements are not met
 			if (firstEmptyPool == -1)
 			{
-				m_pools.emplace_back(PoolSize, false);
-				m_currentPoolIndex = m_pools.size() - 1;
+				mPools.emplace_back(PoolSize, false);
+				mCurrentPoolIndex = mPools.size() - 1;
 			}
 			else
 			{
-				m_currentPoolIndex = static_cast<std::size_t>(firstEmptyPool);
+				mCurrentPoolIndex = static_cast<std::size_t>(firstEmptyPool);
 			}
 		}
 		static constexpr std::size_t PoolSize = 1024 * 64;
 		static constexpr std::uint8_t Magic = 0xff;
 		static constexpr std::size_t Alignment = 16;
-		std::vector<JobPool> m_pools;
-		std::size_t m_currentPoolIndex;
+		std::vector<JobPool> mPools;
+		std::size_t mCurrentPoolIndex;
 	};
 }

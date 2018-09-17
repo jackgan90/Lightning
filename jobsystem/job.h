@@ -71,26 +71,26 @@ namespace JobSystem
 		friend class JobManager;
 	public:
 		Job(JobType type, IJob* parent, std::atomic<std::size_t>& counter):
-			m_type(type),
-			m_parent(parent),
-			m_hasTargetRunThread(false),
-			m_unfinishedJobs(1),
-			m_counter(counter),
-			m_hasCompleted(false)
+			mType(type),
+			mParent(parent),
+			mHasTargetRunThread(false),
+			mUnfinishedJobs(1),
+			mCounter(counter),
+			mHasCompleted(false)
 #ifdef JOB_ASSERT
-			, m_executeCount(0)
+			, mExecuteCount(0)
 #endif
 		{
 			//Don't check parent job's finish status.Specify parent job while the job may potentially be completed
 			//is an undefined behavior.Users should ensure parent is not completed when child job is created
-			if (m_parent)
+			if (mParent)
 			{
-				auto pParent = static_cast<Job*>(m_parent);
+				auto pParent = static_cast<Job*>(mParent);
 				std::int32_t expected{ 0 };
-				//pParent now may or may not be complete here.If it is complete,m_unfinishedJobs should be 0.swap it with an invalid
+				//pParent now may or may not be complete here.If it is complete,mUnfinishedJobs should be 0.swap it with an invalid
 				//job count,there for Finish cannot be called twice.
-				pParent->m_unfinishedJobs.compare_exchange_strong(expected, INVALID_JOB_COUNT, std::memory_order_relaxed);
-				pParent->m_unfinishedJobs.fetch_add(1, std::memory_order_release);
+				pParent->mUnfinishedJobs.compare_exchange_strong(expected, INVALID_JOB_COUNT, std::memory_order_relaxed);
+				pParent->mUnfinishedJobs.fetch_add(1, std::memory_order_release);
 			}
 		}
 		Job(const Job& job) = delete;
@@ -98,42 +98,42 @@ namespace JobSystem
 
 		bool HasCompleted()override
 		{
-			return m_hasCompleted;
+			return mHasCompleted;
 		}
 
-		JobType GetType()override { return m_type; }
+		JobType GetType()override { return mType; }
 
 
 	protected:
 		void SetTargetRunThread(std::thread::id id)
 		{
-			m_targetRunThreadId = id;
-			m_hasTargetRunThread = true;
+			mTargetRunThreadId = id;
+			mHasTargetRunThread = true;
 		}
 
 		std::thread::id GetTargetRunThread()
 		{
-			return m_targetRunThreadId;
+			return mTargetRunThreadId;
 		}
 
 		bool HasTargetRunThread()const
 		{
-			return m_hasTargetRunThread;
+			return mHasTargetRunThread;
 		}
 
-		JobType m_type;
-		IJob* m_parent;
-		bool m_hasTargetRunThread;
-		std::thread::id m_targetRunThreadId;
-		std::atomic<std::int32_t> m_unfinishedJobs;
-		std::atomic<std::size_t>& m_counter;
-		//why don't we just compare m_unfinishedJobs with 0 to indicate completeness?
+		JobType mType;
+		IJob* mParent;
+		bool mHasTargetRunThread;
+		std::thread::id mTargetRunThreadId;
+		std::atomic<std::int32_t> mUnfinishedJobs;
+		std::atomic<std::size_t>& mCounter;
+		//why don't we just compare mUnfinishedJobs with 0 to indicate completeness?
 		//Because after the job is done,there are potentially other jobs specifying this job as 
-		//their parent.It's no harm to increment m_unfinishedJobs if the job is complete.But it
+		//their parent.It's no harm to increment mUnfinishedJobs if the job is complete.But it
 		//makes this value not accurately reflect the complete status. 
-		bool m_hasCompleted;
+		bool mHasCompleted;
 #ifdef JOB_ASSERT
-		std::atomic<std::size_t> m_executeCount;
+		std::atomic<std::size_t> mExecuteCount;
 #endif
 		static constexpr std::int32_t INVALID_JOB_COUNT = -(0x3f << 24 | 0xff << 16 | 0xff << 8 | 0xff);
 	};
@@ -146,19 +146,19 @@ namespace JobSystem
 		template<typename F, typename A>
 		JobImpl(JobType type, IJob* parent, std::atomic<std::size_t>& counter, F&& func, A&& args) :
 			Job(type, parent, counter),
-			m_payload(std::move(func), std::forward<A>(args))
+			mPayload(std::move(func), std::forward<A>(args))
 		{
 		}
 	public:
 		void Execute()override
 		{
 #ifdef JOB_ASSERT
-			assert(m_executeCount == 0);
+			assert(mExecuteCount == 0);
 #endif // JOB_ASSERT
 
-			ApplyWithFunc(m_payload.m_func, m_payload.m_args);
+			ApplyWithFunc(mPayload.mFunc, mPayload.mArgs);
 #ifdef JOB_ASSERT
-			m_executeCount++;
+			mExecuteCount++;
 #endif // JOB_ASSERT
 			Finish();
 		}
@@ -168,32 +168,32 @@ namespace JobSystem
 			if (HasCompleted())
 				return;
 			//if job schedule runs as expected,Finish should only be called within one thread
-			//so m_unfinishedJobs shouldn't be a negative value.
-			auto jobsBefore = m_unfinishedJobs.fetch_sub(1, std::memory_order_acquire);
+			//so mUnfinishedJobs shouldn't be a negative value.
+			auto jobsBefore = mUnfinishedJobs.fetch_sub(1, std::memory_order_acquire);
 			if (jobsBefore == 1)
 			{
-				m_hasCompleted = true;
-				//After finish execution,m_payload should be destroyed
-				m_payload.~Payload();
-				if (m_parent)
-					m_parent->Finish();
+				mHasCompleted = true;
+				//After finish execution,mPayload should be destroyed
+				mPayload.~Payload();
+				if (mParent)
+					mParent->Finish();
 				//Reset memory 
 				*(reinterpret_cast<std::uint8_t*>(this) - 1) = std::uint8_t(0);
-				m_counter.fetch_add(1, std::memory_order_relaxed);
+				mCounter.fetch_add(1, std::memory_order_relaxed);
 			}
 		}
 	private:
 		struct Payload
 		{
 			template<typename F, typename A>
-			Payload(F&& func, A&& args): m_func(std::move(func)), m_args(std::forward<A>(args)){}
-			Function m_func;
-			Tuple m_args;
+			Payload(F&& func, A&& args): mFunc(std::move(func)), mArgs(std::forward<A>(args)){}
+			Function mFunc;
+			Tuple mArgs;
 		};
 		static constexpr std::size_t MemberSize = sizeof(Job) + sizeof(Payload);
 		//std::hardware_destructive_interference_size is defined in c++17,VS2015 doesn't support it
 		static constexpr std::size_t CacheLineSize = 64;
-		Payload m_payload;
-		std::uint8_t m_padding[CacheLineSize - MemberSize % CacheLineSize];
+		Payload mPayload;
+		std::uint8_t mPadding[CacheLineSize - MemberSize % CacheLineSize];
 	};
 }

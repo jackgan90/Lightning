@@ -21,7 +21,7 @@ namespace Lightning
 			//Don't declare any of the five member control methods here,just let the compiler auto generated them.since this class is highly unlikely has many
 			//child classes and even if there's child class of Matrix,subclasses shouldn't add too complex structures
 			using VectorBaseType = Matrix<_Scalar, Rows, 1>;
-			Matrix():m_value(InternalMatrixType::Identity()){}
+			Matrix():mValue(InternalMatrixType::Identity()){}
 			//construct with an initializer list
 			Matrix(const std::initializer_list<_Scalar>& data) 
 			{ 
@@ -52,7 +52,7 @@ namespace Lightning
 			std::enable_if_t<std::is_base_of<VectorBaseType, std::decay_t<_Vector1<S, R>>>::value>
 			SetColumns(int i, const _Vector1<S, R>& col, const _Vector2<S, R>&... columns)
 			{
-				m_value.col(i) = col.m_value;
+				mValue.col(i) = col.mValue;
 				SetColumns(i + 1, columns...);
 			}
 
@@ -60,25 +60,25 @@ namespace Lightning
 			std::enable_if_t<std::is_base_of<VectorBaseType, std::decay_t<_Vector1<S, R>>>::value>
 			SetRows(int i, const _Vector1<S, R>& col, const _Vector2<S, R>&... rows)
 			{
-				m_value.row(i) = col.m_value;
+				mValue.row(i) = col.mValue;
 				SetRows(i + 1, rows...);
 			}
 
-			Matrix<_Scalar, 1, Columns> GetRow(const int i)const { return Matrix<_Scalar, 1, Columns>(m_value.row(i)); }
-			Matrix<_Scalar, Rows, 1> GetColumn(const int i)const { return Matrix<_Scalar, Rows, 1>(m_value.col(i)); }
+			Matrix<_Scalar, 1, Columns> GetRow(const int i)const { return Matrix<_Scalar, 1, Columns>(mValue.row(i)); }
+			Matrix<_Scalar, Rows, 1> GetColumn(const int i)const { return Matrix<_Scalar, Rows, 1>(mValue.col(i)); }
 
-			bool operator==(const Matrix<_Scalar, Rows, Columns>& m)const {return m_value.isApprox(m.m_value);}
+			bool operator==(const Matrix<_Scalar, Rows, Columns>& m)const {return mValue.isApprox(m.mValue);}
 			template<int _Rows, int _Columns>
 			bool operator==(const Matrix<_Scalar, _Rows, _Columns>& m)const
 			{
 				if (Rows != _Columns || Columns != _Rows || (Rows != 1 && Columns != 1))
 					return false;
-				return m_value.isApprox(m.m_value.transpose());
+				return mValue.isApprox(m.mValue.transpose());
 			}
 			bool operator!=(const Matrix<_Scalar, Rows, Columns>& m)const{return !(*this == m); }
 			Matrix<_Scalar, Rows, Columns>& operator+=(const Matrix<_Scalar, Rows, Columns>& m)
 			{
-				m_value += m.m_value;
+				mValue += m.mValue;
 				return *this;
 			}
 			Matrix<_Scalar, Rows, Columns> operator+(const Matrix<_Scalar, Rows, Columns>& m)const
@@ -89,7 +89,7 @@ namespace Lightning
 			}
 			Matrix<_Scalar, Rows, Columns>& operator-=(const Matrix<_Scalar, Rows, Columns>& m)
 			{
-				m_value -= m.m_value;
+				mValue -= m.mValue;
 				return *this;
 			}
 			Matrix<_Scalar, Rows, Columns> operator-(const Matrix<_Scalar, Rows, Columns>& m)const
@@ -100,41 +100,41 @@ namespace Lightning
 			}
 			Matrix<_Scalar, Rows, Columns> operator-()const
 			{
-				return Matrix<_Scalar, Rows, Columns>(-m_value);
+				return Matrix<_Scalar, Rows, Columns>(-mValue);
 			}
 			template<int Dimension>
 			Matrix<_Scalar, Rows, Dimension>& operator*=(const Matrix<_Scalar, Columns, Dimension>& m)
 			{
 				static_assert(Dimension == Columns, "Only matrices that have the same dimension can be multiplied!");
-				m_value *= m.m_value;
+				mValue *= m.mValue;
 				return *this;
 			}
 			template<int Dimension>
 			Matrix<_Scalar, Rows, Dimension> operator*(const Matrix<_Scalar, Columns, Dimension>& m)const
 			{
 				Matrix<_Scalar, Rows, Dimension> result;
-				result.m_value = m_value * m.m_value;
+				result.mValue = mValue * m.mValue;
 				return result;
 			}
 			void TransposeInPlace() 
 			{ 
 				static_assert(Rows == Columns, "Only square matrices can transpose in place!");
-				m_value.transposeInPlace();
+				mValue.transposeInPlace();
 			}
 			void SetZero()
 			{
-				m_value.setZero();
+				mValue.setZero();
 			}
 			template<int SubRows, int SubColumns> 
 			Matrix<_Scalar, SubRows, SubColumns> SubMatrix(const int r, const int c)
 			{
 				static_assert(SubRows <= Rows && SubColumns <= Columns, "submatrix cannot have greater dimension than original matrix.");
-				return Matrix<_Scalar, SubRows, SubColumns>(m_value.block<SubRows, SubColumns>(r, c));
+				return Matrix<_Scalar, SubRows, SubColumns>(mValue.block<SubRows, SubColumns>(r, c));
 			}
 			Matrix<_Scalar, Columns, Rows> Transpose()const 
 			{ 
 				Matrix<_Scalar, Columns, Rows> result;
-				result.m_value = m_value.transpose();
+				result.mValue = mValue.transpose();
 				return result;
 			}
 			template<typename Iterable>
@@ -147,7 +147,7 @@ namespace Lightning
 				int idx = 0;
 				for (auto it = std::cbegin(data); it != std::cend(data);++it)
 				{
-					m_value(idx % Rows, idx / Rows) = *it;
+					mValue(idx % Rows, idx / Rows) = *it;
 					++idx;
 				}
 			}
@@ -162,12 +162,12 @@ namespace Lightning
 				int idx = 0;
 				for (std::decay_t<SizeType> i = 0;i < size;++i)
 				{
-					m_value(idx % Rows, idx / Rows) = arr[i];
+					mValue(idx % Rows, idx / Rows) = arr[i];
 					++idx;
 				}
 			}
-			_Scalar& operator()(const int row, const int column) { return m_value(row, column); }
-			_Scalar operator()(const int row, const int column)const { return m_value(row, column); }
+			_Scalar& operator()(const int row, const int column) { return mValue(row, column); }
+			_Scalar operator()(const int row, const int column)const { return mValue(row, column); }
 			template<int _Rows = Rows>
 			bool Invertible(std::enable_if_t<(_Rows <= 4), void*> = nullptr)const;
 			template<int _Rows = Rows>
@@ -175,7 +175,7 @@ namespace Lightning
 			Matrix<_Scalar, Rows, Columns> Inverse()const
 			{
 				static_assert(Rows == Columns, "Only square matrices are invertible!");
-				return Matrix<_Scalar, Rows, Columns>(m_value.inverse());
+				return Matrix<_Scalar, Rows, Columns>(mValue.inverse());
 			}
 			static const Matrix<_Scalar, Rows, Columns> Identity()
 			{
@@ -183,7 +183,7 @@ namespace Lightning
 				static const Matrix<_Scalar, Rows, Columns> m(InternalMatrixType::Identity());
 				return m;
 			}
-			const _Scalar* GetData()const { return m_value.data(); }
+			const _Scalar* GetData()const { return mValue.data(); }
 		protected:
 			static constexpr int InternalAlignmentOptions = Eigen::DontAlign | 
 				((Rows == 1 && Columns != 1) ? Eigen::RowMajor : 
@@ -193,9 +193,9 @@ namespace Lightning
 			using InternalVectorType = Eigen::Matrix<_Scalar, Dimension, 1, InternalAlignmentOptions>;
 			template<typename _Scalar, int _Rows, int _Columns> friend class Matrix;
 			template<typename _Scalar, int Dimension> friend class Vector;
-			InternalMatrixType m_value;
-			Matrix(const InternalMatrixType& m):m_value(m){}
-			Matrix(InternalMatrixType&& m):m_value(std::move(m)){}
+			InternalMatrixType mValue;
+			Matrix(const InternalMatrixType& m):mValue(m){}
+			Matrix(InternalMatrixType&& m):mValue(std::move(m)){}
 			template<typename S, int _Rows, int _Columns, typename T>
 			auto SetInternal(T&& m) -> 
 				std::enable_if_t<std::is_convertible< std::decay_t<T>, Matrix<std::decay_t<S>, _Rows, Columns>>::value>
@@ -207,37 +207,37 @@ namespace Lightning
 			auto SetInternalImpl(Matrix<S, _Rows, _Columns>&& m) ->
 				std::enable_if_t<!(_Rows == Rows && _Columns == Columns) && (_Rows <= Rows && _Columns <= Columns)>
 			{
-				m_value.block<_Rows, _Columns>(0, 0) = std::move(m.m_value);
+				mValue.block<_Rows, _Columns>(0, 0) = std::move(m.mValue);
 			}
 			template<typename S, int _Rows, int _Columns>
 			auto SetInternalImpl(const Matrix<S, _Rows, _Columns>& m) ->
 				std::enable_if_t<!(_Rows == Rows && _Columns == Columns) && (_Rows <= Rows && _Columns <= Columns)>
 			{
-				m_value.block<_Rows, _Columns>(0, 0) = m.m_value;
+				mValue.block<_Rows, _Columns>(0, 0) = m.mValue;
 			}
 			template<typename S, int _Rows, int _Columns>
 			auto SetInternalImpl(Matrix<S, _Rows, _Columns>&& m) ->
 				std::enable_if_t<!(_Rows == Rows && _Columns == Columns) && (_Rows >= Rows && _Columns >= Columns)>
 			{
-				m_value = std::move(m.m_value.block<Rows, Columns>(0, 0));
+				mValue = std::move(m.mValue.block<Rows, Columns>(0, 0));
 			}
 			template<typename S, int _Rows, int _Columns>
 			auto SetInternalImpl(const Matrix<S, _Rows, _Columns>& m) ->
 				std::enable_if_t<(!(_Rows == Rows && _Columns == Columns) && _Rows >= Rows && _Columns >= Columns)>
 			{
-				m_value = m.m_value.block<Rows, Columns>(0, 0);
+				mValue = m.mValue.block<Rows, Columns>(0, 0);
 			}
 			template<typename S, int _Rows, int _Columns>
 			auto SetInternalImpl(const Matrix<S, _Rows, _Columns>& m) ->
 				std::enable_if_t<(_Rows == Rows && _Columns == Columns)>
 			{
-				m_value = m.m_value;
+				mValue = m.mValue;
 			}
 			template<typename S, int _Rows, int _Columns>
 			auto SetInternalImpl(Matrix<S, _Rows, _Columns>&& m) ->
 				std::enable_if_t<(_Rows == Rows && _Columns == Columns)>
 			{
-				m_value = std::move(m.m_value);
+				mValue = std::move(m.mValue);
 			}
 		private:
 			void SetColumns(int i) {} //Only for execute internally
@@ -254,7 +254,7 @@ namespace Lightning
 			InternalMatrixType invMatrix;
 			_Scalar determinant;
 			bool invertible{ false };
-			m_value.computeInverseAndDetWithCheck(invMatrix, determinant, invertible);
+			mValue.computeInverseAndDetWithCheck(invMatrix, determinant, invertible);
 			return invertible;
 		}
 
@@ -265,7 +265,7 @@ namespace Lightning
 			if (Rows != Columns)
 				return false;
 
-			Eigen::FullPivLU<InternalMatrixType> lu(m_value);
+			Eigen::FullPivLU<InternalMatrixType> lu(mValue);
 			return lu.isInvertible();
 		}
 

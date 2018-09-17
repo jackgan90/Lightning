@@ -20,8 +20,8 @@ namespace Lightning
 			SharedShaderPtr GetShader(size_t shaderHash)override;
 		protected:
 			virtual SharedShaderPtr CreateConcreteShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap) = 0;
-			ShaderMap m_shaders;
-			SharedFileSystemPtr m_fs;
+			ShaderMap mShaders;
+			SharedFileSystemPtr mFs;
 		};
 	}
 }

@@ -28,23 +28,22 @@ namespace Lightning
 			typename std::enable_if<std::is_class<_T>::value>::type InvokeDestructor(_T* obj);
 			template<typename _T>
 			typename std::enable_if<!std::is_class<_T>::value>::type InvokeDestructor(_T* obj);
-			char* m_buffer;
-			PoolObject* m_head;
+			char* mBuffer;
+			PoolObject* mHead;
 		};
 
 		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
-		PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::PoolAllocator():m_buffer(nullptr),m_head(nullptr)
+		PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::PoolAllocator():mBuffer(nullptr),mHead(nullptr)
 		{
 			static_assert(!AlignedAlloc || Alignment > 0, "Alignment must be greater than 0 when AlignedAlloc");
 			if (AlignedAlloc)
 			{
 				size_t objSize = std::max(sizeof(T), sizeof(PoolObject));
-				m_buffer = objSize % Alignment ? new char[(objSize + Alignment) * ObjectCount] : new char[objSize * ObjectCount + Alignment];
-				//m_buffer = new char[(objSize + Alignment) * ObjectCount];
+				mBuffer = objSize % Alignment ? new char[(objSize + Alignment) * ObjectCount] : new char[objSize * ObjectCount + Alignment];
 			}
 			else
 			{
-				m_buffer = new char[std::max(sizeof(T), sizeof(PoolObject)) * ObjectCount];
+				mBuffer = new char[std::max(sizeof(T), sizeof(PoolObject)) * ObjectCount];
 			}
 			InitLinkList();
 		}
@@ -52,14 +51,14 @@ namespace Lightning
 		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
 		PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::~PoolAllocator()
 		{
-			delete[] m_buffer;
+			delete[] mBuffer;
 		}
 
 		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
 		void PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::InitLinkList() //aligned linklist version
 		{
 			static_assert(!AlignedAlloc || Alignment > 0, "Alignment must be greater than 0.");
-			size_t current = reinterpret_cast<size_t>(m_buffer);
+			size_t current = reinterpret_cast<size_t>(mBuffer);
 			size_t objSize = std::max(sizeof(T), sizeof(PoolObject));
 			for (size_t i = 0; i < ObjectCount; ++i)
 			{
@@ -75,8 +74,8 @@ namespace Lightning
 					nextAddr = current + objSize;
 				}
 				PoolObject* pObj = reinterpret_cast<PoolObject*>(current);
-				if (!m_head)
-					m_head = pObj;
+				if (!mHead)
+					mHead = pObj;
 				pObj->next = i == ObjectCount - 1 ? nullptr : reinterpret_cast<PoolObject*>(nextAddr);
 				current += objSize;
 			}
@@ -85,30 +84,30 @@ namespace Lightning
 		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
 		void* PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::Allocate(size_t size, const char* fileName, const char* className, size_t line)
 		{
-			if (!m_head)
+			if (!mHead)
 				return nullptr;
-			auto current = m_head;
-			m_head = m_head->next;
-			++m_allocatedCount;
-			m_allocatedSize += sizeof(T);
+			auto current = mHead;
+			mHead = mHead->next;
+			++mAllocatedCount;
+			mAllocatedSize += sizeof(T);
 			return current;
 		}
 
 		template<typename T, const size_t ObjectCount, bool AlignedAlloc, const size_t Alignment>
 		void PoolAllocator<T, ObjectCount, AlignedAlloc, Alignment>::Deallocate(void* p)
 		{
-			--m_allocatedCount;
-			m_allocatedSize -= sizeof(T);
-			if (!m_head)
+			--mAllocatedCount;
+			mAllocatedSize -= sizeof(T);
+			if (!mHead)
 			{
-				m_head = reinterpret_cast<PoolObject*>(p);
-				m_head->next = nullptr;
+				mHead = reinterpret_cast<PoolObject*>(p);
+				mHead->next = nullptr;
 			}
 			else
 			{
 				PoolObject* tmp = reinterpret_cast<PoolObject*>(p);
-				tmp->next = m_head;
-				m_head = tmp;
+				tmp->next = mHead;
+				mHead = tmp;
 			}
 		}
 

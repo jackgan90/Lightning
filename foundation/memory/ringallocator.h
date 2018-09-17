@@ -32,7 +32,7 @@ namespace Lightning
 			std::size_t GetUsedMemorySize()const;
 			void ReleaseFramesBefore(std::uint64_t frame);
 			void FinishFrame(std::uint64_t frame);
-			std::size_t GetInternalBufferCount()const { return m_buffers.size(); }
+			std::size_t GetInternalBufferCount()const { return mBuffers.size(); }
 		private:
 			std::uint8_t* AllocateBytes(std::size_t size);
 			class RingBuffer
@@ -46,9 +46,9 @@ namespace Lightning
 				std::uint8_t* Allocate(std::size_t size);
 				void FinishFrame(std::uint64_t frame);
 				void ReleaseFramesBefore(std::uint64_t frame);
-				std::size_t GetSize()const { return m_maxSize; }
-				std::size_t GetUsedSize()const { return m_usedSize; }
-				bool Empty()const { return m_usedSize == 0; }
+				std::size_t GetSize()const { return mMaxSize; }
+				std::size_t GetUsedSize()const { return mUsedSize; }
+				bool Empty()const { return mUsedSize == 0; }
 				~RingBuffer();
 			private:
 				static constexpr std::size_t MIN_BUFFER_SIZE = 2048;
@@ -60,13 +60,13 @@ namespace Lightning
 					std::size_t size;
 					std::uint64_t frame;
 				};
-				std::uint8_t* m_buffer;
-				std::size_t m_maxSize;
-				std::size_t m_usedSize;
-				std::size_t m_head;
-				std::size_t m_tail;
-				std::size_t m_frameSize;
-				std::deque<FrameMarker> m_frameMarkers;
+				std::uint8_t* mBuffer;
+				std::size_t mMaxSize;
+				std::size_t mUsedSize;
+				std::size_t mHead;
+				std::size_t mTail;
+				std::size_t mFrameSize;
+				std::deque<FrameMarker> mFrameMarkers;
 			};
 
 			struct RingBufferAllocation
@@ -75,8 +75,8 @@ namespace Lightning
 				RingBuffer buffer;
 				std::uint64_t lastAllocatedFrame;
 			};
-			std::vector<RingBufferAllocation> m_buffers;
-			std::uint64_t m_lastFinishFrame;
+			std::vector<RingBufferAllocation> mBuffers;
+			std::uint64_t mLastFinishFrame;
 		};
 	}
 }

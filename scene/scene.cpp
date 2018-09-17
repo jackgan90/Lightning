@@ -5,32 +5,32 @@ namespace Lightning
 {
 	namespace Scene
 	{
-		Scene::Scene(const std::uint32_t id):m_id(id)
+		Scene::Scene(const std::uint32_t id):mID(id)
 		{
-			m_mainCamera = new Camera();
-			m_renderData.camera = m_mainCamera;
+			mActiveCamera = new Camera();
+			mRenderData.camera = mActiveCamera;
 		}
 
 		Scene::~Scene()
 		{
-			if (m_mainCamera)
+			if (mActiveCamera)
 			{
-				delete m_mainCamera;
-				m_mainCamera = nullptr;
+				delete mActiveCamera;
+				mActiveCamera = nullptr;
 			}
 		}
 
 		void Scene::Update()
 		{
-			for (auto& drawable : m_drawables)
+			for (auto& drawable : mDrawables)
 			{
-				drawable->Draw(*Render::Renderer::Instance(), m_renderData);
+				drawable->Draw(*Render::Renderer::Instance(), mRenderData);
 			}
 		}
 
 		void Scene::AddDrawable(const SharedDrawablePtr& drawable)
 		{
-			m_drawables.push_back(drawable);
+			mDrawables.push_back(drawable);
 		}
 
 	}

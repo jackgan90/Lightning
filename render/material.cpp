@@ -6,8 +6,8 @@ namespace Lightning
 	{
 		IShader* Material::GetShader(ShaderType type)
 		{
-			auto it = m_shaders.find(type);
-			if (it == m_shaders.end())
+			auto it = mShaders.find(type);
+			if (it == mShaders.end())
 				return nullptr;
 			return it->second.get();
 		}
@@ -16,14 +16,14 @@ namespace Lightning
 		{
 			if (!pShader)
 				return;
-			m_shaders[pShader->GetType()] = pShader;
+			mShaders[pShader->GetType()] = pShader;
 		}
 
 		void Material::RemoveShader(ShaderType type)
 		{
-			auto it = m_shaders.find(type);
-			if (it != m_shaders.end())
-				m_shaders.erase(it);
+			auto it = mShaders.find(type);
+			if (it != mShaders.end())
+				mShaders.erase(it);
 		}
 
 

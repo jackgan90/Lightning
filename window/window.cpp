@@ -6,17 +6,17 @@ namespace Lightning
 	{
 		void Window::RegisterWindowMessageHandler(WindowMessage msg, WindowMessageHandler handler)
 		{
-			if (m_msgHandlers.find(msg) == m_msgHandlers.end())
+			if (mMsgHandlers.find(msg) == mMsgHandlers.end())
 			{
-				m_msgHandlers[msg] = handler;
+				mMsgHandlers[msg] = handler;
 			}
 		}
 
 		void Window::OnIdle()
 		{
-			if (m_msgHandlers.find(WindowMessage::IDLE) != m_msgHandlers.end())
+			if (mMsgHandlers.find(WindowMessage::IDLE) != mMsgHandlers.end())
 			{
-				m_msgHandlers[WindowMessage::IDLE](WindowMessage::IDLE, WindowIdleParam(this));
+				mMsgHandlers[WindowMessage::IDLE](WindowMessage::IDLE, WindowIdleParam(this));
 			}
 		}
 	}

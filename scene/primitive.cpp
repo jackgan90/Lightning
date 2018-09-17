@@ -18,13 +18,13 @@ namespace Lightning
 		{
 			if (sceneRenderData.camera)
 			{
-				m_renderItem.viewMatrix = sceneRenderData.camera->GetViewMatrix();
-				m_renderItem.projectionMatrix = sceneRenderData.camera->GetProjectionMatrix();
+				mRenderItem.viewMatrix = sceneRenderData.camera->GetViewMatrix();
+				mRenderItem.projectionMatrix = sceneRenderData.camera->GetProjectionMatrix();
 			}
-			renderer.Draw(m_renderItem);
+			renderer.Draw(mRenderItem);
 		}
 
-		float Cube::verticeTemplate[] = { 0.5f, 0.5f, 0.5f,  //right top front v0
+		float Cube::sVerticeTemplate[] = { 0.5f, 0.5f, 0.5f,  //right top front v0
 											0.5f, 0.5f, -0.5f,	//right top back v1
 											0.5f, -0.5f, 0.5f,	//right bottom front v2
 											0.5f, -0.5f, -0.5f,	//right bottom back v3
@@ -33,7 +33,7 @@ namespace Lightning
 											-0.5f, -0.5f, 0.5f,  //left bottom front v6
 											-0.5f, -0.5f, -0.5f };//left bottom back v7
 
-		std::uint16_t Cube::s_indices[] = 
+		std::uint16_t Cube::sIndices[] = 
 		{
 			//right face
 			0, 2, 3, 0, 3, 1,
@@ -48,9 +48,9 @@ namespace Lightning
 			//bottom face
 			6, 7, 3, 6, 3, 2
 		};
-		Cube::Cube(float size) : m_size(size) 
+		Cube::Cube(float size) : mSize(size) 
 		{
-			assert(m_size > 0 && "The size of the cube must be greater than 0!");
+			assert(mSize > 0 && "The size of the cube must be greater than 0!");
 			Render::VertexComponent comp;
 			comp.format = Render::RenderFormat::R32G32B32_FLOAT;
 			comp.instanceStepRate = 1;
@@ -60,12 +60,12 @@ namespace Lightning
 			comp.semanticItem = { Render::RenderSemantics::POSITION, "POSITION" };
 			std::vector<Render::VertexComponent> comps;
 			comps.push_back(comp);
-			m_renderItem.geometry = std::make_shared<Render::Geometry>();
+			mRenderItem.geometry = std::make_shared<Render::Geometry>();
 			auto pDevice = Renderer::Instance()->GetDevice();
-			//m_renderItem.geometry->vbs[0] = pDevice->CreateVertexBuffer(9 * sizeof(float), comps);
-			//m_renderItem.geometry->ib = pDevice->CreateIndexBuffer(3 * sizeof(std::uint16_t), Render::IndexType::UINT16);
-			m_renderItem.geometry->vbs[0] = pDevice->CreateVertexBuffer(sizeof(verticeTemplate), comps);
-			m_renderItem.geometry->ib = pDevice->CreateIndexBuffer(sizeof(s_indices), Render::IndexType::UINT16);
+			//mRenderItem.geometry->vbs[0] = pDevice->CreateVertexBuffer(9 * sizeof(float), comps);
+			//mRenderItem.geometry->ib = pDevice->CreateIndexBuffer(3 * sizeof(std::uint16_t), Render::IndexType::UINT16);
+			mRenderItem.geometry->vbs[0] = pDevice->CreateVertexBuffer(sizeof(sVerticeTemplate), comps);
+			mRenderItem.geometry->ib = pDevice->CreateIndexBuffer(sizeof(sIndices), Render::IndexType::UINT16);
 			
 			/*
 			float* vertices = new float[9];
@@ -82,39 +82,39 @@ namespace Lightning
 			indices[0] = 0;
 			indices[1] = 2;
 			indices[2] = 1;
-			m_vertices = reinterpret_cast<std::uint8_t*>(vertices);
+			mVertices = reinterpret_cast<std::uint8_t*>(vertices);
 			*/
 			
-			float* vertices = new float[sizeof(verticeTemplate) / sizeof(float)];
-			for (std::size_t i = 0;i < sizeof(verticeTemplate) / sizeof(float);++i)
+			float* vertices = new float[sizeof(sVerticeTemplate) / sizeof(float)];
+			for (std::size_t i = 0;i < sizeof(sVerticeTemplate) / sizeof(float);++i)
 			{
-				vertices[i] = verticeTemplate[i] * size;
+				vertices[i] = sVerticeTemplate[i] * size;
 			}
 
-			m_vertices = reinterpret_cast<std::uint8_t*>(vertices);
+			mVertices = reinterpret_cast<std::uint8_t*>(vertices);
 			
-			m_renderItem.geometry->vbs[0]->SetBuffer(m_vertices, sizeof(verticeTemplate));
-			m_renderItem.geometry->ib->SetBuffer(reinterpret_cast<std::uint8_t*>(&s_indices), sizeof(s_indices));
-			//m_renderItem.geometry->vbs[0]->SetBuffer(m_vertices, 9 * sizeof(float));
-			//m_renderItem.geometry->ib->SetBuffer(reinterpret_cast<std::uint8_t*>(indices), 3 * sizeof(std::uint16_t));
-			std::fill(std::begin(m_renderItem.geometry->vbs_dirty), std::end(m_renderItem.geometry->vbs_dirty), false);
-			m_renderItem.geometry->vbs_dirty[0] = true;
-			m_renderItem.geometry->ib_dirty = true;
-			m_renderItem.geometry->primType = Render::PrimitiveType::TRIANGLE_LIST;
+			mRenderItem.geometry->vbs[0]->SetBuffer(mVertices, sizeof(sVerticeTemplate));
+			mRenderItem.geometry->ib->SetBuffer(reinterpret_cast<std::uint8_t*>(&sIndices), sizeof(sIndices));
+			//mRenderItem.geometry->vbs[0]->SetBuffer(m_vertices, 9 * sizeof(float));
+			//mRenderItem.geometry->ib->SetBuffer(reinterpret_cast<std::uint8_t*>(indices), 3 * sizeof(std::uint16_t));
+			std::fill(std::begin(mRenderItem.geometry->vbs_dirty), std::end(mRenderItem.geometry->vbs_dirty), false);
+			mRenderItem.geometry->vbs_dirty[0] = true;
+			mRenderItem.geometry->ib_dirty = true;
+			mRenderItem.geometry->primType = Render::PrimitiveType::TRIANGLE_LIST;
 			
-			m_renderItem.material = std::make_shared<Render::Material>();
-			m_renderItem.material->RequireSemantic(Render::RenderSemantics::WVP);
+			mRenderItem.material = std::make_shared<Render::Material>();
+			mRenderItem.material->RequireSemantic(Render::RenderSemantics::WVP);
 			auto device = Renderer::Instance()->GetDevice();
-			m_renderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::VERTEX));
-			m_renderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::FRAGMENT));
-			m_renderItem.transform = Render::Transform(Render::Vector3f({ 0.0f, 0.0f, 0.0f }), Render::Vector3f({ 1.0f, 1.0f, 1.0f }));
+			mRenderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::VERTEX));
+			mRenderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::FRAGMENT));
+			mRenderItem.transform = Render::Transform(Render::Vector3f({ 0.0f, 0.0f, 0.0f }), Render::Vector3f({ 1.0f, 1.0f, 1.0f }));
 		}
 
 		Cube::~Cube()
 		{
-			if (m_vertices)
+			if (mVertices)
 			{
-				delete[] m_vertices;
+				delete[] mVertices;
 			}
 		}
 

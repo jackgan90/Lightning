@@ -27,7 +27,7 @@ namespace Lightning
 			End
 		};
 
-		enum class FileAccess : unsigned int
+		enum class FileAccess : std::uint8_t
 		{
 			READ = 0x01,
 			WRITE = 0x02,
@@ -61,12 +61,12 @@ namespace Lightning
 		public:
 			GeneralFileSystem();
 			~GeneralFileSystem()override;
-			SharedFilePtr FindFile(const std::string& filename, FileAccess bitmask)override;
-			bool SetRoot(std::string root_path)override;
-			const std::string GetRoot() const override{ return m_root.string(); }
+			SharedFilePtr FindFile(const std::string& fileName, FileAccess bitMask)override;
+			bool SetRoot(std::string rootPath)override;
+			const std::string GetRoot() const override{ return mRoot.string(); }
 		protected:
-			boost::filesystem::path m_root;
-			std::unordered_map<std::string, SharedFilePtr> m_cachedFiles;
+			boost::filesystem::path mRoot;
+			std::unordered_map<std::string, SharedFilePtr> mCachedFiles;
 		};
 
 		class GeneralFile : public IFile
@@ -91,11 +91,11 @@ namespace Lightning
 			void CalculateFileSize();
 			void OpenFile();
 			void MoveFrom(GeneralFile&& f);
-			FileSize m_size;
-			boost::filesystem::path m_path;
-			bool m_sizeDirty;
-			std::unique_ptr<std::fstream> m_file;
-			FileAccess m_access;
+			FileSize mSize;
+			boost::filesystem::path mPath;
+			bool mSizeDirty;
+			std::unique_ptr<std::fstream> mFile;
+			FileAccess mAccess;
 		};
 
 	}

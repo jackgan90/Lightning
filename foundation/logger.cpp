@@ -8,13 +8,13 @@ namespace Lightning
 		LIGHTNING_FOUNDATION_API Logger logger;
 		Logger::Logger()
 		{
-			m_fs.open(LogFileName, std::fstream::out);
+			mFs.open(LogFileName, std::fstream::out);
 		}
 
 		Logger::~Logger()
 		{
-			m_fs.flush();
-			m_fs.close();
+			mFs.flush();
+			mFs.close();
 		}
 
 		std::string Logger::LogLevelToPrefix(LogLevel level)const

@@ -5,35 +5,35 @@ namespace Lightning
 {
 	namespace Render
 	{
-		Device::Device() :m_devicePipelineState{}, m_frameResourceIndex(0)
+		Device::Device() :mDevicePipelineState{}, mFrameResourceIndex(0)
 		{
 
 		}
 
 		void Device::ApplyRasterizerState(const RasterizerState& state)
 		{
-			m_devicePipelineState.rasterizerState = state;
+			mDevicePipelineState.rasterizerState = state;
 		}
 
 		void Device::ApplyBlendStates(std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount)
 		{
-			std::memcpy(&m_devicePipelineState.blendStates[firstRTIndex], states, stateCount * sizeof(BlendState));
+			std::memcpy(&mDevicePipelineState.blendStates[firstRTIndex], states, stateCount * sizeof(BlendState));
 		}
 
 		void Device::ApplyDepthStencilState(const DepthStencilState& state)
 		{
-			m_devicePipelineState.depthStencilState = state;
+			mDevicePipelineState.depthStencilState = state;
 		}
 
 		void Device::ApplyPipelineState(const PipelineState& state)
 		{
-			m_devicePipelineState = state;
+			mDevicePipelineState = state;
 		}
 
 		SharedShaderPtr Device::GetDefaultShader(ShaderType type)
 		{
-			auto it = m_defaultShaders.find(type);
-			if (it == m_defaultShaders.end())
+			auto it = mDefaultShaders.find(type);
+			if (it == mDefaultShaders.end())
 				return SharedShaderPtr();
 			return it->second;
 		}
@@ -50,7 +50,7 @@ namespace Lightning
 
 		void Device::BeginFrame(const std::size_t frameResourceIndex)
 		{
-			m_frameResourceIndex = frameResourceIndex;
+			mFrameResourceIndex = frameResourceIndex;
 		}
 	}
 }

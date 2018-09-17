@@ -10,7 +10,7 @@ namespace Lightning
 		using Lightning::Foundation::logger;
 		using Lightning::Foundation::LogLevel;
 		using std::vector;
-		char* WinWindow::s_WindowClassName = "DefaultWin32Window";
+		char* WinWindow::sWindowClassName = "DefaultWin32Window";
 		
 		LRESULT CALLBACK WinWindow::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
@@ -20,7 +20,7 @@ namespace Lightning
 				LPVOID pThis = pCS->lpCreateParams;
 				SetWindowLongPtr(hwnd, 0, reinterpret_cast<LONG_PTR>(pThis));
 				auto pWindow = reinterpret_cast<WinWindow*>(pThis);
-				pWindow->m_hWnd = hwnd;
+				pWindow->mHwnd = hwnd;
 				return TRUE;
 			}
 			auto pWindow = reinterpret_cast<WinWindow*>(GetWindowLongPtrW(hwnd, 0));
@@ -30,9 +30,9 @@ namespace Lightning
 			{
 				RECT rect;
 				::GetClientRect(hwnd, &rect);
-				pWindow->m_width = rect.right - rect.left;
-				pWindow->m_height = rect.bottom - rect.top;
-				//logger.Log(LogLevel::Debug, "window resize.width:%d, height : %d", pWindow->m_width, pWindow->m_height);
+				pWindow->mWidth = rect.right - rect.left;
+				pWindow->mHeight = rect.bottom - rect.top;
+				//logger.Log(LogLevel::Debug, "window resize.width:%d, height : %d", pWindow->mWidth, pWindow->mHeight);
 				break;
 			}
 			case WM_CREATE:
@@ -48,8 +48,8 @@ namespace Lightning
 			return 0;
 		}
 
-		WinWindow::WinWindow():m_Caption("Lightning Win32 Window")
-			,m_hWnd(nullptr), m_width(800), m_height(600)
+		WinWindow::WinWindow():mCaption("Lightning Win32 Window")
+			,mHwnd(nullptr), mWidth(800), mHeight(600)
 		{
 			HINSTANCE hInstance = ::GetModuleHandle(NULL);
 			RegisterWindowClass(hInstance);
@@ -70,7 +70,7 @@ namespace Lightning
 			wndcls.hCursor = ::LoadCursor(hInstance, IDC_ARROW);
 			wndcls.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 			wndcls.lpszMenuName = NULL;
-			wndcls.lpszClassName = s_WindowClassName;
+			wndcls.lpszClassName = sWindowClassName;
 			wndcls.hIconSm = (HICON)::LoadIcon(hInstance, IDI_APPLICATION);
 
 			if (!::RegisterClassEx(&wndcls))
@@ -84,12 +84,12 @@ namespace Lightning
 		{
 			RECT windowRect;
 			windowRect.left = 0;
-			windowRect.right = m_width;
+			windowRect.right = mWidth;
 			windowRect.top = 0;
-			windowRect.bottom = m_height;
+			windowRect.bottom = mHeight;
 			::AdjustWindowRectEx(&windowRect, WS_OVERLAPPEDWINDOW, FALSE, NULL);
 			logger.Log(LogLevel::Debug, "Window width:%d, window height:%d", windowRect.right - windowRect.left, windowRect.bottom - windowRect.top);
-			HWND hWnd = ::CreateWindowEx(0, s_WindowClassName, m_Caption.c_str(), 
+			HWND hWnd = ::CreateWindowEx(0, sWindowClassName, mCaption.c_str(), 
 				WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 
 				windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, NULL, NULL, hInstance, static_cast<LPVOID>(this));
 
@@ -102,20 +102,20 @@ namespace Lightning
 
 		WinWindow::~WinWindow()
 		{
-			if(m_hWnd)
+			if(mHwnd)
 			{ 
-				::DestroyWindow(m_hWnd);
-				m_hWnd = nullptr;
+				::DestroyWindow(mHwnd);
+				mHwnd = nullptr;
 			}
 			logger.Log(LogLevel::Info, "Win32 window destructed!");
 		}
 
 		bool WinWindow::Show(bool show)
 		{
-			if (!m_hWnd)
+			if (!mHwnd)
 				return false;
-			ShowWindow(m_hWnd, show ? SW_SHOW : SW_HIDE);
-			UpdateWindow(m_hWnd);
+			ShowWindow(mHwnd, show ? SW_SHOW : SW_HIDE);
+			UpdateWindow(mHwnd);
 			MSG msg{};
 			while (true)
 			{
@@ -123,7 +123,7 @@ namespace Lightning
 				{
 					if (msg.message == WM_QUIT)
 					{
-						m_destroyCode = msg.wParam;	
+						mExitCode = msg.wParam;	
 						break;
 					}
 					::TranslateMessage(&msg);
@@ -139,16 +139,16 @@ namespace Lightning
 
 		std::uint32_t WinWindow::GetWidth()const
 		{
-			return m_width;
+			return mWidth;
 		}
 
 		std::uint32_t WinWindow::GetHeight()const
 		{
-			return m_height;
+			return mHeight;
 		}
 		int WinWindow::GetDestroyCode()
 		{
-			return m_destroyCode;
+			return mExitCode;
 		}
 	}
 }

@@ -81,15 +81,15 @@ namespace Lightning
 			};
 			void CompileImpl();
 			D3D12_SHADER_VISIBILITY GetParameterVisibility()const;
-			ComPtr<ID3D10Blob> m_byteCode;
-			ComPtr<ID3D12ShaderReflection> m_shaderReflect;
-			D3D12_SHADER_DESC m_desc;
-			DescriptorHeap m_constantHeap;
-			std::vector<ConstantUploadContext> m_uploadContexts;
-			std::unordered_map<std::string, ArgumentBinding> m_argumentBindings;
-			std::vector<D3D12_ROOT_PARAMETER> m_rootParameters;
-			std::unordered_map<std::uint8_t, std::vector<D3D12RootBoundResource>> m_rootBoundResources;
-			D3D12_DESCRIPTOR_RANGE *m_descriptorRanges;
+			ComPtr<ID3D10Blob> mByteCode;
+			ComPtr<ID3D12ShaderReflection> mShaderReflect;
+			D3D12_SHADER_DESC mDesc;
+			DescriptorHeap mConstantHeap;
+			std::vector<ConstantUploadContext> mUploadContexts;
+			std::unordered_map<std::string, ArgumentBinding> mArgumentBindings;
+			std::vector<D3D12_ROOT_PARAMETER> mRootParameters;
+			std::unordered_map<std::uint8_t, std::vector<D3D12RootBoundResource>> mRootBoundResources;
+			D3D12_DESCRIPTOR_RANGE *mDescriptorRanges;
 		};
 	}
 }

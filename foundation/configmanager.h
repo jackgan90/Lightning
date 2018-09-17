@@ -21,11 +21,11 @@ namespace Lightning
 			friend class Singleton<ConfigManager>;
 			static const char* CONFIG_FILE_NAME;
 			std::string GetConfigString(const std::string& node_path);
-			const EngineConfig& GetConfig()const { return m_config; }
+			const EngineConfig& GetConfig()const { return mConfig; }
 		private:
 			ConfigManager();
-			EngineConfig m_config;
-			boost::property_tree::ptree m_tree;
+			EngineConfig mConfig;
+			boost::property_tree::ptree mTree;
 		};
 	}
 }

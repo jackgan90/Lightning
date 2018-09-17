@@ -18,8 +18,8 @@ namespace Lightning
 			SharedWindowPtr MakeWindow();
 			std::vector<SharedWindowPtr> GetAllWindows()const;
 		private:
-			std::unordered_map<std::uint32_t, SharedWindowPtr> m_windows;
-			std::uint32_t m_currentID;
+			std::unordered_map<std::uint32_t, SharedWindowPtr> mWindows;
+			std::uint32_t mCurrentID;
 		};
 	}
 }

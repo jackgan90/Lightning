@@ -10,7 +10,7 @@ namespace Lightning
 			void RegisterWindowMessageHandler(WindowMessage msg, WindowMessageHandler handler)override;
 		protected:
 			virtual void OnIdle();
-			std::unordered_map<WindowMessage, WindowMessageHandler> m_msgHandlers;
+			std::unordered_map<WindowMessage, WindowMessageHandler> mMsgHandlers;
 		};
 	}
 }

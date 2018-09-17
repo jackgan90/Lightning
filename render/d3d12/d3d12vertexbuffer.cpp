@@ -8,11 +8,11 @@ namespace Lightning
 		//an extra state transition,should refactor later
 		D3D12VertexBuffer::D3D12VertexBuffer(ID3D12Device* pDevice, std::uint32_t bufferSize, 
 			const VertexComponent* components, std::uint8_t componentCount)
-			:VertexBuffer(bufferSize, components, componentCount), m_resource(pDevice, bufferSize, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER)
+			:VertexBuffer(bufferSize, components, componentCount), mResource(pDevice, bufferSize, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER)
 		{
-			m_bufferView.BufferLocation = m_resource.GetGPUAddress();
-			m_bufferView.SizeInBytes = bufferSize;
-			m_bufferView.StrideInBytes = VertexBuffer::GetVertexSize();
+			mBufferView.BufferLocation = mResource.GetGPUAddress();
+			mBufferView.SizeInBytes = bufferSize;
+			mBufferView.StrideInBytes = VertexBuffer::GetVertexSize();
 		}
 	}
 }

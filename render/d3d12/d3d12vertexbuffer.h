@@ -10,12 +10,12 @@ namespace Lightning
 		{
 		public:
 			D3D12VertexBuffer(ID3D12Device* pDevice, std::uint32_t bufferSize, const VertexComponent *components, std::uint8_t componentCount);
-			D3D12_VERTEX_BUFFER_VIEW GetBufferView() { return m_bufferView; }
-			ComPtr<ID3D12Resource> GetResource() { return m_resource.GetDefaultHeap(); }
-			ComPtr<ID3D12Resource> GetIntermediateResource() { return m_resource.GetUploadHeap(); }
+			D3D12_VERTEX_BUFFER_VIEW GetBufferView() { return mBufferView; }
+			ComPtr<ID3D12Resource> GetResource() { return mResource.GetDefaultHeap(); }
+			ComPtr<ID3D12Resource> GetIntermediateResource() { return mResource.GetUploadHeap(); }
 		private:
-			D3D12BufferResource m_resource;
-			D3D12_VERTEX_BUFFER_VIEW m_bufferView;
+			D3D12BufferResource mResource;
+			D3D12_VERTEX_BUFFER_VIEW mBufferView;
 		};
 	}
 }

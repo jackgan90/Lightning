@@ -25,10 +25,10 @@ namespace Lightning
 		protected:
 			VertexBuffer(uint32_t bufferSize, const VertexComponent *components, std::uint8_t componentCount);
 			void CalculateVertexSize();
-			VertexComponent *m_components;
-			std::uint8_t m_componentCount;
-			std::uint32_t m_vertexCount;
-			std::uint32_t m_vertexSize;
+			VertexComponent *mComponents;
+			std::uint8_t mComponentCount;
+			std::uint32_t mVertexCount;
+			std::uint32_t mVertexSize;
 		};
 	}
 }

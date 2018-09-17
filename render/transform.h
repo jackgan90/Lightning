@@ -15,9 +15,9 @@ namespace Lightning
 		private:
 			void UpdateTransformMatrix();
 			//TODO : add quaternion to represent rotation
-			Vector3f m_pos;
-			Vector3f m_scale;
-			Matrix4x4f m_transform;
+			Vector3f mPosition;
+			Vector3f mScale;
+			Matrix4x4f mTransform;
 		};
 	}
 }

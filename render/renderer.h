@@ -47,8 +47,8 @@ namespace Lightning
 			std::size_t GetFrameResourceIndex()const override;
 			void Start()override;
 			void ShutDown()override;
-			static Renderer* Instance() { return s_instance; }
-			IWindow* GetOutputWindow()override { return m_outputWindow.get(); }
+			static Renderer* Instance() { return sInstance; }
+			IWindow* GetOutputWindow()override { return mOutputWindow.get(); }
 		protected:
 			Renderer(const SharedFileSystemPtr& fs, const SharedWindowPtr& pWindow, RenderPassType renderPassType = RenderPassType::FORWARD);
 			void WaitForPreviousFrame(bool waitAll);
@@ -64,17 +64,17 @@ namespace Lightning
 			//CreateSwapChain is called in Start,ensuring the device is already created
 			virtual ISwapChain* CreateSwapChain() = 0;
 			virtual IDepthStencilBuffer* CreateDepthStencilBuffer(std::size_t width, std::size_t height) = 0;
-			static Renderer* s_instance;
-			std::uint64_t m_frameCount;
-			SharedFileSystemPtr m_fs;
-			std::unique_ptr<IDevice> m_device;
-			std::unique_ptr<ISwapChain> m_swapChain;
-			std::vector<std::unique_ptr<RenderPass>> m_renderPasses;
-			std::size_t m_currentBackBufferIndex;
-			ColorF m_clearColor;
-			SharedDepthStencilBufferPtr m_depthStencilBuffer;
-			FrameResource m_frameResources[RENDER_FRAME_COUNT];
-			SharedWindowPtr m_outputWindow;
+			static Renderer* sInstance;
+			std::uint64_t mFrameCount;
+			SharedFileSystemPtr mFs;
+			std::unique_ptr<IDevice> mDevice;
+			std::unique_ptr<ISwapChain> mSwapChain;
+			std::vector<std::unique_ptr<RenderPass>> mRenderPasses;
+			std::size_t mCurrentBackBufferIndex;
+			ColorF mClearColor;
+			SharedDepthStencilBufferPtr mDepthStencilBuffer;
+			FrameResource mFrameResources[RENDER_FRAME_COUNT];
+			SharedWindowPtr mOutputWindow;
 		};
 	}
 }

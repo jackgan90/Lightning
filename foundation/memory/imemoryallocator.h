@@ -28,22 +28,22 @@ namespace Lightning
 		class LIGHTNING_FOUNDATION_API IMemoryAllocator
 		{
 		public:
-			IMemoryAllocator() :m_allocatedSize(0), m_allocatedCount(0){}
+			IMemoryAllocator() :mAllocatedSize(0), mAllocatedCount(0){}
 			IMemoryAllocator(const IMemoryAllocator&) = delete;
 			IMemoryAllocator& operator=(const IMemoryAllocator&) = delete;
-			size_t GetAllocatedSize()const { return m_allocatedSize; };
-			size_t GetAllocatedCount()const { return m_allocatedCount; }
+			size_t GetAllocatedSize()const { return mAllocatedSize; };
+			size_t GetAllocatedCount()const { return mAllocatedCount; }
 			virtual ~IMemoryAllocator() 
 			{ 
-				assert(m_allocatedSize == 0 && m_allocatedCount == 0);
+				assert(mAllocatedSize == 0 && mAllocatedCount == 0);
 			}
 			virtual void* Allocate(size_t size, const char* fileName, const char* className, size_t line) = 0;
 			virtual void Deallocate(void*) = 0;
 		protected:
 			//align address pointed to by ptr to next alignment byte
 			inline size_t MakeAlign(size_t ptr, size_t alignment)const {return (ptr & ~std::size_t(alignment - 1)) + alignment;}
-			size_t m_allocatedSize;
-			size_t m_allocatedCount;
+			size_t mAllocatedSize;
+			size_t mAllocatedCount;
 		};
 	}
 }

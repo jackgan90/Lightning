@@ -14,15 +14,15 @@ namespace Lightning
 		class LIGHTNING_RENDER_API Material
 		{
 		public:
-			void RequireSemantic(RenderSemantics semantic) { m_semantics.emplace(semantic); }
-			const SemanticSet& GetSemanticRequirements()const { return m_semantics; }
+			void RequireSemantic(RenderSemantics semantic) { mSemantics.emplace(semantic); }
+			const SemanticSet& GetSemanticRequirements()const { return mSemantics; }
 			IShader* GetShader(ShaderType type);
 			void SetShader(const SharedShaderPtr& pShader);
 			void RemoveShader(ShaderType type);
 		protected:
 			using MaterialShaderMap = std::unordered_map<ShaderType, SharedShaderPtr>;
-			SemanticSet m_semantics;
-			MaterialShaderMap m_shaders;
+			SemanticSet mSemantics;
+			MaterialShaderMap mShaders;
 		};
 		using SharedMaterialPtr = std::shared_ptr<Material>;
 	}

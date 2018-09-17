@@ -15,7 +15,7 @@
 #include "d3d12depthstencilbuffer.h"
 
 #ifndef NDEBUG
-#define REPORT_LIVE_OBJECTS if(m_dxgiDebug) {m_dxgiDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);}
+#define REPORT_LIVE_OBJECTS if(mDXGIDebug) {mDXGIDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);}
 #else
 #define REPORT_LIVE_OBJECTS
 #endif
@@ -45,10 +45,10 @@ namespace Lightning
 		private:
 			ID3D12CommandQueue* GetCommandQueue();
 			ID3D12GraphicsCommandList* GetGraphicsCommandList();
-			ComPtr<IDXGIFactory4> m_dxgiFactory;
+			ComPtr<IDXGIFactory4> mDXGIFactory;
 #ifndef NDEBUG
-			ComPtr<ID3D12Debug> m_d3d12Debug;
-			ComPtr<IDXGIDebug> m_dxgiDebug;
+			ComPtr<ID3D12Debug> mD3D12Debug;
+			ComPtr<IDXGIDebug> mDXGIDebug;
 			void EnableDebugLayer();
 			void InitDXGIDebug();
 #endif

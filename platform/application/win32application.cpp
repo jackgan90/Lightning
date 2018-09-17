@@ -21,25 +21,25 @@ namespace Lightning
 
 		int Win32Application::Run()
 		{
-			if (m_window)
+			if (mWindow)
 			{
 				logger.Log(LogLevel::Info, "Win32Application start running!");
 				//the call will block
-				if(!m_window->Show(true))
+				if(!mWindow->Show(true))
 					return 0;
-				return m_window->GetDestroyCode();
+				return mWindow->GetDestroyCode();
 			}
 			return 0;
 		}
 
 		SharedWindowPtr Win32Application::CreateMainWindow()
 		{
-			return m_windowMgr->MakeWindow();
+			return mWindowMgr->MakeWindow();
 		}
 
 		UniqueRendererPtr Win32Application::CreateRenderer()
 		{
-			return RendererFactory::Instance()->CreateRenderer(m_window, m_fs);
+			return RendererFactory::Instance()->CreateRenderer(mWindow, mFileSystem);
 		}
 	}
 }

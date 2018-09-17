@@ -15,11 +15,11 @@ namespace Lightning
 			T* Get()
 			{
 				Buffer *buffer{ nullptr };
-				if (m_buffers.empty() || m_buffers.back().current + sizeof(T) > BUFFER_SIZE)
+				if (mBuffers.empty() || mBuffers.back().current + sizeof(T) > BUFFER_SIZE)
 				{
-					m_buffers.emplace_back();
+					mBuffers.emplace_back();
 				}
-				buffer = &m_buffers.back();
+				buffer = &mBuffers.back();
 				T* ret = static_cast<T*>(buffer->ptr);
 				buffer->current += sizeof(T);
 				return ret;
@@ -38,7 +38,7 @@ namespace Lightning
 				char* ptr;
 				std::size_t current;
 			};
-			std::vector<Buffer> m_buffers;
+			std::vector<Buffer> mBuffers;
 			static constexpr const std::size_t BUFFER_SIZE = sizeof(T) * 100;
 		};
 	}

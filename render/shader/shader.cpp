@@ -8,13 +8,13 @@ namespace Lightning
 	{
 		size_t Shader::Hash(const ShaderType& type, const std::string& shaderName, const ShaderDefine& defineMap)
 		{
-			std::size_t hash = Utility::CalculateHash(shaderName, defineMap.GetAllDefine());
+			std::size_t hash = Utility::CalculateHash(shaderName, defineMap.GetAllMacros());
 			boost::hash_combine(hash, type);
 			return hash;
 		}
 		
 		Shader::Shader(ShaderType type, const std::string& name, const std::string& entryPoint, const char* const source):
-			m_type(type), m_name(name), m_entryPoint(entryPoint), m_source(source)
+			mType(type), mName(name), mEntryPoint(entryPoint), mSource(source)
 		{
 
 		}
@@ -32,37 +32,37 @@ namespace Lightning
 		void Shader::SetEntryPoint(const std::string& entryPoint)
 		{
 			//TODO recompile
-			bool changed = m_entryPoint != entryPoint;
-			m_entryPoint = entryPoint;
+			bool changed = mEntryPoint != entryPoint;
+			mEntryPoint = entryPoint;
 			if (changed)
 				SetHashDirty();
 		}
 
 		void Shader::DefineMacros(const ShaderDefine& define)
 		{
-			m_macros += define;
+			mMacros += define;
 			SetHashDirty();
 		}
 
 		ShaderType Shader::GetType()const
 		{
-			return m_type;
+			return mType;
 		}
 
 		const char* const Shader::GetSource()const
 		{
-			return m_source;
+			return mSource;
 		}
 
 		std::string Shader::GetName()const
 		{
-			return m_name;
+			return mName;
 		}
 
 		void Shader::GetShaderModelVersion(int& major, int& minor)
 		{
-			major = m_smMajorVersion;
-			minor = m_smMinorVersion;
+			major = mShaderModelMajorVersion;
+			minor = mShaderModelMinorVersion;
 		}
 
 	}
