@@ -5,11 +5,9 @@ set(MEMORY_HEADERS	memory/imemoryallocator.h
 					memory/poolallocator.h
 					memory/stackallocator.h
 					memory/ringallocator.h
-					memory/memorypool.h
-					memory/memorymonitor.h)
+					memory/memorypool.h)
 
-set(MEMORY_SOURCES	memory/ringallocator.cpp
-					memory/memorymonitor.cpp)
+set(MEMORY_SOURCES	memory/ringallocator.cpp)
 
 set(HEADERS	common.h
 			timesystem.h
