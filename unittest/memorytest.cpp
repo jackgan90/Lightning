@@ -19,6 +19,7 @@ using Lightning::Foundation::RingAllocator;
 
 namespace 
 {
+	/*
 	template<bool AlignedAlloc, const size_t Alignment, const size_t BlockSize>
 	void TestStackAllocatorAlignment(StackAllocator<AlignedAlloc, Alignment, BlockSize>& allocator)
 	{
@@ -282,7 +283,7 @@ namespace
 
 	}
 
-	/*
+	
 	TEST_CASE("Stack allocator performance test", "[StackAllocator performance]") 
 	{
 		StackAllocator<true, 16, 4096> allocator0;
@@ -299,7 +300,7 @@ namespace
 		TestStackAllocatorPerformance(allocator4);
 		TestStackAllocatorPerformance(allocator5);
 	}
-	*/
+	
 
 	struct PoolTestObject
 	{
@@ -443,6 +444,7 @@ namespace
 			REQUIRE(allocator.GetInternalBufferCount() == 1);
 		}
 	}
+	*/
 }
 
 
