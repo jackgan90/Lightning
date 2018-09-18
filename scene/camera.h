@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include "sceneexportdef.h"
+#include "matrix.h"
 #include "vector.h"
 
 #define LIGHTNING_PI 3.14159265358979
@@ -23,7 +24,7 @@ namespace Lightning
 			return static_cast<float>(radians * 180.0 / LIGHTNING_PI);
 		}
 		using Render::Vector3f;
-		using Render::Matrix4x4f;
+		using Render::Matrix4f;
 		//Use right-handed coordinate system
 		class LIGHTNING_SCENE_API Camera
 		{
@@ -35,8 +36,8 @@ namespace Lightning
 				const Vector3f& lookDir = Vector3f{0.0f, 0.0f, -1.0f},
 				const Vector3f& worldUp = Vector3f{0.0f, 1.0f, 0.0f});
 			virtual ~Camera();
-			Matrix4x4f GetViewMatrix()const { return mViewMatrix; }
-			Matrix4x4f GetProjectionMatrix()const { return mProjectionMatrix; }
+			Matrix4f GetViewMatrix()const { return mViewMatrix; }
+			Matrix4f GetProjectionMatrix()const { return mProjectionMatrix; }
 			void MoveTo(const Vector3f& worldPosition);
 			void LookAt(const Vector3f& worldPosition, const Vector3f& worldUp = Vector3f{0.0f, 1.0f, 0.0f});
 			void SetNear(const float nearPlane);
@@ -64,8 +65,8 @@ namespace Lightning
 			Vector3f mXAxis;
 			Vector3f mYAxis;
 			Vector3f mZAxis;
-			Matrix4x4f mViewMatrix;
-			Matrix4x4f mProjectionMatrix;
+			Matrix4f mViewMatrix;
+			Matrix4f mProjectionMatrix;
 		};
 	}
 }

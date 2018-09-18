@@ -17,20 +17,22 @@ namespace Lightning
 
 		void Transform::UpdateTransformMatrix()
 		{
-			Matrix4x4f scaleMatrix;
-			scaleMatrix(0, 0) = mScale[0];
-			scaleMatrix(1, 1) = mScale[1];
-			scaleMatrix(2, 2) = mScale[2];
+			Matrix4f scaleMatrix;
+			scaleMatrix.SetZero();
+			scaleMatrix.m[0] = mScale[0];
+			scaleMatrix.m[5] = mScale[1];
+			scaleMatrix.m[10] = mScale[2];
+			scaleMatrix.m[15] = 1.0f;
 			
-			Matrix4x4f translationMatrix;
+			Matrix4f translationMatrix;
+			translationMatrix.SetIdentity();
 			Vector4f column(mPosition);
-			column[3] = 1.0f;
-			translationMatrix.SetColumns(3, column);
+			translationMatrix.SetColumn(column, 3);
 			
 			mTransform = translationMatrix * scaleMatrix;
 		}
 
-		Matrix4x4f Transform::GetTransformMatrix()const
+		Matrix4f Transform::GetTransformMatrix()const
 		{
 			return mTransform;
 		}

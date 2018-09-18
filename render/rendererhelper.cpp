@@ -1,3 +1,4 @@
+#include <sstream>
 #include "rendererhelper.h"
 
 namespace Lightning

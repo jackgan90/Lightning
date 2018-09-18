@@ -73,7 +73,8 @@ namespace Lightning
 					auto vs = item.material->GetShader(ShaderType::VERTEX);
 					if (vs)
 					{
-						auto wvp = item.projectionMatrix * item.viewMatrix * item.transform.GetTransformMatrix();
+						auto worldMatrix = item.transform.GetTransformMatrix();
+						auto wvp = item.projectionMatrix * item.viewMatrix * worldMatrix;
 						ShaderArgument arg{wvp};
 						arg.name = "wvp";
 						vs->SetArgument(arg);
@@ -95,7 +96,7 @@ namespace Lightning
 					continue;
 				components[i].clear();
 				VertexInputLayout layout;
-				layout.slot = i;
+				layout.slot = static_cast<std::uint8_t>(i);
 				for (std::size_t j = 0;j < geometry->vbs[i]->GetComponentCount();++j)
 				{
 					components[i].push_back(geometry->vbs[i]->GetComponentInfo(j));

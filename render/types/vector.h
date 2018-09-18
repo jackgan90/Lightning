@@ -1,70 +1,201 @@
 #pragma once
-#include "matrix.h"
+#include <cmath>
+#include <functional>
+#include "plainobject.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		template<typename _Scalar, int Dimension>
-		class Vector : public Matrix<_Scalar, Dimension, 1>
+		template<typename Derived, typename T>
+		struct VectorBase : Foundation::PlainObject<Derived>
 		{
-		public:
-			Vector() : Matrix < _Scalar, Dimension, 1>({0, 0, 0}) {}
-			Vector(const std::initializer_list<_Scalar>& data) : Matrix<_Scalar, Dimension, 1>(data){}
-			Vector(const Matrix<_Scalar, 1, Dimension>& m): Matrix<_Scalar, Dimension, 1>(m.mValue){}
-			Vector(Matrix<_Scalar, 1, Dimension>&& m): Matrix<_Scalar, Dimension, 1>(std::move(m.mValue)){}
-			template<typename S, int Rows, int Columns>
-			Vector(const Matrix<S, Rows, Columns>& v) : Matrix<_Scalar, Dimension, 1>(v){}
-			template<typename S, int Rows, int Columns>
-			Vector(Matrix<S, Rows, Columns>&& v) : Matrix<_Scalar, Dimension, 1>(std::move(v)){}
-			template<typename ScalarPointerType, typename SizeType, typename = 
-				typename std::enable_if<std::is_integral<typename std::decay<SizeType>::type>::value	//ensure the second argument is an integral type
-				&& std::is_pointer<typename std::decay<ScalarPointerType>::type>::value	//ensure the first argument is a pointer
-				&& std::is_convertible<typename std::decay<typename std::remove_pointer<ScalarPointerType>::type>::type, //ensure data pointed to by first argument can be converted to _Scalar
-				typename std::decay<_Scalar>::type>::value
-				>::type
-			>
-			Vector(const ScalarPointerType arr, const SizeType size):Matrix<_Scalar, Dimension, 1>(arr, size){}
-			bool operator==(const Matrix<_Scalar, 1, Dimension>& mv)const
+			static Derived& Zero()
 			{
-				return mValue.isApprox(mv.mValue.transpose());
+				static Derived d;
+				return d;
 			}
-			bool operator!=(const Matrix<_Scalar, 1, Dimension>& mv)const
+			T Dot(const Derived& other)const
 			{
-				return !(*this == mv);
+				T res{ 0 };
+				const Derived *const pDerived = reinterpret_cast<const Derived* const>(this);
+				for (int i = 0;i < Derived::Order;++i)
+				{
+					res += pDerived->operator[](i) * other[i];
+				}
+				return res;
 			}
-			bool operator==(const Vector<_Scalar, Dimension>& v)const
+			Derived operator-()const
 			{
-				return mValue.isApprox(v.mValue);
+				Derived res;
+				const Derived *const pDerived = reinterpret_cast<const Derived*const>(this);
+				for (int i = 0;i < Derived::Order;++i)
+				{
+					res[i] = -pDerived->operator[](i);
+				}
+				return res;
 			}
-			bool operator!=(const Vector<_Scalar, Dimension>& v)const
+
+			Derived operator-(const Derived& other)const
 			{
-				return !(*this == v);
+				return ComponentwiseOperation(other, [](T comp0, T comp1) {return comp0 - comp1; });
 			}
-			_Scalar& operator[](const int comp) { return Matrix<_Scalar, Dimension, 1>::operator()(comp, 0); }
-			_Scalar operator[](const int comp)const { return Matrix<_Scalar, Dimension, 1>::operator()(comp, 0); }
-			_Scalar Dot(const Vector<_Scalar, Dimension>& v)const { return mValue.dot(v.mValue); }
-			Vector<_Scalar, Dimension> Cross(const Vector<_Scalar, Dimension>& v)const { return Vector(mValue.cross(v.mValue)); }
-			_Scalar Length(){ return mValue.norm(); }
-			void Normalize() { mValue.normalize(); }
-			Vector<_Scalar, Dimension> Normalized()const { return Vector<_Scalar, Dimension>(mValue.normalized()); }
-			static const Vector<_Scalar, Dimension> Zero()
+
+			Derived operator+(const Derived& other)const
 			{
-				static const Vector<_Scalar, Dimension> v;
-				return v;
+				return ComponentwiseOperation(other, [](T comp0, T comp1) {return comp0 + comp1; });
 			}
-		protected:
-			Vector(InternalVectorType<Dimension>&& v):Matrix<_Scalar, Dimension, 1>(std::move(v)){}
-			Vector(const InternalVectorType<Dimension>& v):Matrix<_Scalar, Dimension, 1>(v){}
+
+			Derived ComponentwiseOperation(const Derived& other, std::function<T(T,T)> func)const
+			{
+				Derived res;
+				const Derived *pDerived = reinterpret_cast<const Derived* const>(this);
+				for (int i = 0; i < Derived::Order; ++i)
+				{
+					res[i] = func(pDerived->operator[](i), other[i]);
+				}
+				return res;
+			}
+
+			T Length()const
+			{
+				T length{ 0 };
+				const Derived *pDerived = reinterpret_cast<const Derived* const>(this);
+				for (int i = 0; i < Derived::Order; ++i)
+				{
+					length += pDerived->operator[](i) * pDerived->operator[](i);
+				}
+
+				return std::sqrt(length);
+			}
+
+			void Normalize()
+			{
+				auto length = Length();
+				Derived* const pDerived = reinterpret_cast<Derived* const>(this);
+				if (length > 1e-5)
+				{
+					for (int i = 0;i < Derived::Order;++i)
+					{
+						auto& val = pDerived->operator[](i);
+						val /= length;
+					}
+				}
+			}
+
+			Derived Normalized()const
+			{
+				const Derived *const pDerived = reinterpret_cast<const Derived *const>(this);
+				Derived res(*pDerived);
+				res.Normalize();
+				return res;
+			}
 		};
 
-		using Vector4f = Vector<float, 4>;
-		using Vector3f = Vector<float, 3>;
-		using Vector2f = Vector<float, 2>;
-		using Vector4i = Vector<int, 4>;
-		using Vector3i = Vector<int, 3>;
-		using Vector2i = Vector<int, 2>;
-		template<typename _Scalar, int Dimension>
-		using VectorList = std::vector<Vector<_Scalar, Dimension>, Eigen::aligned_allocator<Vector<_Scalar, Dimension>>>;
+		template<typename T>
+		struct Vector2 : VectorBase<Vector2<T>, T>
+		{
+			static constexpr unsigned Order = 2;
+			Vector2() : x(0), y(0){}
+			Vector2(T _x, T _y) : x(_x), y(_y){}
+			T& operator[](int i) {
+				switch (i) {
+				case 1:
+					return y;
+				default:
+					return x;
+				}
+			}
+
+			T operator[](int i)const {
+				switch (i) {
+				case 1:
+					return y;
+				default:
+					return x;
+				}
+			}
+
+			T x, y;
+		};
+
+		template<typename T>
+		struct Vector3 : VectorBase<Vector3<T>, T>
+		{
+			static constexpr unsigned Order = 3;
+			Vector3() : x(0), y(0), z(0){}
+			Vector3(T _x, T _y, T _z) : x(_x), y(_y), z(_z){}
+			T& operator[](int i) {
+				switch (i) {
+				case 1:
+					return y;
+				case 2:
+					return z;
+				default:
+					return x;
+				}
+			}
+
+			T operator[](int i)const {
+				switch (i) {
+				case 1:
+					return y;
+				case 2:
+					return z;
+				default:
+					return x;
+				}
+			}
+
+			Vector3<T> Cross(const Vector3<T>& other)const
+			{
+				return Vector3<T>(y * other.z - z * other.y,
+					z * other.x - x * other.z,
+					x * other.y - y * other.x);
+			}
+			T x, y, z;
+		};
+
+		template<typename T>
+		struct Vector4 : VectorBase<Vector4<T>, T>
+		{
+			static constexpr unsigned Order = 4;
+			Vector4() : x(0), y(0), z(0), w(0){}
+			Vector4(T _x, T _y, T _z, T _w) : x(_x), y(_y), z(_z), w(_w){}
+			Vector4(const Vector3<T>& v) : x(v.x), y(v.y), z(v.z), w(1){}
+			T& operator[](int i) {
+				switch (i) {
+				case 1:
+					return y;
+				case 2:
+					return z;
+				case 3:
+					return w;
+				default:
+					return x;
+				}
+			}
+
+			T operator[](int i)const {
+				switch (i) {
+				case 1:
+					return y;
+				case 2:
+					return z;
+				case 3:
+					return w;
+				default:
+					return x;
+				}
+			}
+			T x, y, z, w;
+		};
+
+		using Vector4f = Vector4<float>;
+		using Vector3f = Vector3<float>;
+		using Vector2f = Vector2<float>;
+		using Vector4i = Vector4<int>;
+		using Vector3i = Vector3<int>;
+		using Vector2i = Vector2<int>;
 	}
 }

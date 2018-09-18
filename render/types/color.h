@@ -1,27 +1,16 @@
 #pragma once
 #include <cstdint>
-#include "vector.h"
+#include "plainobject.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		template<typename _Scalar>
-		class Color : public Vector<_Scalar, 4>
+		template<typename T>
+		struct Color : Foundation::PlainObject<Color<T>>
 		{
-		public:
-			Color(const _Scalar r, const _Scalar g, const _Scalar b, const _Scalar a):Vector<_Scalar, 4>({r, g, b, a}){}
-			template<typename Iterable>
-			Color(const Iterable& data, typename std::iterator_traits<decltype(std::cbegin(data))>::pointer=nullptr) : Vector<_Scalar, 4>(data){}
-			Color(const std::initializer_list<_Scalar>& data) : Vector<_Scalar, 4>(data){}
-			_Scalar& r() { return Vector<_Scalar, 4>::operator [](0); }
-			_Scalar r()const { return Vector<_Scalar, 4>::operator [](0); }
-			_Scalar& g() { return Vector<_Scalar, 4>::operator [](1); }
-			_Scalar g()const { return Vector<_Scalar, 4>::operator [](1); }
-			_Scalar& b() { return Vector<_Scalar, 4>::operator [](2); }
-			_Scalar b()const { return Vector<_Scalar, 4>::operator [](2); }
-			_Scalar& a() { return Vector<_Scalar, 4>::operator [](3); }
-			_Scalar a()const { return Vector<_Scalar, 4>::operator [](3); }
+			Color(T _r, T _g, T _b, T _a) : r(_r), g(_g), b(_b), a(_a){}
+			T r, g, b, a;
 		};
 
 		using ColorF = Color<float>;

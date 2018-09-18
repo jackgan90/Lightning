@@ -6,7 +6,7 @@ namespace Lightning
 {
 	namespace Scene
 	{
-		using Render::Matrix3x3f;
+		using Render::Matrix3f;
 		using Render::Vector4f;
 		Camera::Camera():mType(CameraType::Perspective), mNearPlane(1.0f), mFarPlane(1000.0f), 
 			mFov(DegreesToRadians(60.0f)), mAspectRatio(1.0f),
@@ -107,20 +107,20 @@ namespace Lightning
 			{
 			case CameraType::Perspective:
 			{
-				mProjectionMatrix(0, 0) = static_cast<float>(1.0 / (tan(mFov / 2.0) * mAspectRatio));
-				mProjectionMatrix(1, 1) = static_cast<float>(1.0 / tan(mFov / 2.0));
-				mProjectionMatrix(2, 2) = (mNearPlane * ndcNear - mFarPlane) / (mFarPlane - mNearPlane);
-				mProjectionMatrix(2, 3) = (ndcNear - 1.0f) * mNearPlane * mFarPlane / (mFarPlane - mNearPlane);
-				mProjectionMatrix(3, 2) = -1;
+				mProjectionMatrix.m[0] = static_cast<float>(1.0 / (tan(mFov / 2.0) * mAspectRatio));
+				mProjectionMatrix.m[5] = static_cast<float>(1.0 / tan(mFov / 2.0));
+				mProjectionMatrix.m[10] = (mNearPlane * ndcNear - mFarPlane) / (mFarPlane - mNearPlane);
+				mProjectionMatrix.m[11] = (ndcNear - 1.0f) * mNearPlane * mFarPlane / (mFarPlane - mNearPlane);
+				mProjectionMatrix.m[14] = -1;
 				break;
 			}
 			case CameraType::Orthographic:
 			{
-				mProjectionMatrix(0, 0) = static_cast<float>(1.0 / (tan(mFov / 2.0) * mAspectRatio * mNearPlane));
-				mProjectionMatrix(1, 1) = static_cast<float>(1.0 / (tan(mFov / 2.0) * mNearPlane));
-				mProjectionMatrix(2, 2) = static_cast<float>(-2.0 / (mFarPlane - mNearPlane));
-				mProjectionMatrix(2, 3) = -(mFarPlane + mNearPlane) / (mFarPlane - mNearPlane);
-				mProjectionMatrix(3, 2) = 0;
+				mProjectionMatrix.m[0] = static_cast<float>(1.0 / (tan(mFov / 2.0) * mAspectRatio * mNearPlane));
+				mProjectionMatrix.m[5] = static_cast<float>(1.0 / (tan(mFov / 2.0) * mNearPlane));
+				mProjectionMatrix.m[10] = static_cast<float>(-2.0 / (mFarPlane - mNearPlane));
+				mProjectionMatrix.m[11] = -(mFarPlane + mNearPlane) / (mFarPlane - mNearPlane);
+				mProjectionMatrix.m[14] = 0;
 				break;
 			}
 			default:
@@ -146,7 +146,10 @@ namespace Lightning
 			row1[3] = mYAxis.Dot(translation);
 			Vector4f row2(mZAxis);
 			row2[3] = mZAxis.Dot(translation);
-			mViewMatrix.SetRows(0, row0, row1, row2, Vector4f({0.0f, 0.0f, 0.0f, 1.0f}));
+			mViewMatrix.SetRow(row0, 0);
+			mViewMatrix.SetRow(row1, 1);
+			mViewMatrix.SetRow(row2, 2);
+			mViewMatrix.SetRow(Vector4f({0.0f, 0.0f, 0.0f, 1.0f}), 3);
 
 		}
 	}

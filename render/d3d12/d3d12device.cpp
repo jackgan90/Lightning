@@ -129,7 +129,7 @@ namespace Lightning
 			//cache render target to prevent it from being released before GPU execute ClearRenderTargetView
 			CacheResourceReference(rt);
 
-			const float clearColor[] = { color.r(), color.g(), color.b(), color.a() };
+			const float clearColor[] = { color.r, color.g, color.b, color.a };
 			auto rtvHandle = pTarget->GetCPUHandle();
 			if (rects && !rects->empty())
 			{
@@ -137,9 +137,9 @@ namespace Lightning
 				D3D12_RECT* d3dRect = g_RenderAllocator.Allocate<D3D12_RECT>(rects->size());
 				for (size_t i = 0; i < rects->size(); i++)
 				{
-					d3dRect[i].left = (*rects)[i].left();
+					d3dRect[i].left = (*rects)[i].left;
 					d3dRect[i].right = (*rects)[i].right();
-					d3dRect[i].top = (*rects)[i].top();
+					d3dRect[i].top = (*rects)[i].top;
 					d3dRect[i].bottom = (*rects)[i].bottom();
 				}
 				mCommandList->ClearRenderTargetView(rtvHandle, clearColor, rects->size(), d3dRect);
@@ -170,9 +170,9 @@ namespace Lightning
 				D3D12_RECT* d3dRect = g_RenderAllocator.Allocate<D3D12_RECT>(rects->size());
 				for (size_t i = 0; i < rects->size(); i++)
 				{
-					d3dRect[i].left = (*rects)[i].left();
+					d3dRect[i].left = (*rects)[i].left;
 					d3dRect[i].right = (*rects)[i].right();
-					d3dRect[i].top = (*rects)[i].top();
+					d3dRect[i].top = (*rects)[i].top;
 					d3dRect[i].bottom = (*rects)[i].bottom();
 				}
 				mCommandList->ClearDepthStencilView(dsvHandle, clearFlags, depth, stencil, rects->size(), d3dRect);

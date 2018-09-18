@@ -8,6 +8,7 @@
 #include "hashableobject.h"
 #include "semantics.h"
 #include "renderexception.h"
+#include "types/matrix.h"
 #include "types/vector.h"
 
 namespace Lightning
@@ -60,9 +61,8 @@ namespace Lightning
 				Vector2f v2;
 				Vector3f v3;
 				Vector4f v4;
-				Matrix2x2f m2;
-				Matrix3x3f m3;
-				Matrix4x4f m4;
+				Matrix3f m3;
+				Matrix4f m4;
 				//TODO : add texture and sampler
 			};
 			ShaderArgument():type(ShaderArgumentType::UNKNOWN){}
@@ -73,19 +73,16 @@ namespace Lightning
 			ShaderArgument(Vector3f&& _v3) :type(ShaderArgumentType::FLOAT3) { new (&v3)Vector3f(std::move(_v3)); }
 			ShaderArgument(const Vector4f& _v4) :type(ShaderArgumentType::FLOAT4) { new (&v4)Vector4f(_v4); }
 			ShaderArgument(Vector4f&& _v4) :type(ShaderArgumentType::FLOAT4) { new (&v4)Vector4f(std::move(_v4)); }
-			ShaderArgument(const Matrix2x2f& _m2) :type(ShaderArgumentType::MATRIX2) { new (&m2)Matrix2x2f(_m2); }
-			ShaderArgument(Matrix2x2f&& _m2) :type(ShaderArgumentType::MATRIX2) { new (&m2)Matrix2x2f(std::move(_m2)); }
-			ShaderArgument(const Matrix3x3f& _m3) :type(ShaderArgumentType::MATRIX3) { new (&m3)Matrix3x3f(_m3); }
-			ShaderArgument(Matrix3x3f&& _m3) :type(ShaderArgumentType::MATRIX3) { new (&m3)Matrix3x3f(std::move(_m3)); }
-			ShaderArgument(const Matrix4x4f& _m4) :type(ShaderArgumentType::MATRIX4) { new (&m4)Matrix4x4f(_m4); }
-			ShaderArgument(Matrix4x4f&& _m4) :type(ShaderArgumentType::MATRIX4) { new (&m4)Matrix4x4f(std::move(_m4)); }
+			ShaderArgument(const Matrix3f& _m3) :type(ShaderArgumentType::MATRIX3) { new (&m3)Matrix3f(_m3); }
+			ShaderArgument(Matrix3f&& _m3) :type(ShaderArgumentType::MATRIX3) { new (&m3)Matrix3f(std::move(_m3)); }
+			ShaderArgument(const Matrix4f& _m4) :type(ShaderArgumentType::MATRIX4) { new (&m4)Matrix4f(_m4); }
+			ShaderArgument(Matrix4f&& _m4) :type(ShaderArgumentType::MATRIX4) { new (&m4)Matrix4f(std::move(_m4)); }
 			float GetFloat()const { return f; }
 			Vector2f GetVector2()const { return v2; }
 			Vector3f GetVector3()const { return v3; }
 			Vector4f GetVector4()const { return v4; }
-			Matrix2x2f GetMatrix2()const { return m2; }
-			Matrix3x3f GetMatrix3()const { return m3; }
-			Matrix4x4f GetMatrix4()const { return m4; }
+			Matrix3f GetMatrix3()const { return m3; }
+			Matrix4f GetMatrix4()const { return m4; }
 		};
 
 		class LIGHTNING_RENDER_API IShader : public HashableObject

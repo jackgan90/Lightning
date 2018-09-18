@@ -34,6 +34,12 @@ namespace Lightning
 				return !this->operator==(other);
 			}
 
+			PlainObject& operator=(const Derived& other)
+			{
+				std::memcpy(this, &other, sizeof(other));
+				return *this;
+			}
+
 			std::size_t GetHash()const
 			{
 				static std::random_device rd;

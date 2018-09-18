@@ -13,51 +13,16 @@
 
 namespace
 {
-	using Lightning::Render::Matrix;
-	using Lightning::Render::Matrix4x4f;
-	using Lightning::Render::Matrix3x3f;
-	using Lightning::Render::Matrix2x2f;
-	using Lightning::Render::Matrix4x4i;
-	using Lightning::Render::Matrix3x3i;
-	using Lightning::Render::Matrix2x2i;
-	using Lightning::Render::VectorList;
+	using Lightning::Render::Matrix4f;
+	using Lightning::Render::Matrix3f;
+	using Lightning::Render::Matrix4i;
+	using Lightning::Render::Matrix3i;
 	using Lightning::Render::Vector4f;
 	using Lightning::Render::Vector4i;
 	using Lightning::Render::Vector3f;
 	using Lightning::Render::Vector2f;
-	using Lightning::Render::Vector;
 	using Lightning::Render::RectF;
 	using Lightning::Render::ColorF;
-	using Lightning::Render::MatrixList;
-	template<typename _Scalar, int Rows, int Columns>
-	std::ostream& operator<<(std::ostream& out, Matrix<_Scalar, Rows, Columns>& m)
-	{
-		for (int i = 0;i < Rows;++i)
-		{
-			for (int j = 0;j < Columns;++j)
-			{
-				out << m(i, j) << ' ';
-			}
-			out << std::endl;
-		}
-		return out;
-	}
-
-	template<typename _Scalar, int Dimension>
-	std::ostream& operator<<(std::ostream& out, Vector<_Scalar, Dimension>& v)
-	{
-		out << "[";
-		for (int i = 0;i < Dimension;++i)
-		{
-			out << v[i];
-			if (i < Dimension - 1)
-			{
-				out << ',';
-			}
-		}
-		out << "]";
-		return out;
-	}
 
 	TEST_CASE("Vector test", "[Vector test]")
 	{
@@ -107,45 +72,17 @@ namespace
 		Vector3f v7(v5);
 		REQUIRE(v7 == v5);
 
-		Matrix<float, 1, 3> m0{ 1.0f, 2.0f, 3.0f };
-
-		Vector3f v8(m0);
-		REQUIRE(v8[0] == Approx(1.0f));
-		REQUIRE(v8[1] == Approx(2.0f));
-		REQUIRE(v8[2] == Approx(3.0f));
-
-		Vector3f v9(Matrix<float, 1, 3>({ 1.0f, 2.0f, 3.0f }));
-		REQUIRE(v9[0] == Approx(1.0f));
-		REQUIRE(v9[1] == Approx(2.0f));
-		REQUIRE(v9[2] == Approx(3.0f));
 
 		Vector3f v10;
-		v10 = m0;
 		REQUIRE(v10[0] == Approx(1.0f));
 		REQUIRE(v10[1] == Approx(2.0f));
 		REQUIRE(v10[2] == Approx(3.0f));
 
-		REQUIRE(v10 == m0);
-		REQUIRE(m0 == v10);
 
 		Vector3f v11;
-		v11 = Matrix<float, 1, 3>{ 1.0f, 2.0f, 3.0f };
-		REQUIRE(v11[0] == Approx(1.0f));
-		REQUIRE(v11[1] == Approx(2.0f));
-		REQUIRE(v11[2] == Approx(3.0f));
-
-		float* v_arr = new float[3]{ 1.0f, 2.0f, 3.0f };
-		Vector3f v12(v_arr, 3);
-		REQUIRE(v12[0] == Approx(1.0f));
-		REQUIRE(v12[1] == Approx(2.0f));
-		REQUIRE(v12[2] == Approx(3.0f));
-		delete[]v_arr;
 
 		Vector3f v13{ 3.0f, 4.0f, 5.0f };
-		Vector2f v14(v13);
 		Vector4f v15(v13);
-		REQUIRE(v14[0] == Approx(3.0f));
-		REQUIRE(v14[1] == Approx(4.0f));
 		REQUIRE(v15[0] == Approx(3.0f));
 		REQUIRE(v15[1] == Approx(4.0f));
 		REQUIRE(v15[2] == Approx(5.0f));
@@ -163,333 +100,23 @@ namespace
 
 	TEST_CASE("Matrix test", "[Matrix test]")
 	{
-		auto m = Matrix4x4f::Identity();
-		REQUIRE(m(0, 0) == 1);
-		REQUIRE(m(0, 0) == m(1, 1));
-		REQUIRE(m(1, 1) == m(2, 2));
-		REQUIRE(m(2, 2) == m(3, 3));
+		Matrix4f m;
+		m.SetIdentity();
+		REQUIRE(m.m[m.CELL_INDEX(0, 0)] == 1);
+		REQUIRE(m.m[m.CELL_INDEX(1, 1)] == 1);
+		REQUIRE(m.m[m.CELL_INDEX(2, 2)] == 1);
+		REQUIRE(m.m[m.CELL_INDEX(3, 3)] == 1);
 		for (std::size_t i = 0;i < 4;++i)
 		{
 			for (std::size_t j = 0; j < 4; ++j)
 			{
 				if (i == j)
 					continue;
-				REQUIRE(m(i, j) == 0);
+				REQUIRE(m.m[m.CELL_INDEX(i, j)] == 0);
 			}
 		}
-		m(3, 3) = 10.0;
-		REQUIRE(m(3, 3) == Approx(10.0));
-		Matrix4x4f m1{ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 };
-		auto subm1 = m1.SubMatrix<2, 2>(1, 1);
-		auto subm1_type_correct = std::is_same<decltype(subm1), Matrix<float, 2, 2>>::value;
-		REQUIRE(subm1_type_correct);
-		REQUIRE(m1(0, 0) == Approx(1.0));
-		REQUIRE(m1(1, 0) == Approx(2.0));
-		REQUIRE(m1(0, 1) == Approx(5.0));
-		REQUIRE(m1(3, 2) == Approx(12.0));
-		REQUIRE(subm1(0, 0) == Approx(6.0));
-		REQUIRE(subm1(0, 1) == Approx(10.0));
-		REQUIRE(subm1(1, 0) == Approx(7.0));
-		REQUIRE(subm1(1, 1) == Approx(11.0));
-		
-		Vector4i col0{ 2, 3, 4, 5 };
-		Vector4i col1{ 1, 3, 5, 7 };
-		Vector4i col2{ 10, 20, 30, 40 };
-		Vector4i col3{ -1, -2, -3, -4 };
-		
-		
-		//Matrix4x4i m2(helper::make_array(col0, col1, col2, col3));
-		Matrix4x4i m2;
-		m2.SetColumns(0, col0, col1, col2, col3);
-		REQUIRE(m2(0, 0) == 2);
-		REQUIRE(m2(1, 0) == 3);
-		REQUIRE(m2(2, 0) == 4);
-		REQUIRE(m2(3, 0) == 5);
-		REQUIRE(m2(0, 1) == 1);
-		REQUIRE(m2(1, 1) == 3);
-		REQUIRE(m2(2, 1) == 5);
-		REQUIRE(m2(3, 1) == 7);
-		REQUIRE(m2(0, 2) == 10);
-		REQUIRE(m2(1, 2) == 20);
-		REQUIRE(m2(2, 2) == 30);
-		REQUIRE(m2(3, 2) == 40);
-		REQUIRE(m2(0, 3) == -1);
-		REQUIRE(m2(1, 3) == -2);
-		REQUIRE(m2(2, 3) == -3);
-		REQUIRE(m2(3, 3) == -4);
-		
-		Matrix4x4i opm1 = { 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31 };
-		Matrix4x4i opm2 = { 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32 };
-
-		auto add_m = opm1 + opm2;
-		auto minus_m = opm1 - opm2;
-		auto mul_m = opm1 * opm2;
-
-		REQUIRE(add_m(0, 0) == 3);
-		REQUIRE(add_m(1, 0) == 7);
-		REQUIRE(add_m(2, 0) == 11);
-		REQUIRE(add_m(3, 0) == 15);
-		REQUIRE(add_m(0, 1) == 19);
-		REQUIRE(add_m(1, 1) == 23);
-		REQUIRE(add_m(2, 1) == 27);
-		REQUIRE(add_m(3, 1) == 31);
-		REQUIRE(add_m(0, 2) == 35);
-		REQUIRE(add_m(1, 2) == 39);
-		REQUIRE(add_m(2, 2) == 43);
-		REQUIRE(add_m(3, 2) == 47);
-		REQUIRE(add_m(0, 3) == 51);
-		REQUIRE(add_m(1, 3) == 55);
-		REQUIRE(add_m(2, 3) == 59);
-		REQUIRE(add_m(3, 3) == 63);
-
-		REQUIRE(minus_m(0, 0) == -1);
-		REQUIRE(minus_m(1, 0) == -1);
-		REQUIRE(minus_m(2, 0) == -1);
-		REQUIRE(minus_m(3, 0) == -1);
-		REQUIRE(minus_m(0, 1) == -1);
-		REQUIRE(minus_m(1, 1) == -1);
-		REQUIRE(minus_m(2, 1) == -1);
-		REQUIRE(minus_m(3, 1) == -1);
-		REQUIRE(minus_m(0, 2) == -1);
-		REQUIRE(minus_m(1, 2) == -1);
-		REQUIRE(minus_m(2, 2) == -1);
-		REQUIRE(minus_m(3, 2) == -1);
-		REQUIRE(minus_m(0, 3) == -1);
-		REQUIRE(minus_m(1, 3) == -1);
-		REQUIRE(minus_m(2, 3) == -1);
-		REQUIRE(minus_m(3, 3) == -1);
-
-		REQUIRE(mul_m(0, 0) == 340);
-		REQUIRE(mul_m(1, 0) == 380);
-		REQUIRE(mul_m(2, 0) == 420);
-		REQUIRE(mul_m(3, 0) == 460);
-		REQUIRE(mul_m(0, 1) == 756);
-		REQUIRE(mul_m(1, 1) == 860);
-		REQUIRE(mul_m(2, 1) == 964);
-		REQUIRE(mul_m(3, 1) == 1068);
-		REQUIRE(mul_m(0, 2) == 1172);
-		REQUIRE(mul_m(1, 2) == 1340);
-		REQUIRE(mul_m(2, 2) == 1508);
-		REQUIRE(mul_m(3, 2) == 1676);
-		REQUIRE(mul_m(0, 3) == 1588);
-		REQUIRE(mul_m(1, 3) == 1820);
-		REQUIRE(mul_m(2, 3) == 2052);
-		REQUIRE(mul_m(3, 3) == 2284);
-
-		auto opm3(opm1);
-		REQUIRE(opm1 == opm3);
-		REQUIRE(opm1 != opm2);
-
-		Vector4i row0{ 7, 7, 7, 7 };
-		Vector4i row1{ 8, 8, 8, 8 };
-		auto updatedRows = helper::make_array(row0, row1);
-		auto opm4(opm3);
-		opm3.SetRows(1, row0, row1);
-		for (std::size_t i = 1;i < 3;++i)
-		{
-			for (std::size_t j = 0;j < 4;++j)
-			{
-				opm4(i, j) = updatedRows[i - 1][j];
-			}
-		}
-		REQUIRE(opm3 == opm4);
-
-		auto opm5(opm4);
-		opm4.SetColumns(0, col0, col1);
-		auto updatedColumns = helper::make_array(col0, col1);
-		for (std::size_t i = 0;i < 2;++i)
-		{
-			for (std::size_t j = 0; j < 4; ++j)
-			{
-				opm5(j, i) = updatedColumns[i][j];
-			}
-		}
-		REQUIRE(opm4 == opm5);
-
-		Matrix2x2f fm2{ 7, -6, -4, 3 };
-		REQUIRE(fm2.Invertible());
-
-		Matrix3x3f fm3{ 1, 2, -2, -1, 1, -2, 3, 2, 1 };
-		REQUIRE(fm3.Invertible());
-
-		Matrix4x4f fm4{ 5, 0, -1, 1, 4, 1, -1, 1, 2, -1, 3, -1, 1, -1, 0, 2 };
-		REQUIRE(fm4.Invertible());
-
-		Matrix<float, 5, 5> fmm5{ 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1};
-		REQUIRE(fmm5.Invertible());
-
-		auto inv_fm2 = fm2.Inverse();
-		REQUIRE(inv_fm2 * fm2 == Matrix2x2f::Identity());
-
-		auto inv_fm3 = fm3.Inverse();
-		REQUIRE(inv_fm3 * fm3 == Matrix3x3f::Identity());
-
-		auto inv_fm4 = fm4.Inverse();
-		REQUIRE(inv_fm4 * fm4 == Matrix4x4f::Identity());
-
-		auto transposed_m(m2.Transpose());
-		for (std::size_t i = 0;i < 4;++i)
-		{
-			for (std::size_t j = 0;j < 4;++j)
-			{
-				REQUIRE(m2(i, j) == transposed_m(j, i));
-			}
-		}
-		REQUIRE(m2 != transposed_m);
-		m2.TransposeInPlace();
-		REQUIRE(m2 == transposed_m);
-		
-		VectorList<float, 4> vl;
-		Vector<float, 4> reference_v{ 2,3,4,5 };
-		for (std::size_t i = 0;i < 10;++i)
-		{
-			vl.emplace_back(std::initializer_list<float>{ 2, 3, 4, 5 });
-			REQUIRE(vl.back() == reference_v);
-		}
-
-		MatrixList<float, 4, 4> ml;
-		Matrix<float, 4, 4> reference_m{ 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597 };
-		for (std::size_t i = 0;i < 10;++i)
-		{
-			ml.emplace_back(std::initializer_list<float>{ 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377, 610, 987, 1597 });
-			REQUIRE(ml.back() == reference_m);
-		}
-
-		Matrix4x4f fm5;
-		std::vector<float> v_ctr{ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f };
-		fm5.Set(v_ctr);
-		REQUIRE(fm5(0, 0) == Approx(1.0f));
-		REQUIRE(fm5(1, 0) == Approx(2.0f));
-		REQUIRE(fm5(2, 0) == Approx(3.0f));
-		REQUIRE(fm5(3, 0) == Approx(4.0f));
-		REQUIRE(fm5(0, 1) == Approx(5.0f));
-
-		Matrix4x4f fm6;
-		std::list<float> l_ctr{ 6.0f, 7.0f, 8.0f, 9.0f, 10.0f };
-		fm6.Set(l_ctr);
-		REQUIRE(fm6(0, 0) == Approx(6.0f));
-		REQUIRE(fm6(1, 0) == Approx(7.0f));
-		REQUIRE(fm6(2, 0) == Approx(8.0f));
-		REQUIRE(fm6(3, 0) == Approx(9.0f));
-		REQUIRE(fm6(0, 1) == Approx(10.0f));
-
-		Matrix4x4f fm7;
-		std::set<float> s_ctr{ 11.0f, 12.0f, 13.0f, 14.0f, 15.0f };
-		fm7.Set(s_ctr);
-		REQUIRE(fm7(0, 0) == Approx(11.0f));
-		REQUIRE(fm7(1, 0) == Approx(12.0f));
-		REQUIRE(fm7(2, 0) == Approx(13.0f));
-		REQUIRE(fm7(3, 0) == Approx(14.0f));
-		REQUIRE(fm7(0, 1) == Approx(15.0f));
-
-		Matrix4x4f fm8;
-		std::multiset<float> ms_ctr{ 16.0f, 17.0f, 18.0f, 19.0f, 20.0f };
-		fm8.Set(ms_ctr);
-		REQUIRE(fm8(0, 0) == Approx(16.0f));
-		REQUIRE(fm8(1, 0) == Approx(17.0f));
-		REQUIRE(fm8(2, 0) == Approx(18.0f));
-		REQUIRE(fm8(3, 0) == Approx(19.0f));
-		REQUIRE(fm8(0, 1) == Approx(20.0f));
-
-		Matrix4x4f fm9;
-		const float a_ctr[] = { 21.0f, 22.0f, 23.0f, 24.0f, 25.0f };
-		fm9.Set(a_ctr);
-		REQUIRE(fm9(0, 0) == Approx(21.0f));
-		REQUIRE(fm9(1, 0) == Approx(22.0f));
-		REQUIRE(fm9(2, 0) == Approx(23.0f));
-		REQUIRE(fm9(3, 0) == Approx(24.0f));
-		REQUIRE(fm9(0, 1) == Approx(25.0f));
-
-		Matrix4x4f fm10;
-		std::array<float, 5> std_a_ctr = { 26.0f, 27.0f, 28.0f, 29.0f, 30.0f };
-		fm10.Set(std_a_ctr);
-		REQUIRE(fm10(0, 0) == Approx(26.0f));
-		REQUIRE(fm10(1, 0) == Approx(27.0f));
-		REQUIRE(fm10(2, 0) == Approx(28.0f));
-		REQUIRE(fm10(3, 0) == Approx(29.0f));
-		REQUIRE(fm10(0, 1) == Approx(30.0f));
-
-		Matrix4x4f fm11;
-		float* na_ctr = new float[5]{31.0f, 32.0f, 33.0f, 34.0f, 35.0f};
-		fm11.Set(na_ctr, 5);
-		REQUIRE(fm11(0, 0) == Approx(31.0f));
-		REQUIRE(fm11(1, 0) == Approx(32.0f));
-		REQUIRE(fm11(2, 0) == Approx(33.0f));
-		REQUIRE(fm11(3, 0) == Approx(34.0f));
-		REQUIRE(fm11(0, 1) == Approx(35.0f));
-
-		Matrix4x4f fm12(na_ctr, 5);
-		REQUIRE(fm12(0, 0) == Approx(31.0f));
-		REQUIRE(fm12(1, 0) == Approx(32.0f));
-		REQUIRE(fm12(2, 0) == Approx(33.0f));
-		REQUIRE(fm12(3, 0) == Approx(34.0f));
-		REQUIRE(fm12(0, 1) == Approx(35.0f));
-
-		delete[] na_ctr;
-
-		int* ia = new int[16]{36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51};
-		Matrix4x4f fm13(ia, 16);
-		REQUIRE(fm13(0, 0) == Approx(36.0f));
-		REQUIRE(fm13(1, 0) == Approx(37.0f));
-		REQUIRE(fm13(2, 0) == Approx(38.0f));
-		REQUIRE(fm13(3, 0) == Approx(39.0f));
-		REQUIRE(fm13(0, 1) == Approx(40.0f));
-
-		delete[] ia;
-
-		auto r0 = fm13.GetRow(0);
-		REQUIRE(r0 == Vector4f({ 36.0f, 40.0f, 44.0f, 48.0f }));
-		auto c0 = fm13.GetColumn(0);
-		REQUIRE(c0 == Vector4f({ 36.0f, 37.0f, 38.0f, 39.0f }));
-
-		Matrix2x2i im2{ 1, 2, 3, 4 };
-		Matrix3x3i im3(im2);
-		auto subim2 = im3.SubMatrix<2, 2>(0, 0);
-		REQUIRE(subim2 == im2);
-		im3 = im2;
-		subim2 = im3.SubMatrix<2, 2>(0, 0);
-		REQUIRE(subim2 == im2);
-
-		Matrix4x4i im4{ 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16 };
-		Matrix3x3i im5(im4);
-		auto subim4 = im4.SubMatrix<3, 3>(0, 0);
-		REQUIRE(subim4 == im5);
-
-		Matrix2x2f fm15{ 1.0f, 2.0f, 3.0f, 4.0f };
-		Matrix3x3f fm14(Matrix2x2f({ 1, 2, 3, 4 }));
-		auto subfm14 = fm14.SubMatrix<2, 2>(0, 0);
-		REQUIRE(subfm14 == fm15);
-
-		fm15 = Matrix3x3f{ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f };
-		REQUIRE(fm15 == Matrix2x2f({ 1.0f, 2.0f, 4.0f, 5.0f }));
-
-
-		Matrix4x4f fm16{ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f };
-		Matrix3x3f fm17(Matrix4x4f({ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f, 10.0f, 11.0f, 12.0f, 13.0f, 14.0f, 15.0f, 16.0f }));
-		auto subfm16 = fm16.SubMatrix<3, 3>(0, 0);
-		REQUIRE(subfm16 == fm17);
-
-		auto fm18 = -fm17;
-		REQUIRE(fm18(0, 0) == Approx(-1.0f));
-		REQUIRE(fm18(1, 0) == Approx(-2.0f));
-		REQUIRE(fm18(2, 0) == Approx(-3.0f));
-		REQUIRE(fm18(0, 1) == Approx(-5.0f));
-		REQUIRE(fm18(1, 1) == Approx(-6.0f));
-		REQUIRE(fm18(2, 1) == Approx(-7.0f));
-		REQUIRE(fm18(0, 2) == Approx(-9.0f));
-		REQUIRE(fm18(1, 2) == Approx(-10.0f));
-		REQUIRE(fm18(2, 2) == Approx(-11.0f));
-
-		auto fm19 = -Matrix3x3f{1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f};
-		REQUIRE(fm19(0, 0) == Approx(-1.0f));
-		REQUIRE(fm19(1, 0) == Approx(-2.0f));
-		REQUIRE(fm19(2, 0) == Approx(-3.0f));
-		REQUIRE(fm19(0, 1) == Approx(-4.0f));
-		REQUIRE(fm19(1, 1) == Approx(-5.0f));
-		REQUIRE(fm19(2, 1) == Approx(-6.0f));
-		REQUIRE(fm19(0, 2) == Approx(-7.0f));
-		REQUIRE(fm19(1, 2) == Approx(-8.0f));
-		REQUIRE(fm19(2, 2) == Approx(-9.0f));
+		m.m[m.CELL_INDEX(3, 3)] = 10.0;
+		REQUIRE(m.m[m.CELL_INDEX(3, 3)] == 0);
 
 	}
 

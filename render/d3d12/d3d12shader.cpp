@@ -206,34 +206,50 @@ namespace Lightning
 					}
 					else
 					{
-						const float* data{ nullptr };
+						float data[16];
 						std::size_t size{ 0 };
 						switch (argument.type)
 						{
 						case ShaderArgumentType::FLOAT2:
-							data = argument.GetVector2().GetData();
+						{
+							const auto v2 = argument.GetVector2();
+							data[0] = v2.x;
+							data[1] = v2.y;
 							size = 2 * sizeof(float);
 							break;
+						}
 						case ShaderArgumentType::FLOAT3:
-							data = argument.GetVector3().GetData();
+						{
+							const auto v3 = argument.GetVector3();
+							data[0] = v3.x;
+							data[1] = v3.y;
+							data[2] = v3.z;
 							size = 3 * sizeof(float);
 							break;
+						}
 						case ShaderArgumentType::FLOAT4:
-							data = argument.GetVector4().GetData();
+						{
+							const auto v4 = argument.GetVector4();
+							data[0] = v4.x;
+							data[1] = v4.y;
+							data[2] = v4.z;
+							data[3] = v4.w;
 							size = 4 * sizeof(float);
 							break;
+						}
 						case ShaderArgumentType::MATRIX2:
-							data = argument.GetMatrix2().GetData();
-							size = 4 * sizeof(float);
 							break;
 						case ShaderArgumentType::MATRIX3:
-							data = argument.GetMatrix3().GetData();
-							size = 9 * sizeof(float);
+						{
 							break;
+						}
 						case ShaderArgumentType::MATRIX4:
-							data = argument.GetMatrix4().GetData();
+						{
 							size = 16 * sizeof(float);
+							const auto m4 = argument.GetMatrix4().m;
+							std::memcpy(data, m4, size);
 							break;
+						}
 						default:
 							break;
 						}
