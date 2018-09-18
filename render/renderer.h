@@ -16,7 +16,9 @@ namespace Lightning
 
 		struct FrameResource
 		{
-			IRenderFence *fence;
+			IRenderFence *fence{ nullptr };
+			std::uint64_t lastCommitFrame{ 0 };
+			std::uint64_t lastFenceValue{ 0 };
 			void Release(bool perFrame)
 			{
 				if (!perFrame)
@@ -52,7 +54,6 @@ namespace Lightning
 		protected:
 			Renderer(const SharedFileSystemPtr& fs, const SharedWindowPtr& pWindow, RenderPassType renderPassType = RenderPassType::FORWARD);
 			void WaitForPreviousFrame(bool waitAll);
-			void ReleasePreviousFrameResources(bool perFrame);
 			virtual void BeginFrame();
 			virtual void DoFrame();
 			virtual void EndFrame();

@@ -4,13 +4,15 @@
 #include <deque>
 #include <vector>
 #include <unordered_map>
+#include <thread>
+#include <mutex>
 #include "foundationexportdef.h"
 
 namespace Lightning
 {
 	namespace Foundation
 	{
-		//threaded-unsafe ring allocator.Typycal use in allocation of frame's temp resources
+		//threaded-safe ring allocator.Typycal use in allocation of frame's temp resources
 		class LIGHTNING_FOUNDATION_API RingAllocator
 		{
 		public:
@@ -18,6 +20,7 @@ namespace Lightning
 			~RingAllocator() = default;
 			RingAllocator(const RingAllocator&) = delete;
 			RingAllocator& operator=(const RingAllocator&) = delete;
+			//Allocate elementCount elements of type T ,should not run simultaineously with FinishFrame and ReleaseFramesBefore
 			template<typename T, typename... Args>
 			T* Allocate(std::size_t elementCount, Args&&... args)
 			{
@@ -75,8 +78,9 @@ namespace Lightning
 				RingBuffer buffer;
 				std::uint64_t lastAllocatedFrame;
 			};
-			std::vector<RingBufferAllocation> mBuffers;
+			std::unordered_map<std::thread::id, std::vector<RingBufferAllocation>> mBuffers;
 			std::uint64_t mLastFinishFrame;
+			static std::mutex sBufferMutex;
 		};
 	}
 }

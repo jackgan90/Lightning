@@ -41,7 +41,6 @@ namespace Lightning
 		{
 			WaitForPreviousFrame(false);
 			mFrameCount++;
-			ReleasePreviousFrameResources(true);
 			mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 			mDevice->BeginFrame(mCurrentBackBufferIndex);
 		}
@@ -58,7 +57,11 @@ namespace Lightning
 		void Renderer::EndFrame()
 		{
 			auto fence = mFrameResources[mCurrentBackBufferIndex].fence;
-			fence->SetTargetValue(fence->GetTargetValue() + 1);
+			auto& fenceValue = mFrameResources[mCurrentBackBufferIndex].lastFenceValue;
+			auto& commitFrame = mFrameResources[mCurrentBackBufferIndex].lastCommitFrame;
+			fenceValue = fence->GetTargetValue() + 1;
+			commitFrame = mFrameCount;
+			fence->SetTargetValue(fenceValue);
 			mSwapChain->Present();
 			g_RenderAllocator.FinishFrame(mFrameCount);
 		}
@@ -136,43 +139,15 @@ namespace Lightning
 		void Renderer::ShutDown()
 		{
 			WaitForPreviousFrame(true);
-			ReleasePreviousFrameResources(false);
+			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
+			{
+				mFrameResources[i].Release(false);
+			}
 			mOutputWindow.reset();
 			mDevice.reset();
 			mSwapChain.reset();
 			mDepthStencilBuffer.reset();
 		}
-
-		void Renderer::ReleasePreviousFrameResources(bool perFrame)
-		{
-			//trace back RENDER_FRAME_COUNT frames trying to release temporary memory
-			auto backBufferIndex = mCurrentBackBufferIndex;
-			for (std::size_t i = 0; i < RENDER_FRAME_COUNT;++i)
-			{
-				if (backBufferIndex == 0)
-					backBufferIndex = RENDER_FRAME_COUNT - 1;
-				else
-					backBufferIndex -= 1;
-				auto currentVal = mFrameResources[backBufferIndex].fence->GetCurrentValue();
-				auto targetVal = mFrameResources[backBufferIndex].fence->GetTargetValue();
-				if (currentVal >= targetVal)
-				{
-					if (mFrameCount > i + 1)
-					{
-						g_RenderAllocator.ReleaseFramesBefore(mFrameCount - i - 1);
-						mFrameResources[backBufferIndex].Release(perFrame);
-					}
-				}
-			}
-			if (!perFrame)
-			{
-				for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
-				{
-					mFrameResources[i].Release(false);
-				}
-			}
-		}
-
 
 		void Renderer::WaitForPreviousFrame(bool waitAll)
 		{
@@ -193,6 +168,14 @@ namespace Lightning
 			for (const auto& bufferIndex : bufferIndice)
 			{
 				mFrameResources[bufferIndex].fence->WaitForTarget();
+				auto targetValue = mFrameResources[bufferIndex].fence->GetTargetValue();
+				auto& lastCommitFrame = mFrameResources[bufferIndex].lastCommitFrame;
+				auto& lastFenceValue = mFrameResources[bufferIndex].lastFenceValue;
+				if (lastCommitFrame > RENDER_FRAME_COUNT)
+				{
+					if (targetValue >= lastFenceValue)
+						g_RenderAllocator.ReleaseFramesBefore(lastCommitFrame);
+				}
 			}
 		}
 

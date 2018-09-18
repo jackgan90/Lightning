@@ -5,6 +5,7 @@ namespace Lightning
 {
 	namespace Foundation
 	{
+		std::mutex RingAllocator::sBufferMutex;
 		RingAllocator::RingBuffer::RingBuffer(std::size_t size):
 			mMaxSize(size < MIN_BUFFER_SIZE ? MIN_BUFFER_SIZE : size), mUsedSize(0), mHead(0), mTail(0), mFrameSize(0)
 		{
@@ -111,49 +112,66 @@ namespace Lightning
 
 		std::uint8_t* RingAllocator::AllocateBytes(std::size_t size)
 		{
-			if (mBuffers.empty())
+			auto thread_id = std::this_thread::get_id();
+			if (mBuffers.find(thread_id) == mBuffers.end())
 			{
-				mBuffers.emplace_back(size, mLastFinishFrame);
+				{
+					std::lock_guard<std::mutex> lock(sBufferMutex);
+					mBuffers.emplace(std::piecewise_construct, std::make_tuple(thread_id), std::make_tuple());
+				}
 			}
-			auto& allocBuffer = mBuffers.back();
+			auto& threadBuffers = mBuffers[thread_id];
+			if (threadBuffers.empty())
+			{
+				threadBuffers.emplace_back(size, mLastFinishFrame);
+			}
+			auto& allocBuffer = threadBuffers.back();
 			auto ptr = allocBuffer.buffer.Allocate(size);
 			if (!ptr)
 			{
 				std::size_t newBufferSize = allocBuffer.buffer.GetSize() * 2;
 				while (newBufferSize < size)
 					newBufferSize *= 2;
-				mBuffers.emplace_back(newBufferSize, mLastFinishFrame);
-				auto& newAllocBuffer = mBuffers.back();
+				threadBuffers.emplace_back(newBufferSize, mLastFinishFrame);
+				auto& newAllocBuffer = threadBuffers.back();
 				ptr = newAllocBuffer.buffer.Allocate(size);
 			}
-			mBuffers.back().lastAllocatedFrame = mLastFinishFrame;
+			threadBuffers.back().lastAllocatedFrame = mLastFinishFrame;
 			return ptr;
 		}
 
 		void RingAllocator::ReleaseFramesBefore(std::uint64_t frame)
 		{
-			std::size_t numBuffersToDelete{ 0 };
-			for (std::size_t i = 0;i < mBuffers.size();++i)
+			for (auto it = mBuffers.begin();it != mBuffers.end();++it)
 			{
-				mBuffers[i].buffer.ReleaseFramesBefore(frame);
-				if (i < mBuffers.size() - 1 && mBuffers[i].buffer.Empty())//at lease keep one
+				auto& threadBuffers = it->second;
+				std::size_t numBuffersToDelete{ 0 };
+				for (std::size_t i = 0;i < threadBuffers.size();++i)
 				{
-					numBuffersToDelete++;
+					threadBuffers[i].buffer.ReleaseFramesBefore(frame);
+					if (i < threadBuffers.size() - 1 && threadBuffers[i].buffer.Empty())//at lease keep one
+					{
+						numBuffersToDelete++;
+					}
 				}
-			}
-			if (numBuffersToDelete)
-			{
-				mBuffers.erase(mBuffers.begin(), mBuffers.begin() + numBuffersToDelete);
+				if (numBuffersToDelete)
+				{
+					threadBuffers.erase(threadBuffers.begin(), threadBuffers.begin() + numBuffersToDelete);
+				}
 			}
 		}
 
 		void RingAllocator::FinishFrame(std::uint64_t frame)
 		{
-			for (std::size_t i = 0;i < mBuffers.size();++i)
+			for (auto it = mBuffers.begin(); it != mBuffers.end(); ++it)
 			{
-				if (mBuffers[i].lastAllocatedFrame != mLastFinishFrame)
-					continue;
-				mBuffers[i].buffer.FinishFrame(frame);
+				auto& threadBuffers = it->second;
+				for (std::size_t i = 0;i < threadBuffers.size();++i)
+				{
+					if (threadBuffers[i].lastAllocatedFrame != mLastFinishFrame)
+						continue;
+					threadBuffers[i].buffer.FinishFrame(frame);
+				}
 			}
 			mLastFinishFrame = frame;
 		}
@@ -161,14 +179,26 @@ namespace Lightning
 		std::size_t RingAllocator::GetAllocatedMemorySize()const
 		{
 			std::size_t totalSize{ 0 };
-			std::for_each(mBuffers.cbegin(), mBuffers.cend(), [&](const auto& allocBuffer) {totalSize += allocBuffer.buffer.GetSize(); });
+			for (auto it = mBuffers.begin(); it != mBuffers.end(); ++it)
+			{
+				for (const auto& allocation : it->second)
+				{
+					totalSize += allocation.buffer.GetSize();
+				}
+			}
 			return totalSize;
 		}
 
 		std::size_t RingAllocator::GetUsedMemorySize()const
 		{
 			std::size_t totalSize{ 0 };
-			std::for_each(mBuffers.cbegin(), mBuffers.cend(), [&](const auto& allocBuffer) {totalSize += allocBuffer.buffer.GetUsedSize(); });
+			for (auto it = mBuffers.begin(); it != mBuffers.end(); ++it)
+			{
+				for (const auto& allocation : it->second)
+				{
+					totalSize += allocation.buffer.GetUsedSize();
+				}
+			}
 			return totalSize;
 		}
 
