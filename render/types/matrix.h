@@ -20,7 +20,7 @@ namespace Lightning
 				std::memset(this, 0, sizeof(Derived));
 				Derived* const pDerived = reinterpret_cast<Derived* const>(this);
 				for (int i = 0; i < Derived::Order; ++i)
-					pDerived->m[i * Derived::Order + i] = 1;
+					pDerived->m[CELL_INDEX(i, i)] = 1;
 			}
 
 			Derived operator*(const Derived& other)const
@@ -69,7 +69,7 @@ namespace Lightning
 			{
 				for (int i = 0; i < MatrixType::Order; ++i)
 				{
-					mat.m[col * MatrixType::Order + i] = v[i];
+					mat.m[MatrixType::CELL_INDEX(i, col)] = v[i];
 				}
 			}
 		}
@@ -82,7 +82,7 @@ namespace Lightning
 			{
 				for (int i = 0; i < MatrixType::Order; ++i)
 				{
-					mat.m[i * MatrixType::Order + row] = v[i];
+					mat.m[MatrixType::CELL_INDEX(row, i)] = v[i];
 				}
 			}
 		}
