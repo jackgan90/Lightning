@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include <queue>
 #include "irenderer.h"
 #include "irenderfence.h"
 #include "filesystem.h"
@@ -14,11 +15,21 @@ namespace Lightning
 		using Foundation::SharedFileSystemPtr;
 		using WindowSystem::SharedWindowPtr;
 
+		struct FrameFenceValue
+		{
+			std::uint64_t frame;
+			std::uint64_t fenceValue;
+
+			bool operator>(const FrameFenceValue& other)const noexcept
+			{
+				return fenceValue > other.fenceValue;
+			}
+		};
+
 		struct FrameResource
 		{
 			IRenderFence *fence{ nullptr };
-			std::uint64_t lastCommitFrame{ 0 };
-			std::uint64_t lastFenceValue{ 0 };
+			std::priority_queue<FrameFenceValue, std::vector<FrameFenceValue>, std::greater<FrameFenceValue>> frameEndMarkers;
 			void Release(bool perFrame)
 			{
 				if (!perFrame)

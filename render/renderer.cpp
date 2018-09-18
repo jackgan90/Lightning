@@ -57,10 +57,8 @@ namespace Lightning
 		void Renderer::EndFrame()
 		{
 			auto fence = mFrameResources[mCurrentBackBufferIndex].fence;
-			auto& fenceValue = mFrameResources[mCurrentBackBufferIndex].lastFenceValue;
-			auto& commitFrame = mFrameResources[mCurrentBackBufferIndex].lastCommitFrame;
-			fenceValue = fence->GetTargetValue() + 1;
-			commitFrame = mFrameCount;
+			auto fenceValue = fence->GetTargetValue() + 1;
+			mFrameResources[mCurrentBackBufferIndex].frameEndMarkers.push({mFrameCount, fenceValue});
 			fence->SetTargetValue(fenceValue);
 			mSwapChain->Present();
 			g_RenderAllocator.FinishFrame(mFrameCount);
@@ -167,14 +165,22 @@ namespace Lightning
 			}
 			for (const auto& bufferIndex : bufferIndice)
 			{
-				mFrameResources[bufferIndex].fence->WaitForTarget();
-				auto targetValue = mFrameResources[bufferIndex].fence->GetTargetValue();
-				auto& lastCommitFrame = mFrameResources[bufferIndex].lastCommitFrame;
-				auto& lastFenceValue = mFrameResources[bufferIndex].lastFenceValue;
-				if (lastCommitFrame > RENDER_FRAME_COUNT)
+				auto& frameResource = mFrameResources[bufferIndex];
+				frameResource.fence->WaitForTarget();
+				auto targetValue = frameResource.fence->GetTargetValue();
+				if (targetValue > RENDER_FRAME_COUNT)
 				{
-					if (targetValue >= lastFenceValue)
-						g_RenderAllocator.ReleaseFramesBefore(lastCommitFrame);
+					std::uint64_t finishedFrame{ 0 };
+					while (!frameResource.frameEndMarkers.empty() && 
+						frameResource.frameEndMarkers.top().fenceValue <= targetValue)
+					{
+						auto frame = frameResource.frameEndMarkers.top().frame;
+						frameResource.frameEndMarkers.pop();
+						if (frame > finishedFrame)
+							finishedFrame = frame;
+					}
+					if(finishedFrame > 0)
+						g_RenderAllocator.ReleaseFramesBefore(finishedFrame);
 				}
 			}
 		}
