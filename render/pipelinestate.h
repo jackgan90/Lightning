@@ -160,7 +160,7 @@ namespace Lightning
 			IShader* hs;
 			IShader* ds;
 			VertexInputLayout *inputLayouts;
-			std::uint8_t layoutCount;
+			std::uint8_t inputLayoutCount;
 			Viewport viewPort;
 			ScissorRect scissorRect;
 			IRenderTarget* renderTargets[MAX_RENDER_TARGET_COUNT];

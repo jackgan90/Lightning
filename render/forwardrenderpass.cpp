@@ -48,12 +48,12 @@ namespace Lightning
 			if (!layouts.empty())
 			{
 				state.inputLayouts = &layouts[0];
-				state.layoutCount = static_cast<std::uint8_t>(layouts.size());
+				state.inputLayoutCount = static_cast<std::uint8_t>(layouts.size());
 			}
 			else
 			{
 				state.inputLayouts = nullptr;
-				state.layoutCount = 0;
+				state.inputLayoutCount = 0;
 			}
 			pDevice->ApplyPipelineState(state);
 		}

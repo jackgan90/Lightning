@@ -408,7 +408,7 @@ namespace Lightning
 				shaders.push_back(state.hs);
 			if (state.ds)
 				shaders.push_back(state.ds);
-			UpdatePSOInputLayout(state.inputLayouts, state.layoutCount);
+			UpdatePSOInputLayout(state.inputLayouts, state.inputLayoutCount);
 			auto rootSignature = GetRootSignature(shaders);
 			mPipelineDesc.pRootSignature = rootSignature.Get();
 			mPipelineDesc.PrimitiveTopologyType = D3D12TypeMapper::MapPrimitiveType(state.primType);
@@ -449,7 +449,7 @@ namespace Lightning
 			layout.components = &defaultComponent;
 			layout.componentCount = 1;
 			mDevicePipelineState.inputLayouts = &layout;
-			mDevicePipelineState.layoutCount = 1;
+			mDevicePipelineState.inputLayoutCount = 1;
 			mDevicePipelineState.depthStencilState.depthTestEnable = false;
 			mDevicePipelineState.primType = PrimitiveType::TRIANGLE_LIST;
 			mDevicePipelineState.outputRenderTargetCount = 0;
