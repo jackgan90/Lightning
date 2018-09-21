@@ -131,13 +131,16 @@ namespace JobSystem
 			for (std::size_t i = 0;i < mPools.size();++i)
 			{
 				auto& pool = mPools[i];
-				auto finishedCount = pool.finishedJobCount->load(std::memory_order_relaxed);
-				if (pool.locked && finishedCount >= pool.allocatedJobCount)
+				if (pool.locked)
 				{
-					pool.finishedJobCount->store(0, std::memory_order_relaxed);
-					pool.locked = false;
-					pool.pos = 0;
-					pool.allocatedJobCount = 0;
+					auto finishedCount = pool.finishedJobCount->load(std::memory_order_relaxed);
+					if (finishedCount >= pool.allocatedJobCount)
+					{
+						pool.finishedJobCount->store(0, std::memory_order_relaxed);
+						pool.locked = false;
+						pool.pos = 0;
+						pool.allocatedJobCount = 0;
+					}
 				}
 				if (firstEmptyPool == -1)
 				{

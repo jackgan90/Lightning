@@ -95,7 +95,7 @@ namespace JobSystem
 			assert(job);
 			//check if this write may overwrite any existing job that has not scheduled yet
 			//The overwrite happens when the job queue is considered full (too many jobs crammed in
-			//queue and CPU has no ability to finish them in time.Normally applications should decide
+			//queue and CPU is not able to finish them in time.Normally applications should decide
 			//the queue size before hand)
 			auto head = mHead.load(std::memory_order_relaxed);
 			auto readGeneration = head / mQueueSize;
