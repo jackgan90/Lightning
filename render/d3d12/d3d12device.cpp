@@ -67,7 +67,8 @@ namespace Lightning
 			mShaderMgr = std::make_unique<D3D12ShaderManager>(this, fs);
 			mPipelineDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 			//should create first default pipeline state
-			SetUpDefaultPipelineStates();
+			mDefaultShaders[ShaderType::VERTEX] = mShaderMgr->CreateShaderFromSource(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
+			mDefaultShaders[ShaderType::FRAGMENT] = mShaderMgr->CreateShaderFromSource(ShaderType::FRAGMENT, "[Built-in]default.ps", DEFAULT_PS_SOURCE, ShaderDefine()); 
 			mCommandList->Close();
 		}
 
@@ -438,24 +439,6 @@ namespace Lightning
 			return pipelineState;
 		}
 
-		void D3D12Device::SetUpDefaultPipelineStates()
-		{
-			mDefaultShaders[ShaderType::VERTEX] = mShaderMgr->CreateShaderFromSource(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
-			mDefaultShaders[ShaderType::FRAGMENT] = mShaderMgr->CreateShaderFromSource(ShaderType::FRAGMENT, "[Built-in]default.ps", DEFAULT_PS_SOURCE, ShaderDefine()); 
-			mDevicePipelineState.vs = mDefaultShaders[ShaderType::VERTEX].get();
-			VertexComponent defaultComponent;
-			VertexInputLayout layout;
-			layout.slot = 0;
-			layout.components = &defaultComponent;
-			layout.componentCount = 1;
-			mDevicePipelineState.inputLayouts = &layout;
-			mDevicePipelineState.inputLayoutCount = 1;
-			mDevicePipelineState.depthStencilState.depthTestEnable = false;
-			mDevicePipelineState.primType = PrimitiveType::TRIANGLE_LIST;
-			mDevicePipelineState.outputRenderTargetCount = 0;
-			ApplyPipelineState(mDevicePipelineState);
-		}
-
 		SharedShaderPtr D3D12Device::CreateShader(ShaderType type, const std::string& shaderName, 
 			const char* const shaderSource, const ShaderDefine& defineMap)
 		{
@@ -588,7 +571,6 @@ namespace Lightning
 			assert(targetCount <= MAX_RENDER_TARGET_COUNT);
 			//TODO : actually should set pipeline description based on PipelineState rather than set them here
 			auto rtvHandles = g_RenderAllocator.Allocate<D3D12_CPU_DESCRIPTOR_HANDLE>(targetCount);
-			auto& frameRenderTargets = mFrameResources[mFrameResourceIndex].renderTargets;
 			for (std::size_t i = 0; i < targetCount;++i)
 			{
 				CacheResourceReference(renderTargets[i]);

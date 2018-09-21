@@ -63,13 +63,10 @@ namespace Lightning
 					depthStencilBuffers.clear();
 					renderTargets.clear();
 					buffers.clear();
+					commandAllocator->Reset();
 					if (!perFrame)
 					{
 						commandAllocator.Reset();
-					}
-					else
-					{
-						commandAllocator->Reset();
 					}
 				}
 			};
@@ -79,7 +76,6 @@ namespace Lightning
 			void CreateNativeDevice(IDXGIFactory4* factory);
 			void ApplyShader(IShader* pShader);
 			void UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::uint8_t  layoutCount);
-			void SetUpDefaultPipelineStates();
 			ComPtr<ID3D12RootSignature> GetRootSignature(const std::vector<IShader*>& shaders);
 			ComPtr<ID3D12PipelineState> CreateAndCachePipelineState(const PipelineState& pState, std::size_t hashValue);
 			void ExtractShaderDescriptorHeaps();
