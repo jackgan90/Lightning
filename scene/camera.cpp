@@ -6,8 +6,8 @@ namespace Lightning
 {
 	namespace Scene
 	{
-		using Render::Matrix3f;
-		using Render::Vector4f;
+		using Foundation::Math::DegreesToRadians;
+		using Foundation::Math::Vector4f;
 		Camera::Camera():mType(CameraType::Perspective), mNearPlane(1.0f), mFarPlane(1000.0f), 
 			mFov(DegreesToRadians(60.0f)), mAspectRatio(1.0f),
 			mWorldPosition{0.0f, 0.0f, 0.0f}, 

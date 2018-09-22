@@ -15,11 +15,11 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::Vector2f;
-		using Foundation::Vector3f;
-		using Foundation::Vector4f;
-		using Foundation::Matrix3f;
-		using Foundation::Matrix4f;
+		using Foundation::Math::Vector2f;
+		using Foundation::Math::Vector3f;
+		using Foundation::Math::Vector4f;
+		using Foundation::Math::Matrix3f;
+		using Foundation::Math::Matrix4f;
 		class LIGHTNING_RENDER_API ShaderCompileException : public RendererException
 		{
 		public:

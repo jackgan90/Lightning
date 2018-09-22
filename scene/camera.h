@@ -1,6 +1,7 @@
 #pragma once
 #include <cmath>
 #include "sceneexportdef.h"
+#include "math/common.h"
 #include "math/matrix.h"
 #include "math/vector.h"
 
@@ -10,21 +11,13 @@ namespace Lightning
 {
 	namespace Scene
 	{
-		using Foundation::Vector3f;
-		using Foundation::Matrix4f;
+		using Foundation::Math::Vector3f;
+		using Foundation::Math::Matrix4f;
 		enum class CameraType
 		{
 			Perspective,
 			Orthographic,
 		};
-		inline float DegreesToRadians(const float degree)
-		{
-			return static_cast<float>(degree * LIGHTNING_PI / 180.0);
-		}
-		inline float RadiansToDegrees(const float radians)
-		{
-			return static_cast<float>(radians * 180.0 / LIGHTNING_PI);
-		}
 		//Use right-handed coordinate system
 		class LIGHTNING_SCENE_API Camera
 		{
@@ -48,7 +41,7 @@ namespace Lightning
 			CameraType GetCameraType()const { return mType; }
 			//Set vertical field of view in degrees
 			void SetFOV(const float fov);
-			float GetFOV()const { return RadiansToDegrees(mFov); }
+			float GetFOV()const { return Foundation::Math::RadiansToDegrees(mFov); }
 			void SetAspectRatio(const float aspectRatio);
 			float GetAspectRatio()const { return mAspectRatio; }
 		protected:

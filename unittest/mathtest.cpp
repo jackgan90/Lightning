@@ -13,14 +13,14 @@
 
 namespace
 {
-	using Lightning::Render::Matrix4f;
-	using Lightning::Render::Matrix3f;
-	using Lightning::Render::Matrix4i;
-	using Lightning::Render::Matrix3i;
-	using Lightning::Render::Vector4f;
-	using Lightning::Render::Vector4i;
-	using Lightning::Render::Vector3f;
-	using Lightning::Render::Vector2f;
+	using Lightning::Foundation::Math::Matrix4f;
+	using Lightning::Foundation::Math::Matrix3f;
+	using Lightning::Foundation::Math::Matrix4i;
+	using Lightning::Foundation::Math::Matrix3i;
+	using Lightning::Foundation::Math::Vector4f;
+	using Lightning::Foundation::Math::Vector4i;
+	using Lightning::Foundation::Math::Vector3f;
+	using Lightning::Foundation::Math::Vector2f;
 	using Lightning::Render::RectF;
 	using Lightning::Render::ColorF;
 

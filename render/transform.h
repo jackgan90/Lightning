@@ -7,9 +7,9 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::Vector3f;
-		using Foundation::Vector3f;
-		using Foundation::Matrix4f;
+		using Foundation::Math::Vector3f;
+		using Foundation::Math::Vector3f;
+		using Foundation::Math::Matrix4f;
 		class LIGHTNING_RENDER_API Transform
 		{
 		public:
