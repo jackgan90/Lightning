@@ -105,15 +105,11 @@ namespace Lightning
 			std::memcpy(indices, index_data, 36 * sizeof(std::uint16_t));
 		}
 
-		Cube::CubeDataSource Cube::sPrototype;
+		Cube::CubeDataSource Cube::sDataSource;
 		Cube::Cube(float width, float height, float thickness) : 
 			mWidth(width), mHeight(height), mThickness(thickness)
 		{
 			assert(mWidth > 0 && mHeight > 0 && mThickness > 0 && "The size of the cube must be greater than 0!");
-		}
-
-		Cube::~Cube()
-		{
 		}
 		//Cube
 
@@ -121,30 +117,31 @@ namespace Lightning
 		Cylinder::CylinderDataSource::CylinderDataSource()
 		{
 			static const auto CirclePointCount = 360 / AngularUnit;
-			Vector3f *positions = new Vector3f[VertexCount];
-			indices = new std::uint16_t[IndexCount];
-			std::memset(indices, 0, sizeof(std::uint16_t) * IndexCount);
+			auto vertexCount = GetVertexCount();
+			auto indexCount = GetIndexCount();
+			Vector3f *positions = new Vector3f[vertexCount];
+			indices = new std::uint16_t[indexCount];
+			std::memset(indices, 0, sizeof(std::uint16_t) * indexCount);
 			
-			Vector3f *topCenter = &positions[0];
-			topCenter->x = 0;
-			topCenter->y = static_cast<float>(1.0 / 2.0);
-			topCenter->z = 0;
+			Vector3f& topCenter = positions[0];
+			topCenter.x = 0;
+			topCenter.y = static_cast<float>(1.0 / 2.0);
+			topCenter.z = 0;
 
-			Vector3f *bottomCenter = &positions[VertexCount - 1];
-			bottomCenter->x = 0;
-			bottomCenter->y = static_cast<float>(-1.0 / 2.0);
-			bottomCenter->z = 0;
+			Vector3f& bottomCenter = positions[vertexCount - 1];
+			bottomCenter.x = 0;
+			bottomCenter.y = static_cast<float>(-1.0 / 2.0);
+			bottomCenter.z = 0;
 			int j = 0;
 			
 			for (int i = 0;i < CirclePointCount;++i)
 			{
 				//upper circle
-				auto *vt = &positions[i + 1];
 				auto radians = DegreesToRadians(i * AngularUnit);
-				*vt = *topCenter + 0.5f * (Vector3f::right() * std::cos(radians) + Vector3f::back() * std::sin(radians));
+				positions[i + 1] = topCenter + 0.5f * (Vector3f::right() * std::cos(radians) + Vector3f::back() * std::sin(radians));
 
 				auto *vb = &positions[i + 1 + CirclePointCount];
-				*vb = *vt + Vector3f::down() * 1.0f;
+				positions[i + 1 + CirclePointCount] = positions[i+1] + Vector3f::down() * 1.0f;
 
 				auto isLast = i == CirclePointCount - 1;
 				
@@ -158,7 +155,7 @@ namespace Lightning
 					
 
 				//bottom triangle
-				indices[j++] = static_cast<std::uint16_t>(VertexCount - 1);
+				indices[j++] = static_cast<std::uint16_t>(vertexCount - 1);
 				indices[j++] = static_cast<std::uint16_t>(i + 1 + CirclePointCount);
 				if (!isLast)
 					indices[j++] = static_cast<std::uint16_t>(i + 2 + CirclePointCount);
@@ -186,19 +183,78 @@ namespace Lightning
 				else
 					indices[j++] = static_cast<std::uint16_t>(1 + CirclePointCount);
 			}
+			assert(j == indexCount && "Not all indices are initialized!");
 			vertices = reinterpret_cast<float*>(positions);
 		}
 
-		Cylinder::CylinderDataSource Cylinder::sPrototype;
+		Cylinder::CylinderDataSource Cylinder::sDataSource;
 		Cylinder::Cylinder(float height, float radius) :mHeight(height), mRadius(radius)
 		{
 			assert(height > 0 && radius > 0 && "height and radius of a cylinder must be positive!");
 		}
-
-		Cylinder::~Cylinder()
-		{
-		}
 		//Cylinder
+
+		//Hemisphere
+		Hemisphere::HemisphereDataSource Hemisphere::sDataSource;
+		Hemisphere::Hemisphere(float radius) :mRadius(radius)
+		{
+			assert(radius > 0 && "radius must be positive");
+		}
+
+		Hemisphere::HemisphereDataSource::HemisphereDataSource()
+		{
+			static const auto CirclePointCount = 360 / AngularUnit;
+			auto vertexCount = GetVertexCount();
+			auto indexCount = GetIndexCount();
+			Vector3f *positions = new Vector3f[vertexCount];
+			indices = new std::uint16_t[indexCount];
+			std::memset(indices, 0, sizeof(std::uint16_t) * indexCount);
+			positions[vertexCount - 1].x = 0;
+			positions[vertexCount - 1].y = 0.5;
+			positions[vertexCount - 1].z = 0;
+			auto ringCount = 90 % AngularUnit == 0 ? 90 / AngularUnit : 90 / AngularUnit + 1;
+			std::size_t k = 0;
+			for (std::size_t i = 0;i < ringCount;++i)
+			{
+				auto y_radians = DegreesToRadians(i * AngularUnit);
+				auto y = 0.5f * std::sin(y_radians);
+				auto radius_at_y = 0.5f * std::cos(y_radians);
+				for (std::size_t j = 0;j < CirclePointCount;++j)
+				{
+					auto xz_radians = DegreesToRadians(j * AngularUnit);
+					auto index = i * CirclePointCount + j;
+					positions[index] = y * Vector3f::up() + radius_at_y * 
+						(Vector3f::right() * std::cos(xz_radians) + Vector3f::back() * std::sin(xz_radians));
+					if (i == ringCount - 1)
+					{
+						indices[k++] = static_cast<std::uint16_t>(vertexCount - 1);
+						indices[k++] = static_cast<std::uint16_t>(index);
+						if (j < CirclePointCount - 1)
+							indices[k++] = static_cast<std::uint16_t>(index + 1);
+						else
+							indices[k++] = static_cast<std::uint16_t>(index + 1 - CirclePointCount);
+					}
+					else
+					{
+						indices[k++] = static_cast<std::uint16_t>(index + CirclePointCount);
+						indices[k++] = static_cast<std::uint16_t>(index);
+						indices[k++] = static_cast<std::uint16_t>(index + 1);
+					}
+
+					if (i < ringCount - 1)
+					{
+						indices[k++] = static_cast<std::uint16_t>(index - 1 + CirclePointCount);
+						indices[k++] = static_cast<std::uint16_t>(index);
+						indices[k++] =static_cast<std::uint16_t>(index + CirclePointCount);
+					}
+				}
+			}
+
+			assert(k == indexCount && "Index count does not match!");
+			vertices = reinterpret_cast<float*>(positions);
+		}
+
+		//Hemisphere
 
 	}
 }

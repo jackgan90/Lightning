@@ -41,12 +41,14 @@ namespace Lightning
 			//Create a simple scene here just for test
 			auto scene = SceneManager::Instance()->CreateScene();
 			//auto cube = std::make_shared<Scene::Cube>();
-			auto cylinder = std::make_shared<Scene::Cylinder>(2, 1);
+			//auto cylinder = std::make_shared<Scene::Cylinder>(2, 1);
+			auto hemisphere = std::make_shared<Scene::Hemisphere>();
 			auto camera = scene->GetActiveCamera();
 			camera->MoveTo(Render::Vector3f({2.0f, 2.0f, 2.0f}));
 			camera->LookAt(Render::Vector3f({ 0.0f, 0.0f, 0.0f }));
 			//scene->AddDrawable(cube);
-			scene->AddDrawable(cylinder);
+			//scene->AddDrawable(cylinder);
+			scene->AddDrawable(hemisphere);
 			//End of scene creation
 			RegisterWindowHandlers();
 		}

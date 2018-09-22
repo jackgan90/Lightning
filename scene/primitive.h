@@ -49,10 +49,9 @@ namespace Lightning
 		{
 		public:
 			Cube(float width = 1.0f, float height = 1.0f, float thickness = 1.0f);
-			~Cube()override;
 		protected:
-			std::uint8_t *GetVertices() override { return reinterpret_cast<std::uint8_t*>(sPrototype.vertices); }
-			std::uint16_t *GetIndices() override { return sPrototype.indices; }
+			std::uint8_t *GetVertices() override { return reinterpret_cast<std::uint8_t*>(sDataSource.vertices); }
+			std::uint16_t *GetIndices() override { return sDataSource.indices; }
 			Vector3f GetScale() override { return Vector3f{mWidth, mHeight, mThickness}; }
 			std::size_t GetVertexBufferSize() override { return sizeof(Vector3f) * 8; }
 			std::size_t GetIndexBufferSize() override { return sizeof(std::uint16_t) * 36; }
@@ -60,29 +59,50 @@ namespace Lightning
 			float mHeight;
 			float mThickness;
 			struct CubeDataSource : PrimitiveDataSource { CubeDataSource(); };
-			static CubeDataSource sPrototype;
+			static CubeDataSource sDataSource;
 		};
 
 		class LIGHTNING_SCENE_API Cylinder : public Primitive
 		{
 		public:
 			Cylinder(float height, float radius);
-			~Cylinder()override;
 		protected:
-			std::uint8_t *GetVertices() override { return reinterpret_cast<std::uint8_t*>(sPrototype.vertices); }
-			std::uint16_t *GetIndices() override { return sPrototype.indices; }
+			std::uint8_t *GetVertices() override { return reinterpret_cast<std::uint8_t*>(sDataSource.vertices); }
+			std::uint16_t *GetIndices() override { return sDataSource.indices; }
 			Vector3f GetScale() override { return Vector3f{mRadius, mHeight, mRadius}; }
-			std::size_t GetVertexBufferSize() override { return sizeof(Vector3f) * VertexCount; }
-			std::size_t GetIndexBufferSize() override { return sizeof(std::uint16_t) * IndexCount; }
+			std::size_t GetVertexBufferSize() override { return sizeof(Vector3f) * GetVertexCount(); }
+			std::size_t GetIndexBufferSize() override { return sizeof(std::uint16_t) * GetIndexCount(); }
 			float mHeight;
 			float mRadius;
 			struct CylinderDataSource : PrimitiveDataSource { CylinderDataSource(); };
-			static CylinderDataSource sPrototype;
+			static CylinderDataSource sDataSource;
 		private:
-			//mVertices include 74 vector3s upper circle + lower circle + 2 center
-			static constexpr std::size_t VertexCount = 74;
-			//a cylinder comprises of 144 triangles(36 on top, 36 on bottom, and 72 on body)
-			static constexpr std::size_t IndexCount = 144 * 3;
+			static constexpr std::size_t GetVertexCount() { return 2 + 360 / AngularUnit * 2; }
+			static constexpr std::size_t GetIndexCount() { return 360 / AngularUnit * 12; }
+			static constexpr std::size_t AngularUnit = 10;
+		};
+
+		class LIGHTNING_SCENE_API Hemisphere : public Primitive
+		{
+		public:
+			Hemisphere(float radius = 1.0f);
+		protected:
+			std::uint8_t *GetVertices() override { return reinterpret_cast<std::uint8_t*>(sDataSource.vertices); }
+			std::uint16_t *GetIndices() override { return sDataSource.indices; }
+			Vector3f GetScale() override { return Vector3f{mRadius, mRadius, mRadius}; }
+			std::size_t GetVertexBufferSize() override { return sizeof(Vector3f) * GetVertexCount(); }
+			std::size_t GetIndexBufferSize() override { return sizeof(std::uint16_t) * GetIndexCount(); }
+			float mRadius;
+			struct HemisphereDataSource : PrimitiveDataSource { HemisphereDataSource(); };
+			static HemisphereDataSource sDataSource;
+		private:
+			static constexpr std::size_t GetVertexCount() { 
+				return 1 + (90 % AngularUnit == 0 ? 90 / AngularUnit : 90 / AngularUnit + 1) * 360 / AngularUnit; 
+			}
+			static constexpr std::size_t GetIndexCount(){
+				return 6 * (90 % AngularUnit == 0 ? 90 / AngularUnit - 1 : 90 / AngularUnit) * 360 / AngularUnit + \
+					3 * 360 / AngularUnit;
+			}
 			static constexpr std::size_t AngularUnit = 10;
 		};
 	}
