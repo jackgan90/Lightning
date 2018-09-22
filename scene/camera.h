@@ -1,8 +1,8 @@
 #pragma once
 #include <cmath>
 #include "sceneexportdef.h"
-#include "matrix.h"
-#include "vector.h"
+#include "math/matrix.h"
+#include "math/vector.h"
 
 #define LIGHTNING_PI 3.14159265358979
 
@@ -10,6 +10,8 @@ namespace Lightning
 {
 	namespace Scene
 	{
+		using Foundation::Vector3f;
+		using Foundation::Matrix4f;
 		enum class CameraType
 		{
 			Perspective,
@@ -23,8 +25,6 @@ namespace Lightning
 		{
 			return static_cast<float>(radians * 180.0 / LIGHTNING_PI);
 		}
-		using Render::Vector3f;
-		using Render::Matrix4f;
 		//Use right-handed coordinate system
 		class LIGHTNING_SCENE_API Camera
 		{

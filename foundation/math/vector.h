@@ -5,10 +5,10 @@
 
 namespace Lightning
 {
-	namespace Render
+	namespace Foundation
 	{
 		template<typename Derived, typename T>
-		struct VectorBase : Foundation::PlainObject<Derived>
+		struct VectorBase : PlainObject<Derived>
 		{
 			static Derived& Zero()
 			{

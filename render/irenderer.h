@@ -7,7 +7,7 @@
 #include "iswapchain.h"
 #include "irendertargetmanager.h"
 #include "color.h"
-#include "matrix.h"
+#include "math/matrix.h"
 #include "renderitem.h"
 #include "renderpass.h"
 #include "iwindow.h"

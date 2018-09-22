@@ -4,11 +4,11 @@
 
 namespace Lightning
 {
-	namespace Render
+	namespace Foundation
 	{
 		//column major matrix
 		template<typename Derived, typename T>
-		struct MatrixBase : Foundation::PlainObject<Derived>
+		struct MatrixBase : PlainObject<Derived>
 		{
 			void SetZero()
 			{

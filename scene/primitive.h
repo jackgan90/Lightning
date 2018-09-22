@@ -22,6 +22,8 @@ namespace Lightning
 			PrimitiveType GetPrimitiveType()const { return mRenderItem.geometry->primType; }
 		protected:
 			Render::RenderItem mRenderItem;
+			std::uint8_t *mVertices;
+			std::uint16_t *mIndices;
 		};
 
 		class LIGHTNING_SCENE_API Cube : public Primitive
@@ -31,9 +33,18 @@ namespace Lightning
 			~Cube()override;
 		protected:
 			float mSize;
-			std::uint8_t* mVertices;
 			static float sVerticeTemplate[];
 			static std::uint16_t sIndices[];
+		};
+
+		class LIGHTNING_SCENE_API Cylinder : public Primitive
+		{
+		public:
+			Cylinder(float height, float radius);
+			~Cylinder()override;
+		protected:
+			float mHeight;
+			float mRadius;
 		};
 	}
 }

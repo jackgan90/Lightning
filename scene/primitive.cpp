@@ -1,17 +1,22 @@
 #include <cassert>
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include "primitive.h"
 
 namespace Lightning
 {
 	namespace Scene
 	{
-		Primitive::Primitive()
+		Primitive::Primitive():mVertices(nullptr),mIndices(nullptr)
 		{
 		}
 
 		Primitive::~Primitive()
 		{
-
+			if(mVertices)
+				delete[] mVertices;
+			if(mIndices)
+				delete[] mIndices;
 		}
 
 		void Primitive::Draw(Render::Renderer& renderer, const SceneRenderData& sceneRenderData)
@@ -23,7 +28,8 @@ namespace Lightning
 			}
 			renderer.Draw(mRenderItem);
 		}
-
+		
+		//Cube
 		float Cube::sVerticeTemplate[] = { 0.5f, 0.5f, 0.5f,  //right top front v0
 											0.5f, 0.5f, -0.5f,	//right top back v1
 											0.5f, -0.5f, 0.5f,	//right bottom front v2
@@ -62,28 +68,9 @@ namespace Lightning
 			comps.push_back(comp);
 			mRenderItem.geometry = std::make_shared<Render::Geometry>();
 			auto pDevice = Renderer::Instance()->GetDevice();
-			//mRenderItem.geometry->vbs[0] = pDevice->CreateVertexBuffer(9 * sizeof(float), comps);
-			//mRenderItem.geometry->ib = pDevice->CreateIndexBuffer(3 * sizeof(std::uint16_t), Render::IndexType::UINT16);
 			mRenderItem.geometry->vbs[0] = pDevice->CreateVertexBuffer(sizeof(sVerticeTemplate), comps);
 			mRenderItem.geometry->ib = pDevice->CreateIndexBuffer(sizeof(sIndices), Render::IndexType::UINT16);
 			
-			/*
-			float* vertices = new float[9];
-			vertices[0] = 0.0f;
-			vertices[1] = 0.5f;
-			vertices[2] = 0.5f;
-			vertices[3] = 0.5f;
-			vertices[4] = -0.5f;
-			vertices[5] = 0.5f;
-			vertices[6] = -0.5f;
-			vertices[7] = -0.5f;
-			vertices[8] = 0.5f;
-			std::uint16_t* indices = new std::uint16_t[3];
-			indices[0] = 0;
-			indices[1] = 2;
-			indices[2] = 1;
-			mVertices = reinterpret_cast<std::uint8_t*>(vertices);
-			*/
 			
 			float* vertices = new float[sizeof(sVerticeTemplate) / sizeof(float)];
 			for (std::size_t i = 0;i < sizeof(sVerticeTemplate) / sizeof(float);++i)
@@ -95,8 +82,6 @@ namespace Lightning
 			
 			mRenderItem.geometry->vbs[0]->SetBuffer(mVertices, sizeof(sVerticeTemplate));
 			mRenderItem.geometry->ib->SetBuffer(reinterpret_cast<std::uint8_t*>(&sIndices), sizeof(sIndices));
-			//mRenderItem.geometry->vbs[0]->SetBuffer(m_vertices, 9 * sizeof(float));
-			//mRenderItem.geometry->ib->SetBuffer(reinterpret_cast<std::uint8_t*>(indices), 3 * sizeof(std::uint16_t));
 			std::fill(std::begin(mRenderItem.geometry->vbs_dirty), std::end(mRenderItem.geometry->vbs_dirty), false);
 			mRenderItem.geometry->vbs_dirty[0] = true;
 			mRenderItem.geometry->ib_dirty = true;
@@ -112,11 +97,24 @@ namespace Lightning
 
 		Cube::~Cube()
 		{
-			if (mVertices)
+		}
+		//Cube
+
+		//Cylinder
+		Cylinder::Cylinder(float height, float radius) :mHeight(height), mRadius(radius)
+		{
+			//mVertices include 74 vector3s upper circle + lower circle + 2 center
+			mVertices = new std::uint8_t[sizeof(float) * 3 * 74];
+
+			for (int i = 0;i < 36;++i)
 			{
-				delete[] mVertices;
 			}
 		}
+
+		Cylinder::~Cylinder()
+		{
+		}
+		//Cylinder
 
 	}
 }

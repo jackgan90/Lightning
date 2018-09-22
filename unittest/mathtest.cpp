@@ -5,9 +5,9 @@
 #include <array>
 #include <iostream>
 #include "catch.hpp"
-#include "matrix.h"
+#include "math/matrix.h"
 #include "helperstubs.h"
-#include "vector.h"
+#include "math/vector.h"
 #include "rect.h"
 #include "color.h"
 

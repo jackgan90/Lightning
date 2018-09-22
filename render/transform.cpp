@@ -4,6 +4,7 @@ namespace Lightning
 {
 	namespace Render
 	{
+		using Foundation::Vector4f;
 		Transform::Transform():mPosition{0.0f, 0.0f, 0.0f}, mScale{1.0f, 1.0f, 1.0f}
 		{
 			UpdateTransformMatrix();

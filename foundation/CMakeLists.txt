@@ -9,6 +9,10 @@ set(MEMORY_HEADERS	memory/imemoryallocator.h
 
 set(MEMORY_SOURCES	memory/ringallocator.cpp)
 
+set(MATH_HEADERS	math/common.h
+					math/vector.h
+					math/matrix.h)
+
 set(HEADERS	common.h
 			timesystem.h
 			filesystem.h
@@ -29,10 +33,11 @@ set(SOURCES common.cpp
 			murmurhash3.cpp
 			timesystem.cpp)
 
-list(APPEND HEADERS ${MEMORY_HEADERS})
+		list(APPEND HEADERS ${MEMORY_HEADERS} ${MATH_HEADERS})
 list(APPEND SOURCES ${MEMORY_SOURCES})
 
 source_group("memory" FILES	${MEMORY_HEADERS} ${MEMORY_SOURCES})
+source_group("math" FILES ${MATH_HEADERS})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

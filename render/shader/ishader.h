@@ -8,13 +8,18 @@
 #include "hashableobject.h"
 #include "semantics.h"
 #include "renderexception.h"
-#include "types/matrix.h"
-#include "types/vector.h"
+#include "math/matrix.h"
+#include "math/vector.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
+		using Foundation::Vector2f;
+		using Foundation::Vector3f;
+		using Foundation::Vector4f;
+		using Foundation::Matrix3f;
+		using Foundation::Matrix4f;
 		class LIGHTNING_RENDER_API ShaderCompileException : public RendererException
 		{
 		public:
