@@ -40,8 +40,8 @@ namespace Lightning
 				mRenderer->Start();
 			//Create a simple scene here just for test
 			auto scene = SceneManager::Instance()->CreateScene();
-			//auto cube = std::make_shared<Scene::Cube>(0.5);
-			auto cylinder = std::make_shared<Scene::Cylinder>(2, 0.5);
+			//auto cube = std::make_shared<Scene::Cube>();
+			auto cylinder = std::make_shared<Scene::Cylinder>(2, 1);
 			auto camera = scene->GetActiveCamera();
 			camera->MoveTo(Render::Vector3f({2.0f, 2.0f, 2.0f}));
 			camera->LookAt(Render::Vector3f({ 0.0f, 0.0f, 0.0f }));

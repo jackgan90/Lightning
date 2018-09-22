@@ -26,15 +26,31 @@ namespace Lightning
 			std::uint16_t *mIndices;
 		};
 
+		struct PrimitivePrototype
+		{
+			~PrimitivePrototype()
+			{
+				if (vertices)
+					delete[] vertices;
+				if (indices)
+					delete[] indices;
+			}
+			float *vertices;
+			std::uint16_t *indices;
+		};
+
+
 		class LIGHTNING_SCENE_API Cube : public Primitive
 		{
 		public:
-			Cube(float size);
+			Cube(float width = 1.0f, float height = 1.0f, float thickness = 1.0f);
 			~Cube()override;
 		protected:
-			float mSize;
-			static float sVerticeTemplate[];
-			static std::uint16_t sIndices[];
+			float mWidth;
+			float mHeight;
+			float mThickness ;
+			struct CubePrototype : PrimitivePrototype { CubePrototype(); };
+			static CubePrototype sPrototype;
 		};
 
 		class LIGHTNING_SCENE_API Cylinder : public Primitive
@@ -45,8 +61,9 @@ namespace Lightning
 		protected:
 			float mHeight;
 			float mRadius;
+			struct CylinderPrototype : PrimitivePrototype { CylinderPrototype(); };
+			static CylinderPrototype sPrototype;
 		private:
-			void CreateVerticesAndIndices();
 			//mVertices include 74 vector3s upper circle + lower circle + 2 center
 			static constexpr std::size_t VertexCount = 74;
 			//a cylinder comprises of 144 triangles(36 on top, 36 on bottom, and 72 on body)

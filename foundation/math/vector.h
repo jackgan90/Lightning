@@ -156,31 +156,39 @@ namespace Lightning
 						x * other.y - y * other.x);
 				}
 				T x, y, z;
-				static const Vector3<T> up;
-				static const Vector3<T> down;
-				static const Vector3<T> right;
-				static const Vector3<T> left;
-				static const Vector3<T> forward;
-				static const Vector3<T> back;
+				//Don't make up/down/right/left/forward/back static member which may cause 
+				//issues related to static member initialization order
+				static const Vector3<T> up()
+				{
+					static Vector3<T> inst_up(0, 1, 0);
+					return inst_up;
+				};
+				static const Vector3<T> down()
+				{
+					static Vector3<T> inst_down(0, -1, 0);
+					return inst_down;
+				}
+				static const Vector3<T> right()
+				{
+					static Vector3<T> inst_right(1, 0, 0);
+					return inst_right;
+				}
+				static const Vector3<T> left()
+				{
+					static Vector3<T> inst_left(-1, 0, 0);
+					return inst_left;
+				}
+				static const Vector3<T> forward()
+				{
+					static Vector3<T> inst_forward(0, 0, 1);
+					return inst_forward;
+				}
+				static const Vector3<T> back()
+				{
+					static Vector3<T> inst_back(0, 0, -1);
+					return inst_back;
+				}
 			};
-
-			template<typename T>
-			const Vector3<T> Vector3<T>::up(0, 1, 0);
-
-			template<typename T>
-			const Vector3<T> Vector3<T>::down(0, -1, 0);
-
-			template<typename T>
-			const Vector3<T> Vector3<T>::right(1, 0, 0);
-
-			template<typename T>
-			const Vector3<T> Vector3<T>::left(-1, 0, 0);
-
-			template<typename T>
-			const Vector3<T> Vector3<T>::forward(0, 0, 1);
-
-			template<typename T>
-			const Vector3<T> Vector3<T>::back(0, 0, -1);
 
 			template<typename T>
 			struct Vector4 : VectorBase<Vector4<T>, T>
