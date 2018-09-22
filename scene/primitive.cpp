@@ -154,7 +154,7 @@ namespace Lightning
 				if (!isLast)
 					indices[j++] = static_cast<std::uint16_t>(i + 2);
 				else
-					indices[j++] = static_cast<std::uint16_t>(2);
+					indices[j++] = static_cast<std::uint16_t>(1);
 					
 
 				//bottom triangle
@@ -163,7 +163,7 @@ namespace Lightning
 				if (!isLast)
 					indices[j++] = static_cast<std::uint16_t>(i + 2 + CirclePointCount);
 				else
-					indices[j++] = static_cast<std::uint16_t>(2 + CirclePointCount);
+					indices[j++] = static_cast<std::uint16_t>(1 + CirclePointCount);
 
 				//side triangle 0
 				indices[j++] = static_cast<std::uint16_t>(i + 1);
@@ -174,8 +174,8 @@ namespace Lightning
 				}
 				else
 				{
-					indices[j++] = static_cast<std::uint16_t>(2 + CirclePointCount);
-					indices[j++] = static_cast<std::uint16_t>(2);
+					indices[j++] = static_cast<std::uint16_t>(1 + CirclePointCount);
+					indices[j++] = static_cast<std::uint16_t>(1);
 				}
 
 				//side triangle 1
@@ -184,7 +184,7 @@ namespace Lightning
 				if(!isLast)
 					indices[j++] = static_cast<std::uint16_t>(i + 2 + CirclePointCount);
 				else
-					indices[j++] = static_cast<std::uint16_t>(2 + CirclePointCount);
+					indices[j++] = static_cast<std::uint16_t>(1 + CirclePointCount);
 			}
 			vertices = reinterpret_cast<float*>(positions);
 		}
