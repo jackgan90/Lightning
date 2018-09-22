@@ -45,6 +45,13 @@ namespace Lightning
 		protected:
 			float mHeight;
 			float mRadius;
+		private:
+			void CreateVerticesAndIndices();
+			//mVertices include 74 vector3s upper circle + lower circle + 2 center
+			static constexpr std::size_t VertexCount = 74;
+			//a cylinder comprises of 144 triangles(36 on top, 36 on bottom, and 72 on body)
+			static constexpr std::size_t IndexCount = 144 * 3;
+			static constexpr std::size_t AngularUnit = 10;
 		};
 	}
 }

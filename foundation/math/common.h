@@ -6,11 +6,13 @@ namespace Lightning
 		namespace Math
 		{
 			constexpr double PI = 3.141592653589793;
-			inline float DegreesToRadians(const float degree)
+			template<typename T>
+			inline float DegreesToRadians(T degree)
 			{
 				return static_cast<float>(degree * PI / 180.0);
 			}
-			inline float RadiansToDegrees(const float radians)
+			template<typename T>
+			inline float RadiansToDegrees(T radians)
 			{
 				return static_cast<float>(radians * 180.0 / PI);
 			}

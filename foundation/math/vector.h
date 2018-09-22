@@ -156,7 +156,31 @@ namespace Lightning
 						x * other.y - y * other.x);
 				}
 				T x, y, z;
+				static const Vector3<T> up;
+				static const Vector3<T> down;
+				static const Vector3<T> right;
+				static const Vector3<T> left;
+				static const Vector3<T> forward;
+				static const Vector3<T> back;
 			};
+
+			template<typename T>
+			const Vector3<T> Vector3<T>::up(0, 1, 0);
+
+			template<typename T>
+			const Vector3<T> Vector3<T>::down(0, -1, 0);
+
+			template<typename T>
+			const Vector3<T> Vector3<T>::right(1, 0, 0);
+
+			template<typename T>
+			const Vector3<T> Vector3<T>::left(-1, 0, 0);
+
+			template<typename T>
+			const Vector3<T> Vector3<T>::forward(0, 0, 1);
+
+			template<typename T>
+			const Vector3<T> Vector3<T>::back(0, 0, -1);
 
 			template<typename T>
 			struct Vector4 : VectorBase<Vector4<T>, T>
@@ -192,6 +216,33 @@ namespace Lightning
 				}
 				T x, y, z, w;
 			};
+
+			template<typename V, typename T>
+			std::enable_if_t<std::is_base_of<VectorBase<V, T>, V>::value, void> 
+			VectorMulScalar(const V& v, const T& scalar, V& res)
+			{
+				for (int i = 0;i < V::Order;++i)
+				{
+					res[i] = v[i] * scalar;
+				}
+			}
+
+			template<typename V, typename T>
+			std::enable_if_t<std::is_base_of<VectorBase<V, T>, V>::value, V> operator*(const V& v, const T& scalar)
+			{
+				V res;
+				VectorMulScalar(v, scalar, res);
+				return res;
+			}
+
+			template<typename V, typename T>
+			std::enable_if_t<std::is_base_of<VectorBase<V, T>, V>::value, V> operator*(const T& scalar, const V& v)
+			{
+				V res;
+				VectorMulScalar(v, scalar, res);
+				return res;
+			}
+			
 
 			using Vector4f = Vector4<float>;
 			using Vector3f = Vector3<float>;

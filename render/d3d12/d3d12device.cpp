@@ -311,7 +311,16 @@ namespace Lightning
 					const auto& boundResource = boundResources[i];
 					if (boundResource.type == D3D12RootBoundResourceType::DescriptorTable)
 					{
-						frameResource.descriptorHeaps.push_back(boundResource.descriptorTableHeap.Get());
+						auto pHeap = boundResource.descriptorTableHeap.Get();
+						for (int i = 0;i < frameResource.descriptorHeaps.size();++i)
+						{
+							//TODO : has performance impact.Need to optimize later!
+							if (pHeap == frameResource.descriptorHeaps[i])
+							{
+								return;
+							}
+						}
+						frameResource.descriptorHeaps.push_back(pHeap);
 					}
 				}
 			}

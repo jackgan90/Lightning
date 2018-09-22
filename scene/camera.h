@@ -5,8 +5,6 @@
 #include "math/matrix.h"
 #include "math/vector.h"
 
-#define LIGHTNING_PI 3.14159265358979
-
 namespace Lightning
 {
 	namespace Scene
