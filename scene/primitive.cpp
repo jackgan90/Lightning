@@ -10,7 +10,7 @@ namespace Lightning
 	{
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::DegreesToRadians;
-		Primitive::Primitive():mVertices(nullptr),mIndices(nullptr)
+		Primitive::Primitive():mFirstDraw(true)
 		{
 		}
 
@@ -21,6 +21,11 @@ namespace Lightning
 
 		void Primitive::Draw(Render::Renderer& renderer, const SceneRenderData& sceneRenderData)
 		{
+			if (mFirstDraw)
+			{
+				mFirstDraw = false;
+				UpdateRenderItem();
+			}
 			if (sceneRenderData.camera)
 			{
 				mRenderItem.viewMatrix = sceneRenderData.camera->GetViewMatrix();
@@ -28,9 +33,49 @@ namespace Lightning
 			}
 			renderer.Draw(mRenderItem);
 		}
+
+		void Primitive::UpdateRenderItem()
+		{
+			Render::VertexComponent comp;
+			comp.format = Render::RenderFormat::R32G32B32_FLOAT;
+			comp.instanceStepRate = 1;
+			comp.isInstance = false;
+			comp.offset = 0;
+			comp.semanticIndex = 0;
+			comp.semanticItem = { Render::RenderSemantics::POSITION, "POSITION" };
+			std::vector<Render::VertexComponent> comps;
+			comps.push_back(comp);
+			mRenderItem.geometry = std::make_shared<Render::Geometry>();
+			auto pDevice = Renderer::Instance()->GetDevice();
+			auto vbSize = GetVertexBufferSize();
+			auto ibSize = GetIndexBufferSize();
+			mRenderItem.geometry->vbs[0] = pDevice->CreateVertexBuffer(vbSize, comps);
+			mRenderItem.geometry->ib = pDevice->CreateIndexBuffer(ibSize, Render::IndexType::UINT16);
+			
+			
+			auto vertices = GetVertices();
+
+			auto indices = GetIndices();
+
+			mRenderItem.geometry->vbs[0]->SetBuffer(vertices, vbSize);
+			mRenderItem.geometry->ib->SetBuffer(reinterpret_cast<std::uint8_t*>(indices), ibSize);
+			std::fill(std::begin(mRenderItem.geometry->vbs_dirty), std::end(mRenderItem.geometry->vbs_dirty), false);
+			mRenderItem.geometry->vbs_dirty[0] = true;
+			mRenderItem.geometry->ib_dirty = true;
+			mRenderItem.geometry->primType = Render::PrimitiveType::TRIANGLE_LIST;
+			
+			mRenderItem.material = std::make_shared<Render::Material>();
+			mRenderItem.material->RequireSemantic(Render::RenderSemantics::WVP);
+			auto device = Renderer::Instance()->GetDevice();
+			mRenderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::VERTEX));
+			mRenderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::FRAGMENT));
+			mRenderItem.transform = Render::Transform(Render::Vector3f({ 0.0f, 0.0f, 0.0f }), 
+				GetScale());
+		}
+
 		
 		//Cube
-		Cube::CubePrototype::CubePrototype()
+		Cube::CubeDataSource::CubeDataSource()
 		{
 			auto pVecs = new Vector3f[8];
 			pVecs[0] = { 0.5f, 0.5f, 0.5f };	//right top front v0
@@ -60,45 +105,11 @@ namespace Lightning
 			std::memcpy(indices, index_data, 36 * sizeof(std::uint16_t));
 		}
 
-		Cube::CubePrototype Cube::sPrototype;
+		Cube::CubeDataSource Cube::sPrototype;
 		Cube::Cube(float width, float height, float thickness) : 
 			mWidth(width), mHeight(height), mThickness(thickness)
 		{
 			assert(mWidth > 0 && mHeight > 0 && mThickness > 0 && "The size of the cube must be greater than 0!");
-			Render::VertexComponent comp;
-			comp.format = Render::RenderFormat::R32G32B32_FLOAT;
-			comp.instanceStepRate = 1;
-			comp.isInstance = false;
-			comp.offset = 0;
-			comp.semanticIndex = 0;
-			comp.semanticItem = { Render::RenderSemantics::POSITION, "POSITION" };
-			std::vector<Render::VertexComponent> comps;
-			comps.push_back(comp);
-			mRenderItem.geometry = std::make_shared<Render::Geometry>();
-			auto pDevice = Renderer::Instance()->GetDevice();
-			mRenderItem.geometry->vbs[0] = pDevice->CreateVertexBuffer(8 * sizeof(Vector3f), comps);
-			mRenderItem.geometry->ib = pDevice->CreateIndexBuffer(36 * sizeof(std::uint16_t), Render::IndexType::UINT16);
-			
-			
-			mVertices = reinterpret_cast<std::uint8_t*>(sPrototype.vertices);
-
-			mIndices = sPrototype.indices;
-
-			
-			mRenderItem.geometry->vbs[0]->SetBuffer(mVertices, 8 * sizeof(Vector3f));
-			mRenderItem.geometry->ib->SetBuffer(reinterpret_cast<std::uint8_t*>(mIndices), 36 * sizeof(std::uint16_t));
-			std::fill(std::begin(mRenderItem.geometry->vbs_dirty), std::end(mRenderItem.geometry->vbs_dirty), false);
-			mRenderItem.geometry->vbs_dirty[0] = true;
-			mRenderItem.geometry->ib_dirty = true;
-			mRenderItem.geometry->primType = Render::PrimitiveType::TRIANGLE_LIST;
-			
-			mRenderItem.material = std::make_shared<Render::Material>();
-			mRenderItem.material->RequireSemantic(Render::RenderSemantics::WVP);
-			auto device = Renderer::Instance()->GetDevice();
-			mRenderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::VERTEX));
-			mRenderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::FRAGMENT));
-			mRenderItem.transform = Render::Transform(Render::Vector3f({ 0.0f, 0.0f, 0.0f }), 
-				Render::Vector3f({ mWidth, mHeight, mThickness}));
 		}
 
 		Cube::~Cube()
@@ -107,7 +118,7 @@ namespace Lightning
 		//Cube
 
 		//Cylinder
-		Cylinder::CylinderPrototype::CylinderPrototype()
+		Cylinder::CylinderDataSource::CylinderDataSource()
 		{
 			static const auto CirclePointCount = 360 / AngularUnit;
 			Vector3f *positions = new Vector3f[VertexCount];
@@ -178,41 +189,10 @@ namespace Lightning
 			vertices = reinterpret_cast<float*>(positions);
 		}
 
-		Cylinder::CylinderPrototype Cylinder::sPrototype;
+		Cylinder::CylinderDataSource Cylinder::sPrototype;
 		Cylinder::Cylinder(float height, float radius) :mHeight(height), mRadius(radius)
 		{
 			assert(height > 0 && radius > 0 && "height and radius of a cylinder must be positive!");
-			Render::VertexComponent comp;
-			comp.format = Render::RenderFormat::R32G32B32_FLOAT;
-			comp.instanceStepRate = 1;
-			comp.isInstance = false;
-			comp.offset = 0;
-			comp.semanticIndex = 0;
-			comp.semanticItem = { Render::RenderSemantics::POSITION, "POSITION" };
-			std::vector<Render::VertexComponent> comps;
-			comps.push_back(comp);
-			mRenderItem.geometry = std::make_shared<Render::Geometry>();
-			auto pDevice = Renderer::Instance()->GetDevice();
-			mRenderItem.geometry->vbs[0] = pDevice->CreateVertexBuffer(VertexCount * sizeof(Vector3f), comps);
-			mRenderItem.geometry->ib = pDevice->CreateIndexBuffer(IndexCount * sizeof(std::uint16_t), Render::IndexType::UINT16);
-
-			mVertices = reinterpret_cast<std::uint8_t*>(sPrototype.vertices);
-			mIndices = sPrototype.indices;
-			
-			mRenderItem.geometry->vbs[0]->SetBuffer(mVertices, VertexCount * sizeof(Vector3f));
-			mRenderItem.geometry->ib->SetBuffer(reinterpret_cast<std::uint8_t*>(mIndices), IndexCount * sizeof(std::uint16_t));
-			std::fill(std::begin(mRenderItem.geometry->vbs_dirty), std::end(mRenderItem.geometry->vbs_dirty), false);
-			mRenderItem.geometry->vbs_dirty[0] = true;
-			mRenderItem.geometry->ib_dirty = true;
-			mRenderItem.geometry->primType = Render::PrimitiveType::TRIANGLE_LIST;
-			
-			mRenderItem.material = std::make_shared<Render::Material>();
-			mRenderItem.material->RequireSemantic(Render::RenderSemantics::WVP);
-			auto device = Renderer::Instance()->GetDevice();
-			mRenderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::VERTEX));
-			mRenderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::FRAGMENT));
-			mRenderItem.transform = Render::Transform(Render::Vector3f({ 0.0f, 0.0f, 0.0f }), 
-				Render::Vector3f({ mRadius, mHeight, mRadius}));
 		}
 
 		Cylinder::~Cylinder()
