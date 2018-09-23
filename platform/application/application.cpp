@@ -6,6 +6,7 @@
 #include "scenemanager.h"
 //include primitives here just for simple scene construction
 #include "primitive.h"
+#include "timer.h"
 
 
 namespace Lightning
