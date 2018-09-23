@@ -1,6 +1,7 @@
 #include <cassert>
 #define _USE_MATH_DEFINES
 #include <cmath>
+#include <algorithm>
 #include "math/vector.h"
 #include "primitive.h"
 
@@ -255,6 +256,55 @@ namespace Lightning
 		}
 
 		//Hemisphere
+
+		//Shpere
+		std::uint8_t *Sphere::vertices{ nullptr };
+		std::uint16_t *Sphere::indices{ nullptr };
+		std::mutex Sphere::sVerticeMutex;
+
+		Sphere::Sphere(float radius) : Hemisphere(radius)
+		{
+			InitVerticeAndIndice();
+		}
+
+		void Sphere::InitVerticeAndIndice()
+		{
+			if (vertices)
+				return;
+			{
+				std::lock_guard<std::mutex> lock(sVerticeMutex);
+				if (!vertices)
+				{
+					auto vbSize = Hemisphere::GetVertexBufferSize();
+					auto ibSize = Hemisphere::GetIndexBufferSize();
+					auto superVB = Hemisphere::GetVertices();
+					auto superIB = Hemisphere::GetIndices();
+					auto vertexCount = Hemisphere::GetVertexCount();
+					auto indexCount = Hemisphere::GetIndexCount();
+					vertices = new std::uint8_t[vbSize * 2];
+					indices = new std::uint16_t[2 * indexCount];
+					
+					std::memcpy(vertices, superVB, vbSize);
+					std::memcpy(vertices + vbSize, superVB, vbSize);
+
+					std::memcpy(indices, superIB, ibSize);
+					std::memcpy(reinterpret_cast<std::uint8_t*>(indices) + ibSize, superIB, ibSize);
+
+					Vector3f *positions = reinterpret_cast<Vector3f*>(vertices + vbSize);
+					for (std::size_t i = 0;i < vertexCount;++i)
+					{
+						positions[i].y = -positions[i].y;
+					}
+
+					for (std::size_t i = indexCount;i < 2 * indexCount;++i)
+					{
+						indices[i] += vertexCount;
+					}
+
+				}
+			}
+		}
+		//Sphere
 
 	}
 }

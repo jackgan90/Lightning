@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <cstdint>
+#include <mutex>
 #include "drawable.h"
 #include "material.h"
 #include "vertexbuffer.h"
@@ -79,7 +80,7 @@ namespace Lightning
 		private:
 			static constexpr std::size_t GetVertexCount() { return 2 + 360 / AngularUnit * 2; }
 			static constexpr std::size_t GetIndexCount() { return 360 / AngularUnit * 12; }
-			static constexpr std::size_t AngularUnit = 10;
+			static constexpr std::size_t AngularUnit{ 10 };
 		};
 
 		class LIGHTNING_SCENE_API Hemisphere : public Primitive
@@ -95,7 +96,6 @@ namespace Lightning
 			float mRadius;
 			struct HemisphereDataSource : PrimitiveDataSource { HemisphereDataSource(); };
 			static HemisphereDataSource sDataSource;
-		private:
 			static constexpr std::size_t GetVertexCount() { 
 				return 1 + (90 % AngularUnit == 0 ? 90 / AngularUnit : 90 / AngularUnit + 1) * 360 / AngularUnit; 
 			}
@@ -103,7 +103,23 @@ namespace Lightning
 				return 6 * (90 % AngularUnit == 0 ? 90 / AngularUnit - 1 : 90 / AngularUnit) * 360 / AngularUnit + \
 					3 * 360 / AngularUnit;
 			}
-			static constexpr std::size_t AngularUnit = 10;
+		private:
+			static constexpr std::size_t AngularUnit{ 10 };
+		};
+
+		class LIGHTNING_SCENE_API Sphere : public Hemisphere
+		{
+		public:
+			Sphere(float radius = 1.0f);
+		protected:
+			std::uint8_t *GetVertices() override { return vertices; }
+			std::uint16_t *GetIndices() override { return indices; }
+			std::size_t GetVertexBufferSize() override { return Hemisphere::GetVertexBufferSize() * 2; }
+			std::size_t GetIndexBufferSize() override { return Hemisphere::GetIndexBufferSize() * 2; }
+			void InitVerticeAndIndice();
+			static std::uint8_t *vertices;
+			static std::uint16_t *indices;
+			static std::mutex sVerticeMutex;
 		};
 	}
 }
