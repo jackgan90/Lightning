@@ -25,6 +25,7 @@ set(HEADERS	common.h
 			plainobject.h
 			murmurhash3.h
 			timer.h
+			timermanager.h
 			enumoperation.h)
 set(SOURCES common.cpp
 			filesystem.cpp
@@ -33,6 +34,7 @@ set(SOURCES common.cpp
 			filesystemfactory.cpp
 			murmurhash3.cpp
 			timer.cpp
+			timermanager.cpp
 			timesystem.cpp)
 
 		list(APPEND HEADERS ${MEMORY_HEADERS} ${MATH_HEADERS})

@@ -3,6 +3,7 @@
 #include "platformexportdef.h"
 #include "filesystem.h"
 #include "windowmanager.h"
+#include "timermanager.h"
 
 namespace Lightning
 {
@@ -13,6 +14,8 @@ namespace Lightning
 	namespace App
 	{
 		using Foundation::SharedFileSystemPtr;
+		using Foundation::TimerManager;
+		using Foundation::ITimer;
 		using WindowSystem::WindowManager;
 		using WindowSystem::SharedWindowPtr;
 		using UniqueRendererPtr = std::unique_ptr<Render::IRenderer>;
@@ -40,6 +43,7 @@ namespace Lightning
 			UniqueRendererPtr mRenderer;
 			std::unique_ptr<WindowManager> mWindowMgr;
 			SharedWindowPtr mWindow;
+			ITimer *mTimer;
 		};
 
 	}

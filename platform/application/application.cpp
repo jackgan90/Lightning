@@ -6,7 +6,6 @@
 #include "scenemanager.h"
 //include primitives here just for simple scene construction
 #include "primitive.h"
-#include "timer.h"
 
 
 namespace Lightning
@@ -15,7 +14,7 @@ namespace Lightning
 	{
 		using Foundation::FileSystemFactory;
 		using Scene::SceneManager;
-		Application::Application()
+		Application::Application():mTimer{nullptr}
 		{
 			mFileSystem = FileSystemFactory::Instance()->CreateFileSystem();
 			mWindowMgr = std::make_unique<WindowManager>();
@@ -39,6 +38,8 @@ namespace Lightning
 			mRenderer = CreateRenderer();
 			if (mRenderer)
 				mRenderer->Start();
+			mTimer = TimerManager::Instance()->CreateTimer(10);
+			mTimer->Start();
 			//Create a simple scene here just for test
 			auto scene = SceneManager::Instance()->CreateScene();
 			//auto cube = std::make_shared<Scene::Cube>();
@@ -72,6 +73,8 @@ namespace Lightning
 			SceneManager::Instance()->Update();
 			if(mRenderer)
 				mRenderer->Render();
+			if (mTimer)
+				mTimer->Tick();
 		}
 
 
