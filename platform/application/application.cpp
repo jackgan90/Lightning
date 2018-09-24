@@ -7,13 +7,13 @@
 //include primitives here just for simple scene construction
 #include "primitive.h"
 
-
 namespace Lightning
 {
 	namespace App
 	{
 		using Foundation::FileSystemFactory;
 		using Scene::SceneManager;
+		using namespace WindowSystem;
 		Application::Application():mTimer{nullptr}
 		{
 			mFileSystem = FileSystemFactory::Instance()->CreateFileSystem();
@@ -59,16 +59,14 @@ namespace Lightning
 
 		void Application::RegisterWindowHandlers()
 		{
-			auto pWin = GetMainWindow();
-			if (pWin)
+			auto window = GetMainWindow();
+			if (window)
 			{
-				pWin->RegisterWindowMessageHandler(WindowSystem::WindowMessage::IDLE, 
-					[&](WindowSystem::WindowMessage msg, const WindowSystem::WindowMessageParam& param) 
-					{this->OnWindowIdle(reinterpret_cast<const WindowSystem::WindowIdleParam&>(param)); });
+				WINDOW_MSG_CLASS_HANDLER(window, WindowMessage::IDLE, WindowIdleParam, OnWindowIdle);
 			}
 		}
 
-		void Application::OnWindowIdle(const WindowSystem::WindowIdleParam& param)
+		void Application::OnWindowIdle(const WindowIdleParam& param)
 		{
 			SceneManager::Instance()->Update();
 			if(mRenderer)

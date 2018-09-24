@@ -21,19 +21,20 @@ namespace Lightning
 
 		void WheelTimer::Tick()
 		{
-			auto now = high_resolution_clock::now();
-			auto elapsedTime = duration_cast<milliseconds>(now - mLastTickTime);
-			if (elapsedTime.count() < mResolution)
-				return;
-
 			struct TaskInfo
 			{
 				std::size_t id;
 				std::size_t interval;
 				std::function<void()> func;
 			};
-			std::vector<TaskInfo> repeatedTasks;
+			static std::vector<TaskInfo> repeatedTasks;
+			auto now = high_resolution_clock::now();
+			auto elapsedTime = duration_cast<milliseconds>(now - mLastTickTime);
+			if (elapsedTime.count() < mResolution)
+				return;
+
 			auto& taskList = mTasks[mBucketCursor];
+			repeatedTasks.clear();
 			for (auto it = taskList.begin();it != taskList.end();)
 			{
 				if (it->loopRound == mLoopRound)

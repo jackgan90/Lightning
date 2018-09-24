@@ -18,6 +18,8 @@ namespace Lightning
 			~Win32Application()override;
 			int Run()override;
 		protected:
+			void OnMouseWheel(const WindowSystem::MouseWheelParam& param);
+			void RegisterWindowHandlers()override;
 			SharedWindowPtr CreateMainWindow()override;
 			UniqueRendererPtr CreateRenderer()override;
 		};

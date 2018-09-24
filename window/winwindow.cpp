@@ -30,7 +30,19 @@ namespace Lightning
 				::GetClientRect(hwnd, &rect);
 				pWindow->mWidth = rect.right - rect.left;
 				pWindow->mHeight = rect.bottom - rect.top;
+				WindowResizeParam param(pWindow);
+				param.width = pWindow->mWidth;
+				param.height = pWindow->mHeight;
+				pWindow->PostWindowMessage(WindowMessage::RESIZE, param);
 				//logger.Log(LogLevel::Debug, "window resize.width:%d, height : %d", pWindow->mWidth, pWindow->mHeight);
+				break;
+			}
+			case WM_MOUSEWHEEL:
+			{
+				MouseWheelParam param(pWindow);
+				param.is_vertical = true;
+				param.wheel_delta = GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA;
+				pWindow->PostWindowMessage(WindowMessage::MOUSE_WHEEL, param);
 				break;
 			}
 			case WM_CREATE:

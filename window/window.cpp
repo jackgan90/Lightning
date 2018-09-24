@@ -14,10 +14,7 @@ namespace Lightning
 
 		void Window::OnIdle()
 		{
-			if (mMsgHandlers.find(WindowMessage::IDLE) != mMsgHandlers.end())
-			{
-				mMsgHandlers[WindowMessage::IDLE](WindowMessage::IDLE, WindowIdleParam(this));
-			}
+			PostWindowMessage(WindowMessage::IDLE, WindowIdleParam(this));
 		}
 	}
 }

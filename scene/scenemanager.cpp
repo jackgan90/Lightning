@@ -21,6 +21,11 @@ namespace Lightning
 			}
 		}
 
+		SceneManager::SceneManager():mForegroundScene(nullptr)
+		{
+
+		}
+
 		SceneManager::~SceneManager()
 		{
 			DestroyAll();
@@ -35,6 +40,14 @@ namespace Lightning
 			mScenes.clear();
 		}
 
+		Scene* SceneManager::GetForegroundScene()
+		{
+			return mForegroundScene;
+		}
 
+		void SceneManager::SetForegroundScene(Scene* scene)
+		{
+			mForegroundScene = scene;
+		}
 	}
 }
