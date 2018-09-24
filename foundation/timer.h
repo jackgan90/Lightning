@@ -4,6 +4,7 @@
 #include <list>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 #include <chrono>
 #include "foundationexportdef.h"
 
@@ -56,11 +57,16 @@ namespace Lightning
 			};
 			std::vector<std::list<TimerTask>> mTasks;
 			std::unordered_map<std::size_t, TimerTask*> mIDToTasks;
+			//This container exists because a task may potentially remove itself willingly or unwillingly
+			//in callback which happens in iteration.In this scenario,The deletion must be cached and 
+			//execute after iteration
+			std::unordered_set<std::size_t> mDeletedTasks;
 			std::size_t mResolution;
 			std::size_t mBucketCursor;
 			std::size_t mLoopRound;
 			std::size_t mNextTaskID;
 			std::size_t mBucketCount;
+			bool mIsIterating;
 			std::chrono::time_point<std::chrono::high_resolution_clock> mLastTickTime;
 		};
 	}

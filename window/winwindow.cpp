@@ -45,6 +45,16 @@ namespace Lightning
 				pWindow->PostWindowMessage(WindowMessage::MOUSE_WHEEL, param);
 				break;
 			}
+			case WM_CHAR:
+			{
+				KeyParam param(pWindow);
+				if (wParam >= 'a' && wParam <= 'z')
+					param.code = static_cast<VirtualKeyCode>(wParam - 'a' + VK_A);
+				if(wParam >= 'A' && wParam <= 'Z')
+					param.code = static_cast<VirtualKeyCode>(wParam - 'A' + VK_A);
+				pWindow->PostWindowMessage(WindowMessage::KEY_DOWN, param);
+				break;
+			}
 			case WM_CREATE:
 				LOG_INFO("Win32 window created!");
 				break;

@@ -8,7 +8,8 @@ namespace Lightning
 	{
 		using namespace std::chrono;
 		WheelTimer::WheelTimer(std::size_t wheelSlots, std::size_t resolution):
-			mResolution(resolution), mBucketCursor(0), mLoopRound(0), mNextTaskID(1),mBucketCount(wheelSlots)
+			mResolution(resolution), mBucketCursor(0), mLoopRound(0), mNextTaskID(1),mBucketCount(wheelSlots),
+			mIsIterating(false)
 		{
 			assert(wheelSlots > 0 && "Bucket count must be positive!");
 			mTasks.resize(wheelSlots);
@@ -35,12 +36,14 @@ namespace Lightning
 
 			auto& taskList = mTasks[mBucketCursor];
 			repeatedTasks.clear();
+			mIsIterating = true;
 			for (auto it = taskList.begin();it != taskList.end();)
 			{
 				if (it->loopRound == mLoopRound)
 				{
+					auto taskID = it->taskID;
 					it->func();
-					if (it->repeatInterval > 0)
+					if (mDeletedTasks.find(taskID) == mDeletedTasks.end() && it->repeatInterval > 0)
 						repeatedTasks.push_back({ it->taskID, it->repeatInterval, it->func });
 					mIDToTasks.erase(it->taskID);
 					it = taskList.erase(it);
@@ -48,6 +51,8 @@ namespace Lightning
 				}
 				++it;
 			}
+			mDeletedTasks.clear();
+			mIsIterating = false;
 			for (const auto& task : repeatedTasks)
 			{
 				AddTaskInternal(TimerTaskType::REPEAT, task.interval, task.interval, task.func, task.id);
@@ -94,6 +99,11 @@ namespace Lightning
 			auto it = mIDToTasks.find(task_id);
 			if (it == mIDToTasks.end())
 				return false;
+			if (mIsIterating)
+			{
+				mDeletedTasks.emplace(task_id);
+				return true;
+			}
 			auto pTask = it->second;
 			mTasks[pTask->cursor].remove_if([pTask](const TimerTask& task) {return pTask == &task; });
 			mIDToTasks.erase(it);

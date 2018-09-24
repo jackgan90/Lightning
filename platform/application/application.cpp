@@ -47,7 +47,7 @@ namespace Lightning
 			auto hemisphere = std::make_shared<Scene::Hemisphere>();
 			auto sphere = std::make_shared<Scene::Sphere>();
 			auto camera = scene->GetActiveCamera();
-			camera->MoveTo(Render::Vector3f({2.0f, 2.0f, 2.0f}));
+			camera->MoveTo(Render::Vector3f({0.0f, 2.0f, 2.0f}));
 			camera->LookAt(Render::Vector3f({ 0.0f, 0.0f, 0.0f }));
 			//scene->AddDrawable(cube);
 			//scene->AddDrawable(cylinder);

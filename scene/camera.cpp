@@ -128,6 +128,12 @@ namespace Lightning
 			}
 		}
 
+		void Camera::SetWorldPosition(const Vector3f& position)
+		{
+			mWorldPosition = position;
+			UpdateViewMatrix();
+		}
+
 		void Camera::UpdateViewMatrix()
 		{
 			/*

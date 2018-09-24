@@ -42,6 +42,8 @@ namespace Lightning
 			float GetFOV()const { return Foundation::Math::RadiansToDegrees(mFov); }
 			void SetAspectRatio(const float aspectRatio);
 			float GetAspectRatio()const { return mAspectRatio; }
+			void SetWorldPosition(const Vector3f& position);
+			Vector3f GetWorldPosition()const { return mWorldPosition; }
 		protected:
 			void UpdateViewMatrix();
 			void UpdateProjectionMatrix();

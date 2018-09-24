@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <limits>
 #include <functional>
 #include "plainobject.h"
 
@@ -59,6 +60,17 @@ namespace Lightning
 					return res;
 				}
 
+				bool IsZero()const
+				{
+					const Derived *pDerived = reinterpret_cast<const Derived* const>(this);
+					for (int i = 0; i < Derived::Order; ++i)
+					{
+						if (std::abs(pDerived->operator[](i)) > std::numeric_limits<T>::epsilon())
+							return false;
+					}
+					return true;
+				}
+
 				T Length()const
 				{
 					T length{ 0 };
@@ -92,6 +104,8 @@ namespace Lightning
 					res.Normalize();
 					return res;
 				}
+
+				Derived& operator*=(const T& scalar);
 			};
 
 			template<typename T>
@@ -249,6 +263,13 @@ namespace Lightning
 				V res;
 				VectorMulScalar(v, scalar, res);
 				return res;
+			}
+
+			template<typename Derived, typename T>
+			Derived& VectorBase<Derived, T>::operator*=(const T& scalar)
+			{
+				VectorMulScalar(static_cast<const Derived&>(*this), scalar, static_cast<Derived&>(*this));
+				return static_cast<Derived&>(*this);
 			}
 			
 
