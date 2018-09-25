@@ -2,7 +2,6 @@
 #include <cstddef>
 #include <cstdint>
 #include <thread>
-#include <mutex>
 #include "container.h"
 #include "foundationexportdef.h"
 
@@ -78,7 +77,6 @@ namespace Lightning
 			};
 			container::unordered_map<std::thread::id, container::vector<RingBufferAllocation>> mBuffers;
 			std::uint64_t mLastFinishFrame;
-			static std::mutex sBufferMutex;
 		};
 	}
 }

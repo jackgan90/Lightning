@@ -5,7 +5,6 @@ namespace Lightning
 {
 	namespace Foundation
 	{
-		std::mutex RingAllocator::sBufferMutex;
 		RingAllocator::RingBuffer::RingBuffer(std::size_t size):
 			mMaxSize(size < MIN_BUFFER_SIZE ? MIN_BUFFER_SIZE : size), mUsedSize(0), mHead(0), mTail(0), mFrameSize(0)
 		{
@@ -116,7 +115,6 @@ namespace Lightning
 			if (mBuffers.find(thread_id) == mBuffers.end())
 			{
 				{
-					std::lock_guard<std::mutex> lock(sBufferMutex);
 					mBuffers.emplace(std::piecewise_construct, std::make_tuple(thread_id), std::make_tuple());
 				}
 			}

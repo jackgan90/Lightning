@@ -1,6 +1,5 @@
 #pragma once
 #include <thread>
-#include <mutex>
 #include "container.h"
 #include "singleton.h"
 #include "timer.h"
@@ -16,7 +15,6 @@ namespace Lightning
 			ITimer* GetTimer();
 		private:
 			container::unordered_map< std::thread::id, container::vector<ITimer*>> mTimers;
-			static std::mutex sTimerMutex;
 			static constexpr std::size_t sBucketCount = 4096;
 		};
 	}

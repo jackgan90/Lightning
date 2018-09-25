@@ -262,7 +262,6 @@ namespace Lightning
 		//Shpere
 		std::uint8_t *Sphere::vertices{ nullptr };
 		std::uint16_t *Sphere::indices{ nullptr };
-		std::mutex Sphere::sVerticeMutex;
 
 		Sphere::Sphere(float radius) : Hemisphere(radius)
 		{
@@ -274,7 +273,6 @@ namespace Lightning
 			if (vertices)
 				return;
 			{
-				std::lock_guard<std::mutex> lock(sVerticeMutex);
 				if (!vertices)
 				{
 					auto vbSize = Hemisphere::GetVertexBufferSize();

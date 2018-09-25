@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include <cstdint>
-#include <mutex>
 #include "drawable.h"
 #include "material.h"
 #include "vertexbuffer.h"
@@ -119,7 +118,6 @@ namespace Lightning
 			void InitVerticeAndIndice();
 			static std::uint8_t *vertices;
 			static std::uint16_t *indices;
-			static std::mutex sVerticeMutex;
 		};
 	}
 }
