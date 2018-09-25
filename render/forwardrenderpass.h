@@ -1,5 +1,5 @@
 #pragma once
-#include <vector>
+#include "container.h"
 #include "renderpass.h"
 #include "pipelinestate.h"
 
@@ -7,6 +7,8 @@ namespace Lightning
 {
 	namespace Render
 	{
+		using Foundation::container;
+
 		class LIGHTNING_RENDER_API ForwardRenderPass : public RenderPass
 		{
 		public:	
@@ -19,8 +21,8 @@ namespace Lightning
 			void CommitPipelineStates(const RenderItem& item);
 			void CommitShaderArguments(const RenderItem& item);
 			void Draw(const SharedGeometryPtr& geometry);
-			void GetInputLayouts(const SharedGeometryPtr& geometry, std::vector<VertexInputLayout>& layouts);
-			using RenderItemList = std::vector<RenderItem>;
+			void GetInputLayouts(const SharedGeometryPtr& geometry, container::vector<VertexInputLayout>& layouts);
+			using RenderItemList = container::vector<RenderItem>;
 			RenderItemList mRenderItems;
 		};
 	}

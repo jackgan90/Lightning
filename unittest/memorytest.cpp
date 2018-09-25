@@ -1,13 +1,11 @@
 #include <cstdlib>
-#include <vector>
 #include <random>
-#include <array>
 #include <sstream>
 #include <iostream>
 #include <chrono>
-#include <unordered_map>
 #include <cstdint>
 #include "catch.hpp"
+#include "container.h"
 #include "stackallocator.h"
 #include "poolallocator.h"
 #include "ringallocator.h"

@@ -35,7 +35,7 @@ namespace Lightning
 			void BindRenderTargets(ID3D12Device* pDevice);
 			void CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow);
 			ComPtr<IDXGISwapChain3> mSwapChain;
-			std::unordered_map<UINT, RenderTargetID> mRenderTargets;
+			container::unordered_map<UINT, RenderTargetID> mRenderTargets;
 			DXGI_SWAP_CHAIN_DESC mDesc;
 		};
 	}

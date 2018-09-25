@@ -1,5 +1,5 @@
 #pragma once
-#include <unordered_map>
+#include "container.h"
 #include "sceneexportdef.h"
 #include "singleton.h"
 #include "scene.h"
@@ -8,6 +8,7 @@ namespace Lightning
 {
 	namespace Scene
 	{
+		using Foundation::container;
 		using Foundation::Singleton;
 		class LIGHTNING_SCENE_API SceneManager : public Singleton<SceneManager>
 		{
@@ -32,7 +33,7 @@ namespace Lightning
 			void DestroyAll();
 		protected:
 			std::uint32_t mCurrentSceneID;
-			std::unordered_map<std::uint32_t, Scene*> mScenes;
+			container::unordered_map<std::uint32_t, Scene*> mScenes;
 			Scene* mForegroundScene;
 		};
 	}

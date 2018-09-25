@@ -1,9 +1,6 @@
 #include <cstdlib>
-#include <vector>
-#include <list>
-#include <set>
-#include <array>
 #include <iostream>
+#include "container.h"
 #include "catch.hpp"
 #include "math/matrix.h"
 #include "helperstubs.h"

@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
-#include <vector>
-#include <queue>
+#include "container.h"
 #include "irenderer.h"
 #include "irenderfence.h"
 #include "filesystem.h"
@@ -13,6 +12,7 @@ namespace Lightning
 	namespace Render
 	{
 		using Foundation::SharedFileSystemPtr;
+		using Foundation::container;
 		using WindowSystem::SharedWindowPtr;
 
 		struct FrameFenceValue
@@ -29,7 +29,7 @@ namespace Lightning
 		struct FrameResource
 		{
 			IRenderFence *fence{ nullptr };
-			std::priority_queue<FrameFenceValue, std::vector<FrameFenceValue>, std::greater<FrameFenceValue>> frameEndMarkers;
+			std::priority_queue<FrameFenceValue, container::vector<FrameFenceValue>, std::greater<FrameFenceValue>> frameEndMarkers;
 			void Release(bool perFrame)
 			{
 				if (!perFrame)
@@ -81,7 +81,7 @@ namespace Lightning
 			SharedFileSystemPtr mFs;
 			std::unique_ptr<IDevice> mDevice;
 			std::unique_ptr<ISwapChain> mSwapChain;
-			std::vector<std::unique_ptr<RenderPass>> mRenderPasses;
+			container::vector<std::unique_ptr<RenderPass>> mRenderPasses;
 			std::size_t mCurrentBackBufferIndex;
 			ColorF mClearColor;
 			SharedDepthStencilBufferPtr mDepthStencilBuffer;

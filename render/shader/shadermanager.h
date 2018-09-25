@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include "container.h"
 #include "filesystem.h"
 #include "ishadermanager.h"
 
@@ -8,8 +9,9 @@ namespace Lightning
 	namespace Render
 	{
 		using Foundation::SharedFileSystemPtr;
+		using Foundation::container;
 		//we should not only care about the shader name but also its' defined macros since every different macro group needs to compile the shader again
-		using ShaderMap = std::unordered_map<std::size_t, SharedShaderPtr>;
+		using ShaderMap = container::unordered_map<std::size_t, SharedShaderPtr>;
 		class ShaderManager : public IShaderManager
 		{
 		public:

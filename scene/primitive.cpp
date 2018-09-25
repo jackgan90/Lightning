@@ -2,6 +2,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <algorithm>
+#include "container.h"
 #include "math/vector.h"
 #include "primitive.h"
 
@@ -11,6 +12,7 @@ namespace Lightning
 	{
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::DegreesToRadians;
+		using Foundation::container;
 		Primitive::Primitive():mFirstDraw(true)
 		{
 		}
@@ -44,7 +46,7 @@ namespace Lightning
 			comp.offset = 0;
 			comp.semanticIndex = 0;
 			comp.semanticItem = { Render::RenderSemantics::POSITION, "POSITION" };
-			std::vector<Render::VertexComponent> comps;
+			container::vector<Render::VertexComponent> comps;
 			comps.push_back(comp);
 			mRenderItem.geometry = std::make_shared<Render::Geometry>();
 			auto pDevice = Renderer::Instance()->GetDevice();

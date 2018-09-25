@@ -23,7 +23,7 @@ namespace Lightning
 		};
 		using SharedRenderTargetManagerPtr = std::shared_ptr<IRenderTargetManager>;
 
-		using RenderTargetMap = std::unordered_map<RenderTargetID, SharedRenderTargetPtr>;
+		using RenderTargetMap = container::unordered_map<RenderTargetID, SharedRenderTargetPtr>;
 		template<typename Derived>
 		class RenderTargetManager : public IRenderTargetManager, public Foundation::Singleton<Derived>
 		{

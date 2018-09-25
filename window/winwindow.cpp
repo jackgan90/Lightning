@@ -1,13 +1,12 @@
 #include "common.h"
 #include "winwindow.h"
 #include "logger.h"
-#include <vector>
+#include "container.h"
 
 namespace Lightning
 {
 	namespace WindowSystem
 	{
-		using std::vector;
 		char* WinWindow::sWindowClassName = "DefaultWin32Window";
 		
 		LRESULT CALLBACK WinWindow::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

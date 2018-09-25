@@ -1,11 +1,9 @@
 #pragma once
 #include <cstddef>
 #include <cstdint>
-#include <deque>
-#include <vector>
-#include <unordered_map>
 #include <thread>
 #include <mutex>
+#include "container.h"
 #include "foundationexportdef.h"
 
 namespace Lightning
@@ -69,7 +67,7 @@ namespace Lightning
 				std::size_t mHead;
 				std::size_t mTail;
 				std::size_t mFrameSize;
-				std::deque<FrameMarker> mFrameMarkers;
+				container::deque<FrameMarker> mFrameMarkers;
 			};
 
 			struct RingBufferAllocation
@@ -78,7 +76,7 @@ namespace Lightning
 				RingBuffer buffer;
 				std::uint64_t lastAllocatedFrame;
 			};
-			std::unordered_map<std::thread::id, std::vector<RingBufferAllocation>> mBuffers;
+			container::unordered_map<std::thread::id, container::vector<RingBufferAllocation>> mBuffers;
 			std::uint64_t mLastFinishFrame;
 			static std::mutex sBufferMutex;
 		};

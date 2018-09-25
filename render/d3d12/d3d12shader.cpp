@@ -27,7 +27,7 @@ namespace Lightning
 			CompileImpl();
 			D3DReflect(mByteCode->GetBufferPointer(), mByteCode->GetBufferSize(), IID_PPV_ARGS(&mShaderReflect));
 			mShaderReflect->GetDesc(&mDesc);
-			std::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC> bindDescs;
+			container::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC> bindDescs;
 			for (std::size_t i = 0;i < mDesc.BoundResources;++i)
 			{
 				D3D12_SHADER_INPUT_BIND_DESC bindDesc;
@@ -79,7 +79,7 @@ namespace Lightning
 			}
 			for (std::size_t i = 0; i < RENDER_FRAME_COUNT;++i)
 			{
-				mRootBoundResources.emplace(i, std::vector<D3D12RootBoundResource>());
+				mRootBoundResources.emplace(i, container::vector<D3D12RootBoundResource>());
 				if (mDesc.ConstantBuffers > 0)
 				{
 					CD3DX12_CPU_DESCRIPTOR_HANDLE handle(mConstantHeap.cpuHandle);
@@ -273,7 +273,7 @@ namespace Lightning
 			}
 		}
 
-		const std::vector<D3D12_ROOT_PARAMETER>& D3D12Shader::GetRootParameters()const
+		const container::vector<D3D12_ROOT_PARAMETER>& D3D12Shader::GetRootParameters()const
 		{
 			return mRootParameters;
 		}
@@ -284,7 +284,7 @@ namespace Lightning
 		}
 
 
-		const std::vector<D3D12RootBoundResource>& D3D12Shader::GetRootBoundResources()const
+		const container::vector<D3D12RootBoundResource>& D3D12Shader::GetRootBoundResources()const
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto it = mRootBoundResources.find(resourceIndex);

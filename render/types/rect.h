@@ -1,10 +1,12 @@
 #pragma once
+#include "container.h"
 #include "plainobject.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
+		using Foundation::container;
 		template<typename T>
 		struct Rect : Foundation::PlainObject<Rect<T>>
 		{
@@ -19,7 +21,7 @@ namespace Lightning
 		using RectI = Rect<int>;
 		using RectF = Rect<float>;
 		template<typename T>
-		using RectList = std::vector<Rect<T>>;
+		using RectList = container::vector<Rect<T>>;
 		using RectIList = RectList<int>;
 		using RectFList = RectList<float>;
 	}

@@ -1,7 +1,7 @@
 #pragma once
-#include <vector>
 #include <boost/functional/hash.hpp>
 #include <memory>
+#include "container.h"
 #include "ivertexbuffer.h"
 #include "gpubuffer.h"
 

@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include <vector>
+#include "container.h"
 #include "rendererexportdef.h"
 #include "renderconstants.h"
 
@@ -8,6 +8,8 @@ namespace Lightning
 {
 	namespace Render
 	{
+		using Foundation::container;
+
 		using RenderTargetID = int;
 		class LIGHTNING_RENDER_API IRenderTarget
 		{
@@ -25,6 +27,6 @@ namespace Lightning
 			virtual ~IRenderTarget() = default;
 		};
 		using SharedRenderTargetPtr = std::shared_ptr<IRenderTarget>;
-		using RenderTargetList = std::vector<IRenderTarget*>;
+		using RenderTargetList = container::vector<IRenderTarget*>;
 	}
 }

@@ -1,9 +1,9 @@
 #pragma once
 #include <string>
-#include <unordered_map>
 #include <memory>
 #include <fstream>
 #include <boost/filesystem.hpp>
+#include "container.h"
 #include "foundationexportdef.h"
 #include "singleton.h"
 #include "enumoperation.h"
@@ -66,7 +66,7 @@ namespace Lightning
 			const std::string GetRoot() const override{ return mRoot.string(); }
 		protected:
 			boost::filesystem::path mRoot;
-			std::unordered_map<std::string, SharedFilePtr> mCachedFiles;
+			container::unordered_map<std::string, SharedFilePtr> mCachedFiles;
 		};
 
 		class GeneralFile : public IFile

@@ -1,7 +1,6 @@
 #pragma once
-#include <unordered_map>
-#include <vector>
 #include <cstdint>
+#include "container.h"
 #include "singleton.h"
 #include "iwindow.h"
 #include "windowexportdef.h"
@@ -10,15 +9,17 @@ namespace Lightning
 {
 	namespace WindowSystem
 	{
+		using Foundation::container;
+
 		class LIGHTNING_WINDOW_API WindowManager
 		{
 		public:
 			WindowManager();
 			~WindowManager();
 			SharedWindowPtr MakeWindow();
-			std::vector<SharedWindowPtr> GetAllWindows()const;
+			container::vector<SharedWindowPtr> GetAllWindows()const;
 		private:
-			std::unordered_map<std::uint32_t, SharedWindowPtr> mWindows;
+			container::unordered_map<std::uint32_t, SharedWindowPtr> mWindows;
 			std::uint32_t mCurrentID;
 		};
 	}

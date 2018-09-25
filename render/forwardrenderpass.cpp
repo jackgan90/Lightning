@@ -26,7 +26,7 @@ namespace Lightning
 
 		void ForwardRenderPass::CommitPipelineStates(const RenderItem& item)
 		{
-			static std::vector<VertexInputLayout> layouts;
+			static container::vector<VertexInputLayout> layouts;
 			PipelineState state{};
 			//TODO : set render target count based on model setting
 			state.outputRenderTargetCount = 1;
@@ -87,9 +87,9 @@ namespace Lightning
 			}
 		}
 
-		void ForwardRenderPass::GetInputLayouts(const SharedGeometryPtr& geometry, std::vector<VertexInputLayout>& layouts)
+		void ForwardRenderPass::GetInputLayouts(const SharedGeometryPtr& geometry, container::vector<VertexInputLayout>& layouts)
 		{
-			static std::array<std::vector<VertexComponent>, MAX_GEOMETRY_BUFFER_COUNT> components;
+			static container::array<container::vector<VertexComponent>, MAX_GEOMETRY_BUFFER_COUNT> components;
 			for (std::size_t i = 0;i < MAX_GEOMETRY_BUFFER_COUNT;i++)
 			{
 				if (!geometry->vbs[i])
@@ -118,7 +118,7 @@ namespace Lightning
 		void ForwardRenderPass::CommitBuffers(const SharedGeometryPtr& geometry)
 		{
 			auto pDevice = Renderer::Instance()->GetDevice();
-			std::unordered_map<std::uint8_t, std::vector<SharedGPUBufferPtr>> bufferBinding;
+			container::unordered_map<std::uint8_t, container::vector<SharedGPUBufferPtr>> bufferBinding;
 			for (std::uint8_t i = 0; i < MAX_GEOMETRY_BUFFER_COUNT; i++)
 			{
 				if (!geometry->vbs[i])
@@ -130,7 +130,7 @@ namespace Lightning
 				}
 				if (bufferBinding.empty())
 				{
-					bufferBinding.insert(std::make_pair(i, std::vector<SharedGPUBufferPtr>()));
+					bufferBinding.insert(std::make_pair(i, container::vector<SharedGPUBufferPtr>()));
 					bufferBinding[i].push_back(geometry->vbs[i]);
 				}
 				else
@@ -139,7 +139,7 @@ namespace Lightning
 						bufferBinding[i - 1].push_back(geometry->vbs[i]);
 					else
 					{
-						bufferBinding.insert(std::make_pair(i, std::vector<SharedGPUBufferPtr>()));
+						bufferBinding.insert(std::make_pair(i, container::vector<SharedGPUBufferPtr>()));
 						bufferBinding[i].push_back(geometry->vbs[i]);
 					}
 				}
@@ -151,7 +151,7 @@ namespace Lightning
 					pDevice->CommitGPUBuffer(geometry->ib);
 					geometry->ib_dirty = false;
 				}
-				bufferBinding.insert(std::make_pair(MAX_GEOMETRY_BUFFER_COUNT, std::vector<SharedGPUBufferPtr>()));
+				bufferBinding.insert(std::make_pair(MAX_GEOMETRY_BUFFER_COUNT, container::vector<SharedGPUBufferPtr>()));
 				bufferBinding[MAX_GEOMETRY_BUFFER_COUNT].push_back(geometry->ib);
 			}
 			for (auto it = bufferBinding.cbegin();it != bufferBinding.cend();++it)

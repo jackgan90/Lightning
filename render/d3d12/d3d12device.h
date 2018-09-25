@@ -2,9 +2,8 @@
 #include <d3d12.h>
 #include <dxgi1_4.h>
 #include <wrl\client.h>
-#include <vector>
 #include <memory>
-#include <unordered_map>
+#include "container.h"
 #include "device.h"
 #include "stackallocator.h"
 #include "filesystem.h"
@@ -17,6 +16,7 @@ namespace Lightning
 		using Microsoft::WRL::ComPtr;
 		using Foundation::SharedFileSystemPtr;
 		using Foundation::StackAllocator;
+		using Foundation::container;
 		class LIGHTNING_RENDER_API D3D12Device : public Device
 		{
 		public:
@@ -25,7 +25,7 @@ namespace Lightning
 			~D3D12Device()override;
 			void ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectIList* rects=nullptr)override;
 			void ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr)override;
-			SharedVertexBufferPtr CreateVertexBuffer(std::uint32_t bufferSize, const std::vector<VertexComponent>& components)override;
+			SharedVertexBufferPtr CreateVertexBuffer(std::uint32_t bufferSize, const container::vector<VertexComponent>& components)override;
 			SharedIndexBufferPtr CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;
 			ID3D12Device* GetNative()const { return mDevice.Get(); }
 			ID3D12CommandQueue* GetCommandQueue()const { return mCommandQueue.Get(); }
@@ -33,7 +33,7 @@ namespace Lightning
 			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)override;
 			void ApplyPipelineState(const PipelineState& state)override;
 			void CommitGPUBuffer(const SharedGPUBufferPtr& pBuffer)override;
-			void BindGPUBuffers(std::uint8_t startSlot, const std::vector<SharedGPUBufferPtr>& buffers)override;
+			void BindGPUBuffers(std::uint8_t startSlot, const container::vector<SharedGPUBufferPtr>& buffers)override;
 			void DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset)override;
 			void DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset)override;
 			void BeginFrame(const std::size_t frameResourceIndex)override;
@@ -51,10 +51,10 @@ namespace Lightning
 				//so it's not necessary to hold share pointers just to prevent them from being released
 				//descriptorHeaps is more like an intermediate container because descriptor heaps are not released
 				//so the only purpose of it is to pass arguments to DirectX API
-				std::vector<ID3D12DescriptorHeap*> descriptorHeaps;
-				std::unordered_map<IDepthStencilBuffer*, SharedDepthStencilBufferPtr> depthStencilBuffers;
-				std::unordered_map<IRenderTarget*, SharedRenderTargetPtr> renderTargets;
-				std::unordered_map<IGPUBuffer*, SharedGPUBufferPtr> buffers;
+				container::vector<ID3D12DescriptorHeap*> descriptorHeaps;
+				container::unordered_map<IDepthStencilBuffer*, SharedDepthStencilBufferPtr> depthStencilBuffers;
+				container::unordered_map<IRenderTarget*, SharedRenderTargetPtr> renderTargets;
+				container::unordered_map<IGPUBuffer*, SharedGPUBufferPtr> buffers;
 				ComPtr<ID3D12CommandAllocator> commandAllocator;
 
 				void Release(bool perFrame)
@@ -71,12 +71,12 @@ namespace Lightning
 				}
 			};
 			//if parameter pState is nullptr,this method will create a default pipeline state
-			using PipelineCacheMap = std::unordered_map<std::size_t, ComPtr<ID3D12PipelineState>>;
-			using RootSignatureMap = std::unordered_map<std::size_t, ComPtr<ID3D12RootSignature>>;
+			using PipelineCacheMap = container::unordered_map<std::size_t, ComPtr<ID3D12PipelineState>>;
+			using RootSignatureMap = container::unordered_map<std::size_t, ComPtr<ID3D12RootSignature>>;
 			void CreateNativeDevice(IDXGIFactory4* factory);
 			void ApplyShader(IShader* pShader);
 			void UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::uint8_t  layoutCount);
-			ComPtr<ID3D12RootSignature> GetRootSignature(const std::vector<IShader*>& shaders);
+			ComPtr<ID3D12RootSignature> GetRootSignature(const container::vector<IShader*>& shaders);
 			ComPtr<ID3D12PipelineState> CreateAndCachePipelineState(const PipelineState& pState, std::size_t hashValue);
 			void ExtractShaderDescriptorHeaps();
 			void ExtractShaderDescriptorHeaps(IShader* pShader);

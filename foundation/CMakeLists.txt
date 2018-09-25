@@ -26,6 +26,7 @@ set(HEADERS	common.h
 			murmurhash3.h
 			timer.h
 			timermanager.h
+			container.h
 			enumoperation.h)
 set(SOURCES common.cpp
 			filesystem.cpp

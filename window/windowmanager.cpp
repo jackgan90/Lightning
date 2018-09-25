@@ -21,9 +21,9 @@ namespace Lightning
 			return SharedWindowPtr();
 		}
 
-		std::vector<SharedWindowPtr> WindowManager::GetAllWindows()const
+		container::vector<SharedWindowPtr> WindowManager::GetAllWindows()const
 		{
-			std::vector<SharedWindowPtr> windows;
+			container::vector<SharedWindowPtr> windows;
 			for (auto w : mWindows)
 				windows.push_back(w.second);
 			return windows;

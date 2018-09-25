@@ -1,6 +1,6 @@
 #pragma once
 #include <cstdint>
-#include <vector>
+#include "container.h"
 #include "sceneexportdef.h"
 #include "camera.h"
 #include "drawable.h"
@@ -10,6 +10,8 @@ namespace Lightning
 {
 	namespace Scene
 	{
+		using Foundation::container;
+
 		class LIGHTNING_SCENE_API Scene
 		{
 		public:
@@ -22,7 +24,7 @@ namespace Lightning
 		protected:
 			Camera* mActiveCamera;
 			std::uint32_t mID;
-			std::vector<SharedDrawablePtr> mDrawables;
+			container::vector<SharedDrawablePtr> mDrawables;
 			SceneRenderData mRenderData;
 		};
 	}

@@ -2,8 +2,7 @@
 #include <d3d12.h>
 #include <wrl/client.h>
 #include <d3dcompiler.h>
-#include <vector>
-#include <unordered_map>
+#include "container.h"
 #include "d3d12shadermanager.h"
 #include "d3d12descriptorheapmanager.h"
 #include "ishader.h"
@@ -13,6 +12,7 @@ namespace Lightning
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
+		using Foundation::container;
 		enum class D3D12RootBoundResourceType
 		{
 			DescriptorTable,
@@ -56,9 +56,9 @@ namespace Lightning
 			void Compile()override;
 			void* GetByteCodeBuffer()const;
 			SIZE_T GetByteCodeBufferSize()const;
-			const std::vector<D3D12_ROOT_PARAMETER>& GetRootParameters()const;
+			const container::vector<D3D12_ROOT_PARAMETER>& GetRootParameters()const;
 			std::size_t GetRootParameterCount()const;
-			const std::vector<D3D12RootBoundResource>& GetRootBoundResources()const;
+			const container::vector<D3D12RootBoundResource>& GetRootBoundResources()const;
 		private:
 			//use to commit constant to shader
 			struct ConstantUploadContext
@@ -85,10 +85,10 @@ namespace Lightning
 			ComPtr<ID3D12ShaderReflection> mShaderReflect;
 			D3D12_SHADER_DESC mDesc;
 			DescriptorHeap mConstantHeap;
-			std::vector<ConstantUploadContext> mUploadContexts;
-			std::unordered_map<std::string, ArgumentBinding> mArgumentBindings;
-			std::vector<D3D12_ROOT_PARAMETER> mRootParameters;
-			std::unordered_map<std::uint8_t, std::vector<D3D12RootBoundResource>> mRootBoundResources;
+			container::vector<ConstantUploadContext> mUploadContexts;
+			container::unordered_map<std::string, ArgumentBinding> mArgumentBindings;
+			container::vector<D3D12_ROOT_PARAMETER> mRootParameters;
+			container::unordered_map<std::uint8_t, container::vector<D3D12RootBoundResource>> mRootBoundResources;
 			D3D12_DESCRIPTOR_RANGE *mDescriptorRanges;
 		};
 	}

@@ -7,6 +7,7 @@ namespace Lightning
 {
 	namespace Render
 	{
+		using Foundation::container;
 		D3D12DescriptorHeapManager::D3D12DescriptorHeapManager() :mCurrentID(0)
 		{
 
@@ -41,7 +42,7 @@ namespace Lightning
 			return std::get<1>(res);
 		}
 
-		std::tuple<bool, D3D12DescriptorHeapManager::_DescriptorHeapInternal> D3D12DescriptorHeapManager::CreateHeapInternal(
+		container::tuple<bool, D3D12DescriptorHeapManager::_DescriptorHeapInternal> D3D12DescriptorHeapManager::CreateHeapInternal(
 			D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT descriptorCount, ID3D12Device* pDevice)
 		{
 			auto res = std::make_tuple(false, _DescriptorHeapInternal());
@@ -67,7 +68,7 @@ namespace Lightning
 			auto typeHash = HeapTypeHash(type, shaderVisible);
 			if (mHeaps.find(typeHash) == mHeaps.end())
 			{
-				mHeaps.insert(std::make_pair(typeHash, std::vector<_DescriptorHeapInternal>()));
+				mHeaps.insert(std::make_pair(typeHash, container::vector<_DescriptorHeapInternal>()));
 			}
 			mHeaps[typeHash].push_back(heapInfo);
 			mHeapIDToHeaps[mCurrentID] = heapInfo.heap;
@@ -76,7 +77,7 @@ namespace Lightning
 			return res;
 		}
 
-		std::tuple<bool, DescriptorHeap> D3D12DescriptorHeapManager::TryAllocateInternal(std::vector<_DescriptorHeapInternal>& heapList, UINT count)
+		container::tuple<bool, DescriptorHeap> D3D12DescriptorHeapManager::TryAllocateInternal(container::vector<_DescriptorHeapInternal>& heapList, UINT count)
 		{
 			//loop over existing heap list reversely and try to allocate from it
 			for (int i = heapList.size() - 1; i >= 0;i--)
@@ -88,7 +89,7 @@ namespace Lightning
 			return std::make_tuple(false, DescriptorHeap());
 		}
 
-		std::tuple<bool, DescriptorHeap> D3D12DescriptorHeapManager::TryAllocateInternal(_DescriptorHeapInternal& heapInfo, UINT count)
+		container::tuple<bool, DescriptorHeap> D3D12DescriptorHeapManager::TryAllocateInternal(_DescriptorHeapInternal& heapInfo, UINT count)
 		{
 			auto res = std::make_tuple(false, DescriptorHeap());
 			if(count > heapInfo.freeDescriptors)

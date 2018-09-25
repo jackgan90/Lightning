@@ -186,7 +186,7 @@ namespace Lightning
 
 
 
-		SharedVertexBufferPtr D3D12Device::CreateVertexBuffer(std::uint32_t bufferSize, const std::vector<VertexComponent>& components)
+		SharedVertexBufferPtr D3D12Device::CreateVertexBuffer(std::uint32_t bufferSize, const container::vector<VertexComponent>& components)
 		{
 			const VertexComponent *comps{ nullptr };
 			if (!components.empty())
@@ -402,7 +402,7 @@ namespace Lightning
 			ApplyRasterizerState(state.rasterizerState);
 			ApplyBlendStates(0, state.blendStates, state.outputRenderTargetCount);
 			ApplyDepthStencilState(state.depthStencilState);
-			std::vector<IShader*> shaders;
+			container::vector<IShader*> shaders;
 			ApplyShader(state.vs);
 			ApplyShader(state.fs);
 			ApplyShader(state.gs);
@@ -527,7 +527,7 @@ namespace Lightning
 			inputLayoutDesc.pInputElementDescs = pInputElementDesc;
 		}
 
-		ComPtr<ID3D12RootSignature> D3D12Device::GetRootSignature(const std::vector<IShader*>& shaders)
+		ComPtr<ID3D12RootSignature> D3D12Device::GetRootSignature(const container::vector<IShader*>& shaders)
 		{	
 			//TODO : according to MSDN,pipeline state object can have 0 shader bound.But I found if I omit vertex shader
 			//,the pipeline state creation will fail.Need to find the reason
@@ -542,7 +542,7 @@ namespace Lightning
 				return it->second;
 
 			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-			std::vector<D3D12_ROOT_PARAMETER> cbParameters;
+			container::vector<D3D12_ROOT_PARAMETER> cbParameters;
 			for (std::size_t i = 0;i < shaders.size();++i)
 			{
 				const auto& parameters = static_cast<D3D12Shader*>(shaders[i])->GetRootParameters();
@@ -638,7 +638,7 @@ namespace Lightning
 			mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(d3dResource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, bufferState));
 		}
 
-		void D3D12Device::BindGPUBuffers(std::uint8_t startSlot, const std::vector<SharedGPUBufferPtr>& pBuffers)
+		void D3D12Device::BindGPUBuffers(std::uint8_t startSlot, const container::vector<SharedGPUBufferPtr>& pBuffers)
 		{
 			if (pBuffers.empty())
 				return;

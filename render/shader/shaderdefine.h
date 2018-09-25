@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
-#include <unordered_map>
 #include <string>
+#include "container.h"
 #include "rendererexportdef.h"
 
 
@@ -9,7 +9,8 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using MacroContainer = std::unordered_map<std::string, std::string>;
+		using Foundation::container;
+		using MacroContainer = container::unordered_map<std::string, std::string>;
 		class LIGHTNING_RENDER_API ShaderDefine
 		{
 		public:
