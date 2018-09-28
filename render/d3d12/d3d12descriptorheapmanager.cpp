@@ -156,6 +156,7 @@ namespace Lightning
 #else
 			Deallocate(static_cast<DescriptorHeapEx*>(pHeap));
 #endif
+			delete pHeap;
 		}
 
 		void D3D12DescriptorHeapManager::Deallocate(DescriptorHeapEx *pHeapEx)
