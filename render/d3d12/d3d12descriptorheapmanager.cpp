@@ -131,7 +131,6 @@ namespace Lightning
 					pHeapEx->incrementSize = heapStore.incrementSize;
 					pHeapEx->interval = interval;
 					pHeapEx->pStore = &heapStore;
-					pHeapEx->count = count;
 #ifndef NDEBUG
 					mAllocHeaps.emplace(pHeapEx);
 #endif
@@ -162,7 +161,7 @@ namespace Lightning
 		void D3D12DescriptorHeapManager::Deallocate(DescriptorHeapEx *pHeapEx)
 		{
 			auto pHeapStore = pHeapEx->pStore;
-			pHeapStore->freeDescriptors += pHeapEx->count;
+			pHeapStore->freeDescriptors += std::get<1>(pHeapEx->interval) - std::get<0>(pHeapEx->interval);
 			if (pHeapStore->freeIntervals.empty())
 				pHeapStore->freeIntervals.push_back(pHeapEx->interval);
 			else

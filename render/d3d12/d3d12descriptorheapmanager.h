@@ -43,7 +43,6 @@ namespace Lightning
 			struct DescriptorHeapEx : DescriptorHeap
 			{
 				DescriptorHeapStore *pStore;
-				std::size_t count;
 				container::tuple<UINT64, UINT64> interval;
 			};
 			ID3D12Device* GetNativeDevice();
