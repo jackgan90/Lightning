@@ -82,10 +82,10 @@ namespace Lightning
 				mRootBoundResources.emplace(i, container::vector<D3D12RootBoundResource>());
 				if (mDesc.ConstantBuffers > 0)
 				{
-					CD3DX12_CPU_DESCRIPTOR_HANDLE handle(mConstantHeap.cpuHandle);
-					handle.Offset(i * mDesc.ConstantBuffers * mConstantHeap.incrementSize);
-					CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(mConstantHeap.gpuHandle);
-					gpuHandle.Offset(i * mDesc.ConstantBuffers * mConstantHeap.incrementSize);
+					CD3DX12_CPU_DESCRIPTOR_HANDLE handle(mConstantHeap->cpuHandle);
+					handle.Offset(i * mDesc.ConstantBuffers * mConstantHeap->incrementSize);
+					CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(mConstantHeap->gpuHandle);
+					gpuHandle.Offset(i * mDesc.ConstantBuffers * mConstantHeap->incrementSize);
 					for (std::size_t k = 0;k < mDesc.ConstantBuffers;++k)
 					{
 						auto& context = mUploadContexts[k];
@@ -100,12 +100,12 @@ namespace Lightning
 						cbvDesc.SizeInBytes = bufferSize;
 						device->CreateConstantBufferView(&cbvDesc, context.handle[i]);
 						D3D12RootBoundResource boundResource;
-						boundResource.descriptorTableHeap = D3D12DescriptorHeapManager::Instance()->GetHeap(mConstantHeap.heapID);
+						boundResource.descriptorTableHeap = D3D12DescriptorHeapManager::Instance()->GetHeap(mConstantHeap);
 						boundResource.type = D3D12RootBoundResourceType::DescriptorTable;
 						boundResource.descriptorTableHandle = gpuHandle;
 						mRootBoundResources[i].push_back(boundResource);
-						handle.Offset(mConstantHeap.incrementSize);
-						gpuHandle.Offset(mConstantHeap.incrementSize);
+						handle.Offset(mConstantHeap->incrementSize);
+						gpuHandle.Offset(mConstantHeap->incrementSize);
 					}
 				}
 			}
@@ -133,8 +133,11 @@ namespace Lightning
 			mArgumentBindings.clear();
 			mByteCode.Reset();
 			mShaderReflect.Reset();
-			if(mDesc.ConstantBuffers > 0)
-				D3D12DescriptorHeapManager::Instance()->Deallocate(mConstantHeap.cpuHandle);
+			if (mDesc.ConstantBuffers > 0)
+			{
+				D3D12DescriptorHeapManager::Instance()->Deallocate(mConstantHeap);
+				mConstantHeap = nullptr;
+			}
 		}
 
 		const ShaderDefine D3D12Shader::GetMacros()const

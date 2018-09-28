@@ -13,13 +13,14 @@ namespace Lightning
 			mSampleQuality = pSwapChain->GetSampleQuality();
 			mFormat = pSwapChain->GetRenderFormat();
 			mHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, false, 1, pNativeDevice);
-			pNativeDevice->CreateRenderTargetView(resource.Get(), nullptr, mHeap.cpuHandle);
+			pNativeDevice->CreateRenderTargetView(resource.Get(), nullptr, mHeap->cpuHandle);
 		}
 
 		D3D12RenderTarget::~D3D12RenderTarget()
 		{
 			mResource.Reset();
-			D3D12DescriptorHeapManager::Instance()->Deallocate(mHeap.cpuHandle);
+			D3D12DescriptorHeapManager::Instance()->Deallocate(mHeap);
+			mHeap = nullptr;
 		}
 
 		bool D3D12RenderTarget::IsSwapChainRenderTarget()const

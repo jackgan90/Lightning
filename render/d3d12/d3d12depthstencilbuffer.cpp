@@ -43,13 +43,14 @@ namespace Lightning
 			nativeDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT), D3D12_HEAP_FLAG_NONE,
 				&CD3DX12_RESOURCE_DESC::Tex2D(nativeFormat, mWidth, mHeight, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL),
 				D3D12_RESOURCE_STATE_DEPTH_WRITE, &dsClearValue, IID_PPV_ARGS(&mResource));
-			nativeDevice->CreateDepthStencilView(mResource.Get(), &dsvDesc, mHeap.cpuHandle);
+			nativeDevice->CreateDepthStencilView(mResource.Get(), &dsvDesc, mHeap->cpuHandle);
 		}
 
 		D3D12DepthStencilBuffer::~D3D12DepthStencilBuffer()
 		{
 			mResource.Reset();
-			D3D12DescriptorHeapManager::Instance()->Deallocate(mHeap.cpuHandle);
+			D3D12DescriptorHeapManager::Instance()->Deallocate(mHeap);
+			mHeap = nullptr;
 		}
 
 		void D3D12DepthStencilBuffer::SetClearValue(float depthValue, std::uint32_t stencilValue)

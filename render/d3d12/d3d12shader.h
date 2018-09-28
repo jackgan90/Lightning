@@ -84,7 +84,7 @@ namespace Lightning
 			ComPtr<ID3D10Blob> mByteCode;
 			ComPtr<ID3D12ShaderReflection> mShaderReflect;
 			D3D12_SHADER_DESC mDesc;
-			DescriptorHeap mConstantHeap;
+			DescriptorHeap *mConstantHeap;
 			container::vector<ConstantUploadContext> mUploadContexts;
 			container::unordered_map<std::string, ArgumentBinding> mArgumentBindings;
 			container::vector<D3D12_ROOT_PARAMETER> mRootParameters;

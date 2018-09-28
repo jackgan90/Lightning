@@ -8,7 +8,7 @@ namespace Lightning
 	namespace Render
 	{
 		using Foundation::container;
-		D3D12DescriptorHeapManager::D3D12DescriptorHeapManager() :mCurrentID(0)
+		D3D12DescriptorHeapManager::D3D12DescriptorHeapManager()
 		{
 
 		}
@@ -16,6 +16,10 @@ namespace Lightning
 		D3D12DescriptorHeapManager::~D3D12DescriptorHeapManager()
 		{
 			LOG_INFO("Descriptor heap manager destruct!");
+#ifndef NDEBUG
+			assert(mAllocHeaps.size() == 0 && "D3D12DescriptorHeapManager is destroyed, yet there's still\
+				heaps in used which will cause this pointer dangling.It's dangerous.");
+#endif
 		}
 
 		ID3D12Device* D3D12DescriptorHeapManager::GetNativeDevice()
@@ -23,192 +27,197 @@ namespace Lightning
 			return static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNative();
 		}
 
-		const DescriptorHeap D3D12DescriptorHeapManager::Allocate(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count, ID3D12Device* pDevice)
+		DescriptorHeap* D3D12DescriptorHeapManager::Allocate(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count, ID3D12Device* pDevice)
 		{
 			auto nativeDevice = pDevice ? pDevice : GetNativeDevice();
 			auto typeHash = HeapTypeHash(type, shaderVisible);
 			auto it = mHeaps.find(typeHash);
 			if (it == mHeaps.end())
 			{
-				CreateHeapInternal(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE, nativeDevice);
+				CreateHeapStore(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE, nativeDevice);
 				it = mHeaps.find(typeHash);
 			}
-			auto res = TryAllocateInternal(it->second, count);
+			auto res = TryAllocateDescriptorHeap(it->second, count);
 			if (std::get<0>(res))
 				return std::get<1>(res);
 			//if reach here,the existing heaps can not allocate more descriptors, so just allocate a new heap
-			auto newHeap = CreateHeapInternal(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE, nativeDevice);
-			res = TryAllocateInternal(std::get<1>(newHeap), count);
+			auto newHeap = CreateHeapStore(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE, nativeDevice);
+			res = TryAllocateDescriptorHeap(std::get<1>(newHeap), count);
 			return std::get<1>(res);
 		}
 
-		container::tuple<bool, D3D12DescriptorHeapManager::_DescriptorHeapInternal> D3D12DescriptorHeapManager::CreateHeapInternal(
+		container::tuple<bool, D3D12DescriptorHeapManager::DescriptorHeapStore> D3D12DescriptorHeapManager::CreateHeapStore(
 			D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT descriptorCount, ID3D12Device* pDevice)
 		{
-			auto res = std::make_tuple(false, _DescriptorHeapInternal());
-			auto& heapInfo = std::get<1>(res);
-			heapInfo.desc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			heapInfo.desc.NodeMask = 0;
-			heapInfo.desc.NumDescriptors = descriptorCount;
-			heapInfo.desc.Type = type;
-			auto hr = pDevice->CreateDescriptorHeap(&heapInfo.desc, IID_PPV_ARGS(&heapInfo.heap));
+			auto res = std::make_tuple(false, DescriptorHeapStore());
+			auto& heapStore = std::get<1>(res);
+			heapStore.desc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+			heapStore.desc.NodeMask = 0;
+			heapStore.desc.NumDescriptors = descriptorCount;
+			heapStore.desc.Type = type;
+			auto hr = pDevice->CreateDescriptorHeap(&heapStore.desc, IID_PPV_ARGS(&heapStore.heap));
 			if (FAILED(hr))
 			{
 				LOG_ERROR("Failed to create d3d12 descriptor heap!type:%d, flags:%d, number of descriptors:%d", 
-					heapInfo.desc.Type, heapInfo.desc.Flags, heapInfo.desc.NumDescriptors);
+					heapStore.desc.Type, heapStore.desc.Flags, heapStore.desc.NumDescriptors);
 				return res;
 			}
-			heapInfo.freeDescriptors = descriptorCount;
-			heapInfo.freeIntervals.emplace_back(std::make_tuple(0, descriptorCount));
-			heapInfo.cpuHandle = heapInfo.heap->GetCPUDescriptorHandleForHeapStart();
-			heapInfo.gpuHandle = heapInfo.heap->GetGPUDescriptorHandleForHeapStart();
-			heapInfo.incrementSize = GetIncrementSize(type, pDevice);
-			heapInfo.heapID = mCurrentID;
+			heapStore.freeDescriptors = descriptorCount;
+			heapStore.freeIntervals.emplace_back(std::make_tuple(0, descriptorCount));
+			heapStore.cpuHandle = heapStore.heap->GetCPUDescriptorHandleForHeapStart();
+			heapStore.gpuHandle = heapStore.heap->GetGPUDescriptorHandleForHeapStart();
+			heapStore.incrementSize = GetIncrementSize(type, pDevice);
 			
 			auto typeHash = HeapTypeHash(type, shaderVisible);
 			if (mHeaps.find(typeHash) == mHeaps.end())
 			{
-				mHeaps.insert(std::make_pair(typeHash, container::vector<_DescriptorHeapInternal>()));
+				mHeaps.insert(std::make_pair(typeHash, container::vector<DescriptorHeapStore>()));
 			}
-			mHeaps[typeHash].push_back(heapInfo);
-			mHeapIDToHeaps[mCurrentID] = heapInfo.heap;
-			mCurrentID++;
+			mHeaps[typeHash].push_back(heapStore);
 			std::get<0>(res) =  true;
 			return res;
 		}
 
-		container::tuple<bool, DescriptorHeap> D3D12DescriptorHeapManager::TryAllocateInternal(container::vector<_DescriptorHeapInternal>& heapList, UINT count)
+		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocateDescriptorHeap(container::vector<DescriptorHeapStore>& heapList, UINT count)
 		{
 			//loop over existing heap list reversely and try to allocate from it
 			for (int i = heapList.size() - 1; i >= 0;i--)
 			{
-				auto allocateResult = TryAllocateInternal(heapList[i], count);
-				if (std::get<0>(allocateResult))
-					return allocateResult;
+				auto res = TryAllocateDescriptorHeap(heapList[i], count);
+				if (std::get<0>(res))
+					return res;
 			}
-			return std::make_tuple(false, DescriptorHeap());
+			return std::make_tuple<bool, DescriptorHeap*>(false, nullptr);
 		}
 
-		container::tuple<bool, DescriptorHeap> D3D12DescriptorHeapManager::TryAllocateInternal(_DescriptorHeapInternal& heapInfo, UINT count)
+		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocateDescriptorHeap(DescriptorHeapStore& heapStore, UINT count)
 		{
-			auto res = std::make_tuple(false, DescriptorHeap());
-			if(count > heapInfo.freeDescriptors)
+			auto res = std::make_tuple<bool, DescriptorHeap*>(false, nullptr);
+			if(count > heapStore.freeDescriptors)
 				return res;
-			for (auto it = heapInfo.freeIntervals.begin(); it != heapInfo.freeIntervals.end();++it)
+			for (auto it = heapStore.freeIntervals.begin(); it != heapStore.freeIntervals.end();++it)
 			{
-				auto leftEndPoint = std::get<0>(*it);
-				auto rightEndPoint = std::get<1>(*it);
-				auto descriptorsInInterval = rightEndPoint - leftEndPoint;
-				if (descriptorsInInterval >= count)
+				auto left = std::get<0>(*it);
+				auto right = std::get<1>(*it);
+				auto descriptorCount = right - left;
+				if (descriptorCount >= count)
 				{
+					container::tuple<UINT64, UINT64> interval;
 					//split this interval into 2 intervals and mark left interval as used
-					if (descriptorsInInterval == count)
+					if (descriptorCount == count)
 					{
 						//no other space for a descriptor, just remove this interval
-						heapInfo.freeIntervals.erase(it);
+						heapStore.freeIntervals.erase(it);
+						std::get<0>(interval) = left;
+						std::get<1>(interval) = right;
 					}
 					else
 					{
 						//there's still some space for at least a descriptor,change the interval end points
-						auto rightInterval = std::make_tuple(leftEndPoint + count, rightEndPoint);
-						*it = rightInterval;
+						*it = std::make_tuple(left + count, right);
+						std::get<0>(interval) = left;
+						std::get<1>(interval) = left + count;
 					}
-					heapInfo.freeDescriptors -= count;
+					heapStore.freeDescriptors -= count;
 					std::get<0>(res) = true;
-					auto& info = std::get<1>(res);
-					CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(heapInfo.cpuHandle);
-					CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(heapInfo.gpuHandle);
-					cpuHandle.Offset(leftEndPoint * heapInfo.incrementSize);
-					gpuHandle.Offset(leftEndPoint * heapInfo.incrementSize);
-					mCPUHandles[cpuHandle.ptr] = &heapInfo;
-					mGPUHandles[gpuHandle.ptr] = &heapInfo;
-					heapInfo.locationToSizes[leftEndPoint] = count;
-					info.heapID = heapInfo.heapID;
-					info.cpuHandle = cpuHandle;
-					info.gpuHandle = gpuHandle;
+					auto pHeapEx = new DescriptorHeapEx;
+					std::get<1>(res) = pHeapEx;
+					CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(heapStore.cpuHandle);
+					CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(heapStore.gpuHandle);
+					cpuHandle.Offset(left * heapStore.incrementSize);
+					gpuHandle.Offset(left * heapStore.incrementSize);
+					pHeapEx->cpuHandle = cpuHandle;
+					pHeapEx->gpuHandle = gpuHandle;
+					pHeapEx->incrementSize = heapStore.incrementSize;
+					pHeapEx->interval = interval;
+					pHeapEx->pStore = &heapStore;
+					pHeapEx->count = count;
+#ifndef NDEBUG
+					mAllocHeaps.emplace(pHeapEx);
+#endif
 					break;
 				}
 			}
 			return res;
 		}
 
-		void D3D12DescriptorHeapManager::Deallocate(D3D12_CPU_DESCRIPTOR_HANDLE handle)
+		void D3D12DescriptorHeapManager::Deallocate(DescriptorHeap* pHeap)
 		{
-			auto it = mCPUHandles.find(handle.ptr);
-			assert(it != mCPUHandles.end());
-			//calculate handle offset in heap
-			auto offset = (handle.ptr - it->second->cpuHandle.ptr) / it->second->incrementSize;
-			Deallocate(*it->second, offset);
-			//erase gpu handle as well
-			mGPUHandles.erase(it->second->gpuHandle.ptr + offset * it->second->incrementSize);
-			mCPUHandles.erase(it);
+			assert(pHeap != nullptr && "pHeap must be a valid heap pointer!");
+#ifndef NDEBUG
+			auto it = mAllocHeaps.find(static_cast<DescriptorHeapEx*>(pHeap));
+			if (it == mAllocHeaps.end())
+			{
+				LOG_ERROR("pHeap is not allocated by this manager!");
+				return;
+			}
+			Deallocate(*it);
+			mAllocHeaps.erase(it);
+#else
+			Deallocate(static_cast<DescriptorHeapEx*>(pHeap));
+#endif
 		}
 
-		void D3D12DescriptorHeapManager::Deallocate(D3D12_GPU_DESCRIPTOR_HANDLE handle)
+		void D3D12DescriptorHeapManager::Deallocate(DescriptorHeapEx *pHeapEx)
 		{
-			auto it = mGPUHandles.find(handle.ptr);
-			assert(it != mGPUHandles.end());
-			auto offset = (handle.ptr - it->second->cpuHandle.ptr) / it->second->incrementSize;
-			Deallocate(*it->second, offset);
-			//erase cpu handle as well
-			mCPUHandles.erase(it->second->cpuHandle.ptr + offset * it->second->incrementSize);
-			mGPUHandles.erase(it);
-		}
-
-		void D3D12DescriptorHeapManager::Deallocate(_DescriptorHeapInternal& heapInfo, const UINT64 offset)
-		{
-			auto it = heapInfo.locationToSizes.find(offset);
-			assert(it != heapInfo.locationToSizes.end());
-			auto newInterval = std::make_tuple(offset, offset + it->second);
-			heapInfo.freeDescriptors += it->second;
-			if (heapInfo.freeIntervals.empty())
-				heapInfo.freeIntervals.push_back(newInterval);
+			auto pHeapStore = pHeapEx->pStore;
+			pHeapStore->freeDescriptors += pHeapEx->count;
+			if (pHeapStore->freeIntervals.empty())
+				pHeapStore->freeIntervals.push_back(pHeapEx->interval);
 			else
 			{
 				//insert new interval to appropriate position.If adjacent intervals can be joined,then join them
-				auto prevIt = heapInfo.freeIntervals.end();
-				auto nextIt = heapInfo.freeIntervals.end();
+				auto prevIt = pHeapStore->freeIntervals.end();
+				auto nextIt = pHeapStore->freeIntervals.end();
 				//first loop intervals and find a gap that can be fit the new interval
-				for (auto currIt = heapInfo.freeIntervals.begin();currIt != heapInfo.freeIntervals.end();++currIt)
+				for (auto currIt = pHeapStore->freeIntervals.begin();currIt != pHeapStore->freeIntervals.end();++currIt)
 				{
-					if(std::get<0>(*currIt) >= offset + it->second)
+					if(std::get<0>(*currIt) >= std::get<1>(pHeapEx->interval))
 					{
 						nextIt = currIt;
 						break;
 					}
 					prevIt = currIt;
 				}
-				if (nextIt == heapInfo.freeIntervals.end())//no nextIt means append to back
+				if (nextIt == pHeapStore->freeIntervals.end())//no nextIt means append to back
 				{
-					//try to join previous interval with the new interval
-					if (std::get<1>(*prevIt) == offset)
+					if (prevIt == pHeapStore->freeIntervals.end())//prevIt also end, which means there's no free interval
 					{
-						std::get<1>(*prevIt) = offset + it->second;	//joinable
+						pHeapStore->freeIntervals.push_back(pHeapEx->interval);
 					}
 					else
 					{
-						auto backIt = std::back_inserter(heapInfo.freeIntervals);
-						*backIt = newInterval;
+						//try to join previous interval with the new interval
+						if (std::get<1>(*prevIt) == std::get<0>(pHeapEx->interval))
+						{
+							std::get<1>(*prevIt) = std::get<1>(pHeapEx->interval);	//joinable
+						}
+						else
+						{
+							auto backIt = std::back_inserter(pHeapStore->freeIntervals);
+							*backIt = pHeapEx->interval;
+						}
 					}
 				}
-				else
+				else	//insert between two adjacent intervals.Try to merge if possible
 				{
-					auto currIt = heapInfo.freeIntervals.insert(nextIt, newInterval);
-					if (prevIt != heapInfo.freeIntervals.end() && std::get<1>(*prevIt) == offset)
+					auto currIt = pHeapStore->freeIntervals.insert(nextIt, pHeapEx->interval);
+					if (prevIt != pHeapStore->freeIntervals.end() && std::get<1>(*prevIt) == std::get<0>(pHeapEx->interval))
 					{
-						std::get<1>(*prevIt) = offset + it->second;
-						heapInfo.freeIntervals.erase(currIt);
+						std::get<1>(*prevIt) = std::get<1>(pHeapEx->interval);
+						pHeapStore->freeIntervals.erase(currIt);
 						currIt = prevIt;
 					}
-
-					if (std::get<0>(*nextIt) == offset + it->second)
+					//here must recalculate nextIt,because it may be invalidated by previous code
+					auto oldCurrIt = currIt;
+					auto nextIt = ++currIt;
+					if (std::get<1>(*oldCurrIt) == std::get<0>(*nextIt))
 					{
-						std::get<1>(*currIt) = std::get<1>(*nextIt);
-						heapInfo.freeIntervals.erase(nextIt);
+						std::get<1>(*oldCurrIt) = std::get<1>(*nextIt);
+						pHeapStore->freeIntervals.erase(nextIt);
 					}
 				}
 			}
-			heapInfo.locationToSizes.erase(it);
 		}
 
 		UINT D3D12DescriptorHeapManager::GetIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type, ID3D12Device* pDevice)
@@ -224,21 +233,19 @@ namespace Lightning
 		void D3D12DescriptorHeapManager::Clear()
 		{
 			mHeaps.clear();
-			mHeapIDToHeaps.clear();
-			mCPUHandles.clear();
-			mGPUHandles.clear();
 		}
 
-		ComPtr<ID3D12DescriptorHeap> D3D12DescriptorHeapManager::GetHeap(UINT heapID)const
+		ComPtr<ID3D12DescriptorHeap> D3D12DescriptorHeapManager::GetHeap(DescriptorHeap* pHeap)const
 		{
-			auto it = mHeapIDToHeaps.find(heapID);
-			if (it == mHeapIDToHeaps.end())
+#ifndef NDEBUG
+			auto it = mAllocHeaps.find(static_cast<DescriptorHeapEx*>(pHeap));
+			if (it == mAllocHeaps.end())
 			{
+				LOG_ERROR("Invalid descriptor heap in GetHeap:%s:%d", __FILE__, __LINE__);
 				return ComPtr<ID3D12DescriptorHeap>();
 			}
-			return it->second;
+#endif
+			return static_cast<DescriptorHeapEx*>(pHeap)->pStore->heap;
 		}
-
-
 	}
 }

@@ -19,7 +19,7 @@ namespace Lightning
 			float GetDepthClearValue()const override;
 			std::uint32_t GetStencilClearValue()const override;
 			RenderFormat GetRenderFormat()const override;
-			D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return mHeap.cpuHandle; }
+			D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return mHeap->cpuHandle; }
 			std::uint32_t GetWidth()const override { return mWidth; }
 			std::uint32_t GetHeight()const override { return mHeight; }
 		private:
@@ -30,7 +30,7 @@ namespace Lightning
 			RenderFormat mFormat;
 			std::uint32_t mWidth;
 			std::uint32_t mHeight;
-			DescriptorHeap mHeap;
+			DescriptorHeap* mHeap;
 		};
 	}
 }

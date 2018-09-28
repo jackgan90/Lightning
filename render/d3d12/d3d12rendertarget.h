@@ -19,8 +19,8 @@ namespace Lightning
 			bool IsSwapChainRenderTarget()const override;
 			RenderTargetID GetID() const override { return mID; }
 			ComPtr<ID3D12Resource> GetNative()const { return mResource; }
-			const D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return mHeap.cpuHandle; }
-			const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle()const { return mHeap.gpuHandle; }
+			const D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return mHeap->cpuHandle; }
+			const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle()const { return mHeap->gpuHandle; }
 			std::size_t GetSampleCount()override { return mSampleCount; }
 			int GetSampleQuality()override { return mSampleQuality; }
 			RenderFormat GetRenderFormat()const override { return mFormat; }
@@ -28,7 +28,7 @@ namespace Lightning
 			ComPtr<ID3D12Resource> mResource;
 			bool mIsSwapChainTarget;
 			RenderTargetID mID;
-			DescriptorHeap mHeap;
+			DescriptorHeap *mHeap;
 			std::size_t mSampleCount;
 			int mSampleQuality;
 			RenderFormat mFormat;
