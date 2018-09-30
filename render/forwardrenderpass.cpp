@@ -16,8 +16,8 @@ namespace Lightning
 		{
 			for (auto& renderItem : mRenderItems)
 			{
-				CommitPipelineStates(renderItem);
 				CommitShaderArguments(renderItem);
+				CommitPipelineStates(renderItem);
 				CommitBuffers(renderItem.geometry);
 				Draw(renderItem.geometry);
 			}

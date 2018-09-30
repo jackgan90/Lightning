@@ -135,7 +135,6 @@ namespace Lightning
 		void D3D12Renderer::BeginFrame()
 		{
 			Renderer::BeginFrame();
-			D3D12ConstantBufferManager::Instance()->ResetBuffers(mCurrentBackBufferIndex);
 		}
 
 		void D3D12Renderer::DoFrame()

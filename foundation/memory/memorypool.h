@@ -1,15 +1,14 @@
 #pragma once
 #include <cstdint>
 #include "container.h"
-#include "singleton.h"
 
 namespace Lightning
 {
 	namespace Foundation
 	{
 		//Allocate memory for objects that won't release(for example vertex formats)
-		template<typename T>
-		class MemoryPool : public Singleton<MemoryPool>
+		template<typename T, int BufferObjects=100>
+		class MemoryPool
 		{
 		public:
 			T* Get()
@@ -39,7 +38,7 @@ namespace Lightning
 				std::size_t current;
 			};
 			container::vector<Buffer> mBuffers;
-			static constexpr const std::size_t BUFFER_SIZE = sizeof(T) * 100;
+			static constexpr const std::size_t BUFFER_SIZE = sizeof(T) * BufferObjects;
 		};
 	}
 }

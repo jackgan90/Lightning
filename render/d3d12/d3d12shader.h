@@ -56,9 +56,9 @@ namespace Lightning
 			void Compile()override;
 			void* GetByteCodeBuffer()const;
 			SIZE_T GetByteCodeBufferSize()const;
-			const container::vector<D3D12_ROOT_PARAMETER>& GetRootParameters();
+			const container::vector<D3D12_ROOT_PARAMETER>& GetRootParameters()const;
 			std::size_t GetRootParameterCount()const;
-			const container::vector<D3D12RootBoundResource>& GetRootBoundResources()const;
+			const container::vector<D3D12RootBoundResource>& GetRootBoundResources();
 		private:
 			struct ArgumentBinding
 			{
@@ -67,16 +67,17 @@ namespace Lightning
 			};
 			void CompileImpl();
 			D3D12_SHADER_VISIBILITY GetParameterVisibility()const;
-			void UpdateRootParameters();
+			void UpdateRootBoundResources();
 			ComPtr<ID3D10Blob> mByteCode;
-			ComPtr<ID3D12ShaderReflection> mShaderReflect;
 			D3D12_SHADER_DESC mDesc;
-			DescriptorHeap *mConstantHeap;
+			DescriptorHeap *mConstantHeaps[RENDER_FRAME_COUNT];
 			container::unordered_map<std::string, ArgumentBinding> mArgumentBindings;
 			container::vector<D3D12_ROOT_PARAMETER> mRootParameters;
 			container::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC> mInputBindDescs;
 			container::unordered_map<std::size_t, D3D12_SHADER_BUFFER_DESC> mBufferDescs;
 			container::unordered_map<std::uint8_t, container::vector<D3D12RootBoundResource>> mRootBoundResources;
+			//bufferIndex to bufferid
+			container::unordered_map<UINT, std::size_t> mBoundBufferCache;
 			D3D12_DESCRIPTOR_RANGE *mDescriptorRanges;
 		};
 	}

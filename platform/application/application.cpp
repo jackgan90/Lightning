@@ -53,7 +53,7 @@ namespace Lightning
 			scene->AddDrawable(cube);
 			//scene->AddDrawable(cylinder);
 			//scene->AddDrawable(hemisphere);
-			//scene->AddDrawable(sphere);
+			scene->AddDrawable(sphere);
 			//End of scene creation
 			RegisterWindowHandlers();
 		}

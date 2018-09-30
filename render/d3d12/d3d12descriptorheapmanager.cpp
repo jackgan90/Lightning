@@ -41,8 +41,9 @@ namespace Lightning
 			if (std::get<0>(res))
 				return std::get<1>(res);
 			//if reach here,the existing heaps can not allocate more descriptors, so just allocate a new heap
-			auto newHeap = CreateHeapStore(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE, nativeDevice);
-			res = TryAllocateDescriptorHeap(std::get<1>(newHeap), count);
+			CreateHeapStore(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE, nativeDevice);
+			it = mHeaps.find(typeHash);
+			res = TryAllocateDescriptorHeap(it->second, count);
 			return std::get<1>(res);
 		}
 
@@ -246,7 +247,8 @@ namespace Lightning
 				return ComPtr<ID3D12DescriptorHeap>();
 			}
 #endif
-			return static_cast<DescriptorHeapEx*>(pHeap)->pStore->heap;
+			auto pHeapEx = static_cast<DescriptorHeapEx*>(pHeap);
+			return pHeapEx->pStore->heap;
 		}
 	}
 }

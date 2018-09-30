@@ -25,26 +25,26 @@ namespace Lightning
 			, mDescriptorRanges(nullptr)
 		{
 			assert(shaderSource);
+			std::memset(mConstantHeaps, 0, sizeof(mConstantHeaps));
 			CompileImpl();
-			D3DReflect(mByteCode->GetBufferPointer(), mByteCode->GetBufferSize(), IID_PPV_ARGS(&mShaderReflect));
-			mShaderReflect->GetDesc(&mDesc);
+			ComPtr<ID3D12ShaderReflection> shaderReflection;
+			D3DReflect(mByteCode->GetBufferPointer(), mByteCode->GetBufferSize(), IID_PPV_ARGS(&shaderReflection));
+			shaderReflection->GetDesc(&mDesc);
 			for (std::size_t i = 0;i < mDesc.BoundResources;++i)
 			{
 				D3D12_SHADER_INPUT_BIND_DESC bindDesc;
-				mShaderReflect->GetResourceBindingDesc(i, &bindDesc);
+				shaderReflection->GetResourceBindingDesc(i, &bindDesc);
 				mInputBindDescs[bindDesc.Name] = bindDesc;
 			}
 			//create heap descriptor(samplers excluded)
 			//TODO : should create sampler descriptor heap
 			if (mDesc.ConstantBuffers > 0)
 			{
-				mDescriptorRanges = new D3D12_DESCRIPTOR_RANGE[mDesc.ConstantBuffers * RENDER_FRAME_COUNT];
+				mDescriptorRanges = new D3D12_DESCRIPTOR_RANGE[mDesc.ConstantBuffers];
 				//initialize cbv descriptor ranges, number of descriptors is the number of constant buffers
-				mConstantHeap = D3D12DescriptorHeapManager::Instance()->Allocate(
-					D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, true, mDesc.ConstantBuffers * RENDER_FRAME_COUNT, device);
 				for (size_t i = 0; i < mDesc.ConstantBuffers; i++)
 				{
-					auto constantBufferRefl = mShaderReflect->GetConstantBufferByIndex(i);
+					auto constantBufferRefl = shaderReflection->GetConstantBufferByIndex(i);
 					D3D12_SHADER_BUFFER_DESC bufferDesc;
 					constantBufferRefl->GetDesc(&bufferDesc);
 					mBufferDescs[i] = bufferDesc;
@@ -58,28 +58,20 @@ namespace Lightning
 						argBinding.offsetInBuffer = shaderVarDesc.StartOffset;
 						mArgumentBindings[shaderVarDesc.Name] = argBinding;
 					}
+					D3D12_SHADER_INPUT_BIND_DESC& bindDesc = mInputBindDescs[bufferDesc.Name];
+					mDescriptorRanges[i].BaseShaderRegister = bindDesc.BindPoint;
+					mDescriptorRanges[i].NumDescriptors = 1;
+					mDescriptorRanges[i].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+					mDescriptorRanges[i].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+					mDescriptorRanges[i].RegisterSpace = bindDesc.Space;
 				}
+				CD3DX12_ROOT_PARAMETER cbvParameter;
+				cbvParameter.InitAsDescriptorTable(mDesc.ConstantBuffers, mDescriptorRanges, GetParameterVisibility());
+				mRootParameters.push_back(cbvParameter);
 			}
 			for (std::size_t i = 0; i < RENDER_FRAME_COUNT;++i)
 			{
 				mRootBoundResources.emplace(i, container::vector<D3D12RootBoundResource>());
-				if (mDesc.ConstantBuffers > 0)
-				{
-					CD3DX12_CPU_DESCRIPTOR_HANDLE handle(mConstantHeap->cpuHandle);
-					handle.Offset(i * mDesc.ConstantBuffers * mConstantHeap->incrementSize);
-					CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(mConstantHeap->gpuHandle);
-					gpuHandle.Offset(i * mDesc.ConstantBuffers * mConstantHeap->incrementSize);
-					for (std::size_t k = 0;k < mDesc.ConstantBuffers;++k)
-					{
-						D3D12RootBoundResource boundResource;
-						boundResource.descriptorTableHeap = D3D12DescriptorHeapManager::Instance()->GetHeap(mConstantHeap);
-						boundResource.type = D3D12RootBoundResourceType::DescriptorTable;
-						boundResource.descriptorTableHandle = gpuHandle;
-						mRootBoundResources[i].push_back(boundResource);
-						handle.Offset(mConstantHeap->incrementSize);
-						gpuHandle.Offset(mConstantHeap->incrementSize);
-					}
-				}
 			}
 			//TODO initialize other shader resource
 		}
@@ -92,11 +84,12 @@ namespace Lightning
 			}
 			mArgumentBindings.clear();
 			mByteCode.Reset();
-			mShaderReflect.Reset();
-			if (mDesc.ConstantBuffers > 0)
+			for (auto i = 0; i < RENDER_FRAME_COUNT; ++i)
 			{
-				D3D12DescriptorHeapManager::Instance()->Deallocate(mConstantHeap);
-				mConstantHeap = nullptr;
+				if (mConstantHeaps[i])
+				{
+					D3D12DescriptorHeapManager::Instance()->Deallocate(mConstantHeaps[i]);
+				}
 			}
 		}
 
@@ -155,12 +148,11 @@ namespace Lightning
 				{
 					const auto& bindingInfo = it->second;
 					std::uint8_t *addr{ nullptr };
-					std::size_t bufferId{ 0 };
 					std::size_t size{ 0 };
 					if (argument.type == ShaderArgumentType::FLOAT)
 					{
-						bufferId = D3D12ConstantBufferManager::Instance()->AllocBuffer(sizeof(float));
-						addr = D3D12ConstantBufferManager::Instance()->LockBuffer(bufferId);
+						mBoundBufferCache[it->second.bufferIndex] = D3D12ConstantBufferManager::Instance()->AllocBuffer(sizeof(float));
+						addr = D3D12ConstantBufferManager::Instance()->LockBuffer(mBoundBufferCache[it->second.bufferIndex]);
 						*reinterpret_cast<float*>(addr + bindingInfo.offsetInBuffer) = argument.GetFloat();
 					}
 					else
@@ -211,18 +203,10 @@ namespace Lightning
 						default:
 							break;
 						}
-						bufferId = D3D12ConstantBufferManager::Instance()->AllocBuffer(size);
-						addr = D3D12ConstantBufferManager::Instance()->LockBuffer(bufferId);
+						mBoundBufferCache[it->second.bufferIndex] = D3D12ConstantBufferManager::Instance()->AllocBuffer(size);
+						addr = D3D12ConstantBufferManager::Instance()->LockBuffer(mBoundBufferCache[it->second.bufferIndex]);
 						std::memcpy(addr + bindingInfo.offsetInBuffer, data, size);
 					}
-					D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
-					cbvDesc.BufferLocation = D3D12ConstantBufferManager::Instance()->GetVirtualAddress(bufferId);
-					cbvDesc.SizeInBytes = D3D12ConstantBufferManager::Instance()->GetBufferSize(bufferId);
-					auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-					auto nativeDevice = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNative();
-					CD3DX12_CPU_DESCRIPTOR_HANDLE handle(mConstantHeap->cpuHandle);
-					handle.Offset((resourceIndex * mDesc.ConstantBuffers + bindingInfo.bufferIndex) * mConstantHeap->incrementSize);
-					nativeDevice->CreateConstantBufferView(&cbvDesc, handle);
 				}
 				break;
 			}
@@ -239,37 +223,39 @@ namespace Lightning
 			}
 		}
 
-		void D3D12Shader::UpdateRootParameters()
+		void D3D12Shader::UpdateRootBoundResources()
 		{
-			static std::uint64_t lastUpdateFrame{ 0 };
-			auto currentFrame = Renderer::Instance()->GetCurrentFrameCount();
-			if (currentFrame > lastUpdateFrame)
+			if (!mBoundBufferCache.empty())
 			{
-				lastUpdateFrame = currentFrame;
-				if (mDescriptorRanges)
+				auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
+				mRootBoundResources[resourceIndex].clear();
+				mConstantHeaps[resourceIndex] = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+					GetParameterVisibility(), mBoundBufferCache.size());
+				int index{ 0 };
+				for (auto it = mBoundBufferCache.begin(); it != mBoundBufferCache.end();++it, ++index)
 				{
-					auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-					for (size_t i = 0; i < mDesc.ConstantBuffers; i++)
-					{
-						auto rangeIndex = resourceIndex * RENDER_FRAME_COUNT + i;
-						D3D12_SHADER_INPUT_BIND_DESC& bindDesc = mInputBindDescs[mBufferDescs[i].Name];
-						mDescriptorRanges[rangeIndex].BaseShaderRegister = bindDesc.BindPoint;
-						mDescriptorRanges[rangeIndex].NumDescriptors = 1;
-						mDescriptorRanges[rangeIndex].OffsetInDescriptorsFromTableStart = mConstantHeap->offsetInDescriptors + rangeIndex;
-						mDescriptorRanges[rangeIndex].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-						mDescriptorRanges[rangeIndex].RegisterSpace = bindDesc.Space;
-					}
-					mRootParameters.clear();
-					CD3DX12_ROOT_PARAMETER cbvParameter;
-					cbvParameter.InitAsDescriptorTable(mDesc.ConstantBuffers, &mDescriptorRanges[resourceIndex * RENDER_FRAME_COUNT], GetParameterVisibility());
-					mRootParameters.push_back(cbvParameter);
+					D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
+					cbvDesc.BufferLocation = D3D12ConstantBufferManager::Instance()->GetVirtualAddress(it->second);
+					cbvDesc.SizeInBytes = D3D12ConstantBufferManager::Instance()->GetBufferSize(it->second);
+					auto nativeDevice = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNative();
+					CD3DX12_CPU_DESCRIPTOR_HANDLE handle(mConstantHeaps[resourceIndex]->cpuHandle);
+					handle.Offset(it->first * mConstantHeaps[resourceIndex]->incrementSize);
+					nativeDevice->CreateConstantBufferView(&cbvDesc, handle);
+
+					D3D12RootBoundResource boundResource;
+					boundResource.type = D3D12RootBoundResourceType::DescriptorTable;
+					boundResource.descriptorTableHeap = D3D12DescriptorHeapManager::Instance()->GetHeap(mConstantHeaps[resourceIndex]);
+					CD3DX12_GPU_DESCRIPTOR_HANDLE gpuAddress(mConstantHeaps[resourceIndex]->gpuHandle);
+					gpuAddress.Offset(index * mConstantHeaps[resourceIndex]->incrementSize);
+					boundResource.descriptorTableHandle = gpuAddress;
+					mRootBoundResources[resourceIndex].push_back(boundResource);
 				}
+				mBoundBufferCache.clear();
 			}
 		}
 
-		const container::vector<D3D12_ROOT_PARAMETER>& D3D12Shader::GetRootParameters()
+		const container::vector<D3D12_ROOT_PARAMETER>& D3D12Shader::GetRootParameters()const
 		{
-			UpdateRootParameters();
 			return mRootParameters;
 		}
 
@@ -279,11 +265,12 @@ namespace Lightning
 		}
 
 
-		const container::vector<D3D12RootBoundResource>& D3D12Shader::GetRootBoundResources()const
+		const container::vector<D3D12RootBoundResource>& D3D12Shader::GetRootBoundResources()
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto it = mRootBoundResources.find(resourceIndex);
 			assert(it != mRootBoundResources.end());
+			UpdateRootBoundResources();
 			return it->second;
 		}
 
