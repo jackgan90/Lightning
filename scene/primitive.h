@@ -20,6 +20,8 @@ namespace Lightning
 			virtual ~Primitive();
 			void Draw(Render::Renderer& renderer, const SceneRenderData& sceneRenderData) override;
 			PrimitiveType GetPrimitiveType()const { return mRenderItem.geometry->primType; }
+			void SetWorldPosition(const Vector3f& pos) { mWorldPosition = pos; }
+			Vector3f GetWorldPosition()const { return mWorldPosition; }
 		protected:
 			void UpdateRenderItem();
 			virtual std::uint8_t *GetVertices() = 0;
@@ -28,6 +30,7 @@ namespace Lightning
 			virtual std::size_t GetVertexBufferSize() = 0;
 			virtual std::size_t GetIndexBufferSize() = 0;
 			Render::RenderItem mRenderItem;
+			Vector3f mWorldPosition;
 			bool mFirstDraw;
 		};
 

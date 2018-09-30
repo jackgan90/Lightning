@@ -13,7 +13,7 @@ namespace Lightning
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::DegreesToRadians;
 		using Foundation::container;
-		Primitive::Primitive():mFirstDraw(true)
+		Primitive::Primitive():mFirstDraw(true),mWorldPosition(0, 0, 0)
 		{
 		}
 
@@ -72,8 +72,7 @@ namespace Lightning
 			auto device = Renderer::Instance()->GetDevice();
 			mRenderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::VERTEX));
 			mRenderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::FRAGMENT));
-			mRenderItem.transform = Render::Transform(Render::Vector3f({ 0.0f, 0.0f, 0.0f }), 
-				GetScale());
+			mRenderItem.transform = Render::Transform(mWorldPosition, GetScale());
 		}
 
 		

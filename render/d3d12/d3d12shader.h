@@ -56,24 +56,10 @@ namespace Lightning
 			void Compile()override;
 			void* GetByteCodeBuffer()const;
 			SIZE_T GetByteCodeBufferSize()const;
-			const container::vector<D3D12_ROOT_PARAMETER>& GetRootParameters()const;
+			const container::vector<D3D12_ROOT_PARAMETER>& GetRootParameters();
 			std::size_t GetRootParameterCount()const;
 			const container::vector<D3D12RootBoundResource>& GetRootBoundResources()const;
 		private:
-			//use to commit constant to shader
-			struct ConstantUploadContext
-			{
-				//upload heap use to update constant value
-				ComPtr<ID3D12Resource> resource[RENDER_FRAME_COUNT];
-				//handle to resource
-				D3D12_CPU_DESCRIPTOR_HANDLE handle[RENDER_FRAME_COUNT];
-				//constant buffer name in shader
-				char* bufferName;
-				//specified register index in shader
-				UINT registerIndex;
-				//constant buffer size
-				UINT64 bufferSize;
-			};
 			struct ArgumentBinding
 			{
 				UINT bufferIndex;
@@ -81,13 +67,15 @@ namespace Lightning
 			};
 			void CompileImpl();
 			D3D12_SHADER_VISIBILITY GetParameterVisibility()const;
+			void UpdateRootParameters();
 			ComPtr<ID3D10Blob> mByteCode;
 			ComPtr<ID3D12ShaderReflection> mShaderReflect;
 			D3D12_SHADER_DESC mDesc;
 			DescriptorHeap *mConstantHeap;
-			container::vector<ConstantUploadContext> mUploadContexts;
 			container::unordered_map<std::string, ArgumentBinding> mArgumentBindings;
 			container::vector<D3D12_ROOT_PARAMETER> mRootParameters;
+			container::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC> mInputBindDescs;
+			container::unordered_map<std::size_t, D3D12_SHADER_BUFFER_DESC> mBufferDescs;
 			container::unordered_map<std::uint8_t, container::vector<D3D12RootBoundResource>> mRootBoundResources;
 			D3D12_DESCRIPTOR_RANGE *mDescriptorRanges;
 		};

@@ -19,6 +19,8 @@ namespace Lightning
 			D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle;
 			D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle;
 			UINT incrementSize;
+			//offset from heap start.Measured in number of descriptors offset,not byte
+			UINT offsetInDescriptors;
 		};
 
 		class D3D12DescriptorHeapManager : public Foundation::Singleton<D3D12DescriptorHeapManager>

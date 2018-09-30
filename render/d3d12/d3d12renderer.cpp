@@ -4,6 +4,7 @@
 #include "d3d12descriptorheapmanager.h"
 #include "d3d12rendertarget.h"
 #include "d3d12renderfence.h"
+#include "d3d12constantbuffermanager.h"
 #include "winwindow.h"
 #include "configmanager.h"
 #include "logger.h"
@@ -20,7 +21,6 @@ namespace Lightning
 
 		D3D12Renderer::~D3D12Renderer()
 		{
-			LOG_INFO("Start to clean up render resources.");
 			//Note:we should release resources in advance to make REPORT_LIVE_OBJECTS work correctly because if we let the share pointer
 			//destructor run out of the scope,we cannot trace the objects 
 			//device , swap chain and depth stencil buffer are parent class's members but we still release them here because we need to track alive resources
@@ -66,11 +66,14 @@ namespace Lightning
 
 		void D3D12Renderer::ShutDown()
 		{
+			LOG_INFO("Start to clean up render resources.");
 			Renderer::ShutDown();
 			D3D12RenderTargetManager::Instance()->Clear();
 			D3D12DescriptorHeapManager::Instance()->Clear();
+			D3D12ConstantBufferManager::Instance()->Clear();
 			mDXGIFactory.Reset();
 			REPORT_LIVE_OBJECTS;
+			LOG_INFO("Finished reporting live objects!");
 		}
 
 		ID3D12CommandQueue* D3D12Renderer::GetCommandQueue()
@@ -132,6 +135,7 @@ namespace Lightning
 		void D3D12Renderer::BeginFrame()
 		{
 			Renderer::BeginFrame();
+			D3D12ConstantBufferManager::Instance()->ResetBuffers(mCurrentBackBufferIndex);
 		}
 
 		void D3D12Renderer::DoFrame()

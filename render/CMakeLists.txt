@@ -90,7 +90,8 @@ if(LIGHTNING_USE_D3D12)
 						d3d12/d3d12shadermanager.h
 						d3d12/d3d12vertexbuffer.h
 						d3d12/d3d12indexbuffer.h
-						d3d12/d3d12bufferresource.h)
+						d3d12/d3d12bufferresource.h
+						d3d12/d3d12constantbuffermanager.h)
 	set(D3D12_SOURCES	d3d12/d3d12device.cpp
 						d3d12/d3d12swapchain.cpp
 						d3d12/d3d12rendertarget.cpp
@@ -103,7 +104,8 @@ if(LIGHTNING_USE_D3D12)
 						d3d12/d3d12shadermanager.cpp
 						d3d12/d3d12vertexbuffer.cpp
 						d3d12/d3d12indexbuffer.cpp
-						d3d12/d3d12bufferresource.cpp)
+						d3d12/d3d12bufferresource.cpp
+						d3d12/d3d12constantbuffermanager.cpp)
 	list(APPEND HEADERS ${D3D12_HEADERS})
 	list(APPEND SOURCES ${D3D12_SOURCES})
 	source_group("d3d12" FILES ${D3D12_HEADERS} ${D3D12_SOURCES})

@@ -129,6 +129,7 @@ namespace Lightning
 					pHeapEx->cpuHandle = cpuHandle;
 					pHeapEx->gpuHandle = gpuHandle;
 					pHeapEx->incrementSize = heapStore.incrementSize;
+					pHeapEx->offsetInDescriptors = std::get<0>(interval);
 					pHeapEx->interval = interval;
 					pHeapEx->pStore = &heapStore;
 #ifndef NDEBUG
