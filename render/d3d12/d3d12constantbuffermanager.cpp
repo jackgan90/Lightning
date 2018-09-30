@@ -54,7 +54,7 @@ namespace Lightning
 			allocation.offset = resource.offset;
 			allocation.resource = &resource;
 			mAllocations[resourceIndex][++mCurrentID] = allocation;
-			resource.offset += bufferSize;
+			resource.offset += AlignedSize(bufferSize, 256);
 
 			return mCurrentID;
 		}
