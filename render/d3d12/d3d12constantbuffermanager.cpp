@@ -37,7 +37,7 @@ namespace Lightning
 				BufferResource newResource;
 				auto nativeDevice = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNative();
 				//D3D12 requires constant buffer having a size multiple of 256
-				auto resourceSize = AlignedSize(bufferSize, 256);
+				auto resourceSize = AlignedSize(bufferSize > MIN_BUFFER_SIZE ? bufferSize : MIN_BUFFER_SIZE, 256);
 				nativeDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE,
 					&CD3DX12_RESOURCE_DESC::Buffer(resourceSize),
 					D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&newResource.resource));
@@ -49,12 +49,14 @@ namespace Lightning
 				newResource.virtualAddress = newResource.resource->GetGPUVirtualAddress();
 				bufferResources.push_back(newResource);
 			}
+			auto realSize = AlignedSize(bufferSize, 256);
 			BufferResource& resource = bufferResources.back();
 			BufferAllocation allocation;
 			allocation.offset = resource.offset;
 			allocation.resource = &resource;
+			allocation.size = realSize;
 			mAllocations[resourceIndex][++mCurrentID] = allocation;
-			resource.offset += AlignedSize(bufferSize, 256);
+			resource.offset += realSize;
 
 			return mCurrentID;
 		}
@@ -98,7 +100,7 @@ namespace Lightning
 				return 0;
 			}
 			auto pBufferResource = it->second;
-			return pBufferResource.resource->size;
+			return pBufferResource.size;
 		}
 
 		void D3D12ConstantBufferManager::ResetBuffers(std::size_t frameIndex)
@@ -106,6 +108,7 @@ namespace Lightning
 			auto& bufferResources = mBufferResources[frameIndex];
 			if (!bufferResources.empty())
 			{
+				//LOG_INFO("Erase range,vector size:%d", bufferResources.size());
 				bufferResources.erase(bufferResources.begin() + 1, bufferResources.end());
 				bufferResources[0].offset = 0;
 			}
