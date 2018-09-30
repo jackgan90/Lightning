@@ -27,9 +27,9 @@ namespace Lightning
 			return static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNative();
 		}
 
-		DescriptorHeap* D3D12DescriptorHeapManager::Allocate(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count, ID3D12Device* pDevice)
+		DescriptorHeap* D3D12DescriptorHeapManager::Allocate(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count, bool frameTransient)
 		{
-			auto nativeDevice = pDevice ? pDevice : GetNativeDevice();
+			auto nativeDevice = GetNativeDevice();
 			auto typeHash = HeapTypeHash(type, shaderVisible);
 			auto it = mHeaps.find(typeHash);
 			if (it == mHeaps.end())
@@ -37,13 +37,13 @@ namespace Lightning
 				CreateHeapStore(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE, nativeDevice);
 				it = mHeaps.find(typeHash);
 			}
-			auto res = TryAllocateDescriptorHeap(it->second, count);
+			auto res = TryAllocateDescriptorHeap(it->second, count, frameTransient);
 			if (std::get<0>(res))
 				return std::get<1>(res);
 			//if reach here,the existing heaps can not allocate more descriptors, so just allocate a new heap
 			CreateHeapStore(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE, nativeDevice);
 			it = mHeaps.find(typeHash);
-			res = TryAllocateDescriptorHeap(it->second, count);
+			res = TryAllocateDescriptorHeap(it->second, count, frameTransient);
 			return std::get<1>(res);
 		}
 
@@ -79,19 +79,19 @@ namespace Lightning
 			return res;
 		}
 
-		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocateDescriptorHeap(container::vector<DescriptorHeapStore>& heapList, UINT count)
+		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocateDescriptorHeap(container::vector<DescriptorHeapStore>& heapList, UINT count, bool transient)
 		{
 			//loop over existing heap list reversely and try to allocate from it
 			for (int i = heapList.size() - 1; i >= 0;i--)
 			{
-				auto res = TryAllocateDescriptorHeap(heapList[i], count);
+				auto res = TryAllocateDescriptorHeap(heapList[i], count, transient);
 				if (std::get<0>(res))
 					return res;
 			}
 			return std::make_tuple<bool, DescriptorHeap*>(false, nullptr);
 		}
 
-		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocateDescriptorHeap(DescriptorHeapStore& heapStore, UINT count)
+		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocateDescriptorHeap(DescriptorHeapStore& heapStore, UINT count, bool transient)
 		{
 			auto res = std::make_tuple<bool, DescriptorHeap*>(false, nullptr);
 			if(count > heapStore.freeDescriptors)
@@ -130,9 +130,18 @@ namespace Lightning
 					pHeapEx->cpuHandle = cpuHandle;
 					pHeapEx->gpuHandle = gpuHandle;
 					pHeapEx->incrementSize = heapStore.incrementSize;
-					pHeapEx->offsetInDescriptors = std::get<0>(interval);
+					//pHeapEx->offsetInDescriptors = std::get<0>(interval);
 					pHeapEx->interval = interval;
 					pHeapEx->pStore = &heapStore;
+					if (transient)
+					{
+						auto frameIndex = Renderer::Instance()->GetFrameResourceIndex();
+						if (mFrameTransientHeaps.find(frameIndex) == mFrameTransientHeaps.end())
+						{
+							mFrameTransientHeaps.emplace(std::piecewise_construct, std::make_tuple(frameIndex), std::make_tuple());
+						}
+						mFrameTransientHeaps[frameIndex].push_back(pHeapEx);
+					}
 #ifndef NDEBUG
 					mAllocHeaps.emplace(pHeapEx);
 #endif
@@ -234,6 +243,16 @@ namespace Lightning
 
 		void D3D12DescriptorHeapManager::Clear()
 		{
+#ifndef NDEBUG
+			for (auto it = mFrameTransientHeaps.begin(); it != mFrameTransientHeaps.end();++it)
+			{
+				for (auto pHeapEx : it->second)
+				{
+					Deallocate(static_cast<DescriptorHeap*>(pHeapEx));
+				}
+			}
+			mFrameTransientHeaps.clear();
+#endif
 			mHeaps.clear();
 		}
 
@@ -249,6 +268,15 @@ namespace Lightning
 #endif
 			auto pHeapEx = static_cast<DescriptorHeapEx*>(pHeap);
 			return pHeapEx->pStore->heap;
+		}
+
+		void D3D12DescriptorHeapManager::EraseTransientAllocation(std::size_t frameIndex)
+		{
+			for (auto pHeapEx : mFrameTransientHeaps[frameIndex])
+			{
+				Deallocate(static_cast<DescriptorHeap*>(pHeapEx));
+			}
+			mFrameTransientHeaps[frameIndex].clear();
 		}
 	}
 }

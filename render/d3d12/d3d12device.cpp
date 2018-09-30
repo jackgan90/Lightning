@@ -17,6 +17,8 @@
 #include "logger.h"
 #include "configmanager.h"
 #include "ringallocator.h"
+#include "d3d12descriptorheapmanager.h"
+#include "d3d12constantbuffermanager.h"
 
 namespace Lightning
 {
@@ -571,6 +573,8 @@ namespace Lightning
 		void D3D12Device::BeginFrame(const std::size_t frameResourceIndex)
 		{
 			Device::BeginFrame(frameResourceIndex);
+			D3D12DescriptorHeapManager::Instance()->EraseTransientAllocation(frameResourceIndex);
+			D3D12ConstantBufferManager::Instance()->ResetBuffers(frameResourceIndex);
 			mFrameResources[frameResourceIndex].Release(true);
 			mCommandList->Reset(mFrameResources[frameResourceIndex].commandAllocator.Get(), nullptr);
 		}

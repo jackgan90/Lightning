@@ -25,7 +25,6 @@ namespace Lightning
 			, mDescriptorRanges(nullptr)
 		{
 			assert(shaderSource);
-			std::memset(mConstantHeaps, 0, sizeof(mConstantHeaps));
 			CompileImpl();
 			ComPtr<ID3D12ShaderReflection> shaderReflection;
 			D3DReflect(mByteCode->GetBufferPointer(), mByteCode->GetBufferSize(), IID_PPV_ARGS(&shaderReflection));
@@ -84,13 +83,6 @@ namespace Lightning
 			}
 			mArgumentBindings.clear();
 			mByteCode.Reset();
-			for (auto i = 0; i < RENDER_FRAME_COUNT; ++i)
-			{
-				if (mConstantHeaps[i])
-				{
-					D3D12DescriptorHeapManager::Instance()->Deallocate(mConstantHeaps[i]);
-				}
-			}
 		}
 
 		const ShaderDefine D3D12Shader::GetMacros()const
@@ -149,10 +141,11 @@ namespace Lightning
 					const auto& bindingInfo = it->second;
 					std::uint8_t *addr{ nullptr };
 					std::size_t size{ 0 };
+					std::size_t bufferId{ 0 };
 					if (argument.type == ShaderArgumentType::FLOAT)
 					{
-						mBoundBufferCache[it->second.bufferIndex] = D3D12ConstantBufferManager::Instance()->AllocBuffer(sizeof(float));
-						addr = D3D12ConstantBufferManager::Instance()->LockBuffer(mBoundBufferCache[it->second.bufferIndex]);
+						bufferId = D3D12ConstantBufferManager::Instance()->AllocBuffer(sizeof(float));
+						addr = D3D12ConstantBufferManager::Instance()->LockBuffer(bufferId);
 						*reinterpret_cast<float*>(addr + bindingInfo.offsetInBuffer) = argument.GetFloat();
 					}
 					else
@@ -203,10 +196,11 @@ namespace Lightning
 						default:
 							break;
 						}
-						mBoundBufferCache[it->second.bufferIndex] = D3D12ConstantBufferManager::Instance()->AllocBuffer(size);
-						addr = D3D12ConstantBufferManager::Instance()->LockBuffer(mBoundBufferCache[it->second.bufferIndex]);
+						bufferId = D3D12ConstantBufferManager::Instance()->AllocBuffer(size);
+						addr = D3D12ConstantBufferManager::Instance()->LockBuffer(bufferId);
 						std::memcpy(addr + bindingInfo.offsetInBuffer, data, size);
 					}
+					UpdateRootBoundResources(bufferId);
 				}
 				break;
 			}
@@ -223,35 +217,25 @@ namespace Lightning
 			}
 		}
 
-		void D3D12Shader::UpdateRootBoundResources()
+		void D3D12Shader::UpdateRootBoundResources(std::size_t bufferId)
 		{
-			if (!mBoundBufferCache.empty())
-			{
-				auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-				mRootBoundResources[resourceIndex].clear();
-				mConstantHeaps[resourceIndex] = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-					GetParameterVisibility(), mBoundBufferCache.size());
-				int index{ 0 };
-				for (auto it = mBoundBufferCache.begin(); it != mBoundBufferCache.end();++it, ++index)
-				{
-					D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
-					cbvDesc.BufferLocation = D3D12ConstantBufferManager::Instance()->GetVirtualAddress(it->second);
-					cbvDesc.SizeInBytes = D3D12ConstantBufferManager::Instance()->GetBufferSize(it->second);
-					auto nativeDevice = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNative();
-					CD3DX12_CPU_DESCRIPTOR_HANDLE handle(mConstantHeaps[resourceIndex]->cpuHandle);
-					handle.Offset(it->first * mConstantHeaps[resourceIndex]->incrementSize);
-					nativeDevice->CreateConstantBufferView(&cbvDesc, handle);
+			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
+			mRootBoundResources[resourceIndex].clear();
+			auto constantHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+				GetParameterVisibility(), 1, true);
+			D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
+			cbvDesc.BufferLocation = D3D12ConstantBufferManager::Instance()->GetVirtualAddress(bufferId);
+			cbvDesc.SizeInBytes = D3D12ConstantBufferManager::Instance()->GetBufferSize(bufferId);
+			auto nativeDevice = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNative();
+			CD3DX12_CPU_DESCRIPTOR_HANDLE handle(constantHeap->cpuHandle);
+			nativeDevice->CreateConstantBufferView(&cbvDesc, handle);
 
-					D3D12RootBoundResource boundResource;
-					boundResource.type = D3D12RootBoundResourceType::DescriptorTable;
-					boundResource.descriptorTableHeap = D3D12DescriptorHeapManager::Instance()->GetHeap(mConstantHeaps[resourceIndex]);
-					CD3DX12_GPU_DESCRIPTOR_HANDLE gpuAddress(mConstantHeaps[resourceIndex]->gpuHandle);
-					gpuAddress.Offset(index * mConstantHeaps[resourceIndex]->incrementSize);
-					boundResource.descriptorTableHandle = gpuAddress;
-					mRootBoundResources[resourceIndex].push_back(boundResource);
-				}
-				mBoundBufferCache.clear();
-			}
+			D3D12RootBoundResource boundResource;
+			boundResource.type = D3D12RootBoundResourceType::DescriptorTable;
+			boundResource.descriptorTableHeap = D3D12DescriptorHeapManager::Instance()->GetHeap(constantHeap);
+			CD3DX12_GPU_DESCRIPTOR_HANDLE gpuAddress(constantHeap->gpuHandle);
+			boundResource.descriptorTableHandle = gpuAddress;
+			mRootBoundResources[resourceIndex].push_back(boundResource);
 		}
 
 		const container::vector<D3D12_ROOT_PARAMETER>& D3D12Shader::GetRootParameters()const
@@ -270,7 +254,6 @@ namespace Lightning
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto it = mRootBoundResources.find(resourceIndex);
 			assert(it != mRootBoundResources.end());
-			UpdateRootBoundResources();
 			return it->second;
 		}
 

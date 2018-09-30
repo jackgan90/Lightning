@@ -25,7 +25,7 @@ namespace Lightning
 		void D3D12DepthStencilBuffer::CreateResource()
 		{
 			//create heap
-			mHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, false, 1);
+			mHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, false, 1, false);
 
 			auto nativeFormat = D3D12TypeMapper::MapRenderFormat(mFormat);
 			//create resource
