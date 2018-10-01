@@ -52,7 +52,6 @@ namespace Lightning
 					cbufferInfo.size = bufferDesc.Size;
 					mConstantBufferInfo[i] = cbufferInfo;
 					totalBufferSize += bufferDesc.Size;
-					mBufferDescs[i] = bufferDesc;
 					for (size_t j = 0; j < bufferDesc.Variables; j++)
 					{
 						ID3D12ShaderReflectionVariable* variableRefl = constantBufferRefl->GetVariableByIndex(j);
@@ -124,94 +123,22 @@ namespace Lightning
 			return mDesc.BoundResources;
 		}
 
-		void D3D12Shader::SetArgument(const ShaderArgument& argument)
+		void D3D12Shader::SetArgument(const ShaderArgument& arg)
 		{
-			if (argument.type == ShaderArgumentType::UNKNOWN)
+			if (arg.type == ShaderArgumentType::UNKNOWN)
 			{
 				LOG_WARNING("Unknown shader argument type when set shader %s", mName.c_str());
 				return;
 			}
-			switch (argument.type)
+			auto it = mArgumentBindings.find(arg.name);
+			assert(it != mArgumentBindings.end());
+			const auto& bindingInfo = it->second;
+			std::size_t size{ 0 };
+			auto data = arg.Buffer(size);
+			if (data)
 			{
-			case ShaderArgumentType::FLOAT:
-			case ShaderArgumentType::FLOAT2:
-			case ShaderArgumentType::FLOAT3:
-			case ShaderArgumentType::FLOAT4:
-			case ShaderArgumentType::MATRIX2:
-			case ShaderArgumentType::MATRIX3:
-			case ShaderArgumentType::MATRIX4:
-			{
-				auto it = mArgumentBindings.find(argument.name);
-				if (it == mArgumentBindings.end())
-				{
-					//logger.Log(LogLevel::Warning, "shader argument of type %d with name %s doesn't exist in shader %s",
-					//	argument.type, argument.name.c_str(), mName.c_str());
-				}
-				else
-				{
-					const auto& bindingInfo = it->second;
-					std::size_t size{ 0 };
-					std::size_t bufferId{ 0 };
-					std::uint8_t *buffer = mIntermediateBuffer + mConstantBufferInfo[bindingInfo.bufferIndex].offset;
-					if (argument.type == ShaderArgumentType::FLOAT)
-					{
-						*reinterpret_cast<float*>(buffer + bindingInfo.offsetInBuffer) = argument.GetFloat();
-					}
-					else
-					{
-						float data[16];
-						switch (argument.type)
-						{
-						case ShaderArgumentType::FLOAT2:
-						{
-							const auto v2 = argument.GetVector2();
-							data[0] = v2.x;
-							data[1] = v2.y;
-							size = 2 * sizeof(float);
-							break;
-						}
-						case ShaderArgumentType::FLOAT3:
-						{
-							const auto v3 = argument.GetVector3();
-							data[0] = v3.x;
-							data[1] = v3.y;
-							data[2] = v3.z;
-							size = 3 * sizeof(float);
-							break;
-						}
-						case ShaderArgumentType::FLOAT4:
-						{
-							const auto v4 = argument.GetVector4();
-							data[0] = v4.x;
-							data[1] = v4.y;
-							data[2] = v4.z;
-							data[3] = v4.w;
-							size = 4 * sizeof(float);
-							break;
-						}
-						case ShaderArgumentType::MATRIX2:
-							break;
-						case ShaderArgumentType::MATRIX3:
-						{
-							break;
-						}
-						case ShaderArgumentType::MATRIX4:
-						{
-							size = 16 * sizeof(float);
-							const auto m4 = argument.GetMatrix4().m;
-							std::memcpy(data, m4, size);
-							break;
-						}
-						default:
-							break;
-						}
-						std::memcpy(buffer + bindingInfo.offsetInBuffer, data, size);
-					}
-				}
-				break;
-			}
-			default:
-				break;
+				std::uint8_t *buffer = mIntermediateBuffer + mConstantBufferInfo[bindingInfo.bufferIndex].offset;
+				std::memcpy(buffer + bindingInfo.offsetInBuffer, data, size);
 			}
 		}
 

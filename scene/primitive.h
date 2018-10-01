@@ -7,12 +7,14 @@
 #include "indexbuffer.h"
 #include "renderconstants.h"
 #include "renderitem.h"
+#include "color.h"
 
 namespace Lightning
 {
 	namespace Scene
 	{
 		using Render::PrimitiveType;
+		using Render::Color32;
 		class LIGHTNING_SCENE_API Primitive : public IDrawable
 		{
 		public:
@@ -22,6 +24,13 @@ namespace Lightning
 			PrimitiveType GetPrimitiveType()const { return mRenderItem.geometry->primType; }
 			void SetWorldPosition(const Vector3f& pos) { mWorldPosition = pos; }
 			Vector3f GetWorldPosition()const { return mWorldPosition; }
+			Color32 GetColor()const { return mColor; }
+			void SetColor(const Color32& color);
+			//color is in ARGB order
+			void SetColor(std::uint32_t color);
+			void SetColor(float a, float r, float g, float b);
+			void SetTransparency(std::uint8_t transparency);
+			void SetTransparency(float transparency);
 		protected:
 			void UpdateRenderItem();
 			virtual std::uint8_t *GetVertices() = 0;
@@ -32,6 +41,7 @@ namespace Lightning
 			Render::RenderItem mRenderItem;
 			Vector3f mWorldPosition;
 			bool mFirstDraw;
+			Color32 mColor;
 		};
 
 		struct PrimitiveDataSource

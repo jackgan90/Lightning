@@ -73,21 +73,50 @@ namespace Lightning
 			ShaderArgument():type(ShaderArgumentType::UNKNOWN){}
 			ShaderArgument(const float _f):type(ShaderArgumentType::FLOAT), f(_f){}
 			ShaderArgument(const Vector2f& _v2) :type(ShaderArgumentType::FLOAT2) { new (&v2)Vector2f(_v2); }
-			ShaderArgument(Vector2f&& _v2) :type(ShaderArgumentType::FLOAT2) { new (&v2)Vector2f(std::move(_v2)); }
 			ShaderArgument(const Vector3f& _v3) :type(ShaderArgumentType::FLOAT3) { new (&v3)Vector3f(_v3); }
-			ShaderArgument(Vector3f&& _v3) :type(ShaderArgumentType::FLOAT3) { new (&v3)Vector3f(std::move(_v3)); }
 			ShaderArgument(const Vector4f& _v4) :type(ShaderArgumentType::FLOAT4) { new (&v4)Vector4f(_v4); }
-			ShaderArgument(Vector4f&& _v4) :type(ShaderArgumentType::FLOAT4) { new (&v4)Vector4f(std::move(_v4)); }
 			ShaderArgument(const Matrix3f& _m3) :type(ShaderArgumentType::MATRIX3) { new (&m3)Matrix3f(_m3); }
-			ShaderArgument(Matrix3f&& _m3) :type(ShaderArgumentType::MATRIX3) { new (&m3)Matrix3f(std::move(_m3)); }
 			ShaderArgument(const Matrix4f& _m4) :type(ShaderArgumentType::MATRIX4) { new (&m4)Matrix4f(_m4); }
-			ShaderArgument(Matrix4f&& _m4) :type(ShaderArgumentType::MATRIX4) { new (&m4)Matrix4f(std::move(_m4)); }
-			float GetFloat()const { return f; }
-			Vector2f GetVector2()const { return v2; }
-			Vector3f GetVector3()const { return v3; }
-			Vector4f GetVector4()const { return v4; }
-			Matrix3f GetMatrix3()const { return m3; }
-			Matrix4f GetMatrix4()const { return m4; }
+			const std::uint8_t* Buffer(std::size_t& size)const
+			{
+				size = 0;
+				switch (type)
+				{
+				case ShaderArgumentType::UNKNOWN:
+					break;
+				case ShaderArgumentType::FLOAT:
+					size = sizeof(f);
+					return reinterpret_cast<const std::uint8_t*>(&f);
+				case ShaderArgumentType::FLOAT2:
+					size = sizeof(v2);
+					return reinterpret_cast<const std::uint8_t*>(&v2);
+				case ShaderArgumentType::FLOAT3:
+					size = sizeof(v3);
+					return reinterpret_cast<const std::uint8_t*>(&v3);
+				case ShaderArgumentType::FLOAT4:
+					size = sizeof(v4);
+					return reinterpret_cast<const std::uint8_t*>(&v4);
+				case ShaderArgumentType::MATRIX2:
+					break;
+				case ShaderArgumentType::MATRIX3:
+					size = sizeof(m3);
+					return reinterpret_cast<const std::uint8_t*>(&m3);
+				case ShaderArgumentType::MATRIX4:
+					size = sizeof(m4);
+					return reinterpret_cast<const std::uint8_t*>(&m4);
+				case ShaderArgumentType::TEXTURE2D:
+					break;
+				case ShaderArgumentType::TEXTURE3D:
+					break;
+				case ShaderArgumentType::SAMPLER2D:
+					break;
+				case ShaderArgumentType::SAMPLER3D:
+					break;
+				default:
+					break;
+				}
+				return nullptr;
+			}
 		};
 
 		class LIGHTNING_RENDER_API IShader : public HashableObject

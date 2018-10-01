@@ -22,6 +22,37 @@ namespace Lightning
 
 		}
 
+		void Primitive::SetColor(const Color32& color)
+		{
+			mColor = color;
+		}
+
+		void Primitive::SetColor(std::uint32_t color)
+		{
+			mColor.a = static_cast<std::uint8_t>((color & 0xff000000) >> 24);
+			mColor.r = static_cast<std::uint8_t>((color & 0x00ff0000) >> 16);
+			mColor.g = static_cast<std::uint8_t>((color & 0x0000ff00) >> 8);
+			mColor.b = static_cast<std::uint8_t>(color & 0x000000ff);
+		}
+
+		void Primitive::SetColor(float a, float r, float g, float b)
+		{
+			mColor.a = static_cast<std::uint8_t>(a * 255);
+			mColor.r = static_cast<std::uint8_t>(r * 255);
+			mColor.g = static_cast<std::uint8_t>(g * 255);
+			mColor.b = static_cast<std::uint8_t>(b * 255);
+		}
+
+		void Primitive::SetTransparency(std::uint8_t transparency)
+		{
+			mColor.a = transparency;
+		}
+
+		void Primitive::SetTransparency(float transparency)
+		{
+			mColor.a = static_cast<std::uint8_t>(255 * transparency);
+		}
+
 		void Primitive::Draw(Render::Renderer& renderer, const SceneRenderData& sceneRenderData)
 		{
 			if (mFirstDraw)
