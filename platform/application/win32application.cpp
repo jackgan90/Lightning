@@ -86,6 +86,7 @@ namespace Lightning
 					{
 						mTimer->RemoveTask(cameraMoveTimerId);
 						offset *= 0.2f;
+						offset = camera->CameraToWorld(offset) - camera->GetWorldPosition();
 						auto targetPosition = position + offset;
 						std::size_t *ptrTimerID = &cameraMoveTimerId;
 						float* ptrProgress = &progress;

@@ -136,11 +136,15 @@ namespace Lightning
 			};
 
 			template<typename T>
+			struct Vector4;
+
+			template<typename T>
 			struct Vector3 : VectorBase<Vector3<T>, T>
 			{
 				static constexpr unsigned Order = 3;
 				Vector3() : x(0), y(0), z(0){}
 				Vector3(T _x, T _y, T _z) : x(_x), y(_y), z(_z){}
+				Vector3(const Vector4<T>& v4) : x(v4.x), y(v4.y), z(v4.z){}
 				T& operator[](int i) {
 					switch (i) {
 					case 1:

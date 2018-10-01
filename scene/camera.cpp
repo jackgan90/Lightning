@@ -166,6 +166,22 @@ namespace Lightning
 			mViewMatrix.SetRow(2, row2);
 			mViewMatrix.SetRow(3, Vector4f({0.0f, 0.0f, 0.0f, 1.0f}));
 
+			Vector4f col0(mXAxis), col1(mYAxis), col2(mZAxis), col3(mWorldPosition);
+			col0[3] = col1[3] = col2[3] = 0;
+			mInvViewMatrix.SetColumn(0, col0);
+			mInvViewMatrix.SetColumn(1, col1);
+			mInvViewMatrix.SetColumn(2, col2);
+			mInvViewMatrix.SetColumn(3, col3);
+		}
+
+		Vector3f Camera::CameraToWorld(const Vector3f& position)const
+		{
+			return mInvViewMatrix * Vector4f(position);
+		}
+
+		Vector3f Camera::WorldToCamera(const Vector3f& position)const
+		{
+			return mViewMatrix * Vector4f(position);
 		}
 	}
 }

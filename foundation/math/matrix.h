@@ -41,6 +41,25 @@ namespace Lightning
 					}
 					return mat;
 				}
+
+				template<typename V>
+				std::enable_if_t<std::is_base_of<VectorBase<V, T>, V>::value, V> operator*(const V& v)const
+				{
+					static_assert(Derived::Order == V::Order, "matrix multiply vector requires the same dimension!");
+					V res;
+					const Derived* const pDerived = reinterpret_cast<const Derived* const>(this);
+					auto& m = pDerived->m;
+					for (int i = 0;i < Derived::Order;++i)
+					{
+						T s{ 0 };
+						for (int j = 0; j < Derived::Order;++j)
+						{
+							s += m[CELL_INDEX(i, j)] * v[j];
+						}
+						res[i] = s;
+					}
+					return res;
+				}
 				
 				static inline unsigned CELL_INDEX(unsigned row, unsigned col) { return col * Derived::Order + row; }
 			};

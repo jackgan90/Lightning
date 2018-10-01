@@ -29,6 +29,7 @@ namespace Lightning
 			virtual ~Camera();
 			Matrix4f GetViewMatrix()const { return mViewMatrix; }
 			Matrix4f GetProjectionMatrix()const { return mProjectionMatrix; }
+			Matrix4f GetInvViewMatrix()const { return mInvViewMatrix; }
 			void MoveTo(const Vector3f& worldPosition);
 			void LookAt(const Vector3f& lookPosition, const Vector3f& worldUp = Vector3f{0.0f, 1.0f, 0.0f});
 			void SetNear(const float nearPlane);
@@ -44,6 +45,8 @@ namespace Lightning
 			float GetAspectRatio()const { return mAspectRatio; }
 			void SetWorldPosition(const Vector3f& position);
 			Vector3f GetWorldPosition()const { return mWorldPosition; }
+			Vector3f CameraToWorld(const Vector3f& position)const;
+			Vector3f WorldToCamera(const Vector3f& position)const;
 		protected:
 			void UpdateViewMatrix();
 			void UpdateProjectionMatrix();
@@ -59,6 +62,7 @@ namespace Lightning
 			Vector3f mYAxis;
 			Vector3f mZAxis;
 			Matrix4f mViewMatrix;
+			Matrix4f mInvViewMatrix;
 			Matrix4f mProjectionMatrix;
 		};
 	}
