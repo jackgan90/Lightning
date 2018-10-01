@@ -24,7 +24,7 @@ namespace Lightning
 			//clear a specified render target,possibly parts of it defined by an array of rects
 			virtual void ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectIList* rects=nullptr) = 0;
 			virtual void ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr) = 0;
-			virtual SharedVertexBufferPtr CreateVertexBuffer(std::uint32_t bufferSize, const container::vector<VertexComponent>& components) = 0;
+			virtual SharedVertexBufferPtr CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor) = 0;
 			virtual SharedIndexBufferPtr CreateIndexBuffer(std::uint32_t bufferSize, IndexType type) = 0;
 			virtual SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap) = 0;
 			virtual SharedShaderPtr GetDefaultShader(ShaderType type) = 0;

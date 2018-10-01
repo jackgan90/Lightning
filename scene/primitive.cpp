@@ -81,6 +81,7 @@ namespace Lightning
 
 		void Primitive::UpdateRenderItem()
 		{
+			Render::VertexDescriptor descriptor;
 			Render::VertexComponent comp;
 			comp.format = Render::RenderFormat::R32G32B32_FLOAT;
 			comp.instanceStepRate = 1;
@@ -88,13 +89,12 @@ namespace Lightning
 			comp.offset = 0;
 			comp.semanticIndex = 0;
 			comp.semanticItem = { Render::RenderSemantics::POSITION, "POSITION" };
-			container::vector<Render::VertexComponent> comps;
-			comps.push_back(comp);
+			descriptor.components.push_back(comp);
 			mRenderItem.geometry = std::make_shared<Render::Geometry>();
 			auto pDevice = Renderer::Instance()->GetDevice();
 			auto vbSize = GetVertexBufferSize();
 			auto ibSize = GetIndexBufferSize();
-			mRenderItem.geometry->vbs[0] = pDevice->CreateVertexBuffer(vbSize, comps);
+			mRenderItem.geometry->vbs[0] = pDevice->CreateVertexBuffer(vbSize, descriptor);
 			mRenderItem.geometry->ib = pDevice->CreateIndexBuffer(ibSize, Render::IndexType::UINT16);
 			
 			
@@ -102,11 +102,13 @@ namespace Lightning
 
 			auto indices = GetIndices();
 
-			mRenderItem.geometry->vbs[0]->SetBuffer(vertices, vbSize);
-			mRenderItem.geometry->ib->SetBuffer(reinterpret_cast<std::uint8_t*>(indices), ibSize);
-			std::fill(std::begin(mRenderItem.geometry->vbs_dirty), std::end(mRenderItem.geometry->vbs_dirty), false);
-			mRenderItem.geometry->vbs_dirty[0] = true;
-			mRenderItem.geometry->ib_dirty = true;
+			auto mem = mRenderItem.geometry->vbs[0]->Lock(0, vbSize);
+			std::memcpy(mem, vertices, vbSize);
+			mRenderItem.geometry->vbs[0]->Unlock(0, vbSize);
+
+			mem = mRenderItem.geometry->ib->Lock(0, ibSize);
+			std::memcpy(mem, indices, ibSize);
+			mRenderItem.geometry->ib->Unlock(0, ibSize);
 			mRenderItem.geometry->primType = Render::PrimitiveType::TRIANGLE_LIST;
 			
 			mRenderItem.material = std::make_shared<Render::Material>();

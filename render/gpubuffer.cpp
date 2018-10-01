@@ -5,22 +5,25 @@ namespace Lightning
 {
 	namespace Render
 	{
-		GPUBuffer::GPUBuffer(std::uint32_t bufferSize) :mBuffer(nullptr), mBufferSize(bufferSize), mUsedSize(0)
+		GPUBuffer::GPUBuffer(std::uint32_t bufferSize) :
+			mBufferSize(bufferSize), mDirty(true)
 		{
-
+			mBuffer = new std::uint8_t[bufferSize];
 		}
 
-		const std::uint8_t* GPUBuffer::GetBuffer()const
+		GPUBuffer::~GPUBuffer()
 		{
-			return mBuffer;
+			delete[] mBuffer;
 		}
 
-		void GPUBuffer::SetBuffer(std::uint8_t* buffer, std::uint32_t bufferSize)
+		std::uint8_t* GPUBuffer::Lock(std::size_t start, std::size_t size)
 		{
-			assert(buffer && "buffer can't be nullptr!");
-			assert(bufferSize <= mBufferSize);
-			mBuffer = buffer;
-			mUsedSize = bufferSize;
+			return mBuffer + start;
+		}
+
+		void GPUBuffer::Unlock(std::size_t start, std::size_t size)
+		{
+			mDirty = size > 0;
 		}
 
 		std::uint32_t GPUBuffer::GetBufferSize()const

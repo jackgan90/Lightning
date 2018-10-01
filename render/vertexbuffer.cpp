@@ -7,40 +7,26 @@ namespace Lightning
 {
 	namespace Render
 	{
-		VertexBuffer::VertexBuffer(uint32_t bufferSize, const VertexComponent *components, std::size_t componentCount):
-			IVertexBuffer(bufferSize), mComponents(nullptr), mComponentCount(componentCount)
-			,mVertexSize(0), mVertexCount(0)
+		VertexBuffer::VertexBuffer(uint32_t bufferSize, const VertexDescriptor& descriptor):
+			IVertexBuffer(bufferSize), mVertexDescriptor(descriptor)
+			,mVertexSize(0)
 		{
-			if (mComponentCount)
-			{
-				mComponents = new VertexComponent[mComponentCount];
-				std::memcpy(mComponents, components, mComponentCount * sizeof(VertexComponent));
-			}
 			CalculateVertexSize();
 		}
 
 		VertexBuffer::~VertexBuffer()
 		{
-			if (mComponents)
-			{
-				delete[] mComponents;
-			}
 		}
 
-		const VertexComponent& VertexBuffer::GetComponentInfo(size_t componentIndex)
+		const VertexComponent& VertexBuffer::GetVertexComponent(size_t index)
 		{
-			assert(componentIndex < mComponentCount);
-			return mComponents[componentIndex];
+			assert(index < mVertexDescriptor.components.size());
+			return mVertexDescriptor.components[index];
 		}
 
-		std::size_t VertexBuffer::GetComponentCount()
+		std::size_t VertexBuffer::GetVertexComponentCount()
 		{
-			return mComponentCount;
-		}
-
-		std::uint32_t VertexBuffer::GetVertexCount()const 
-		{
-			return mVertexCount;
+			return mVertexDescriptor.components.size();
 		}
 
 		std::uint32_t VertexBuffer::GetVertexSize()const
@@ -48,20 +34,13 @@ namespace Lightning
 			return mVertexSize;
 		}
 
-
-		void VertexBuffer::SetBuffer(std::uint8_t* buffer, std::uint32_t bufferSize)
-		{
-			IVertexBuffer::SetBuffer(buffer, bufferSize);
-			mVertexCount = mUsedSize / mVertexSize;
-		}
-
-
 		void VertexBuffer::CalculateVertexSize()
 		{
 			mVertexSize = 0;
-			for (std::size_t i = 0;i < mComponentCount;++i)
+			for (std::size_t i = 0;i < GetVertexComponentCount();++i)
 			{
-				mVertexSize += GetVertexFormatSize(mComponents[i].format);
+				const auto& component = GetVertexComponent(i);
+				mVertexSize += GetVertexFormatSize(component.format);
 			}
 		}
 	}

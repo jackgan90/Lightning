@@ -10,16 +10,20 @@ namespace Lightning
 		{
 		public:
 			GPUBuffer(std::uint32_t bufferSize);
+			~GPUBuffer()override;
 			//get internal data
-			const std::uint8_t* GetBuffer()const override;
+			std::uint8_t* Lock(std::size_t start, std::size_t size)override;
 			//set internal buffer,no copy
-			void SetBuffer(std::uint8_t* buffer, std::uint32_t bufferSize)override;
+			void Unlock(std::size_t start, std::size_t size)override;
 			//get internal buffer size in bytes
 			std::uint32_t GetBufferSize()const override;
+			bool IsDirty()override { return mDirty; }
+			void ResetDirty()override { mDirty = false; }
+			const std::uint8_t* GetBuffer()const override { return mBuffer; }
 		protected:
 			std::uint8_t* mBuffer;
 			std::uint32_t mBufferSize;
-			std::uint32_t mUsedSize;
+			bool mDirty;
 		};
 	}
 }

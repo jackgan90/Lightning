@@ -192,14 +192,9 @@ namespace Lightning
 
 
 
-		SharedVertexBufferPtr D3D12Device::CreateVertexBuffer(std::uint32_t bufferSize, const container::vector<VertexComponent>& components)
+		SharedVertexBufferPtr D3D12Device::CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor)
 		{
-			const VertexComponent *comps{ nullptr };
-			if (!components.empty())
-			{
-				comps = &components[0];
-			}
-			return std::make_shared<D3D12VertexBuffer>(mDevice.Get(), bufferSize, comps, components.size());
+			return std::make_shared<D3D12VertexBuffer>(mDevice.Get(), bufferSize, descriptor);
 		}
 
 		SharedIndexBufferPtr D3D12Device::CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)

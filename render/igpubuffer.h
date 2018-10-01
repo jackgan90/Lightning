@@ -19,10 +19,15 @@ namespace Lightning
 		{
 		public:
 			virtual ~IGPUBuffer(){}
-			//get internal data
 			virtual const std::uint8_t* GetBuffer()const = 0;
+			//get internal data
+			virtual std::uint8_t* Lock(std::size_t start, std::size_t size) = 0;
 			//set internal buffer,no copy
-			virtual void SetBuffer(std::uint8_t* buffer, std::uint32_t bufferSize) = 0;
+			virtual void Unlock(std::size_t start, std::size_t size) = 0;
+			//return whether the underlying buffer data has changed
+			virtual bool IsDirty() = 0;
+			//Reset dirty flag
+			virtual void ResetDirty() = 0;
 			//get internal buffer size in bytes
 			virtual std::uint32_t GetBufferSize()const = 0;
 			//get the buffer type

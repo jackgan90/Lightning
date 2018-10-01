@@ -25,7 +25,7 @@ namespace Lightning
 			~D3D12Device()override;
 			void ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectIList* rects=nullptr)override;
 			void ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr)override;
-			SharedVertexBufferPtr CreateVertexBuffer(std::uint32_t bufferSize, const container::vector<VertexComponent>& components)override;
+			SharedVertexBufferPtr CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor)override;
 			SharedIndexBufferPtr CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;
 			ID3D12Device* GetNative()const { return mDevice.Get(); }
 			ID3D12CommandQueue* GetCommandQueue()const { return mCommandQueue.Get(); }

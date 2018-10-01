@@ -106,9 +106,9 @@ namespace Lightning
 				components[i].clear();
 				VertexInputLayout layout;
 				layout.slot = static_cast<std::uint8_t>(i);
-				for (std::size_t j = 0;j < geometry->vbs[i]->GetComponentCount();++j)
+				for (std::size_t j = 0;j < geometry->vbs[i]->GetVertexComponentCount();++j)
 				{
-					components[i].push_back(geometry->vbs[i]->GetComponentInfo(j));
+					components[i].push_back(geometry->vbs[i]->GetVertexComponent(j));
 				}
 				if (!components[i].empty())
 				{
@@ -132,10 +132,10 @@ namespace Lightning
 			{
 				if (!geometry->vbs[i])
 					continue;
-				if (geometry->vbs_dirty[i])
+				if (geometry->vbs[i]->IsDirty())
 				{
 					pDevice->CommitGPUBuffer(geometry->vbs[i]);
-					geometry->vbs_dirty[i] = false;
+					geometry->vbs[i]->ResetDirty();
 				}
 				if (bufferBinding.empty())
 				{
@@ -155,10 +155,10 @@ namespace Lightning
 			}
 			if (geometry->ib)
 			{
-				if (geometry->ib_dirty)
+				if (geometry->ib->IsDirty())
 				{
 					pDevice->CommitGPUBuffer(geometry->ib);
-					geometry->ib_dirty = false;
+					geometry->ib->ResetDirty();
 				}
 				bufferBinding.insert(std::make_pair(MAX_GEOMETRY_BUFFER_COUNT, container::vector<SharedGPUBufferPtr>()));
 				bufferBinding[MAX_GEOMETRY_BUFFER_COUNT].push_back(geometry->ib);
