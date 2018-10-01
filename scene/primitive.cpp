@@ -11,9 +11,12 @@ namespace Lightning
 	namespace Scene
 	{
 		using Foundation::Math::Vector3f;
+		using Foundation::Math::Vector4f;
 		using Foundation::Math::DegreesToRadians;
 		using Foundation::container;
+		using Render::ShaderArgument;
 		Primitive::Primitive():mFirstDraw(true),mWorldPosition(0, 0, 0)
+			,mColor(0, 0, 0, 255)
 		{
 		}
 
@@ -41,6 +44,14 @@ namespace Lightning
 			mColor.r = static_cast<std::uint8_t>(r * 255);
 			mColor.g = static_cast<std::uint8_t>(g * 255);
 			mColor.b = static_cast<std::uint8_t>(b * 255);
+		}
+
+		void Primitive::GetColor(float& a, float& r, float& g, float& b)
+		{
+			a = float(mColor.a) / 255;
+			r = float(mColor.r) / 255;
+			g = float(mColor.g) / 255;
+			b = float(mColor.b) / 255;
 		}
 
 		void Primitive::SetTransparency(std::uint8_t transparency)
@@ -103,6 +114,10 @@ namespace Lightning
 			auto device = Renderer::Instance()->GetDevice();
 			mRenderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::VERTEX));
 			mRenderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::FRAGMENT));
+			float a, r, g, b;
+			GetColor(a, r, g, b);
+			mRenderItem.material->AddArgument(Render::ShaderType::FRAGMENT, ShaderArgument("color", Vector4f(r, g, b, a)));
+			mRenderItem.material->EnableBlend(mColor.a != 0xff);
 			mRenderItem.transform = Render::Transform(mWorldPosition, GetScale());
 		}
 

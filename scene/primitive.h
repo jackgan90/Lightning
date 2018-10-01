@@ -25,6 +25,7 @@ namespace Lightning
 			void SetWorldPosition(const Vector3f& pos) { mWorldPosition = pos; }
 			Vector3f GetWorldPosition()const { return mWorldPosition; }
 			Color32 GetColor()const { return mColor; }
+			void GetColor(float& a, float& r, float& g, float& b);
 			void SetColor(const Color32& color);
 			//color is in ARGB order
 			void SetColor(std::uint32_t color);

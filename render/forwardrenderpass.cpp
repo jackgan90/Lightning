@@ -29,7 +29,7 @@ namespace Lightning
 			static container::vector<VertexInputLayout> layouts;
 			PipelineState state{};
 			//TODO : set render target count based on model setting
-			state.outputRenderTargetCount = 1;
+			state.outputRenderTargetCount = item.renderTargets;
 			auto pSwapChain = Renderer::Instance()->GetSwapChain();
 			state.renderTargets[0] = pSwapChain->GetPrimaryRenderTarget().get();
 			if (item.material)
@@ -39,6 +39,10 @@ namespace Lightning
 				state.gs = item.material->GetShader(ShaderType::GEOMETRY);
 				state.hs = item.material->GetShader(ShaderType::TESSELATION_CONTROL);
 				state.ds = item.material->GetShader(ShaderType::TESSELATION_EVALUATION);
+				for (auto i = 0;i < item.renderTargets;++i)
+				{
+					state.blendStates[i] = item.material->GetBlendState();
+				}
 			}
 			state.primType = item.geometry->primType;
 			//TODO : Apply other pipeline states(blend state, rasterizer state etc)
@@ -60,9 +64,16 @@ namespace Lightning
 
 		void ForwardRenderPass::CommitShaderArguments(const RenderItem& item)
 		{
-			//TODO : set other arguments for shaders
 			if (!item.material)
 				return;
+			const auto& shaderMap = item.material->GetMaterialShaderMap();
+			for (const auto& shaderAndArgs : shaderMap)
+			{
+				for (const auto& arg : shaderAndArgs.second.arguments)
+				{
+					shaderAndArgs.second.shader->SetArgument(arg);
+				}
+			}
 			auto semantics = item.material->GetSemanticRequirements();
 			for (auto semantic : semantics)
 			{
@@ -75,9 +86,7 @@ namespace Lightning
 					{
 						auto worldMatrix = item.transform.GetTransformMatrix();
 						auto wvp = item.projectionMatrix * item.viewMatrix * worldMatrix;
-						ShaderArgument arg{wvp};
-						arg.name = "wvp";
-						vs->SetArgument(arg);
+						vs->SetArgument(ShaderArgument("wvp", wvp));
 					}
 					break;
 				}

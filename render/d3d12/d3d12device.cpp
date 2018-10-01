@@ -39,9 +39,13 @@ namespace Lightning
 				"return mul(wvp, float4(position, 1.0f));\n"
 			"}\n";
 		const char* const DEFAULT_PS_SOURCE =
+			"cbuffer PS_IN : register(b0)\n"
+			"{\n"
+			"	float4 color;\n"
+			"};\n"
 			"float4 main(void):SV_TARGET\n"
 			"{\n"
-				"return float4(1.0f, 0.0f, 0.0f, 1.0f);\n"
+				"return color;\n"
 			"}\n";
 		D3D12Device::D3D12Device(IDXGIFactory4* factory, const SharedFileSystemPtr& fs)
 			:Device(), mFs(fs), mPipelineDesc{}

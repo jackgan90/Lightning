@@ -71,12 +71,12 @@ namespace Lightning
 				//TODO : add texture and sampler
 			};
 			ShaderArgument():type(ShaderArgumentType::UNKNOWN){}
-			ShaderArgument(const float _f):type(ShaderArgumentType::FLOAT), f(_f){}
-			ShaderArgument(const Vector2f& _v2) :type(ShaderArgumentType::FLOAT2) { new (&v2)Vector2f(_v2); }
-			ShaderArgument(const Vector3f& _v3) :type(ShaderArgumentType::FLOAT3) { new (&v3)Vector3f(_v3); }
-			ShaderArgument(const Vector4f& _v4) :type(ShaderArgumentType::FLOAT4) { new (&v4)Vector4f(_v4); }
-			ShaderArgument(const Matrix3f& _m3) :type(ShaderArgumentType::MATRIX3) { new (&m3)Matrix3f(_m3); }
-			ShaderArgument(const Matrix4f& _m4) :type(ShaderArgumentType::MATRIX4) { new (&m4)Matrix4f(_m4); }
+			ShaderArgument(const std::string& n, const float _f):name(n), type(ShaderArgumentType::FLOAT), f(_f){}
+			ShaderArgument(const std::string& n, const Vector2f& _v2) :name(n), type(ShaderArgumentType::FLOAT2) { new (&v2)Vector2f(_v2); }
+			ShaderArgument(const std::string& n, const Vector3f& _v3) :name(n), type(ShaderArgumentType::FLOAT3) { new (&v3)Vector3f(_v3); }
+			ShaderArgument(const std::string& n, const Vector4f& _v4) :name(n), type(ShaderArgumentType::FLOAT4) { new (&v4)Vector4f(_v4); }
+			ShaderArgument(const std::string& n, const Matrix3f& _m3) :name(n), type(ShaderArgumentType::MATRIX3) { new (&m3)Matrix3f(_m3); }
+			ShaderArgument(const std::string& n, const Matrix4f& _m4) :name(n), type(ShaderArgumentType::MATRIX4) { new (&m4)Matrix4f(_m4); }
 			const std::uint8_t* Buffer(std::size_t& size)const
 			{
 				size = 0;

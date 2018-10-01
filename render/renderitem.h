@@ -10,11 +10,13 @@ namespace Lightning
 	{
 		struct LIGHTNING_RENDER_API RenderItem
 		{
+			RenderItem():renderTargets(1){}
 			SharedGeometryPtr geometry;	//vb ib 
 			SharedMaterialPtr material;	//shader material attributes
 			Transform transform;		//position rotation scale
 			Matrix4f viewMatrix;		//camera view matrix
 			Matrix4f projectionMatrix;//camera projection matrix
+			std::uint8_t renderTargets;
 		};
 	}
 }
