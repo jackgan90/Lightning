@@ -215,7 +215,7 @@ namespace Lightning
 		void D3D12Device::ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount)
 		{
 			Device::ApplyBlendStates(firstRTIndex, states, stateCount);
-			for (std::size_t i = firstRTIndex; i < firstRTIndex + stateCount;++i)
+			for (int i = firstRTIndex; i < firstRTIndex + stateCount;++i)
 			{
 				D3D12_RENDER_TARGET_BLEND_DESC* pDesc = &mPipelineDesc.BlendState.RenderTarget[i];
 				pDesc->BlendEnable = states[i].enable;
@@ -314,7 +314,7 @@ namespace Lightning
 					if (boundResource.type == D3D12RootBoundResourceType::DescriptorTable)
 					{
 						auto pHeap = boundResource.descriptorTableHeap.Get();
-						for (int i = 0;i < frameResource.descriptorHeaps.size();++i)
+						for (std::size_t i = 0;i < frameResource.descriptorHeaps.size();++i)
 						{
 							//TODO : has performance impact.Need to optimize later!
 							if (pHeap == frameResource.descriptorHeaps[i])

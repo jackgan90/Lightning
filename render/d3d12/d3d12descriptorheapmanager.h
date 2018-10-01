@@ -40,13 +40,13 @@ namespace Lightning
 			{
 				D3D12_DESCRIPTOR_HEAP_DESC desc;
 				ComPtr<ID3D12DescriptorHeap> heap;
-				container::list<container::tuple<UINT64, UINT64>> freeIntervals;
+				container::list<container::tuple<UINT, UINT>> freeIntervals;
 				std::size_t freeDescriptors;
 			};
 			struct DescriptorHeapEx : DescriptorHeap
 			{
 				DescriptorHeapStore *pStore;
-				container::tuple<UINT64, UINT64> interval;
+				container::tuple<UINT, UINT> interval;
 			};
 			ID3D12Device* GetNativeDevice();
 			UINT HeapTypeHash(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible) { return static_cast<UINT>(type) << 1 | static_cast<UINT>(shaderVisible); }

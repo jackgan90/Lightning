@@ -7,7 +7,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		VertexBuffer::VertexBuffer(uint32_t bufferSize, const VertexComponent *components, std::uint8_t componentCount):
+		VertexBuffer::VertexBuffer(uint32_t bufferSize, const VertexComponent *components, std::size_t componentCount):
 			IVertexBuffer(bufferSize), mComponents(nullptr), mComponentCount(componentCount)
 			,mVertexSize(0), mVertexCount(0)
 		{
@@ -33,7 +33,7 @@ namespace Lightning
 			return mComponents[componentIndex];
 		}
 
-		std::uint8_t VertexBuffer::GetComponentCount()
+		std::size_t VertexBuffer::GetComponentCount()
 		{
 			return mComponentCount;
 		}

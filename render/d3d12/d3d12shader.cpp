@@ -228,7 +228,7 @@ namespace Lightning
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			mRootBoundResources[resourceIndex].clear();
 			auto constantHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-				GetParameterVisibility(), mDesc.ConstantBuffers, true);
+				true, mDesc.ConstantBuffers, true);
 			CD3DX12_CPU_DESCRIPTOR_HANDLE handle(constantHeap->cpuHandle);
 			for (std::size_t i = 0;i < mDesc.ConstantBuffers;++i)
 			{
@@ -307,11 +307,21 @@ namespace Lightning
 				for (auto it = macros.begin(); it != macros.end(); ++it,++idx)
 				{
 					const char* name = it->first.c_str();
-					pMacros[idx].Name = g_RenderAllocator.Allocate<const char>(std::strlen(name) + 1);
+					auto nameSize = std::strlen(name) + 1;
+					pMacros[idx].Name = g_RenderAllocator.Allocate<const char>(nameSize);
+#ifdef _MSC_VER
+					strcpy_s(const_cast<char*>(pMacros[idx].Name), nameSize, name);
+#else
 					std::strcpy(const_cast<char*>(pMacros[idx].Name), name);
+#endif
 					const char* definition = it->second.c_str();
-					pMacros[idx].Definition = g_RenderAllocator.Allocate<const char>(std::strlen(definition) + 1);
+					auto definitionSize = std::strlen(definition) + 1;
+					pMacros[idx].Definition = g_RenderAllocator.Allocate<const char>(definitionSize);
+#ifdef _MSC_VER
+					strcpy_s(const_cast<char*>(pMacros[idx].Definition), definitionSize,definition);
+#else
 					std::strcpy(const_cast<char*>(pMacros[idx].Definition), definition);
+#endif
 				}
 			}
 			//TODO: resolve include

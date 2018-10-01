@@ -297,7 +297,7 @@ namespace Lightning
 
 					for (std::size_t i = indexCount;i < 2 * indexCount;++i)
 					{
-						indices[i] += vertexCount;
+						indices[i] += static_cast<std::uint16_t>(vertexCount);
 					}
 
 				}

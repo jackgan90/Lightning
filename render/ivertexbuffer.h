@@ -38,7 +38,7 @@ namespace Lightning
 			IVertexBuffer(std::uint32_t bufferSize):GPUBuffer(bufferSize){}
 			virtual const VertexComponent& GetComponentInfo(size_t attributeIndex) = 0;
 			//get vertex attribute count associate with this vertex buffer
-			virtual std::uint8_t GetComponentCount() = 0;
+			virtual std::size_t GetComponentCount() = 0;
 			//get vertices count contained within this vertex buffer
 			virtual std::uint32_t GetVertexCount()const = 0;
 			//get vertex size in bytes

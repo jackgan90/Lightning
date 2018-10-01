@@ -40,7 +40,11 @@ namespace Lightning
 				break;
 			}
 			ss << "_" << majorVersion << "_" << minorVersion;
+#ifdef _MSC_VER
+			strcpy_s(buf, ss.str().length() + 1, ss.str().c_str());
+#else
 			std::strcpy(buf, ss.str().c_str());
+#endif
 		}
 	}
 }

@@ -61,7 +61,7 @@ namespace Lightning
 				return SharedShaderPtr();
 			}
 			shaderFile->SetFilePointer(FilePointerType::Read, FileAnchor::Begin, 0);
-			char* buffer = g_RenderAllocator.Allocate<char>(size + 1);
+			char* buffer = g_RenderAllocator.Allocate<char>(static_cast<std::size_t>(size + 1));
 			auto readSize = shaderFile->Read(buffer, size);
 			if (readSize < size)
 			{

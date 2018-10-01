@@ -103,7 +103,7 @@ namespace Lightning
 				auto descriptorCount = right - left;
 				if (descriptorCount >= count)
 				{
-					container::tuple<UINT64, UINT64> interval;
+					container::tuple<UINT, UINT> interval;
 					//split this interval into 2 intervals and mark left interval as used
 					if (descriptorCount == count)
 					{
