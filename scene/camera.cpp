@@ -60,13 +60,22 @@ namespace Lightning
 			UpdateViewMatrix();
 		}
 
-		void Camera::LookAt(const Vector3f& worldPosition, const Vector3f& worldUp)
+		void Camera::LookAt(const Vector3f& lookPosition, const Vector3f& worldUp)
 		{
+			if (worldUp.IsZero())
+				return;
+			auto direction = mWorldPosition - lookPosition;
+			if (direction.IsZero())
+				return;
 			auto normalizedUp = worldUp.Normalized();
-			mZAxis = mWorldPosition - worldPosition;
+			mZAxis = direction;
 			mZAxis.Normalize();
-			mXAxis = normalizedUp.Cross(mZAxis);
-			mXAxis.Normalize();
+			auto newXAxis = normalizedUp.Cross(mZAxis);
+			if (!newXAxis.IsZero())	//mXAxis is zero when up and z axis are aligned, in this case, just keep X Axis unchanged
+			{
+				mXAxis = newXAxis;
+				mXAxis.Normalize();
+			}
 			mYAxis = mZAxis.Cross(mXAxis);
 			UpdateViewMatrix();
 		}
