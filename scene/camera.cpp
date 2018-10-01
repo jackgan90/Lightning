@@ -161,10 +161,10 @@ namespace Lightning
 			row1[3] = mYAxis.Dot(translation);
 			Vector4f row2(mZAxis);
 			row2[3] = mZAxis.Dot(translation);
-			mViewMatrix.SetRow(row0, 0);
-			mViewMatrix.SetRow(row1, 1);
-			mViewMatrix.SetRow(row2, 2);
-			mViewMatrix.SetRow(Vector4f({0.0f, 0.0f, 0.0f, 1.0f}), 3);
+			mViewMatrix.SetRow(0, row0);
+			mViewMatrix.SetRow(1, row1);
+			mViewMatrix.SetRow(2, row2);
+			mViewMatrix.SetRow(3, Vector4f({0.0f, 0.0f, 0.0f, 1.0f}));
 
 		}
 	}

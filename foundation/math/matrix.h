@@ -49,8 +49,8 @@ namespace Lightning
 			struct Matrix3 : MatrixBase<Matrix3<T>, T>
 			{
 				static constexpr unsigned Order = 3;
-				void SetRow(const Vector3<T>& v, unsigned row) { SetMatrixRow(*this, v, row); }
-				void SetColumn(const Vector3<T>& v, unsigned col) { SetMatrixColumn(*this, v, col); }
+				void SetRow(unsigned row, const Vector3<T>& v) { SetMatrixRow(*this, row, v); }
+				void SetColumn(unsigned col, const Vector3<T>& v) { SetMatrixColumn(*this, col, v); }
 				T m[Order * Order];
 			};
 
@@ -58,13 +58,13 @@ namespace Lightning
 			struct Matrix4 : MatrixBase<Matrix4<T>, T>
 			{
 				static constexpr unsigned Order = 4;
-				void SetRow(const Vector4<T>& v, unsigned row) { SetMatrixRow(*this, v, row); }
-				void SetColumn(const Vector4<T>& v, unsigned col) { SetMatrixColumn(*this, v, col); }
+				void SetRow(unsigned row, const Vector4<T>& v) { SetMatrixRow(*this, row, v); }
+				void SetColumn(unsigned col, const Vector4<T>& v) { SetMatrixColumn(*this, col, v); }
 				T m[Order * Order];
 			};
 
 			template<typename MatrixType, typename VectorType>
-			void SetMatrixColumn(MatrixType& mat, const VectorType& v, unsigned col)
+			void SetMatrixColumn(MatrixType& mat, unsigned col, const VectorType& v)
 			{
 				static_assert(MatrixType::Order == VectorType::Order, "vector order must match matrix order!");
 				if (col >= 0 && col < MatrixType::Order)
@@ -77,7 +77,7 @@ namespace Lightning
 			}
 
 			template<typename MatrixType, typename VectorType>
-			void SetMatrixRow(MatrixType& mat, const VectorType& v, unsigned row)
+			void SetMatrixRow(MatrixType& mat, unsigned row, const VectorType& v)
 			{
 				static_assert(MatrixType::Order == VectorType::Order, "vector order must match matrix order!");
 				if (row >= 0 && row < MatrixType::Order)

@@ -28,7 +28,7 @@ namespace Lightning
 			Matrix4f translationMatrix;
 			translationMatrix.SetIdentity();
 			Vector4f column(mPosition);
-			translationMatrix.SetColumn(column, 3);
+			translationMatrix.SetColumn(3, column);
 			
 			mTransform = translationMatrix * scaleMatrix;
 		}
