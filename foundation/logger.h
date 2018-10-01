@@ -43,7 +43,7 @@ namespace Lightning
 				//output to file
 				auto prefix = LogLevelToPrefix(level);
 				auto timeStr = Foundation::Time::GetCurrentTimeString();
-				char buf[512];
+				static char buf[4096];
 #ifdef _MSC_VER
 				sprintf_s(buf, text.c_str(), std::forward<Args>(args)...);
 #else
@@ -51,7 +51,7 @@ namespace Lightning
 #endif
 				mFs << timeStr << " " << prefix << " " << buf << std::endl;
 #ifdef _MSC_VER
-				char outputBuffer[512];
+				static char outputBuffer[4096];
 				sprintf_s(outputBuffer, "%s %s %s\n", timeStr.c_str(), prefix.c_str(), buf);
 				::OutputDebugString(outputBuffer);
 #endif

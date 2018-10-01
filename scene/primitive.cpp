@@ -82,14 +82,23 @@ namespace Lightning
 		void Primitive::UpdateRenderItem()
 		{
 			Render::VertexDescriptor descriptor;
-			Render::VertexComponent comp;
-			comp.format = Render::RenderFormat::R32G32B32_FLOAT;
-			comp.instanceStepRate = 1;
-			comp.isInstance = false;
-			comp.offset = 0;
-			comp.semanticIndex = 0;
-			comp.semanticItem = { Render::RenderSemantics::POSITION, "POSITION" };
-			descriptor.components.push_back(comp);
+			Render::VertexComponent compPosition;
+			compPosition.format = Render::RenderFormat::R32G32B32_FLOAT;
+			compPosition.instanceStepRate = 1;
+			compPosition.isInstance = false;
+			compPosition.offset = 0;
+			compPosition.semanticIndex = 0;
+			compPosition.semanticItem = { Render::RenderSemantics::POSITION, "POSITION" };
+			descriptor.components.push_back(compPosition);
+			Render::VertexComponent compNormal;
+			compNormal.format = Render::RenderFormat::R32G32B32_FLOAT;
+			compNormal.instanceStepRate = 1;
+			compNormal.isInstance = false;
+			compNormal.offset = 0;
+			compNormal.semanticIndex = 0;
+			compNormal.semanticItem = { Render::RenderSemantics::NORMAL, "NORMAL" };
+			descriptor.components.push_back(compNormal);
+
 			mRenderItem.geometry = std::make_shared<Render::Geometry>();
 			auto pDevice = Renderer::Instance()->GetDevice();
 			auto vbSize = GetVertexBufferSize();
@@ -127,16 +136,24 @@ namespace Lightning
 		//Cube
 		Cube::CubeDataSource::CubeDataSource()
 		{
-			auto pVecs = new Vector3f[8];
+			auto pVecs = new Vector3f[16];
 			pVecs[0] = { 0.5f, 0.5f, 0.5f };	//right top front v0
-			pVecs[1] = { 0.5f, 0.5f, -0.5f };	//right top back v1
-			pVecs[2] = { 0.5f, -0.5f, 0.5f };	//right bottom front v2
-			pVecs[3] = { 0.5f, -0.5f, -0.5f };	//right bottom back v3
-			pVecs[4] = { -0.5f, 0.5f, 0.5f };	//left top front v4
-			pVecs[5] = { -0.5f, 0.5f, -0.5f };	//left top back v5
-			pVecs[6] = { -0.5f, -0.5f, 0.5f };	//left bottom front v6
-			pVecs[7] = { -0.5f, -0.5f, -0.5f };	//left bottom back v7
-			vertices = reinterpret_cast<float*>(pVecs);
+			pVecs[1] = { 0.5774f, 0.5774f, 0.5774f };
+			pVecs[2] = { 0.5f, 0.5f, -0.5f };	//right top back v1
+			pVecs[3] = { 0.5774f, 0.5774f, -0.5774f };
+			pVecs[4] = { 0.5f, -0.5f, 0.5f };	//right bottom front v2
+			pVecs[5] = { 0.5774f, -0.5774f, 0.5774f };
+			pVecs[6] = { 0.5f, -0.5f, -0.5f };	//right bottom back v3
+			pVecs[7] = { 0.5774f, -0.5774f, -0.5774f };
+			pVecs[8] = { -0.5f, 0.5f, 0.5f };	//left top front v4
+			pVecs[9] = { -0.5774f, 0.5774f, 0.5774f };
+			pVecs[10] = { -0.5f, 0.5f, -0.5f };	//left top back v5
+			pVecs[11] = { -0.5774f, 0.5774f, -0.5774f };
+			pVecs[12] = { -0.5f, -0.5f, 0.5f };	//left bottom front v6
+			pVecs[13] = { -0.5774f, -0.5774f, 0.5774f };
+			pVecs[14] = { -0.5f, -0.5f, -0.5f };	//left bottom back v7
+			pVecs[15] = { -0.5774f, -0.5774f, -0.5774f };
+			vertices = reinterpret_cast<std::uint8_t*>(pVecs);
 			std::uint16_t index_data[] = {
 				//right face
 				0, 2, 3, 0, 3, 1,
@@ -169,29 +186,34 @@ namespace Lightning
 			static const auto CirclePointCount = 360 / AngularUnit;
 			auto vertexCount = GetVertexCount();
 			auto indexCount = GetIndexCount();
-			Vector3f *positions = new Vector3f[vertexCount];
+			Vector3f *data = new Vector3f[2 * vertexCount];
 			indices = new std::uint16_t[indexCount];
 			std::memset(indices, 0, sizeof(std::uint16_t) * indexCount);
 			
-			Vector3f& topCenter = positions[0];
+			Vector3f& topCenter = data[0];
 			topCenter.x = 0;
 			topCenter.y = static_cast<float>(1.0 / 2.0);
 			topCenter.z = 0;
+			data[1] = { 0, 1, 0 };
 
-			Vector3f& bottomCenter = positions[vertexCount - 1];
+			Vector3f& bottomCenter = data[2 * vertexCount - 2];
 			bottomCenter.x = 0;
 			bottomCenter.y = static_cast<float>(-1.0 / 2.0);
 			bottomCenter.z = 0;
-			int j = 0;
-			
+			data[2 * vertexCount - 1] = { 0, -1, 0 };
+
+			int j = 0, k = 2;
 			for (int i = 0;i < CirclePointCount;++i)
 			{
 				//upper circle
 				auto radians = DegreesToRadians(i * AngularUnit);
-				positions[i + 1] = topCenter + 0.5f * (Vector3f::right() * std::cos(radians) + Vector3f::back() * std::sin(radians));
-
-				auto *vb = &positions[i + 1 + CirclePointCount];
-				positions[i + 1 + CirclePointCount] = positions[i+1] + Vector3f::down() * 1.0f;
+				//normal
+				data[k + 1] = Vector3f::right() * std::cos(radians) + Vector3f::back() * std::sin(radians);
+				data[k] = topCenter + 0.5f * data[k + 1];
+				
+				data[k + 1 + 2 * CirclePointCount] = data[k + 1];
+				data[k + 2 * CirclePointCount] = data[k] + Vector3f::down();
+				k += 2;
 
 				auto isLast = i == CirclePointCount - 1;
 				
@@ -234,7 +256,7 @@ namespace Lightning
 					indices[j++] = static_cast<std::uint16_t>(1 + CirclePointCount);
 			}
 			assert(j == indexCount && "Not all indices are initialized!");
-			vertices = reinterpret_cast<float*>(positions);
+			vertices = reinterpret_cast<std::uint8_t*>(data);
 		}
 
 		Cylinder::CylinderDataSource Cylinder::sDataSource;
@@ -256,14 +278,15 @@ namespace Lightning
 			static const auto CirclePointCount = 360 / AngularUnit;
 			auto vertexCount = GetVertexCount();
 			auto indexCount = GetIndexCount();
-			Vector3f *positions = new Vector3f[vertexCount];
+			Vector3f *data = new Vector3f[2 * vertexCount];
 			indices = new std::uint16_t[indexCount];
 			std::memset(indices, 0, sizeof(std::uint16_t) * indexCount);
-			positions[vertexCount - 1].x = 0;
-			positions[vertexCount - 1].y = 0.5;
-			positions[vertexCount - 1].z = 0;
+			data[2 * vertexCount - 2].x = 0;
+			data[2 * vertexCount - 2].y = 0.5;
+			data[2 * vertexCount - 2].z = 0;
+			data[2 * vertexCount - 1] = { 0, 1, 0 };
 			auto ringCount = 90 % AngularUnit == 0 ? 90 / AngularUnit : 90 / AngularUnit + 1;
-			std::size_t k = 0;
+			std::size_t k = 0, t = 0;
 			for (std::size_t i = 0;i < ringCount;++i)
 			{
 				auto y_radians = DegreesToRadians(i * AngularUnit);
@@ -273,8 +296,12 @@ namespace Lightning
 				{
 					auto xz_radians = DegreesToRadians(j * AngularUnit);
 					auto index = i * CirclePointCount + j;
-					positions[index] = y * Vector3f::up() + radius_at_y * 
+					//pos
+					data[t++] = y * Vector3f::up() + radius_at_y * 
 						(Vector3f::right() * std::cos(xz_radians) + Vector3f::back() * std::sin(xz_radians));
+					//normal
+					data[t] = data[t - 1] * 2.0f;
+					++t;
 					if (i == ringCount - 1)
 					{
 						indices[k++] = static_cast<std::uint16_t>(vertexCount - 1);
@@ -301,7 +328,7 @@ namespace Lightning
 			}
 
 			assert(k == indexCount && "Index count does not match!");
-			vertices = reinterpret_cast<float*>(positions);
+			vertices = reinterpret_cast<std::uint8_t*>(data);
 		}
 
 		//Hemisphere
@@ -337,10 +364,10 @@ namespace Lightning
 					std::memcpy(indices, superIB, ibSize);
 					std::memcpy(reinterpret_cast<std::uint8_t*>(indices) + ibSize, superIB, ibSize);
 
-					Vector3f *positions = reinterpret_cast<Vector3f*>(vertices + vbSize);
-					for (std::size_t i = 0;i < vertexCount;++i)
+					Vector3f *verts = reinterpret_cast<Vector3f*>(vertices + vbSize);
+					for (std::size_t i = 0;i < 2 * vertexCount;++i)
 					{
-						positions[i].y = -positions[i].y;
+						verts[i].y = -verts[i].y;
 					}
 
 					for (std::size_t i = indexCount;i < 2 * indexCount;++i)

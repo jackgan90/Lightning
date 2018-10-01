@@ -54,7 +54,7 @@ namespace Lightning
 				if (indices)
 					delete[] indices;
 			}
-			float *vertices;
+			std::uint8_t *vertices;
 			std::uint16_t *indices;
 		};
 
@@ -64,10 +64,10 @@ namespace Lightning
 		public:
 			Cube(float width = 1.0f, float height = 1.0f, float thickness = 1.0f);
 		protected:
-			std::uint8_t *GetVertices() override { return reinterpret_cast<std::uint8_t*>(sDataSource.vertices); }
+			std::uint8_t *GetVertices() override { return sDataSource.vertices; }
 			std::uint16_t *GetIndices() override { return sDataSource.indices; }
 			Vector3f GetScale() override { return Vector3f{mWidth, mHeight, mThickness}; }
-			std::size_t GetVertexBufferSize() override { return sizeof(Vector3f) * 8; }
+			std::size_t GetVertexBufferSize() override { return sizeof(Vector3f) * 16; }
 			std::size_t GetIndexBufferSize() override { return sizeof(std::uint16_t) * 36; }
 			float mWidth;
 			float mHeight;
@@ -81,10 +81,10 @@ namespace Lightning
 		public:
 			Cylinder(float height, float radius);
 		protected:
-			std::uint8_t *GetVertices() override { return reinterpret_cast<std::uint8_t*>(sDataSource.vertices); }
+			std::uint8_t *GetVertices() override { return sDataSource.vertices; }
 			std::uint16_t *GetIndices() override { return sDataSource.indices; }
 			Vector3f GetScale() override { return Vector3f{mRadius, mHeight, mRadius}; }
-			std::size_t GetVertexBufferSize() override { return sizeof(Vector3f) * GetVertexCount(); }
+			std::size_t GetVertexBufferSize() override { return 2 * sizeof(Vector3f) * GetVertexCount(); }
 			std::size_t GetIndexBufferSize() override { return sizeof(std::uint16_t) * GetIndexCount(); }
 			float mHeight;
 			float mRadius;
@@ -101,10 +101,10 @@ namespace Lightning
 		public:
 			Hemisphere(float radius = 1.0f);
 		protected:
-			std::uint8_t *GetVertices() override { return reinterpret_cast<std::uint8_t*>(sDataSource.vertices); }
+			std::uint8_t *GetVertices() override { return sDataSource.vertices; }
 			std::uint16_t *GetIndices() override { return sDataSource.indices; }
 			Vector3f GetScale() override { return Vector3f{mRadius, mRadius, mRadius}; }
-			std::size_t GetVertexBufferSize() override { return sizeof(Vector3f) * GetVertexCount(); }
+			std::size_t GetVertexBufferSize() override { return 2 * sizeof(Vector3f) * GetVertexCount(); }
 			std::size_t GetIndexBufferSize() override { return sizeof(std::uint16_t) * GetIndexCount(); }
 			float mRadius;
 			struct HemisphereDataSource : PrimitiveDataSource { HemisphereDataSource(); };

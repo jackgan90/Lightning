@@ -30,22 +30,40 @@ namespace Lightning
 
 		extern RingAllocator g_RenderAllocator;
 		const char* const DEFAULT_VS_SOURCE =
-			"cbuffer VS_IN : register(b0)\n"
+			"cbuffer VSConstants : register(b0)\n"
 			"{\n"
 			"	float4x4 wvp;\n"
 			"};\n"
-			"float4 main(float3 position:POSITION):SV_POSITION\n"
+			"struct VSInput\n"
 			"{\n"
-				"return mul(wvp, float4(position, 1.0f));\n"
+			"	float3 position : POSITION;\n"
+			"	float3 normal : NORMAL;\n"
+			"};\n"
+			"struct VSOutput\n"
+			"{\n"
+			"	float4 pos : SV_POSITION;\n"
+			"	float3 normal : TEXCOORD0;\n"
+			"};\n"
+			"VSOutput main(VSInput input)\n"
+			"{\n"
+			"	VSOutput output;\n"
+			"	output.pos = mul(wvp, float4(input.position, 1.0f));\n"
+			"	output.normal = input.normal * 0.5f + float3(0.5f, 0.5f, 0.5f);\n"
+			"	return output;\n"
 			"}\n";
 		const char* const DEFAULT_PS_SOURCE =
-			"cbuffer PS_IN : register(b0)\n"
+			"cbuffer PSConstants : register(b0)\n"
 			"{\n"
 			"	float4 color;\n"
 			"};\n"
-			"float4 main(void):SV_TARGET\n"
+			"struct PSInput\n"
 			"{\n"
-				"return color;\n"
+			"	float4 pos : SV_POSITION;\n"
+			"	float3 normal : TEXCOORD0;\n"
+			"};\n"
+			"float4 main(PSInput input):SV_TARGET\n"
+			"{\n"
+			"	return float4(input.normal, color.a) ;\n"
 			"}\n";
 		D3D12Device::D3D12Device(IDXGIFactory4* factory, const SharedFileSystemPtr& fs)
 			:Device(), mFs(fs), mPipelineDesc{}

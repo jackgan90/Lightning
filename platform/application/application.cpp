@@ -45,26 +45,27 @@ namespace Lightning
 
 			auto cube = std::make_shared<Scene::Cube>();
 			cube->SetWorldPosition(Render::Vector3f(1.0, 0.0, 0.0));
-			cube->SetColor(0x1f000000);
+			cube->SetColor(0xff000000);
+			scene->AddDrawable(cube);
 
 			auto cylinder = std::make_shared<Scene::Cylinder>(2, 1);
 			cylinder->SetWorldPosition(Render::Vector3f(-1.0, 0.0, 0.0));
 			cylinder->SetColor(0xffffff00);
+			scene->AddDrawable(cylinder);
 
 			auto hemisphere = std::make_shared<Scene::Hemisphere>();
-			hemisphere->SetWorldPosition(Render::Vector3f(0, 1, 0));
+			hemisphere->SetWorldPosition(Render::Vector3f(0, 0, 0));
 			hemisphere->SetColor(0xff00ff00);
+			scene->AddDrawable(hemisphere);
 
 			auto sphere = std::make_shared<Scene::Sphere>();
-			sphere->SetColor(0x3c0000ff);
+			sphere->SetWorldPosition(Render::Vector3f(0, 1, 0));
+			sphere->SetColor(0xff0000ff);
+			scene->AddDrawable(sphere);
 
 			auto camera = scene->GetActiveCamera();
 			camera->MoveTo(Render::Vector3f({0.0f, 2.0f, 2.0f}));
 			camera->LookAt(Render::Vector3f({ 0.0f, 0.0f, 0.0f }));
-			scene->AddDrawable(cube);
-			scene->AddDrawable(cylinder);
-			scene->AddDrawable(hemisphere);
-			scene->AddDrawable(sphere);
 			//End of scene creation
 			RegisterWindowHandlers();
 		}
