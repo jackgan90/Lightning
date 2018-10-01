@@ -65,9 +65,14 @@ namespace Lightning
 				UINT bufferIndex;
 				UINT offsetInBuffer;
 			};
+			struct ConstantBufferInfo
+			{
+				UINT offset;
+				UINT size;
+			};
 			void CompileImpl();
 			D3D12_SHADER_VISIBILITY GetParameterVisibility()const;
-			void UpdateRootBoundResources(std::size_t bufferId);
+			void UpdateRootBoundResources();
 			ComPtr<ID3D10Blob> mByteCode;
 			D3D12_SHADER_DESC mDesc;
 			container::unordered_map<std::string, ArgumentBinding> mArgumentBindings;
@@ -75,7 +80,11 @@ namespace Lightning
 			container::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC> mInputBindDescs;
 			container::unordered_map<std::size_t, D3D12_SHADER_BUFFER_DESC> mBufferDescs;
 			container::unordered_map<std::uint8_t, container::vector<D3D12RootBoundResource>> mRootBoundResources;
+			//each offset corresponds to mIntermediateBuffer
+			container::unordered_map<std::size_t, ConstantBufferInfo> mConstantBufferInfo;
 			D3D12_DESCRIPTOR_RANGE *mDescriptorRanges;
+			//buffer used to cache constant buffer value
+			std::uint8_t *mIntermediateBuffer;
 		};
 	}
 }
