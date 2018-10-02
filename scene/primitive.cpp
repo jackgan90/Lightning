@@ -227,8 +227,8 @@ namespace Lightning
 					
 
 				//bottom triangle
-				indices[j++] = static_cast<std::uint16_t>(vertexCount - 1);
 				indices[j++] = static_cast<std::uint16_t>(i + 1 + CirclePointCount);
+				indices[j++] = static_cast<std::uint16_t>(vertexCount - 1);
 				if (!isLast)
 					indices[j++] = static_cast<std::uint16_t>(i + 2 + CirclePointCount);
 				else
