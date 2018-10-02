@@ -64,8 +64,8 @@ namespace Lightning
 			scene->AddDrawable(sphere);
 
 			auto camera = scene->GetActiveCamera();
-			camera->MoveTo(Render::Vector3f({2.0f, -2.0f, 1.0f}));
-			camera->LookAt(Render::Vector3f({ 1.0f, 0.5f, 1.0f }));
+			camera->MoveTo(Render::Vector3f({2.0f, 2.0f, 2.0f}));
+			camera->LookAt(Render::Vector3f({ 0.0f, 0.0f, 0.0f }));
 
 			//End of scene creation
 			RegisterWindowHandlers();

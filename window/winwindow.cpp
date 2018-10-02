@@ -86,7 +86,7 @@ namespace Lightning
 			wndcls.cbWndExtra = sizeof(WinWindow*);
 			wndcls.hInstance = hInstance;
 			wndcls.hIcon = ::LoadIcon(hInstance, IDI_APPLICATION);
-			wndcls.hCursor = ::LoadCursor(hInstance, IDC_ARROW);
+			wndcls.hCursor = ::LoadCursor(NULL, IDC_ARROW);
 			wndcls.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
 			wndcls.lpszMenuName = NULL;
 			wndcls.lpszClassName = sWindowClassName;
