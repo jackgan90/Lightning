@@ -45,7 +45,7 @@ namespace Lightning
 
 			auto cube = std::make_shared<Scene::Cube>();
 			cube->SetWorldPosition(Render::Vector3f(1.0, 0.0, 0.0));
-			cube->SetColor(0xff000000);
+			cube->SetColor(0xffff0000);
 			scene->AddDrawable(cube);
 
 			auto cylinder = std::make_shared<Scene::Cylinder>(2, 1);

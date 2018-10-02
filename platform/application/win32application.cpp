@@ -89,7 +89,7 @@ namespace Lightning
 					{
 						auto position = camera->GetWorldPosition();
 						camOffset.Normalize();
-						camOffset *= 0.1f;
+						camOffset *= 0.3f;
 						camOffset = camera->CameraDirectionToWorld(camOffset);
 						auto targetPosition = position + camOffset;
 						static std::size_t timerId{ 0 };
@@ -100,7 +100,7 @@ namespace Lightning
 						}
 						auto pTimerId = &timerId;
 						timerId = mTimer->AddTask(Foundation::TimerTaskType::REPEAT, repeatInterval, repeatInterval, [pTimerId, targetPosition, camera, this]() {
-							static float camSpeed{ 2.0f };
+							static float camSpeed{ 3.0f };
 							auto camPos = camera->GetWorldPosition();
 							auto moveDir = targetPosition - camPos;
 							auto distanceToTarget = moveDir.Length();

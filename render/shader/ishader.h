@@ -130,7 +130,7 @@ namespace Lightning
 			virtual std::size_t GetArgumentCount()const = 0;
 			virtual void Compile() = 0;
 			virtual std::string GetName()const = 0;
-			virtual void SetArgument(const ShaderArgument& argument) = 0;
+			virtual bool SetArgument(const ShaderArgument& argument) = 0;
 			virtual const char* const GetSource()const = 0;
 			virtual void GetShaderModelVersion(int& major, int& minor) = 0;
 		};

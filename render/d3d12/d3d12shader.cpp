@@ -57,10 +57,10 @@ namespace Lightning
 						ID3D12ShaderReflectionVariable* variableRefl = constantBufferRefl->GetVariableByIndex(j);
 						D3D12_SHADER_VARIABLE_DESC shaderVarDesc;
 						variableRefl->GetDesc(&shaderVarDesc);
-						ArgumentBinding argBinding;
-						argBinding.bufferIndex = i;
-						argBinding.offsetInBuffer = shaderVarDesc.StartOffset;
-						mArgumentBindings[shaderVarDesc.Name] = argBinding;
+						ArgumentInfo info;
+						info.bufferIndex = i;
+						info.offsetInBuffer = shaderVarDesc.StartOffset;
+						mArguments[shaderVarDesc.Name] = info;
 					}
 					D3D12_SHADER_INPUT_BIND_DESC& bindDesc = mInputBindDescs[bufferDesc.Name];
 					mDescriptorRanges[i].BaseShaderRegister = bindDesc.BindPoint;
@@ -91,7 +91,7 @@ namespace Lightning
 			{
 				delete[] mIntermediateBuffer;
 			}
-			mArgumentBindings.clear();
+			mArguments.clear();
 			mByteCode.Reset();
 		}
 
@@ -123,15 +123,15 @@ namespace Lightning
 			return mDesc.BoundResources;
 		}
 
-		void D3D12Shader::SetArgument(const ShaderArgument& arg)
+		bool D3D12Shader::SetArgument(const ShaderArgument& arg)
 		{
 			if (arg.type == ShaderArgumentType::UNKNOWN)
 			{
 				LOG_WARNING("Unknown shader argument type when set shader %s", mName.c_str());
-				return;
+				return false;
 			}
-			auto it = mArgumentBindings.find(arg.name);
-			assert(it != mArgumentBindings.end());
+			auto it = mArguments.find(arg.name);
+			assert(it != mArguments.end());
 			const auto& bindingInfo = it->second;
 			std::size_t size{ 0 };
 			auto data = arg.Buffer(size);
@@ -139,7 +139,9 @@ namespace Lightning
 			{
 				std::uint8_t *buffer = mIntermediateBuffer + mConstantBufferInfo[bindingInfo.bufferIndex].offset;
 				std::memcpy(buffer + bindingInfo.offsetInBuffer, data, size);
+				return true;
 			}
+			return false;
 		}
 
 		void D3D12Shader::Compile()
@@ -170,14 +172,13 @@ namespace Lightning
 				auto nativeDevice = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNative();
 				handle.Offset(i * constantHeap->incrementSize);
 				nativeDevice->CreateConstantBufferView(&cbvDesc, handle);
-
-				D3D12RootBoundResource boundResource;
-				boundResource.type = D3D12RootBoundResourceType::DescriptorTable;
-				boundResource.descriptorTableHeap = D3D12DescriptorHeapManager::Instance()->GetHeap(constantHeap);
-				CD3DX12_GPU_DESCRIPTOR_HANDLE gpuAddress(constantHeap->gpuHandle);
-				boundResource.descriptorTableHandle = gpuAddress;
-				mRootBoundResources[resourceIndex].push_back(boundResource);
 			}
+			D3D12RootBoundResource boundResource;
+			boundResource.type = D3D12RootBoundResourceType::DescriptorTable;
+			boundResource.descriptorTableHeap = D3D12DescriptorHeapManager::Instance()->GetHeap(constantHeap);
+			CD3DX12_GPU_DESCRIPTOR_HANDLE gpuAddress(constantHeap->gpuHandle);
+			boundResource.descriptorTableHandle = gpuAddress;
+			mRootBoundResources[resourceIndex].push_back(boundResource);
 		}
 
 		const container::vector<D3D12_ROOT_PARAMETER>& D3D12Shader::GetRootParameters()const

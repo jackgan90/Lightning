@@ -48,13 +48,18 @@ namespace Lightning
 			"{\n"
 			"	VSOutput output;\n"
 			"	output.pos = mul(wvp, float4(input.position, 1.0f));\n"
-			"	output.normal = input.normal * 0.5f + float3(0.5f, 0.5f, 0.5f);\n"
+			"	output.normal = input.normal;\n"
 			"	return output;\n"
 			"}\n";
 		const char* const DEFAULT_PS_SOURCE =
 			"cbuffer PSConstants : register(b0)\n"
 			"{\n"
 			"	float4 color;\n"
+			"//	float3 light;\n"
+			"};\n"
+			"cbuffer PSConstants1 : register(b1)\n"
+			"{\n"
+			"	float3 light;\n"
 			"};\n"
 			"struct PSInput\n"
 			"{\n"
@@ -63,7 +68,10 @@ namespace Lightning
 			"};\n"
 			"float4 main(PSInput input):SV_TARGET\n"
 			"{\n"
-			"	return float4(input.normal, color.a) ;\n"
+			"	float3 N = normalize(input.normal);\n"
+			"	float3 L = normalize(light);\n"
+			"	float3 diffuse = dot(N, L);\n"
+			"	return float4(color.rgb * diffuse, color.a) ;\n"
 			"}\n";
 		D3D12Device::D3D12Device(IDXGIFactory4* factory, const SharedFileSystemPtr& fs)
 			:Device(), mFs(fs), mPipelineDesc{}

@@ -28,7 +28,7 @@ namespace Lightning
 			IShader* GetShader(ShaderType type);
 			void SetShader(const SharedShaderPtr& pShader);
 			void RemoveShader(ShaderType type);
-			void AddArgument(ShaderType type, const ShaderArgument& arg);
+			void SetArgument(ShaderType type, const ShaderArgument& arg);
 			const MaterialShaderMap& GetMaterialShaderMap()const;
 			void EnableBlend(bool enable);
 			const BlendState& GetBlendState()const { return mBlendState; }

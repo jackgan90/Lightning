@@ -31,7 +31,7 @@ namespace Lightning
 				mShaders.erase(it);
 		}
 
-		void Material::AddArgument(ShaderType type, const ShaderArgument& arg)
+		void Material::SetArgument(ShaderType type, const ShaderArgument& arg)
 		{
 			auto it = mShaders.find(type);
 			if (it != mShaders.end())

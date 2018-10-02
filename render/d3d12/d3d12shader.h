@@ -52,7 +52,7 @@ namespace Lightning
 			//bool Compile(const Foundation::SharedFilePtr& file, const ShaderDefine& define)override;
 			//const std::string GetCompileErrorLog()const override;
 			std::size_t GetArgumentCount()const override;
-			void SetArgument(const ShaderArgument& argument) override;
+			bool SetArgument(const ShaderArgument& argument) override;
 			void Compile()override;
 			void* GetByteCodeBuffer()const;
 			SIZE_T GetByteCodeBufferSize()const;
@@ -60,7 +60,7 @@ namespace Lightning
 			std::size_t GetRootParameterCount()const;
 			const container::vector<D3D12RootBoundResource>& GetRootBoundResources();
 		private:
-			struct ArgumentBinding
+			struct ArgumentInfo
 			{
 				UINT bufferIndex;
 				UINT offsetInBuffer;
@@ -75,7 +75,7 @@ namespace Lightning
 			void UpdateRootBoundResources();
 			ComPtr<ID3D10Blob> mByteCode;
 			D3D12_SHADER_DESC mDesc;
-			container::unordered_map<std::string, ArgumentBinding> mArgumentBindings;
+			container::unordered_map<std::string, ArgumentInfo> mArguments;
 			container::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC> mInputBindDescs;
 			container::vector<D3D12_ROOT_PARAMETER> mRootParameters;
 			container::unordered_map<std::size_t, container::vector<D3D12RootBoundResource>> mRootBoundResources;

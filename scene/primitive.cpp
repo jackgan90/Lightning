@@ -127,7 +127,9 @@ namespace Lightning
 			mRenderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::FRAGMENT));
 			float a, r, g, b;
 			GetColor(a, r, g, b);
-			mRenderItem.material->AddArgument(Render::ShaderType::FRAGMENT, ShaderArgument("color", Vector4f(r, g, b, a)));
+			mRenderItem.material->SetArgument(Render::ShaderType::FRAGMENT, ShaderArgument("color", Vector4f(r, g, b, a)));
+			mRenderItem.material->SetArgument(Render::ShaderType::FRAGMENT, ShaderArgument("light", Vector3f(3, 3, 3)));
+
 			mRenderItem.material->EnableBlend(mColor.a != 0xff);
 			mRenderItem.transform = Render::Transform(mWorldPosition, GetScale());
 		}
