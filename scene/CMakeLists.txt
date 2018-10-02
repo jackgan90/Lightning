@@ -29,6 +29,7 @@ include_directories(${CMAKE_SOURCE_DIR}/render
 					${CMAKE_SOURCE_DIR}/window
 					${CMAKE_SOURCE_DIR}/entities
 					${CMAKE_SOURCE_DIR}/foundation
+					${CMAKE_SOURCE_DIR}/foundation/math
 					${CMAKE_SOURCE_DIR}/utilities
 					${LIGHTNING_DEPENDENCIES_DIR}/boost
 					${LIGHTNING_DEPENDENCIES_DIR}/eigen)

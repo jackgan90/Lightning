@@ -5,7 +5,10 @@ namespace Lightning
 	namespace Render
 	{
 		using Foundation::Math::Vector4f;
-		Transform::Transform():mPosition{0.0f, 0.0f, 0.0f}, mScale{1.0f, 1.0f, 1.0f}
+		Transform::Transform():
+			mPosition(0.0f, 0.0f, 0.0f)
+			,mRotation(0, 0, 0, 1)
+			,mScale(1.0f, 1.0f, 1.0f)
 		{
 			UpdateTransformMatrix();
 		}
@@ -16,21 +19,42 @@ namespace Lightning
 			UpdateTransformMatrix();
 		}
 
+		void Transform::SetPosition(const Vector3f& position)
+		{
+			mPosition = position;
+			UpdateTransformMatrix();
+		}
+
+		void Transform::SetRotation(const Quaternionf& rotation)
+		{
+			mRotation = rotation;
+			UpdateTransformMatrix();
+		}
+
+		void Transform::SetScale(const Vector3f& scale)
+		{
+			mScale = scale;
+			UpdateTransformMatrix();
+		}
+
 		void Transform::UpdateTransformMatrix()
 		{
-			Matrix4f scaleMatrix;
-			scaleMatrix.SetZero();
-			scaleMatrix.m[0] = mScale[0];
-			scaleMatrix.m[5] = mScale[1];
-			scaleMatrix.m[10] = mScale[2];
-			scaleMatrix.m[15] = 1.0f;
+			Matrix4f matScale;
+			matScale.SetZero();
+			matScale.m[0] = mScale[0];
+			matScale.m[5] = mScale[1];
+			matScale.m[10] = mScale[2];
+			matScale.m[15] = 1.0f;
+
+			Matrix4f matRotation;
+			mRotation.ToMatrix(matRotation);
 			
-			Matrix4f translationMatrix;
-			translationMatrix.SetIdentity();
+			Matrix4f matTranslation;
+			matTranslation.SetIdentity();
 			Vector4f column(mPosition);
-			translationMatrix.SetColumn(3, column);
+			matTranslation.SetColumn(3, column);
 			
-			mTransform = translationMatrix * scaleMatrix;
+			mTransform = matTranslation * matRotation * matScale;
 		}
 
 		Matrix4f Transform::GetTransformMatrix()const

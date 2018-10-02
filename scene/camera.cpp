@@ -124,13 +124,6 @@ namespace Lightning
 				mProjectionMatrix.SetCell(2, 2, (mNearPlane * ndcNear - mFarPlane) / (mFarPlane - mNearPlane));
 				mProjectionMatrix.SetCell(3, 2, -1);
 				mProjectionMatrix.SetCell(2, 3, (ndcNear - 1.0f) * mNearPlane * mFarPlane / (mFarPlane - mNearPlane));
-				/*
-				mProjectionMatrix.m[0] = static_cast<float>(1.0 / (tan(mFov / 2.0) * mAspectRatio));
-				mProjectionMatrix.m[5] = static_cast<float>(1.0 / tan(mFov / 2.0));
-				mProjectionMatrix.m[10] = (mNearPlane * ndcNear - mFarPlane) / (mFarPlane - mNearPlane);
-				mProjectionMatrix.m[11] = -1;
-				mProjectionMatrix.m[14] = (ndcNear - 1.0f) * mNearPlane * mFarPlane / (mFarPlane - mNearPlane);
-				*/
 				break;
 			}
 			case CameraType::Orthographic:
@@ -140,13 +133,6 @@ namespace Lightning
 				mProjectionMatrix.SetCell(2, 2, static_cast<float>(-2.0 / (mFarPlane - mNearPlane)));
 				mProjectionMatrix.SetCell(2, 3, -(mFarPlane + mNearPlane) / (mFarPlane - mNearPlane));
 				mProjectionMatrix.SetCell(3, 3, 1);
-				/*
-				mProjectionMatrix.m[0] = static_cast<float>(1.0 / (tan(mFov / 2.0) * mAspectRatio * mNearPlane));
-				mProjectionMatrix.m[5] = static_cast<float>(1.0 / (tan(mFov / 2.0) * mNearPlane));
-				mProjectionMatrix.m[10] = static_cast<float>(-2.0 / (mFarPlane - mNearPlane));
-				mProjectionMatrix.m[14] =-(mFarPlane + mNearPlane) / (mFarPlane - mNearPlane);
-				mProjectionMatrix.m[15] = 1;
-				*/
 				break;
 			}
 			default:

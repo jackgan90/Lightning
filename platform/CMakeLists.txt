@@ -38,6 +38,7 @@ set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 
 include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/foundation/memory
+					${CMAKE_SOURCE_DIR}/foundation/math
 					${CMAKE_CURRENT_SOURCE_DIR} 
 					${CMAKE_SOURCE_DIR}/render
 					${CMAKE_SOURCE_DIR}/render/types

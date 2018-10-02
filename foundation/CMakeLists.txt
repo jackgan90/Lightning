@@ -11,7 +11,8 @@ set(MEMORY_SOURCES	memory/ringallocator.cpp)
 
 set(MATH_HEADERS	math/common.h
 					math/vector.h
-					math/matrix.h)
+					math/matrix.h
+					math/quaternion.h)
 
 set(HEADERS	common.h
 			timesystem.h

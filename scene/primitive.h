@@ -8,6 +8,7 @@
 #include "renderconstants.h"
 #include "renderitem.h"
 #include "color.h"
+#include "quaternion.h"
 
 namespace Lightning
 {
@@ -15,6 +16,8 @@ namespace Lightning
 	{
 		using Render::PrimitiveType;
 		using Render::Color32;
+		using Render::Transform;
+		using Foundation::Math::Quaternionf;
 		class LIGHTNING_SCENE_API Primitive : public IDrawable
 		{
 		public:
@@ -22,8 +25,10 @@ namespace Lightning
 			virtual ~Primitive();
 			void Draw(Render::Renderer& renderer, const SceneRenderData& sceneRenderData) override;
 			PrimitiveType GetPrimitiveType()const { return mRenderItem.geometry->primType; }
-			void SetWorldPosition(const Vector3f& pos) { mWorldPosition = pos; }
-			Vector3f GetWorldPosition()const { return mWorldPosition; }
+			void SetWorldPosition(const Vector3f& pos) { mTransform.SetPosition(pos); }
+			Vector3f GetWorldPosition()const { return mTransform.GetPosition(); }
+			void SetWorldRotation(const Quaternionf& rot) { mTransform.SetRotation(rot); }
+			Quaternionf GetWorldRotation()const { return mTransform.GetRotation(); }
 			Color32 GetColor()const { return mColor; }
 			void GetColor(float& a, float& r, float& g, float& b);
 			void SetColor(const Color32& color);
@@ -40,7 +45,7 @@ namespace Lightning
 			virtual std::size_t GetVertexBufferSize() = 0;
 			virtual std::size_t GetIndexBufferSize() = 0;
 			Render::RenderItem mRenderItem;
-			Vector3f mWorldPosition;
+			Transform mTransform;
 			bool mFirstDraw;
 			Color32 mColor;
 		};

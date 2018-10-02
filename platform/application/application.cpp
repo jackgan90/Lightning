@@ -14,6 +14,9 @@ namespace Lightning
 		using Foundation::FileSystemFactory;
 		using Scene::SceneManager;
 		using namespace WindowSystem;
+		using Foundation::Math::EulerAnglef;
+		using Foundation::Math::Quaternionf;
+		using Foundation::Math::Vector3f;
 		Application::Application():mTimer{nullptr}
 		{
 			mFileSystem = FileSystemFactory::Instance()->CreateFileSystem();
@@ -42,35 +45,47 @@ namespace Lightning
 			mTimer->Start();
 			//Create a simple scene here just for test
 			auto scene = SceneManager::Instance()->CreateScene();
-
-			auto cube = std::make_shared<Scene::Cube>();
-			cube->SetWorldPosition(Render::Vector3f(1.0, 0.0, 0.0));
-			cube->SetColor(0xffff0000);
-			scene->AddDrawable(cube);
-
-			auto cylinder = std::make_shared<Scene::Cylinder>(2, 1);
-			cylinder->SetWorldPosition(Render::Vector3f(-1.0, 0.0, 0.0));
-			cylinder->SetColor(0xffffff00);
-			scene->AddDrawable(cylinder);
-
-			auto hemisphere = std::make_shared<Scene::Hemisphere>();
-			hemisphere->SetWorldPosition(Render::Vector3f(0, 0, 0));
-			hemisphere->SetColor(0x5f00ff00);
-			scene->AddDrawable(hemisphere);
-
-			auto sphere = std::make_shared<Scene::Sphere>();
-			sphere->SetWorldPosition(Render::Vector3f(0, 1, 0));
-			sphere->SetColor(0x4f0000ff);
-			scene->AddDrawable(sphere);
-
 			auto camera = scene->GetActiveCamera();
 			camera->MoveTo(Render::Vector3f({0.0f, 0.0f, 2.0f}));
 			camera->LookAt(Render::Vector3f({ 0.0f, 0.0f, 0.0f }));
+			GenerateSceneObjects();
 			//camera->SetCameraType(Scene::CameraType::Orthographic);
 			//camera->RotateTowards(Render::Vector3f(0.0f, 1.0f, -1.0f));
 
 			//End of scene creation
 			RegisterWindowHandlers();
+		}
+
+		void Application::GenerateSceneObjects()
+		{
+			auto scene = SceneManager::Instance()->GetForegroundScene();
+
+			auto cube = std::make_shared<Scene::Cube>();
+			cube->SetWorldPosition(Vector3f(1.0, 0.0, 0.0));
+			cube->SetColor(0xffff0000);
+			scene->AddDrawable(cube);
+
+			auto cylinder = std::make_shared<Scene::Cylinder>(2, 1);
+			cylinder->SetWorldPosition(Vector3f(-1.0, 0.0, 0.0));
+			//cylinder->SetWorldRotation(Quaternionf(EulerAnglef(0, 3.14 / 2, 0)));
+			auto rot = Quaternionf(EulerAnglef(0, 3.14 / 4, 0));
+			//EulerAnglef euler;
+			//rot.ToEulerAngle(euler);
+			//rot *= Quaternionf(EulerAnglef(0, 3.14 / 4, 0));
+			//rot.ToEulerAngle(euler);
+			cylinder->SetWorldRotation(rot);
+			cylinder->SetColor(0xffffff00);
+			scene->AddDrawable(cylinder);
+
+			auto hemisphere = std::make_shared<Scene::Hemisphere>();
+			hemisphere->SetWorldPosition(Vector3f(0, 0, 0));
+			hemisphere->SetColor(0x5f00ff00);
+			scene->AddDrawable(hemisphere);
+
+			auto sphere = std::make_shared<Scene::Sphere>();
+			sphere->SetWorldPosition(Vector3f(0, 1, 0));
+			sphere->SetColor(0x4f0000ff);
+			scene->AddDrawable(sphere);
 		}
 
 		void Application::RegisterWindowHandlers()

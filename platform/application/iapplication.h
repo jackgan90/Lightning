@@ -39,6 +39,8 @@ namespace Lightning
 			virtual UniqueRendererPtr CreateRenderer() = 0;
 			virtual void RegisterWindowHandlers();
 			WindowSystem::SharedWindowPtr GetMainWindow() const { return mWindow; }
+			//For test
+			void GenerateSceneObjects();
 			SharedFileSystemPtr mFileSystem;
 			UniqueRendererPtr mRenderer;
 			std::unique_ptr<WindowManager> mWindowMgr;

@@ -15,7 +15,7 @@ namespace Lightning
 		using Foundation::Math::DegreesToRadians;
 		using Foundation::container;
 		using Render::ShaderArgument;
-		Primitive::Primitive():mFirstDraw(true),mWorldPosition(0, 0, 0)
+		Primitive::Primitive():mFirstDraw(true)
 			,mColor(0, 0, 0, 255)
 		{
 		}
@@ -131,7 +131,8 @@ namespace Lightning
 			mRenderItem.material->SetArgument(Render::ShaderType::FRAGMENT, ShaderArgument("light", Vector3f(3, 3, 3)));
 
 			mRenderItem.material->EnableBlend(mColor.a != 0xff);
-			mRenderItem.transform = Render::Transform(mWorldPosition, GetScale());
+			mTransform.SetScale(GetScale());
+			mRenderItem.transform = mTransform;
 		}
 
 		
