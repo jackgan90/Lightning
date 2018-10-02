@@ -15,6 +15,9 @@ namespace Lightning
 		using namespace WindowSystem;
 		using Scene::SceneManager;
 		using Foundation::Math::Vector3f;
+		using Foundation::Math::Vector2i;
+
+		Vector2i mousePosition;
 		Win32Application::Win32Application():Application()
 		{
 		}
@@ -44,70 +47,89 @@ namespace Lightning
 			{
 				WINDOW_MSG_CLASS_HANDLER(window, WindowMessage::MOUSE_WHEEL, MouseWheelParam, OnMouseWheel);
 				WINDOW_MSG_CLASS_HANDLER(window, WindowMessage::KEY_DOWN, KeyParam, OnKeyDown);
+				WINDOW_MSG_CLASS_HANDLER(window, WindowMessage::MOUSE_DOWN, MouseDownParam, OnMouseDown);
+				WINDOW_MSG_CLASS_HANDLER(window, WindowMessage::MOUSE_MOVE, MouseMoveParam, OnMouseMove);
 			}
 		}
 
 		void Win32Application::OnKeyDown(const WindowSystem::KeyParam& param)
 		{
-			static std::size_t cameraMoveTimerId{ 0 };
-			static float progress{ 0.0f };
 			auto scene = SceneManager::Instance()->GetForegroundScene();
 			if (scene)
 			{
 				auto camera = scene->GetActiveCamera();
 				if (camera)
 				{
+					Vector3f camOffset;
 					auto position = camera->GetWorldPosition();
-					Vector3f offset{ 0, 0, 0 };
-					switch (param.code)
+					switch (param.code & ~VK_CONTROL_MASK)
 					{
 					case VK_A:
-						offset = Vector3f::left();
+						camOffset += Vector3f::left();
 						break;
 					case VK_D:
-						offset = Vector3f::right();
+						camOffset += Vector3f::right();
 						break;
 					case VK_W:
-						offset = Vector3f::back();
+						camOffset += Vector3f::back();
 						break;
 					case VK_S:
-						offset = Vector3f::forward();
+						camOffset += Vector3f::forward();
 						break;
 					case VK_Q:
-						offset = Vector3f::up();
+						camOffset += Vector3f::up();
 						break;
 					case VK_E:
-						offset = Vector3f::down();
+						camOffset += Vector3f::down();
 						break;
 					default:
 						break;
 					}
-					if (!offset.IsZero())
+					if (!camOffset.IsZero())
 					{
-						mTimer->RemoveTask(cameraMoveTimerId);
-						offset *= 0.2f;
-						offset = camera->CameraToWorld(offset) - camera->GetWorldPosition();
-						auto targetPosition = position + offset;
-						std::size_t *ptrTimerID = &cameraMoveTimerId;
-						float* ptrProgress = &progress;
-						progress = 0.0f;
-						cameraMoveTimerId = mTimer->AddTask(Foundation::TimerTaskType::REPEAT, 15, 15, 
-							[ptrTimerID, ptrProgress, camera, position, targetPosition, this]() {
-							if (*ptrProgress >= 1.0f)
-								mTimer->RemoveTask(*ptrTimerID);
-							else
-							{
-								*ptrProgress += 0.1f;
-								auto x = *ptrProgress;
-								x = x * x * x * (x * (x * 6 - 15) + 10);
-								camera->SetWorldPosition(position * (1 - x) + targetPosition * x);
-							}
-						});
+						auto position = camera->GetWorldPosition();
+						camOffset.Normalize();
+						camOffset *= 0.05f;
+						camOffset = camera->CameraDirectionToWorld(camOffset);
+						camera->SetWorldPosition(position + camOffset);
 					}
 				}
 			}
 
 		}
+
+		void Win32Application::OnMouseDown(const WindowSystem::MouseDownParam& param)
+		{
+			if (param.pressedKey & VK_MOUSERBUTTON)
+			{
+				mousePosition.x = param.x;
+				mousePosition.y = param.y;
+			}
+		}
+
+		void Win32Application::OnMouseMove(const WindowSystem::MouseMoveParam& param)
+		{
+			if (param.pressedKey & VK_MOUSERBUTTON)
+			{
+				auto scene = SceneManager::Instance()->GetForegroundScene();
+				if (scene)
+				{
+					auto camera = scene->GetActiveCamera();
+					if (camera)
+					{
+						float delta_x = float(param.x) - mousePosition.x;
+						float delta_y = float(param.y) - mousePosition.y;
+						Vector3f direction(delta_x, -delta_y, 0);
+						direction = camera->CameraDirectionToWorld(direction);
+						auto forward = camera->GetForward();
+						camera->RotateTowards(forward + direction * 0.005f);
+					}
+				}
+				mousePosition.x = param.x;
+				mousePosition.y = param.y;
+			}
+		}
+
 
 		void Win32Application::OnMouseWheel(const MouseWheelParam& param)
 		{

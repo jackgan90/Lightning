@@ -31,7 +31,8 @@ namespace Lightning
 			Matrix4f GetProjectionMatrix()const { return mProjectionMatrix; }
 			Matrix4f GetInvViewMatrix()const { return mInvViewMatrix; }
 			void MoveTo(const Vector3f& worldPosition);
-			void LookAt(const Vector3f& lookPosition, const Vector3f& worldUp = Vector3f{0.0f, 1.0f, 0.0f});
+			void LookAt(const Vector3f& lookPosition, const Vector3f& worldUp = Vector3f::up());
+			void RotateTowards(const Vector3f& direction, const Vector3f& worldUp = Vector3f::up());
 			void SetNear(const float nearPlane);
 			void SetFar(const float farPlane);
 			float GetNear()const { return mNearPlane; }
@@ -45,11 +46,15 @@ namespace Lightning
 			float GetAspectRatio()const { return mAspectRatio; }
 			void SetWorldPosition(const Vector3f& position);
 			Vector3f GetWorldPosition()const { return mWorldPosition; }
-			Vector3f CameraToWorld(const Vector3f& position)const;
-			Vector3f WorldToCamera(const Vector3f& position)const;
+			Vector3f CameraPointToWorld(const Vector3f& point)const;
+			Vector3f WorldPointToCamera(const Vector3f& point)const;
+			Vector3f CameraDirectionToWorld(const Vector3f& direction)const;
+			Vector3f WorldDirectionToCamera(const Vector3f& direction)const;
+			Vector3f GetForward()const { return -mZAxis; }
 		protected:
 			void UpdateViewMatrix();
 			void UpdateProjectionMatrix();
+			void UpdateXZAxis(const Vector3f& up);
 			CameraType mType;
 			float mNearPlane;
 			float mFarPlane;

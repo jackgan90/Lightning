@@ -105,6 +105,13 @@ namespace Lightning
 					return res;
 				}
 
+				Derived& operator+=(const Derived& other)
+				{
+					Derived* const pThis = static_cast<Derived*>(this);
+					*pThis = *pThis + other;
+					return *pThis;
+				}
+
 				Derived& operator*=(const T& scalar);
 			};
 

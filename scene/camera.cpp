@@ -60,6 +60,17 @@ namespace Lightning
 			UpdateViewMatrix();
 		}
 
+		void Camera::RotateTowards(const Vector3f& direction, const Vector3f& worldUp)
+		{
+			if (direction.IsZero())
+				return;
+			if (worldUp.IsZero())
+				return;
+			mZAxis = -direction;
+			mZAxis.Normalize();
+			UpdateXZAxis(worldUp.Normalized());
+		}
+
 		void Camera::LookAt(const Vector3f& lookPosition, const Vector3f& worldUp)
 		{
 			if (worldUp.IsZero())
@@ -67,17 +78,9 @@ namespace Lightning
 			auto direction = mWorldPosition - lookPosition;
 			if (direction.IsZero())
 				return;
-			auto normalizedUp = worldUp.Normalized();
 			mZAxis = direction;
 			mZAxis.Normalize();
-			auto newXAxis = normalizedUp.Cross(mZAxis);
-			if (!newXAxis.IsZero())	//mXAxis is zero when up and z axis are aligned, in this case, just keep X Axis unchanged
-			{
-				mXAxis = newXAxis;
-				mXAxis.Normalize();
-			}
-			mYAxis = mZAxis.Cross(mXAxis);
-			UpdateViewMatrix();
+			UpdateXZAxis(worldUp.Normalized());
 		}
 
 		void Camera::SetNear(const float nearPlane)
@@ -174,14 +177,48 @@ namespace Lightning
 			mInvViewMatrix.SetColumn(3, col3);
 		}
 
-		Vector3f Camera::CameraToWorld(const Vector3f& position)const
+		void Camera::UpdateXZAxis(const Vector3f& up)
 		{
-			return mInvViewMatrix * Vector4f(position);
+			auto newXAxis = up.Cross(mZAxis);
+			bool xAxisUpdated{ false };
+			if (!newXAxis.IsZero())	//mXAxis is zero when up and z axis are aligned, in this case, just keep X Axis unchanged
+			{
+				mXAxis = newXAxis;
+				mXAxis.Normalize();
+				xAxisUpdated = true;
+			}
+			mYAxis = mZAxis.Cross(mXAxis);
+			//If x-axis remains unchanged,new z axis and x axis may not be perpendicular.So we must
+			//recalculate x axis based on new y and z axis
+			if (!xAxisUpdated)	
+			{
+				mXAxis = mYAxis.Cross(mZAxis);
+			}
+			UpdateViewMatrix();
 		}
 
-		Vector3f Camera::WorldToCamera(const Vector3f& position)const
+		Vector3f Camera::CameraPointToWorld(const Vector3f& point)const
 		{
-			return mViewMatrix * Vector4f(position);
+			return mInvViewMatrix * Vector4f(point);
+		}
+
+		Vector3f Camera::WorldPointToCamera(const Vector3f& point)const
+		{
+			return mViewMatrix * Vector4f(point);
+		}
+
+		Vector3f Camera::CameraDirectionToWorld(const Vector3f& direction)const
+		{
+			Vector4f dir(direction);
+			dir.w = 0;
+			return mInvViewMatrix * dir;
+		}
+
+		Vector3f Camera::WorldDirectionToCamera(const Vector3f& direction)const
+		{
+			Vector4f dir(direction);
+			dir.w = 0;
+			return mViewMatrix * dir;
 		}
 	}
 }

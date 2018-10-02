@@ -44,14 +44,80 @@ namespace Lightning
 				pWindow->PostWindowMessage(WindowMessage::MOUSE_WHEEL, param);
 				break;
 			}
-			case WM_CHAR:
+			case WM_KEYDOWN:
 			{
 				KeyParam param(pWindow);
+				std::size_t code{ 0 };
 				if (wParam >= 'a' && wParam <= 'z')
-					param.code = static_cast<VirtualKeyCode>(wParam - 'a' + VK_A);
+					code = wParam - 'a' + VK_A;
 				if(wParam >= 'A' && wParam <= 'Z')
-					param.code = static_cast<VirtualKeyCode>(wParam - 'A' + VK_A);
+					code = wParam - 'A' + VK_A;
+				auto CtrlState = ::GetKeyState(VK_CONTROL);
+				auto LButtonState = ::GetKeyState(VK_LBUTTON);
+				auto RButtonState = ::GetKeyState(VK_RBUTTON);
+				auto MButtonState = ::GetKeyState(VK_MBUTTON);
+				auto ShiftState = ::GetKeyState(VK_SHIFT);
+				std::size_t StateMask = 0x8000;
+				if (CtrlState & StateMask)
+				{
+					code |= VK_CTRL;
+				}
+				if (LButtonState & StateMask)
+				{
+					code |= VK_MOUSELBUTTON;
+				}
+				if (MButtonState & StateMask)
+				{
+					code |= VK_MOUSEMBUTTON;
+				}
+				if (RButtonState & StateMask)
+				{
+					code |= VK_MOUSERBUTTON;
+				}
+				if (ShiftState & StateMask)
+				{
+					code |= VK_SHIFTBUTTON;
+				}
+				param.code = static_cast<VirtualKeyCode>(code);
 				pWindow->PostWindowMessage(WindowMessage::KEY_DOWN, param);
+				break;
+			}
+			case WM_RBUTTONDOWN:
+			{
+				MouseDownParam param(pWindow);
+				param.x = LOWORD(lParam);
+				param.y = HIWORD(lParam);
+				std::size_t pressedKey = VK_MOUSERBUTTON;
+				if (wParam & MK_CONTROL)
+					pressedKey |= VK_CTRL;
+				if (wParam & MK_LBUTTON)
+					pressedKey |= VK_MOUSELBUTTON;
+				if (wParam & MK_MBUTTON)
+					pressedKey |= VK_MOUSEMBUTTON;
+				if (wParam & MK_SHIFT)
+					pressedKey |= VK_SHIFTBUTTON;
+				param.pressedKey = static_cast<VirtualKeyCode>(pressedKey);
+				pWindow->PostWindowMessage(WindowMessage::MOUSE_DOWN, param);
+				break;
+			}
+			case WM_MOUSEMOVE:
+			{
+				MouseMoveParam param(pWindow);
+				param.x = LOWORD(lParam);
+				param.y = HIWORD(lParam);
+				std::size_t pressedKey{ 0 };
+				if (wParam & MK_CONTROL)
+					pressedKey |= VK_CTRL;
+				if (wParam & MK_LBUTTON)
+					pressedKey |= VK_MOUSELBUTTON;
+				if (wParam & MK_MBUTTON)
+					pressedKey |= VK_MOUSEMBUTTON;
+				if (wParam & MK_RBUTTON)
+					pressedKey |= VK_MOUSERBUTTON;
+				if (wParam & MK_SHIFT)
+					pressedKey |= VK_SHIFTBUTTON;
+				param.pressedKey = static_cast<VirtualKeyCode>(pressedKey);
+				pWindow->PostWindowMessage(WindowMessage::MOUSE_MOVE, param);
 				break;
 			}
 			case WM_CREATE:
