@@ -89,9 +89,32 @@ namespace Lightning
 					{
 						auto position = camera->GetWorldPosition();
 						camOffset.Normalize();
-						camOffset *= 0.05f;
+						camOffset *= 0.1f;
 						camOffset = camera->CameraDirectionToWorld(camOffset);
-						camera->SetWorldPosition(position + camOffset);
+						auto targetPosition = position + camOffset;
+						static std::size_t timerId{ 0 };
+						static std::size_t repeatInterval = 1000 / 60;
+						if (timerId)
+						{
+							mTimer->RemoveTask(timerId);
+						}
+						auto pTimerId = &timerId;
+						timerId = mTimer->AddTask(Foundation::TimerTaskType::REPEAT, repeatInterval, repeatInterval, [pTimerId, targetPosition, camera, this]() {
+							static float camSpeed{ 2.0f };
+							auto camPos = camera->GetWorldPosition();
+							auto moveDir = targetPosition - camPos;
+							auto distanceToTarget = moveDir.Length();
+							if (distanceToTarget <= 0.001f)
+							{
+								mTimer->RemoveTask(*pTimerId);
+								return;
+							}
+							auto moveDistance = camSpeed * (1.0f / 60.0f);
+							if (moveDistance > distanceToTarget)
+								moveDistance = distanceToTarget;
+							moveDir.Normalize();
+							camera->SetWorldPosition(camPos + moveDir * moveDistance);
+						});
 					}
 				}
 			}
