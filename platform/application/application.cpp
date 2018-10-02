@@ -66,7 +66,7 @@ namespace Lightning
 			auto camera = scene->GetActiveCamera();
 			camera->MoveTo(Render::Vector3f({0.0f, 0.0f, 2.0f}));
 			camera->LookAt(Render::Vector3f({ 0.0f, 0.0f, 0.0f }));
-			camera->SetCameraType(Scene::CameraType::Orthographic);
+			//camera->SetCameraType(Scene::CameraType::Orthographic);
 			//camera->RotateTowards(Render::Vector3f(0.0f, 1.0f, -1.0f));
 
 			//End of scene creation

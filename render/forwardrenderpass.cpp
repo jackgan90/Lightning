@@ -45,7 +45,6 @@ namespace Lightning
 					if (state.blendStates[i].enable)
 					{
 						state.depthStencilState.depthWriteEnable = false;
-						state.depthStencilState.depthTestEnable = false;
 					}
 				}
 			}
