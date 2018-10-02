@@ -42,6 +42,10 @@ namespace Lightning
 				for (auto i = 0;i < item.renderTargets;++i)
 				{
 					state.blendStates[i] = item.material->GetBlendState();
+					if (state.blendStates[i].enable)
+					{
+						state.depthStencilState.depthWriteEnable = false;
+					}
 				}
 			}
 			state.primType = item.geometry->primType;
