@@ -373,6 +373,10 @@ namespace Lightning
 					for (std::size_t i = indexCount;i < 2 * indexCount;++i)
 					{
 						indices[i] += static_cast<std::uint16_t>(vertexCount);
+						if (i % 3 == 2)
+						{
+							std::swap(indices[i], indices[i - 1]);
+						}
 					}
 
 				}

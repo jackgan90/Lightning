@@ -45,7 +45,7 @@ namespace Lightning
 
 			auto cube = std::make_shared<Scene::Cube>();
 			cube->SetWorldPosition(Render::Vector3f(1.0, 0.0, 0.0));
-			cube->SetColor(0xff000000);
+			cube->SetColor(0x4f000000);
 			scene->AddDrawable(cube);
 
 			auto cylinder = std::make_shared<Scene::Cylinder>(2, 1);
@@ -55,7 +55,7 @@ namespace Lightning
 
 			auto hemisphere = std::make_shared<Scene::Hemisphere>();
 			hemisphere->SetWorldPosition(Render::Vector3f(0, 0, 0));
-			hemisphere->SetColor(0xff00ff00);
+			hemisphere->SetColor(0x5f00ff00);
 			scene->AddDrawable(hemisphere);
 
 			auto sphere = std::make_shared<Scene::Sphere>();
