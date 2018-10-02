@@ -41,10 +41,10 @@ namespace Lightning
 		{
 			Matrix4f matScale;
 			matScale.SetZero();
-			matScale.m[0] = mScale[0];
-			matScale.m[5] = mScale[1];
-			matScale.m[10] = mScale[2];
-			matScale.m[15] = 1.0f;
+			matScale.SetCell(0, 0, mScale[0]);
+			matScale.SetCell(1, 1, mScale[1]);
+			matScale.SetCell(2, 2, mScale[2]);
+			matScale.SetCell(3, 3, 1);
 
 			Matrix4f matRotation;
 			mRotation.ToMatrix(matRotation);

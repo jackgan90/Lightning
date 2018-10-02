@@ -16,5 +16,12 @@ namespace Lightning
 			ss << std::put_time(std::localtime(&tt), "[%Y-%m-%d %H:%M:%S]");
 			return ss.str();
 		}
+
+		std::size_t Time::Now()
+		{
+			auto now = std::chrono::high_resolution_clock::now();
+			auto duration = now.time_since_epoch();
+			return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+		}
 	}
 }

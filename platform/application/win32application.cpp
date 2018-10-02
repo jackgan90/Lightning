@@ -4,6 +4,7 @@
 #include "logger.h"
 #include "windowmanager.h"
 #include "scenemanager.h"
+#include "timesystem.h"
 #undef min
 #undef max
 
@@ -94,13 +95,19 @@ namespace Lightning
 						auto targetPosition = position + camOffset;
 						static std::size_t timerId{ 0 };
 						static std::size_t repeatInterval = 1000 / 60;
+						static std::size_t now{ 0 };
 						if (timerId)
 						{
 							mTimer->RemoveTask(timerId);
 						}
 						auto pTimerId = &timerId;
-						timerId = mTimer->AddTask(Foundation::TimerTaskType::REPEAT, repeatInterval, repeatInterval, [pTimerId, targetPosition, camera, this]() {
+						auto pNow = &now;
+						now = Foundation::Time::Now();
+						timerId = mTimer->AddTask(Foundation::TimerTaskType::REPEAT, repeatInterval, repeatInterval, [pTimerId, pNow, targetPosition, camera, this]() {
 							static float camSpeed{ 3.0f };
+							auto now = Foundation::Time::Now();
+							auto delta_time = (now - *pNow) / 1000.0f;
+							*pNow = now;
 							auto camPos = camera->GetWorldPosition();
 							auto moveDir = targetPosition - camPos;
 							auto distanceToTarget = moveDir.Length();
@@ -109,7 +116,7 @@ namespace Lightning
 								mTimer->RemoveTask(*pTimerId);
 								return;
 							}
-							auto moveDistance = camSpeed * (1.0f / 60.0f);
+							auto moveDistance = camSpeed * delta_time;
 							if (moveDistance > distanceToTarget)
 								moveDistance = distanceToTarget;
 							moveDir.Normalize();

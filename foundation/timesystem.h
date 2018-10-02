@@ -10,6 +10,7 @@ namespace Lightning
 		{
 		public:
 			static std::string GetCurrentTimeString();
+			static std::size_t Now();
 		};
 	}
 }
