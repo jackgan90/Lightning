@@ -25,6 +25,12 @@ namespace Lightning
 						pDerived->m[CELL_INDEX(i, i)] = 1;
 				}
 
+				void SetCell(unsigned row, unsigned col, const T& value)
+				{
+					Derived* const pDerived = reinterpret_cast<Derived* const>(this);
+					pDerived->m[CELL_INDEX(row, col)] = value;
+				}
+
 				Derived operator*(const Derived& other)const
 				{
 					Derived mat;
