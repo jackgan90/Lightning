@@ -139,28 +139,31 @@ namespace Lightning
 				//ref : https://gamedev.stackexchange.com/questions/15070/orienting-a-model-to-face-a-target
 				void OrientTo(const Vector3<T>& direction, const Vector3<T>& up = Vector3<T>::up())
 				{
+					assert(direction.Length() >= 0.999 && direction.Length() <= 1.0001);
 					auto old_direction = RotateVector(Vector3<T>::back());
 					auto dot = old_direction.Dot(direction);
 
-					if (std::abs(dot - (-1.0f)) < 0.000001f)
+					Quaternion<T> q;
+					if (std::abs(dot - T(-1)) < T(0.000001))
 					{
 						// direction and old_direction point exactly in the opposite direction, 
 						// so it is a 180 degrees turn around the up-axis
-						FromAxisAndAngle(up, PI);
-						return;
+						q.FromAxisAndAngle(up, PI);
 					}
-					if (std::abs(dot - (1.0f)) < 0.000001f)
+					if (std::abs(dot - T(1)) < T(0.000001))
 					{
 						// direction and old_direction point exactly in the same direction
 						// so we return the identity quaternion
-						*this = Identity();
-						return;
+						q = Quaternion<T>::Identity();
 					}
 
 					auto rotAngle = std::acos(dot);
 					auto rotAxis = old_direction.Cross(direction);
+					if (rotAxis.SquareLength() < T(0.000001))
+						return;
 					rotAxis.Normalize();
-					FromAxisAndAngle(rotAxis, rotAngle);
+					q.FromAxisAndAngle(rotAxis, rotAngle);
+					*this = q * (*this);
 				}
 
 				//ref : Mathematics for 3D Game Programming And Computer Graphics

@@ -120,7 +120,7 @@ namespace Lightning
 							if (moveDistance > distanceToTarget)
 								moveDistance = distanceToTarget;
 							moveDir.Normalize();
-							camera->SetWorldPosition(camPos + moveDir * moveDistance);
+							camera->MoveTo(camPos + moveDir * moveDistance);
 						});
 					}
 				}
@@ -152,7 +152,8 @@ namespace Lightning
 						Vector3f direction(delta_x, -delta_y, 0);
 						direction = camera->CameraDirectionToWorld(direction);
 						auto forward = camera->GetForward();
-						camera->RotateTowards(forward + direction * 0.005f);
+						auto dest_dir = forward + direction * 0.005f;
+						camera->RotateTowards(dest_dir);
 					}
 				}
 				mousePosition.x = param.x;

@@ -72,16 +72,20 @@ namespace Lightning
 					return true;
 				}
 
-				T Length()const
+				T SquareLength()const
 				{
-					T length{ 0 };
+					T sqrLength{ 0 };
 					const Derived *pDerived = reinterpret_cast<const Derived* const>(this);
 					for (int i = 0; i < Derived::Order; ++i)
 					{
-						length += pDerived->operator[](i) * pDerived->operator[](i);
+						sqrLength += pDerived->operator[](i) * pDerived->operator[](i);
 					}
+					return sqrLength;
+				}
 
-					return std::sqrt(length);
+				T Length()const
+				{
+					return std::sqrt(SquareLength());
 				}
 
 				void Normalize()

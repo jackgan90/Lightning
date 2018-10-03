@@ -89,7 +89,7 @@ namespace Lightning
 					if (vs)
 					{
 						//We know that transform.ToMatrix4 may change it's internal matrix
-						auto worldMatrix = const_cast<RenderItem&>(item).transform.ToMatrix4();
+						auto worldMatrix = const_cast<RenderItem&>(item).transform.LocalToGlobalMatrix4();
 						auto wvp = item.projectionMatrix * item.viewMatrix * worldMatrix;
 						vs->SetArgument(ShaderArgument("wvp", wvp));
 					}

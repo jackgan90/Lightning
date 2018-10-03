@@ -1,9 +1,7 @@
 #pragma once
 #include <cmath>
 #include "sceneexportdef.h"
-#include "math/common.h"
-#include "math/matrix.h"
-#include "math/vector.h"
+#include "transform.h"
 
 namespace Lightning
 {
@@ -11,6 +9,7 @@ namespace Lightning
 	{
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Matrix4f;
+		using Render::Transform;
 		enum class CameraType
 		{
 			Perspective,
@@ -44,17 +43,16 @@ namespace Lightning
 			float GetFOV()const { return Foundation::Math::RadiansToDegrees(mFov); }
 			void SetAspectRatio(const float aspectRatio);
 			float GetAspectRatio()const { return mAspectRatio; }
-			void SetWorldPosition(const Vector3f& position);
-			Vector3f GetWorldPosition()const { return mWorldPosition; }
+			Vector3f GetWorldPosition()const { return mTransform.GetPosition(); }
 			Vector3f CameraPointToWorld(const Vector3f& point)const;
 			Vector3f WorldPointToCamera(const Vector3f& point)const;
 			Vector3f CameraDirectionToWorld(const Vector3f& direction)const;
 			Vector3f WorldDirectionToCamera(const Vector3f& direction)const;
-			Vector3f GetForward()const { return -mZAxis; }
+			Vector3f GetForward()const { return mTransform.Yaw(); }
+			const Transform& GetTransform()const { return mTransform; }
 		protected:
 			void UpdateViewMatrix();
 			void UpdateProjectionMatrix();
-			void UpdateXZAxis(const Vector3f& up);
 			CameraType mType;
 			float mNearPlane;
 			float mFarPlane;
@@ -62,10 +60,7 @@ namespace Lightning
 			float mFov;
 			//ratio of near plane width / near plane height
 			float mAspectRatio;
-			Vector3f mWorldPosition;
-			Vector3f mXAxis;
-			Vector3f mYAxis;
-			Vector3f mZAxis;
+			Transform mTransform;
 			Matrix4f mViewMatrix;
 			Matrix4f mInvViewMatrix;
 			Matrix4f mProjectionMatrix;

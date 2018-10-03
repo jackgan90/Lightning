@@ -8,21 +8,21 @@ namespace Lightning
 	{
 		using Foundation::Math::DegreesToRadians;
 		using Foundation::Math::Vector4f;
-		Camera::Camera():mType(CameraType::Perspective), mNearPlane(1.0f), mFarPlane(1000.0f), 
+		using Foundation::Math::Quaternionf;
+		Camera::Camera():mType(CameraType::Perspective), mNearPlane(0.01f), mFarPlane(1000.0f), 
 			mFov(DegreesToRadians(60.0f)), mAspectRatio(1.0f),
-			mWorldPosition{0.0f, 0.0f, 0.0f}, 
-			mXAxis{1.0f, 0.0f, 0.0f}, mYAxis{0.0f, 1.0f, 0.0f}, mZAxis{0.0f, 0.0f, 1.0f}
+			mTransform(Vector3f::Zero(), Vector3f(1, 1, 1), Quaternionf::Identity())
 		{
 			UpdateViewMatrix();
 			UpdateProjectionMatrix();
 		}
 
 		Camera::Camera(const Vector3f& worldPosition, const Vector3f& lookDir, const Vector3f& worldUp):
-			mType(CameraType::Perspective), mNearPlane(1.0f), mFarPlane(1000.0f),
-			mFov(DegreesToRadians(60.0f)), mAspectRatio(1.0f),
-			mWorldPosition(worldPosition), 
-			mZAxis(-lookDir), mXAxis(worldUp.Cross(mZAxis)), mYAxis(mZAxis.Cross(mXAxis))
+			mType(CameraType::Perspective), mNearPlane(0.01f), mFarPlane(1000.0f),
+			mFov(DegreesToRadians(60.0f)), mAspectRatio(1.0f)
 		{
+			mTransform.SetPosition(worldPosition);
+			mTransform.OrientTo(lookDir, worldUp);
 			UpdateViewMatrix();
 			UpdateProjectionMatrix();
 		}
@@ -31,11 +31,11 @@ namespace Lightning
 			const Vector3f& worldPosition, 
 			const Vector3f& lookDir,
 			const Vector3f& worldUp):
-			mType(CameraType::Perspective), mNearPlane(1.0f), mFarPlane(1000.0f), 
-			mFov(DegreesToRadians(fov)),mAspectRatio(aspectRatio),
-			mWorldPosition(worldPosition), 
-			mZAxis(-lookDir), mXAxis(worldUp.Cross(mZAxis)), mYAxis(mZAxis.Cross(mXAxis))
+			mType(CameraType::Perspective), mNearPlane(0.01f), mFarPlane(1000.0f), 
+			mFov(DegreesToRadians(fov)),mAspectRatio(aspectRatio)
 		{
+			mTransform.SetPosition(worldPosition);
+			mTransform.OrientTo(lookDir, worldUp);
 			UpdateViewMatrix();
 			UpdateProjectionMatrix();
 		}
@@ -56,31 +56,20 @@ namespace Lightning
 
 		void Camera::MoveTo(const Vector3f& worldPosition)
 		{
-			mWorldPosition = worldPosition;
+			mTransform.SetPosition(worldPosition);
 			UpdateViewMatrix();
 		}
 
 		void Camera::RotateTowards(const Vector3f& direction, const Vector3f& worldUp)
 		{
-			if (direction.IsZero())
-				return;
-			if (worldUp.IsZero())
-				return;
-			mZAxis = -direction;
-			mZAxis.Normalize();
-			UpdateXZAxis(worldUp.Normalized());
+			mTransform.OrientTo(direction, mTransform.Pitch());
+			UpdateViewMatrix();
 		}
 
 		void Camera::LookAt(const Vector3f& lookPosition, const Vector3f& worldUp)
 		{
-			if (worldUp.IsZero())
-				return;
-			auto direction = mWorldPosition - lookPosition;
-			if (direction.IsZero())
-				return;
-			mZAxis = direction;
-			mZAxis.Normalize();
-			UpdateXZAxis(worldUp.Normalized());
+			mTransform.LookAt(lookPosition, worldUp);
+			UpdateViewMatrix();
 		}
 
 		void Camera::SetNear(const float nearPlane)
@@ -140,12 +129,6 @@ namespace Lightning
 			}
 		}
 
-		void Camera::SetWorldPosition(const Vector3f& position)
-		{
-			mWorldPosition = position;
-			UpdateViewMatrix();
-		}
-
 		void Camera::UpdateViewMatrix()
 		{
 			/*
@@ -157,44 +140,10 @@ namespace Lightning
 					| R RA|
 					| 0 1 |
 			*/	
-			Vector3f translation{ -mWorldPosition[0], -mWorldPosition[1], -mWorldPosition[2] };
-			Vector4f row0(mXAxis);
-			row0[3] = mXAxis.Dot(translation);
-			Vector4f row1(mYAxis);
-			row1[3] = mYAxis.Dot(translation);
-			Vector4f row2(mZAxis);
-			row2[3] = mZAxis.Dot(translation);
-			mViewMatrix.SetRow(0, row0);
-			mViewMatrix.SetRow(1, row1);
-			mViewMatrix.SetRow(2, row2);
-			mViewMatrix.SetRow(3, Vector4f({0.0f, 0.0f, 0.0f, 1.0f}));
+			mViewMatrix = mTransform.GlobalToLocalMatrix4();
+			mInvViewMatrix = mTransform.LocalToGlobalMatrix4();
 
-			Vector4f col0(mXAxis), col1(mYAxis), col2(mZAxis), col3(mWorldPosition);
-			col0[3] = col1[3] = col2[3] = 0;
-			mInvViewMatrix.SetColumn(0, col0);
-			mInvViewMatrix.SetColumn(1, col1);
-			mInvViewMatrix.SetColumn(2, col2);
-			mInvViewMatrix.SetColumn(3, col3);
-		}
-
-		void Camera::UpdateXZAxis(const Vector3f& up)
-		{
-			auto newXAxis = up.Cross(mZAxis);
-			bool xAxisUpdated{ false };
-			if (!newXAxis.IsZero())	//mXAxis is zero when up and z axis are aligned, in this case, just keep X Axis unchanged
-			{
-				mXAxis = newXAxis;
-				mXAxis.Normalize();
-				xAxisUpdated = true;
-			}
-			mYAxis = mZAxis.Cross(mXAxis);
-			//If x-axis remains unchanged,new z axis and x axis may not be perpendicular.So we must
-			//recalculate x axis based on new y and z axis
-			if (!xAxisUpdated)	
-			{
-				mXAxis = mYAxis.Cross(mZAxis);
-			}
-			UpdateViewMatrix();
+			//auto res = mViewMatrix * mInvViewMatrix;
 		}
 
 		Vector3f Camera::CameraPointToWorld(const Vector3f& point)const

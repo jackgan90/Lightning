@@ -48,8 +48,8 @@ namespace Lightning
 			auto camera = scene->GetActiveCamera();
 			camera->MoveTo(Render::Vector3f({0.0f, 0.0f, 2.0f}));
 			camera->LookAt(Render::Vector3f({ 0.0f, 0.0f, 0.0f }));
-			GenerateSceneObjects();
 			//camera->SetCameraType(Scene::CameraType::Orthographic);
+			GenerateSceneObjects();
 			//camera->RotateTowards(Render::Vector3f(0.0f, 1.0f, -1.0f));
 
 			//End of scene creation
@@ -68,12 +68,12 @@ namespace Lightning
 			auto cylinder = std::make_shared<Scene::Cylinder>(2, 1);
 			cylinder->SetWorldPosition(Vector3f(-1.0, 0.0, 0.0));
 			//cylinder->SetWorldRotation(Quaternionf(EulerAnglef(0, 3.14 / 2, 0)));
-			auto rot = Quaternionf(EulerAnglef(0, 3.14 / 4, 0));
+			//auto rot = Quaternionf(EulerAnglef(0, 3.14 / 4, 0));
 			//EulerAnglef euler;
 			//rot.ToEulerAngle(euler);
 			//rot *= Quaternionf(EulerAnglef(0, 3.14 / 4, 0));
 			//rot.ToEulerAngle(euler);
-			cylinder->SetWorldRotation(rot);
+			//cylinder->SetWorldRotation(rot);
 			cylinder->SetColor(0xffffff00);
 			scene->AddDrawable(cylinder);
 

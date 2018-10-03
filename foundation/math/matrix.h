@@ -55,8 +55,9 @@ namespace Lightning
 
 				Derived& operator*=(const Derived& other)
 				{
-					*this = *this * other;
-					return *reinterpret_cast<Derived*>(this);
+					auto pDerived = reinterpret_cast<Derived*>(this);
+					*pDerived = *pDerived * other;
+					return *pDerived;
 				}
 
 				template<typename V>
