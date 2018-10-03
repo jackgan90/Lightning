@@ -31,9 +31,8 @@ namespace Lightning
 					pDerived->m[CELL_INDEX(row, col)] = value;
 				}
 
-				Derived operator*(const Derived& other)const
+				void MultMatrix(const Derived& other, Derived& mat)const
 				{
-					Derived mat;
 					const Derived *const pDerived = reinterpret_cast<const Derived* const>(this);
 					for (int i = 0;i < Derived::Order;++i)
 					{
@@ -45,7 +44,19 @@ namespace Lightning
 								mat.m[idx] += pDerived->m[CELL_INDEX(i, k)] * other.m[CELL_INDEX(k, j)];
 						}
 					}
+				}
+
+				Derived operator*(const Derived& other)const
+				{
+					Derived mat;
+					MultMatrix(other, mat);
 					return mat;
+				}
+
+				Derived& operator*=(const Derived& other)
+				{
+					*this = *this * other;
+					return *reinterpret_cast<Derived*>(this);
 				}
 
 				template<typename V>

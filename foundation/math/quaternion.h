@@ -51,6 +51,18 @@ namespace Lightning
 					w /= length;
 				}
 
+				Quaternion<T> Inversed()const
+				{
+					Quaternion<T> q(-x, -y, -z, w);
+					auto sqrl = q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w;
+					assert(sqrl > 0);
+					q.x /= sqrl;
+					q.y /= sqrl;
+					q.z /= sqrl;
+					q.w /= sqrl;
+					return q;
+				}
+
 				Quaternion<T> operator*(const Quaternion<T>& q)const
 				{
 					Quaternion<T> res;
@@ -134,7 +146,7 @@ namespace Lightning
 					{
 						// direction and old_direction point exactly in the opposite direction, 
 						// so it is a 180 degrees turn around the up-axis
-						FromAxisAndAngle(Vector3<T>::up(), PI);
+						FromAxisAndAngle(up, PI);
 						return;
 					}
 					if (std::abs(dot - (1.0f)) < 0.000001f)

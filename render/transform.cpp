@@ -40,27 +40,27 @@ namespace Lightning
 
 		void Transform::UpdateMatrix()
 		{
-			Matrix4f matScale;
-			matScale.SetZero();
-			matScale.SetCell(0, 0, mScale[0]);
-			matScale.SetCell(1, 1, mScale[1]);
-			matScale.SetCell(2, 2, mScale[2]);
-			matScale.SetCell(3, 3, 1);
+			
+			mMatrix.SetIdentity();
+			mMatrix.SetColumn(3, Vector4f(mPosition));
 
 			Matrix4f matRotation;
 			mRotation.ToMatrix(matRotation);
-			
-			Matrix4f matTranslation;
-			matTranslation.SetIdentity();
-			Vector4f column(mPosition);
-			matTranslation.SetColumn(3, column);
-			
-			mMatrix = matTranslation * matRotation * matScale;
+
+			mMatrix *= matRotation;
+
+			mMatrix.m[Matrix4f::CELL_INDEX(0, 0)] *= mScale.x;
+			mMatrix.m[Matrix4f::CELL_INDEX(1, 1)] *= mScale.y;
+			mMatrix.m[Matrix4f::CELL_INDEX(2, 2)] *= mScale.z;
 		}
 
 		void Transform::LookAt(const Vector3f& position, const Vector3f& up)
 		{
-
+			auto direction = position - mPosition;
+			if (direction.IsZero())
+				return;
+			mRotation.OrientTo(direction, up);
+			mMatrixDirty = true;
 		}
 
 		Matrix4f Transform::ToMatrix4()
@@ -71,6 +71,17 @@ namespace Lightning
 				mMatrixDirty = false;
 			}
 			return mMatrix;
+		}
+
+		Matrix4f Transform::GlobalToLocalMatrix4()
+		{
+			Transform transInverse = Inversed();
+			return transInverse.ToMatrix4();
+		}
+
+		Transform Transform::Inversed()const
+		{
+			return Transform(-mPosition, mScale * 0.5f, mRotation.Inversed());
 		}
 	}
 }

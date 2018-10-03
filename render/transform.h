@@ -16,7 +16,9 @@ namespace Lightning
 		public:
 			Transform();
 			Transform(const Vector3f& pos, const Vector3f& scale, const Quaternionf& rot);
+			Transform Inversed()const;
 			Matrix4f ToMatrix4();
+			Matrix4f GlobalToLocalMatrix4();
 			void SetPosition(const Vector3f& position);
 			Vector3f GetPosition()const { return mPosition; }
 			void SetRotation(const Quaternionf& rotation);
