@@ -137,10 +137,13 @@ namespace Lightning
 				}
 
 				//ref : https://gamedev.stackexchange.com/questions/15070/orienting-a-model-to-face-a-target
-				void OrientTo(const Vector3<T>& direction, const Vector3<T>& up = Vector3<T>::up())
+				void OrientTo(const Vector3<T>& direction, const Vector3<T>& up = Vector3<T>::up(), Space space = Space::World)
 				{
 					assert(direction.Length() >= 0.999 && direction.Length() <= 1.0001);
-					auto old_direction = RotateVector(Vector3<T>::back());
+					//auto old_direction = RotateVector(Vector3<T>::back());
+					auto old_direction = Vector3<T>::back();
+					if (space == Space::Local)
+						old_direction = RotateVector(old_direction);
 					auto dot = old_direction.Dot(direction);
 
 					Quaternion<T> q;
@@ -163,7 +166,10 @@ namespace Lightning
 						return;
 					rotAxis.Normalize();
 					q.FromAxisAndAngle(rotAxis, rotAngle);
-					*this = q * (*this);
+					if(space == Space::World)
+						*this = q;
+					else
+						*this = q * (*this);
 				}
 
 				//ref : Mathematics for 3D Game Programming And Computer Graphics

@@ -16,6 +16,12 @@ namespace Lightning
 			{
 				return static_cast<float>(radians * 180.0 / PI);
 			}
+
+			enum class Space
+			{
+				World,
+				Local
+			};
 		}
 	}
 }
