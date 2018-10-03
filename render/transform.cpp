@@ -1,3 +1,4 @@
+#include <cassert>
 #include "transform.h"
 
 namespace Lightning
@@ -9,35 +10,35 @@ namespace Lightning
 			mPosition(0.0f, 0.0f, 0.0f)
 			,mRotation(0, 0, 0, 1)
 			,mScale(1.0f, 1.0f, 1.0f)
+			,mMatrixDirty(true)
 		{
-			UpdateTransformMatrix();
 		}
 
-		Transform::Transform(const Vector3f& pos, const Vector3f& scale) :
-			mPosition(pos), mScale(scale)
+		Transform::Transform(const Vector3f& pos, const Vector3f& scale, const Quaternionf& rot) :
+			mPosition(pos), mScale(scale), mRotation(rot), mMatrixDirty(true)
 		{
-			UpdateTransformMatrix();
 		}
 
 		void Transform::SetPosition(const Vector3f& position)
 		{
 			mPosition = position;
-			UpdateTransformMatrix();
+			mMatrixDirty = true;
 		}
 
 		void Transform::SetRotation(const Quaternionf& rotation)
 		{
+			assert(rotation.Length() >= 0.999 && rotation.Length() <= 1.0001);
 			mRotation = rotation;
-			UpdateTransformMatrix();
+			mMatrixDirty = true;
 		}
 
 		void Transform::SetScale(const Vector3f& scale)
 		{
 			mScale = scale;
-			UpdateTransformMatrix();
+			mMatrixDirty = true;
 		}
 
-		void Transform::UpdateTransformMatrix()
+		void Transform::UpdateMatrix()
 		{
 			Matrix4f matScale;
 			matScale.SetZero();
@@ -54,12 +55,22 @@ namespace Lightning
 			Vector4f column(mPosition);
 			matTranslation.SetColumn(3, column);
 			
-			mTransform = matTranslation * matRotation * matScale;
+			mMatrix = matTranslation * matRotation * matScale;
 		}
 
-		Matrix4f Transform::GetTransformMatrix()const
+		void Transform::LookAt(const Vector3f& position, const Vector3f& up)
 		{
-			return mTransform;
+
+		}
+
+		Matrix4f Transform::ToMatrix4()
+		{
+			if (mMatrixDirty)
+			{
+				UpdateMatrix();
+				mMatrixDirty = false;
+			}
+			return mMatrix;
 		}
 	}
 }

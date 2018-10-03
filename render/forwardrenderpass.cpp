@@ -88,7 +88,8 @@ namespace Lightning
 					auto vs = item.material->GetShader(ShaderType::VERTEX);
 					if (vs)
 					{
-						auto worldMatrix = item.transform.GetTransformMatrix();
+						//We know that transform.ToMatrix4 may change it's internal matrix
+						auto worldMatrix = const_cast<RenderItem&>(item).transform.ToMatrix4();
 						auto wvp = item.projectionMatrix * item.viewMatrix * worldMatrix;
 						vs->SetArgument(ShaderArgument("wvp", wvp));
 					}

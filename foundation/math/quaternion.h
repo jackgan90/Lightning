@@ -1,4 +1,5 @@
 #pragma once
+#include <cassert>
 #include <cmath>
 #include <limits>
 #include "common.h"
@@ -26,11 +27,7 @@ namespace Lightning
 				//direction is a normalized vector3
 				Quaternion(const Vector3<T>& direction, T theta)
 				{
-					auto sin_half_theta = std::sin(theta / T(2.0));
-					x = sin_half_theta * direction.x;
-					y = sin_half_theta * direction.y;
-					z = sin_half_theta * direction.z;
-					w = std::cos(theta / T(2.0));
+					FromAxisAndAngle(direction, theta);
 				}
 
 				Quaternion(const EulerAngle<T>& angle)
@@ -73,17 +70,27 @@ namespace Lightning
 				//ref : https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
 				void FromEulerAngle(const EulerAngle<T>& angle)
 				{
-					T cos_roll = std::cos(angle.roll * 0.5);
-					T sin_roll = std::sin(angle.roll * 0.5);
-					T cos_pitch = std::cos(angle.pitch * 0.5);
-					T sin_pitch = std::sin(angle.pitch * 0.5);
-					T cos_yaw = std::cos(angle.yaw * 0.5);
-					T sin_yaw = std::sin(angle.yaw * 0.5);
+					auto cos_roll = std::cos(angle.roll * 0.5);
+					auto sin_roll = std::sin(angle.roll * 0.5);
+					auto cos_pitch = std::cos(angle.pitch * 0.5);
+					auto sin_pitch = std::sin(angle.pitch * 0.5);
+					auto cos_yaw = std::cos(angle.yaw * 0.5);
+					auto sin_yaw = std::sin(angle.yaw * 0.5);
 
-					w = cos_roll * cos_pitch * cos_yaw + sin_roll * sin_pitch * sin_yaw;
-					x = cos_roll * sin_pitch * cos_yaw - sin_roll * cos_pitch * sin_yaw;
-					y = cos_roll * cos_pitch * sin_yaw + sin_roll * sin_pitch * cos_yaw;
-					z = sin_roll * cos_pitch * cos_yaw - cos_roll * sin_pitch * sin_yaw;
+					w = T(cos_roll * cos_pitch * cos_yaw + sin_roll * sin_pitch * sin_yaw);
+					x = T(cos_roll * sin_pitch * cos_yaw - sin_roll * cos_pitch * sin_yaw);
+					y = T(cos_roll * cos_pitch * sin_yaw + sin_roll * sin_pitch * cos_yaw);
+					z = T(sin_roll * cos_pitch * cos_yaw - cos_roll * sin_pitch * sin_yaw);
+				}
+
+				void FromAxisAndAngle(const Vector3<T>& direction, T theta)
+				{
+					assert(direction.Length() >= 0.999 && direction.Length() <= 1.0001);
+					auto sint = std::sin(theta / T(2.0));
+					x = sint * direction.x;
+					y = sint * direction.y;
+					z = sint * direction.z;
+					w = std::cos(theta / T(2.0));
 				}
 
 				//ref : https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
@@ -105,6 +112,43 @@ namespace Lightning
 					T siny_cosp = +2.0 * (w * z + x * y);
 					T cosy_cosp = +1.0 - 2.0 * (y * y + z * z);  
 					angle.roll = std::atan2(siny_cosp, cosy_cosp);
+				}
+
+				//ref : https://gamedev.stackexchange.com/questions/28395/rotating-vector3-by-a-quaternion
+				Vector3<T> RotateVector(const Vector3<T>& v)const
+				{ 
+					// Extract the vector part of the quaternion
+					Vector3<T> u(x, y, z);
+
+					// Do the math
+					return T(2.0) * u.Dot(v) * u + (w*w - u.Dot(u)) * v + T(2.0) * w * u.Cross(v);
+				}
+
+				//ref : https://gamedev.stackexchange.com/questions/15070/orienting-a-model-to-face-a-target
+				void OrientTo(const Vector3<T>& direction, const Vector3<T>& up = Vector3<T>::up())
+				{
+					auto old_direction = RotateVector(Vector3<T>::back());
+					auto dot = old_direction.Dot(direction);
+
+					if (std::abs(dot - (-1.0f)) < 0.000001f)
+					{
+						// direction and old_direction point exactly in the opposite direction, 
+						// so it is a 180 degrees turn around the up-axis
+						FromAxisAndAngle(Vector3<T>::up(), PI);
+						return;
+					}
+					if (std::abs(dot - (1.0f)) < 0.000001f)
+					{
+						// direction and old_direction point exactly in the same direction
+						// so we return the identity quaternion
+						*this = Identity();
+						return;
+					}
+
+					auto rotAngle = std::acos(dot);
+					auto rotAxis = old_direction.Cross(direction);
+					rotAxis.Normalize();
+					FromAxisAndAngle(rotAxis, rotAngle);
 				}
 
 				//ref : Mathematics for 3D Game Programming And Computer Graphics

@@ -18,6 +18,7 @@ namespace Lightning
 					static Derived d;
 					return d;
 				}
+
 				T Dot(const Derived& other)const
 				{
 					T res{ 0 };
