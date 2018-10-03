@@ -95,7 +95,7 @@ namespace Lightning
 						auto targetPosition = position + camOffset;
 						static std::size_t timerId{ 0 };
 						static std::size_t repeatInterval = 1000 / 60;
-						static std::size_t now{ 0 };
+						static long long now{ 0 };
 						if (timerId)
 						{
 							mTimer->RemoveTask(timerId);

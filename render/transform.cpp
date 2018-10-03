@@ -83,9 +83,9 @@ namespace Lightning
 		{
 			Matrix4f mat;
 			mat.SetIdentity();
-			mat.SetCell(0, 0, 1.0 / mScale.x);
-			mat.SetCell(1, 1, 1.0 / mScale.y);
-			mat.SetCell(2, 2, 1.0 / mScale.z);
+			mat.SetCell(0, 0, float(1.0 / mScale.x));
+			mat.SetCell(1, 1, float(1.0 / mScale.y));
+			mat.SetCell(2, 2, float(1.0 / mScale.z));
 
 			Matrix4f matTrans;
 			matTrans.SetIdentity();

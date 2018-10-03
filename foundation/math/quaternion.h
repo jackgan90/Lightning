@@ -97,7 +97,7 @@ namespace Lightning
 
 				void FromAxisAndAngle(const Vector3<T>& direction, T theta)
 				{
-					assert(direction.Length() >= 0.999 && direction.Length() <= 1.0001);
+					assert(direction.IsUnitVector());
 					auto sint = std::sin(theta / T(2.0));
 					x = sint * direction.x;
 					y = sint * direction.y;
@@ -139,7 +139,7 @@ namespace Lightning
 				//ref : https://gamedev.stackexchange.com/questions/15070/orienting-a-model-to-face-a-target
 				void OrientTo(const Vector3<T>& direction, const Vector3<T>& up = Vector3<T>::up(), Space space = Space::World)
 				{
-					assert(direction.Length() >= 0.999 && direction.Length() <= 1.0001);
+					assert(direction.IsUnitVector());
 					//auto old_direction = RotateVector(Vector3<T>::back());
 					auto old_direction = Vector3<T>::back();
 					if (space == Space::Local)
@@ -151,7 +151,7 @@ namespace Lightning
 					{
 						// direction and old_direction point exactly in the opposite direction, 
 						// so it is a 180 degrees turn around the up-axis
-						q.FromAxisAndAngle(up, PI);
+						q.FromAxisAndAngle(up, T(PI));
 					}
 					if (std::abs(dot - T(1)) < T(0.000001))
 					{

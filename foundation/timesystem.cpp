@@ -17,7 +17,7 @@ namespace Lightning
 			return ss.str();
 		}
 
-		std::size_t Time::Now()
+		long long Time::Now()
 		{
 			auto now = std::chrono::high_resolution_clock::now();
 			auto duration = now.time_since_epoch();

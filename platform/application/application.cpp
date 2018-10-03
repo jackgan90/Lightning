@@ -65,7 +65,7 @@ namespace Lightning
 			cube->SetColor(0xffff0000);
 			scene->AddDrawable(cube);
 
-			auto cylinder = std::make_shared<Scene::Cylinder>(2, 1);
+			auto cylinder = std::make_shared<Scene::Cylinder>(2.0, 1.0);
 			cylinder->SetWorldPosition(Vector3f(-1.0, 0.0, 0.0));
 			//cylinder->SetWorldRotation(Quaternionf(EulerAnglef(0, 3.14 / 2, 0)));
 			//auto rot = Quaternionf(EulerAnglef(0, 3.14 / 4, 0));

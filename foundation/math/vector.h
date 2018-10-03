@@ -72,6 +72,12 @@ namespace Lightning
 					return true;
 				}
 
+				bool IsUnitVector()const
+				{
+					auto sqrl = SquareLength();
+					return sqrl >= 0.9999 && sqrl <= 1.0001;
+				}
+
 				T SquareLength()const
 				{
 					T sqrLength{ 0 };
