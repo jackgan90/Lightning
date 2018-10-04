@@ -129,6 +129,12 @@ namespace Lightning
 			}
 		}
 
+		void Camera::SetRotation(const Quaternionf& rotation)
+		{
+			mTransform.SetRotation(rotation);
+			UpdateViewMatrix();
+		}
+
 		void Camera::UpdateViewMatrix()
 		{
 			/*

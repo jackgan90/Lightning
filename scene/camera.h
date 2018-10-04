@@ -9,6 +9,7 @@ namespace Lightning
 	{
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Matrix4f;
+		using Foundation::Math::Quaternionf;
 		using Render::Transform;
 		enum class CameraType
 		{
@@ -49,7 +50,7 @@ namespace Lightning
 			Vector3f CameraDirectionToWorld(const Vector3f& direction)const;
 			Vector3f WorldDirectionToCamera(const Vector3f& direction)const;
 			Vector3f GetForward()const { return mTransform.Yaw(); }
-			const Transform& GetTransform()const { return mTransform; }
+			void SetRotation(const Quaternionf& rotation); 
 		protected:
 			void UpdateViewMatrix();
 			void UpdateProjectionMatrix();
