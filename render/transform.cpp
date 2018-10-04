@@ -89,6 +89,10 @@ namespace Lightning
 			assert(up.IsUnitVector());
 			direction.Normalize();
 			auto right = direction.Cross(up);
+			if (right.IsZero())
+			{
+				right = Right();
+			}
 			auto desiredUp = right.Cross(direction);
 
 			auto rot1 = Quaternionf::MakeRotation(Vector3f::back(), direction);
