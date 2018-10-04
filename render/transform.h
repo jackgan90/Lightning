@@ -36,6 +36,7 @@ namespace Lightning
 			Quaternionf mRotation;
 			bool mMatrixDirty;
 			Matrix4f mMatrix;
+			Matrix4f mInvMatrix;
 		};
 	}
 }

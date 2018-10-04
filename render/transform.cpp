@@ -40,18 +40,36 @@ namespace Lightning
 
 		void Transform::UpdateMatrix()
 		{
-			
-			mMatrix.SetIdentity();
-			mMatrix.SetColumn(3, Vector4f(mPosition));
+			if (!mMatrixDirty)
+				return;
+			mMatrixDirty = false;
+
+			Matrix4f matTrans;
+			matTrans.SetIdentity();
+			matTrans.SetColumn(3, Vector4f(mPosition));
 
 			Matrix4f matRotation;
 			mRotation.ToMatrix(matRotation);
 
-			mMatrix *= matRotation;
+			Matrix4f matScale;
+			matScale.SetIdentity();
+			matScale.SetCell(0, 0, mScale.x);
+			matScale.SetCell(1, 1, mScale.y);
+			matScale.SetCell(2, 2, mScale.z);
 
-			mMatrix.m[Matrix4f::CELL_INDEX(0, 0)] *= mScale.x;
-			mMatrix.m[Matrix4f::CELL_INDEX(1, 1)] *= mScale.y;
-			mMatrix.m[Matrix4f::CELL_INDEX(2, 2)] *= mScale.z;
+			mMatrix = matTrans * matRotation * matScale;
+
+			matScale.SetIdentity();
+			matScale.SetCell(0, 0, float(1.0 / mScale.x));
+			matScale.SetCell(1, 1, float(1.0 / mScale.y));
+			matScale.SetCell(2, 2, float(1.0 / mScale.z));
+
+			mRotation.Inversed().ToMatrix(matRotation);
+
+			matTrans.SetIdentity();
+			matTrans.SetColumn(3, Vector4f(-mPosition));
+
+			mInvMatrix = matScale * matRotation * matTrans;
 		}
 
 		void Transform::LookAt(const Vector3f& position, const Vector3f& up)
@@ -71,29 +89,14 @@ namespace Lightning
 
 		Matrix4f Transform::LocalToGlobalMatrix4()
 		{
-			if (mMatrixDirty)
-			{
-				UpdateMatrix();
-				mMatrixDirty = false;
-			}
+			UpdateMatrix();
 			return mMatrix;
 		}
 
 		Matrix4f Transform::GlobalToLocalMatrix4()
 		{
-			Matrix4f mat;
-			mat.SetIdentity();
-			mat.SetCell(0, 0, float(1.0 / mScale.x));
-			mat.SetCell(1, 1, float(1.0 / mScale.y));
-			mat.SetCell(2, 2, float(1.0 / mScale.z));
-
-			Matrix4f matTrans;
-			matTrans.SetIdentity();
-			matTrans.SetColumn(3, Vector4f(-mPosition));
-
-			Matrix4f matRotation;
-			mRotation.Inversed().ToMatrix(matRotation);
-			return mat * matRotation * matTrans;
+			UpdateMatrix();
+			return mInvMatrix;
 		}
 	}
 }
