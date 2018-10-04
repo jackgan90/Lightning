@@ -135,6 +135,12 @@ namespace Lightning
 					// Do the math
 					return T(2.0) * u.Dot(v) * u + (w*w - u.Dot(u)) * v + T(2.0) * w * u.Cross(v);
 				}
+
+				Vector3<T> operator*(const Vector3<T>& v)const
+				{
+					return RotateVector(v);
+				}
+
 				
 				//construct a rotation based on source and dest directions.Both source and dest are unit vector.
 				//ref : https://github.com/opengl-tutorials/ogl/blob/master/common/quaternion_utils.cpp

@@ -100,7 +100,7 @@ namespace Lightning
 
 			auto rot1 = Quaternionf::MakeRotation(Vector3f::back(), direction);
 
-			Vector3f newUp = rot1.RotateVector(Vector3f::up());
+			Vector3f newUp = rot1 * Vector3f::up();
 
 			auto rot2 = Quaternionf::MakeRotation(newUp, desiredUp);
 
