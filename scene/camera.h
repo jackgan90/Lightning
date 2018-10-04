@@ -49,8 +49,9 @@ namespace Lightning
 			Vector3f WorldPointToCamera(const Vector3f& point)const;
 			Vector3f CameraDirectionToWorld(const Vector3f& direction)const;
 			Vector3f WorldDirectionToCamera(const Vector3f& direction)const;
-			Vector3f GetForward()const { return mTransform.Yaw(); }
+			Vector3f GetForward()const { return mTransform.Forward(); }
 			void SetRotation(const Quaternionf& rotation); 
+			Quaternionf GetRotation()const { return mTransform.GetRotation(); }
 		protected:
 			void UpdateViewMatrix();
 			void UpdateProjectionMatrix();

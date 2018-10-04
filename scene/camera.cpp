@@ -62,13 +62,13 @@ namespace Lightning
 
 		void Camera::RotateTowards(const Vector3f& direction)
 		{
-			mTransform.OrientTo(direction, mTransform.Pitch());
+			mTransform.OrientTo(direction, mTransform.Up());
 			UpdateViewMatrix();
 		}
 
 		void Camera::LookAt(const Vector3f& lookPosition)
 		{
-			mTransform.LookAt(lookPosition, mTransform.Pitch());
+			mTransform.LookAt(lookPosition, mTransform.Up());
 			UpdateViewMatrix();
 		}
 
