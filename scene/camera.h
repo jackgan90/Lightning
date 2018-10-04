@@ -31,8 +31,8 @@ namespace Lightning
 			Matrix4f GetProjectionMatrix()const { return mProjectionMatrix; }
 			Matrix4f GetInvViewMatrix()const { return mInvViewMatrix; }
 			void MoveTo(const Vector3f& worldPosition);
-			void LookAt(const Vector3f& lookPosition, const Vector3f& worldUp = Vector3f::up());
-			void RotateTowards(const Vector3f& direction, const Vector3f& worldUp = Vector3f::up());
+			void LookAt(const Vector3f& lookPosition);
+			void RotateTowards(const Vector3f& direction);
 			void SetNear(const float nearPlane);
 			void SetFar(const float farPlane);
 			float GetNear()const { return mNearPlane; }

@@ -60,15 +60,15 @@ namespace Lightning
 			UpdateViewMatrix();
 		}
 
-		void Camera::RotateTowards(const Vector3f& direction, const Vector3f& worldUp)
+		void Camera::RotateTowards(const Vector3f& direction)
 		{
 			mTransform.OrientTo(direction, mTransform.Pitch());
 			UpdateViewMatrix();
 		}
 
-		void Camera::LookAt(const Vector3f& lookPosition, const Vector3f& worldUp)
+		void Camera::LookAt(const Vector3f& lookPosition)
 		{
-			mTransform.LookAt(lookPosition, worldUp);
+			mTransform.LookAt(lookPosition, mTransform.Pitch());
 			UpdateViewMatrix();
 		}
 
