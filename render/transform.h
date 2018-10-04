@@ -25,7 +25,7 @@ namespace Lightning
 			void SetScale(const Vector3f& scale);
 			Vector3f GetScale()const { return mScale; }
 			void LookAt(const Vector3f& position, const Vector3f& up = Vector3f::up());
-			void OrientTo(const Vector3f& direction, const Vector3f& up = Vector3f::up());
+			void OrientTo(Vector3f direction, const Vector3f& up = Vector3f::up());
 			Vector3f Forward()const { return mRotation.RotateVector(Vector3f::back()); }
 			Vector3f Up()const { return mRotation.RotateVector(Vector3f::up()); }
 			Vector3f Right()const { return mRotation.RotateVector(Vector3f::right()); }

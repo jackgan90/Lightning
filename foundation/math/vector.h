@@ -66,7 +66,7 @@ namespace Lightning
 					const Derived *pDerived = reinterpret_cast<const Derived* const>(this);
 					for (int i = 0; i < Derived::Order; ++i)
 					{
-						if (std::abs(pDerived->operator[](i)) > std::numeric_limits<T>::epsilon())
+						if (std::abs(pDerived->operator[](i)) > 0.00001)
 							return false;
 					}
 					return true;

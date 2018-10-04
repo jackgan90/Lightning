@@ -46,9 +46,9 @@ namespace Lightning
 			//Create a simple scene here just for test
 			auto scene = SceneManager::Instance()->CreateScene();
 			auto camera = scene->GetActiveCamera();
-			camera->MoveTo(Render::Vector3f({0.0f, 0.0f, 2.0f}));
-			//camera->LookAt(Render::Vector3f({ 0.0f, 0.1f, 0.0f }));
-			camera->SetRotation(Quaternionf(EulerAnglef(0, -3.14 / 2, 0)));
+			camera->MoveTo(Render::Vector3f({0.0f, 3.0f, 0.0f}));
+			camera->LookAt(Render::Vector3f({ 0.0f, 0.0f, 0.0f }));
+			//camera->SetRotation(Quaternionf(EulerAnglef(3.14 + 0.0, 0, 0)));
 			//camera->SetCameraType(Scene::CameraType::Orthographic);
 			GenerateSceneObjects();
 			//camera->RotateTowards(Render::Vector3f(0.0f, 1.0f, -1.0f));

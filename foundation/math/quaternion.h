@@ -137,37 +137,36 @@ namespace Lightning
 				}
 				
 				//construct a rotation based on source and dest directions.Both source and dest are unit vector.
-				//ref : https://gamedev.stackexchange.com/questions/15070/orienting-a-model-to-face-a-target
-				static Quaternion<T> MakeRotation(const Vector3<T>& source, const Vector3<T>& dest, const Vector3<T>& up)
+				//ref : https://github.com/opengl-tutorials/ogl/blob/master/common/quaternion_utils.cpp
+				static Quaternion<T> MakeRotation(Vector3<T> source, Vector3<T> dest)
 				{
+					source.Normalize();
+					dest.Normalize();
 					auto dot = source.Dot(dest);
 
-					Quaternion<T> q;
-					if (std::abs(dot - T(-1)) < T(0.000001))
+					Vector3<T> rotAxis;
+					if (dot < -1 + T(0.0001))
 					{
-						// direction and old_direction point exactly in the opposite direction, 
-						// so it is a 180 degrees turn around the up-axis
-						return Quaternion<T>(up, T(PI));
-					}
-					else if (std::abs(dot - T(1)) < T(0.000001))
-					{
-						// direction and old_direction point exactly in the same direction
-						// so we return the identity quaternion
-						return Quaternion<T>::Identity();
+						// special case when vectors in opposite directions :
+						// there is no "ideal" rotation axis
+						// So guess one; any will do as long as it's perpendicular to start
+						// This implementation favors a rotation around the Up axis,
+						// since it's often what you want to do.
+						rotAxis = Vector3<T>::forward().Cross(source);
+						if (rotAxis.IsZero())// bad luck, they were parallel, try again!
+						{
+							rotAxis = Vector3<T>::right().Cross(source);
+						}
+						rotAxis.Normalize();
+						return Quaternion<T>(rotAxis, PI);
 					}
 					else
 					{
-						auto rotAngle = std::acos(dot);
-						auto rotAxis = source.Cross(dest);
-						rotAxis.Normalize();
-						return Quaternion<T>(rotAxis, rotAngle);
+						rotAxis = source.Cross(dest);
+						auto s = std::sqrt((1 + dot) * 2.0);
+						auto invs = 1 / s;
+						return Quaternion<T>(rotAxis.x * invs, rotAxis.y * invs, rotAxis.z * invs, s * T(0.5));
 					}
-				}
-
-				void OrientTo(const Vector3<T>& direction, const Vector3<T>& up = Vector3<T>::up())
-				{
-					assert(direction.IsUnitVector());
-					*this = MakeRotation(Vector3<T>::back(), direction, up);
 				}
 
 				//ref : Mathematics for 3D Game Programming And Computer Graphics

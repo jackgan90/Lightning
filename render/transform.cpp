@@ -1,4 +1,5 @@
 #include <cassert>
+#include "logger.h"
 #include "transform.h"
 
 namespace Lightning
@@ -6,6 +7,8 @@ namespace Lightning
 	namespace Render
 	{
 		using Foundation::Math::Vector4f;
+		using Foundation::Math::EulerAnglef;
+		using Foundation::Math::PI;
 		Transform::Transform():
 			mPosition(0.0f, 0.0f, 0.0f)
 			,mRotation(0, 0, 0, 1)
@@ -80,10 +83,22 @@ namespace Lightning
 			OrientTo(direction, up);
 		}
 
-		void Transform::OrientTo(const Vector3f& direction, const Vector3f& up)
+		void Transform::OrientTo(Vector3f direction, const Vector3f& up)
 		{
 			assert(!direction.IsZero());
-			mRotation.OrientTo(direction.Normalized(), up);
+			assert(up.IsUnitVector());
+			direction.Normalize();
+			auto right = direction.Cross(up);
+			auto desiredUp = right.Cross(direction);
+
+			auto rot1 = Quaternionf::MakeRotation(Vector3f::back(), direction);
+
+			Vector3f newUp = rot1.RotateVector(Vector3f::up());
+
+			auto rot2 = Quaternionf::MakeRotation(newUp, desiredUp);
+
+			mRotation = rot2 * rot1;
+
 			mMatrixDirty = true;
 		}
 
