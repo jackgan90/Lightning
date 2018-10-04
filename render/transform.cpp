@@ -1,6 +1,9 @@
 #include <cassert>
+#include <algorithm>
 #include "logger.h"
 #include "transform.h"
+#undef min
+#undef max
 
 namespace Lightning
 {
@@ -83,11 +86,11 @@ namespace Lightning
 			OrientTo(direction, up);
 		}
 
-		void Transform::OrientTo(Vector3f direction, const Vector3f& up)
+		void Transform::OrientTo(Vector3f direction, Vector3f up)
 		{
-			assert(!direction.IsZero());
-			assert(up.IsUnitVector());
+			up.Normalize();
 			direction.Normalize();
+
 			auto right = direction.Cross(up);
 			if (right.IsZero())
 			{
@@ -102,6 +105,14 @@ namespace Lightning
 			auto rot2 = Quaternionf::MakeRotation(newUp, desiredUp);
 
 			mRotation = rot2 * rot1;
+
+			auto fwdDot = Forward().Dot(direction);
+			fwdDot = std::min(std::max(-1.0f, fwdDot), 1.0f);
+			if (fwdDot < 0)
+			{
+				mRotation = Quaternionf(desiredUp, std::acos(fwdDot)) * mRotation;
+				//LOG_INFO("TRIGGER, x, y, z, w : %f, %f, %f, %f", mRotation.x, mRotation.y, mRotation.z, mRotation.w);
+			}
 
 			mMatrixDirty = true;
 		}

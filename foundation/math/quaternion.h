@@ -95,9 +95,9 @@ namespace Lightning
 					z = T(sin_roll * cos_pitch * cos_yaw - cos_roll * sin_pitch * sin_yaw);
 				}
 
-				void FromAxisAndAngle(const Vector3<T>& direction, T theta)
+				void FromAxisAndAngle(Vector3<T> direction, T theta)
 				{
-					assert(direction.IsUnitVector());
+					direction.Normalize();
 					auto sint = std::sin(theta / T(2.0));
 					x = sint * direction.x;
 					y = sint * direction.y;
