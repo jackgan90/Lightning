@@ -5,6 +5,12 @@
 #include "deferedrenderpass.h"
 #include "ringallocator.h"
 
+#define INVOKE_CALLBACK(Callback)\
+for(auto& callback : mCallbacks)\
+{\
+	callback->Callback();\
+}
+
 namespace Lightning
 {
 	namespace Render
@@ -43,6 +49,7 @@ namespace Lightning
 			mFrameCount++;
 			mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 			mDevice->BeginFrame(mCurrentBackBufferIndex);
+			INVOKE_CALLBACK(OnBeginFrame)
 		}
 
 		void Renderer::DoFrame()
@@ -52,10 +59,12 @@ namespace Lightning
 			mDevice->ClearDepthStencilBuffer(mDepthStencilBuffer, DepthStencilClearFlags::CLEAR_DEPTH | DepthStencilClearFlags::CLEAR_STENCIL,
 				mDepthStencilBuffer->GetDepthClearValue(), mDepthStencilBuffer->GetStencilClearValue(), nullptr);
 			static_cast<Device*>(mDevice.get())->ApplyRenderTargets(&currentSwapChainRT, 1, mDepthStencilBuffer);
+			INVOKE_CALLBACK(OnDoFrame)
 		}
 
 		void Renderer::EndFrame()
 		{
+			INVOKE_CALLBACK(OnEndFrame)
 			auto fence = mFrameResources[mCurrentBackBufferIndex].fence;
 			auto fenceValue = fence->GetTargetValue() + 1;
 			mFrameResources[mCurrentBackBufferIndex].frameEndMarkers.push({mFrameCount, fenceValue});
@@ -120,6 +129,11 @@ namespace Lightning
 		std::size_t Renderer::GetFrameResourceIndex()const
 		{
 			return mCurrentBackBufferIndex;
+		}
+
+		void Renderer::RegisterCallback(IRendererCallback* callback)
+		{
+			mCallbacks.push_back(callback);
 		}
 
 		void Renderer::Start()

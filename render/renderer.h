@@ -60,6 +60,7 @@ namespace Lightning
 			std::size_t GetFrameResourceIndex()const override;
 			void Start()override;
 			void ShutDown()override;
+			void RegisterCallback(IRendererCallback* callback)override;
 			static Renderer* Instance() { return sInstance; }
 			IWindow* GetOutputWindow()override { return mOutputWindow.get(); }
 		protected:
@@ -85,6 +86,7 @@ namespace Lightning
 			std::size_t mCurrentBackBufferIndex;
 			ColorF mClearColor;
 			SharedDepthStencilBufferPtr mDepthStencilBuffer;
+			container::vector<IRendererCallback*> mCallbacks;
 			FrameResource mFrameResources[RENDER_FRAME_COUNT];
 			SharedWindowPtr mOutputWindow;
 		};

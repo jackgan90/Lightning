@@ -10,7 +10,7 @@ namespace Lightning
 	{
 		using Foundation::container;
 		using Foundation::Singleton;
-		class LIGHTNING_SCENE_API SceneManager : public Singleton<SceneManager>
+		class LIGHTNING_SCENE_API SceneManager : public Singleton<SceneManager>, public Render::IRendererCallback
 		{
 			friend class Singleton<SceneManager>;
 		public:
@@ -31,6 +31,9 @@ namespace Lightning
 			void Update();
 			void DestroyScene(const std::uint32_t sceneId);
 			void DestroyAll();
+			void OnBeginFrame()override;
+			void OnDoFrame()override;
+			void OnEndFrame()override;
 		protected:
 			std::uint32_t mCurrentSceneID;
 			container::unordered_map<std::uint32_t, Scene*> mScenes;

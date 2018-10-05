@@ -23,7 +23,7 @@ namespace Lightning
 
 		SceneManager::SceneManager():mForegroundScene(nullptr)
 		{
-
+			Renderer::Instance()->RegisterCallback(this);
 		}
 
 		SceneManager::~SceneManager()
@@ -48,6 +48,21 @@ namespace Lightning
 		void SceneManager::SetForegroundScene(Scene* scene)
 		{
 			mForegroundScene = scene;
+		}
+		
+		void SceneManager::OnBeginFrame()
+		{
+
+		}
+
+		void SceneManager::OnDoFrame()
+		{
+			Update();
+		}
+
+		void SceneManager::OnEndFrame()
+		{
+
 		}
 	}
 }

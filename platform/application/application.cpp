@@ -100,7 +100,6 @@ namespace Lightning
 
 		void Application::OnWindowIdle(const WindowIdleParam& param)
 		{
-			SceneManager::Instance()->Update();
 			if (mTimer)
 				mTimer->Tick();
 			if(mRenderer)

@@ -29,6 +29,15 @@ namespace Lightning
 			SwapChainInitException(const char*const w):RendererException(w){}
 		};
 
+		class LIGHTNING_RENDER_API IRendererCallback
+		{
+		public:
+			virtual ~IRendererCallback(){}
+			virtual void OnBeginFrame() = 0;
+			virtual void OnDoFrame() = 0;
+			virtual void OnEndFrame() = 0;
+		};
+
 		class LIGHTNING_RENDER_API IRenderer
 		{
 		public:
@@ -46,6 +55,8 @@ namespace Lightning
 			virtual std::size_t GetFrameResourceIndex()const = 0;
 			virtual void AddRenderPass(RenderPassType type) = 0;
 			virtual void Draw(const RenderItem& item) = 0;
+			//register renderer event callback.The callback will be called on certain moment of rendering
+			virtual void RegisterCallback(IRendererCallback* callback) = 0;
 			//get near plane value corresponding to normalized device coordinate
 			//different render API may have different near plane definition
 			//for example OpenGL clips coordinates to [-1, 1] and DirectX clips coordinates to [0, 1]
