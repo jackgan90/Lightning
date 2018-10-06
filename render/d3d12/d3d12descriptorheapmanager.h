@@ -50,11 +50,11 @@ namespace Lightning
 			};
 			ID3D12Device* GetNativeDevice();
 			UINT HeapTypeHash(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible) { return static_cast<UINT>(type) << 1 | static_cast<UINT>(shaderVisible); }
-			container::tuple<bool, DescriptorHeapStore> CreateHeapStore(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT descriptorCount, ID3D12Device* pDevice);
-			container::tuple<bool, DescriptorHeap*> TryAllocateDescriptorHeap(DescriptorHeapStore& heapInfo, UINT count, bool transient);
-			container::tuple<bool, DescriptorHeap*> TryAllocateDescriptorHeap(container::vector<DescriptorHeapStore>& heapList, UINT count, bool transient);
+			container::tuple<bool, DescriptorHeapStore*> CreateHeapStore(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT descriptorCount, ID3D12Device* pDevice);
+			container::tuple<bool, DescriptorHeap*> TryAllocateDescriptorHeap(DescriptorHeapStore* heapInfo, UINT count, bool transient);
+			container::tuple<bool, DescriptorHeap*> TryAllocateDescriptorHeap(container::vector<DescriptorHeapStore*>& heapList, UINT count, bool transient);
 			void Deallocate(DescriptorHeapEx* pHeapEx);
-			container::unordered_map<UINT, container::vector<DescriptorHeapStore>> mHeaps;
+			container::unordered_map<UINT, container::vector<DescriptorHeapStore*>> mHeaps;
 			container::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, UINT> mIncrementSizes;
 			container::unordered_map<std::size_t, container::vector<DescriptorHeapEx*>> mFrameTransientHeaps;
 #ifndef NDEBUG

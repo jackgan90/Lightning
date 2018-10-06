@@ -47,39 +47,39 @@ namespace Lightning
 			return std::get<1>(res);
 		}
 
-		container::tuple<bool, D3D12DescriptorHeapManager::DescriptorHeapStore> D3D12DescriptorHeapManager::CreateHeapStore(
+		container::tuple<bool, D3D12DescriptorHeapManager::DescriptorHeapStore*> D3D12DescriptorHeapManager::CreateHeapStore(
 			D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT descriptorCount, ID3D12Device* pDevice)
 		{
-			auto res = std::make_tuple(false, DescriptorHeapStore());
+			auto res = std::make_tuple(false, new DescriptorHeapStore);
 			auto& heapStore = std::get<1>(res);
-			heapStore.desc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-			heapStore.desc.NodeMask = 0;
-			heapStore.desc.NumDescriptors = descriptorCount;
-			heapStore.desc.Type = type;
-			auto hr = pDevice->CreateDescriptorHeap(&heapStore.desc, IID_PPV_ARGS(&heapStore.heap));
+			heapStore->desc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+			heapStore->desc.NodeMask = 0;
+			heapStore->desc.NumDescriptors = descriptorCount;
+			heapStore->desc.Type = type;
+			auto hr = pDevice->CreateDescriptorHeap(&heapStore->desc, IID_PPV_ARGS(&heapStore->heap));
 			if (FAILED(hr))
 			{
 				LOG_ERROR("Failed to create d3d12 descriptor heap!type:%d, flags:%d, number of descriptors:%d", 
-					heapStore.desc.Type, heapStore.desc.Flags, heapStore.desc.NumDescriptors);
+					heapStore->desc.Type, heapStore->desc.Flags, heapStore->desc.NumDescriptors);
 				return res;
 			}
-			heapStore.freeDescriptors = descriptorCount;
-			heapStore.freeIntervals.emplace_back(std::make_tuple(0, descriptorCount));
-			heapStore.cpuHandle = heapStore.heap->GetCPUDescriptorHandleForHeapStart();
-			heapStore.gpuHandle = heapStore.heap->GetGPUDescriptorHandleForHeapStart();
-			heapStore.incrementSize = GetIncrementSize(type, pDevice);
+			heapStore->freeDescriptors = descriptorCount;
+			heapStore->freeIntervals.emplace_back(std::make_tuple(0, descriptorCount));
+			heapStore->cpuHandle = heapStore->heap->GetCPUDescriptorHandleForHeapStart();
+			heapStore->gpuHandle = heapStore->heap->GetGPUDescriptorHandleForHeapStart();
+			heapStore->incrementSize = GetIncrementSize(type, pDevice);
 			
 			auto typeHash = HeapTypeHash(type, shaderVisible);
 			if (mHeaps.find(typeHash) == mHeaps.end())
 			{
-				mHeaps.insert(std::make_pair(typeHash, container::vector<DescriptorHeapStore>()));
+				mHeaps.insert(std::make_pair(typeHash, container::vector<DescriptorHeapStore*>()));
 			}
 			mHeaps[typeHash].push_back(heapStore);
 			std::get<0>(res) =  true;
 			return res;
 		}
 
-		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocateDescriptorHeap(container::vector<DescriptorHeapStore>& heapList, UINT count, bool transient)
+		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocateDescriptorHeap(container::vector<DescriptorHeapStore*>& heapList, UINT count, bool transient)
 		{
 			//loop over existing heap list reversely and try to allocate from it
 			for (int i = heapList.size() - 1; i >= 0;i--)
@@ -91,12 +91,12 @@ namespace Lightning
 			return std::make_tuple<bool, DescriptorHeap*>(false, nullptr);
 		}
 
-		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocateDescriptorHeap(DescriptorHeapStore& heapStore, UINT count, bool transient)
+		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocateDescriptorHeap(DescriptorHeapStore* heapStore, UINT count, bool transient)
 		{
 			auto res = std::make_tuple<bool, DescriptorHeap*>(false, nullptr);
-			if(count > heapStore.freeDescriptors)
+			if(count > heapStore->freeDescriptors)
 				return res;
-			for (auto it = heapStore.freeIntervals.begin(); it != heapStore.freeIntervals.end();++it)
+			for (auto it = heapStore->freeIntervals.begin(); it != heapStore->freeIntervals.end();++it)
 			{
 				auto left = std::get<0>(*it);
 				auto right = std::get<1>(*it);
@@ -108,7 +108,7 @@ namespace Lightning
 					if (descriptorCount == count)
 					{
 						//no other space for a descriptor, just remove this interval
-						heapStore.freeIntervals.erase(it);
+						heapStore->freeIntervals.erase(it);
 						std::get<0>(interval) = left;
 						std::get<1>(interval) = right;
 					}
@@ -119,20 +119,20 @@ namespace Lightning
 						std::get<0>(interval) = left;
 						std::get<1>(interval) = left + count;
 					}
-					heapStore.freeDescriptors -= count;
+					heapStore->freeDescriptors -= count;
 					std::get<0>(res) = true;
 					auto pHeapEx = new DescriptorHeapEx;
 					std::get<1>(res) = pHeapEx;
-					CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(heapStore.cpuHandle);
-					CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(heapStore.gpuHandle);
-					cpuHandle.Offset(left * heapStore.incrementSize);
-					gpuHandle.Offset(left * heapStore.incrementSize);
+					CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(heapStore->cpuHandle);
+					CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(heapStore->gpuHandle);
+					cpuHandle.Offset(left * heapStore->incrementSize);
+					gpuHandle.Offset(left * heapStore->incrementSize);
 					pHeapEx->cpuHandle = cpuHandle;
 					pHeapEx->gpuHandle = gpuHandle;
-					pHeapEx->incrementSize = heapStore.incrementSize;
+					pHeapEx->incrementSize = heapStore->incrementSize;
 					//pHeapEx->offsetInDescriptors = std::get<0>(interval);
 					pHeapEx->interval = interval;
-					pHeapEx->pStore = &heapStore;
+					pHeapEx->pStore = heapStore;
 					if (transient)
 					{
 						auto frameIndex = Renderer::Instance()->GetFrameResourceIndex();
@@ -253,6 +253,11 @@ namespace Lightning
 			}
 			mFrameTransientHeaps.clear();
 #endif
+			for(auto it = mHeaps.begin(); it != mHeaps.end();++it)
+			{
+				for (auto p : it->second)
+					delete p;
+			}
 			mHeaps.clear();
 		}
 
