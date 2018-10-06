@@ -135,7 +135,7 @@ namespace Lightning
 				static std::random_device rd;
 				static std::mt19937 mt(rd());
 				static std::uniform_real_distribution<float> zDist(-1, 1);
-				static std::uniform_real_distribution<float> thetaDist(0, 2 * PI);
+				static std::uniform_real_distribution<float> thetaDist(0, float(2 * PI));
 				auto z = zDist(mt);
 				auto theta = thetaDist(mt);
 				auto coef = std::sqrt(1 - z * z);

@@ -164,14 +164,14 @@ namespace Lightning
 							rotAxis = Vector3<T>::right().Cross(source);
 						}
 						rotAxis.Normalize();
-						return Quaternion<T>(rotAxis, PI);
+						return Quaternion<T>(rotAxis, T(PI));
 					}
 					else
 					{
 						rotAxis = source.Cross(dest);
 						auto s = std::sqrt((1 + dot) * 2.0);
 						auto invs = 1 / s;
-						return Quaternion<T>(rotAxis.x * invs, rotAxis.y * invs, rotAxis.z * invs, s * T(0.5));
+						return Quaternion<T>(T(rotAxis.x * invs), T(rotAxis.y * invs), T(rotAxis.z * invs), T(s * 0.5));
 					}
 				}
 
