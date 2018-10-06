@@ -307,26 +307,27 @@ namespace Lightning
 			{
 				mCommandList->SetGraphicsRootSignature(mPipelineDesc.pRootSignature);
 				auto& frameResource = mFrameResources[mFrameResourceIndex];
-				ExtractShaderDescriptorHeaps();
+				container::vector<ID3D12DescriptorHeap*> heaps;
+				ExtractShaderDescriptorHeaps(heaps);
 				//TODO : cancel all heap binding when empty?
-				if (!frameResource.descriptorHeaps.empty())
+				if (!heaps.empty())
 				{
-					mCommandList->SetDescriptorHeaps(frameResource.descriptorHeaps.size(), &frameResource.descriptorHeaps[0]);
+					mCommandList->SetDescriptorHeaps(heaps.size(), &heaps[0]);
 				}
 				BindShaderResources();
 			}
 		}
 
-		void D3D12Device::ExtractShaderDescriptorHeaps()
+		void D3D12Device::ExtractShaderDescriptorHeaps(container::vector<ID3D12DescriptorHeap*>& heaps)
 		{
-			ExtractShaderDescriptorHeaps(mDevicePipelineState.vs);
-			ExtractShaderDescriptorHeaps(mDevicePipelineState.fs);
-			ExtractShaderDescriptorHeaps(mDevicePipelineState.gs);
-			ExtractShaderDescriptorHeaps(mDevicePipelineState.hs);
-			ExtractShaderDescriptorHeaps(mDevicePipelineState.ds);
+			ExtractShaderDescriptorHeaps(mDevicePipelineState.vs, heaps);
+			ExtractShaderDescriptorHeaps(mDevicePipelineState.fs, heaps);
+			ExtractShaderDescriptorHeaps(mDevicePipelineState.gs, heaps);
+			ExtractShaderDescriptorHeaps(mDevicePipelineState.hs, heaps);
+			ExtractShaderDescriptorHeaps(mDevicePipelineState.ds, heaps);
 		}
 
-		void D3D12Device::ExtractShaderDescriptorHeaps(IShader* pShader)
+		void D3D12Device::ExtractShaderDescriptorHeaps(IShader* pShader, container::vector<ID3D12DescriptorHeap*>& heaps)
 		{
 			if (pShader)
 			{
@@ -338,16 +339,13 @@ namespace Lightning
 					const auto& boundResource = boundResources[i];
 					if (boundResource.type == D3D12RootBoundResourceType::DescriptorTable)
 					{
-						auto pHeap = boundResource.descriptorTableHeap.Get();
-						for (std::size_t i = 0;i < frameResource.descriptorHeaps.size();++i)
+						auto heap = boundResource.descriptorTableHeap.Get();
+						for (auto& pHeap : heaps)
 						{
-							//TODO : has performance impact.Need to optimize later!
-							if (pHeap == frameResource.descriptorHeaps[i])
-							{
+							if (heap == pHeap)
 								return;
-							}
 						}
-						frameResource.descriptorHeaps.push_back(pHeap);
+						heaps.push_back(heap);
 					}
 				}
 			}

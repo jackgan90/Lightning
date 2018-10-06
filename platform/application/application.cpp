@@ -67,7 +67,7 @@ namespace Lightning
 			static std::uniform_real_distribution<float> rDist(-2, 2);
 			static std::uniform_int_distribution<int> dist(0, 3);
 			static std::uniform_int_distribution<int> cDist(0, 255);
-			for (auto i = 0;i < 4;++i)
+			for (auto i = 0;i < 200;++i)
 			{
 				std::shared_ptr<Scene::Primitive> p;
 				switch (dist(mt))
@@ -101,31 +101,6 @@ namespace Lightning
 				p->SetWorldRotation(Transform::RandomRotation());
 				scene->AddDrawable(p);
 			}
-			/*
-			auto cube = std::make_shared<Scene::Cube>();
-			cube->SetWorldPosition(Vector3f(1.0, 0.0, 0.0));
-			cube->SetColor(0xffff0000);
-			cube->SetWorldRotation(Transform::RandomRotation());
-			scene->AddDrawable(cube);
-
-			auto cylinder = std::make_shared<Scene::Cylinder>(2.0, 1.0);
-			cylinder->SetWorldPosition(Vector3f(-1.0, 0.0, 0.0));
-			cylinder->SetColor(0xffffff00);
-			cylinder->SetWorldRotation(Transform::RandomRotation());
-			scene->AddDrawable(cylinder);
-
-			auto hemisphere = std::make_shared<Scene::Hemisphere>();
-			hemisphere->SetWorldPosition(Vector3f(0, 0, 0));
-			hemisphere->SetColor(0x5f00ff00);
-			hemisphere->SetWorldRotation(Transform::RandomRotation());
-			scene->AddDrawable(hemisphere);
-
-			auto sphere = std::make_shared<Scene::Sphere>();
-			sphere->SetWorldPosition(Vector3f(0, 1, 0));
-			sphere->SetColor(0x4f0000ff);
-			sphere->SetWorldRotation(Transform::RandomRotation());
-			scene->AddDrawable(sphere);
-			*/
 		}
 
 		void Application::RegisterWindowHandlers()
