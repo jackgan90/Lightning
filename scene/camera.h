@@ -10,7 +10,7 @@ namespace Lightning
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Matrix4f;
 		using Foundation::Math::Quaternionf;
-		using Render::Transform;
+		using Foundation::Math::Transform;
 		enum class CameraType
 		{
 			Perspective,

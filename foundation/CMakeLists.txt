@@ -12,7 +12,10 @@ set(MEMORY_SOURCES	memory/ringallocator.cpp)
 set(MATH_HEADERS	math/common.h
 					math/vector.h
 					math/matrix.h
-					math/quaternion.h)
+					math/quaternion.h
+					math/transform.h)
+
+set(MATH_SOURCES	math/transform.cpp)
 
 set(HEADERS	common.h
 			timesystem.h
@@ -28,7 +31,8 @@ set(HEADERS	common.h
 			timer.h
 			timermanager.h
 			container.h
-			enumoperation.h)
+			enumoperation.h
+			)
 set(SOURCES common.cpp
 			filesystem.cpp
 			logger.cpp
@@ -39,11 +43,11 @@ set(SOURCES common.cpp
 			timermanager.cpp
 			timesystem.cpp)
 
-		list(APPEND HEADERS ${MEMORY_HEADERS} ${MATH_HEADERS})
-list(APPEND SOURCES ${MEMORY_SOURCES})
+list(APPEND HEADERS ${MEMORY_HEADERS} ${MATH_HEADERS})
+list(APPEND SOURCES ${MEMORY_SOURCES} ${MATH_SOURCES})
 
 source_group("memory" FILES	${MEMORY_HEADERS} ${MEMORY_SOURCES})
-source_group("math" FILES ${MATH_HEADERS})
+source_group("math" FILES ${MATH_HEADERS} ${MATH_SOURCES})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

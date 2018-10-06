@@ -29,7 +29,6 @@ set(HEADERS rendererexportdef.h
 			renderpass.h
 			forwardrenderpass.h
 			deferedrenderpass.h
-			transform.h
 			renderitem.h)
 set(SOURCES renderer.cpp
 			device.cpp
@@ -41,8 +40,7 @@ set(SOURCES renderer.cpp
 			geometry.cpp
 			material.cpp
 			forwardrenderpass.cpp
-			deferedrenderpass.cpp
-			transform.cpp)
+			deferedrenderpass.cpp)
 
 set(TYPES_HEADERS	types/color.h
 					types/rect.h)
@@ -120,6 +118,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_CURRENT_SOURCE_DIR}/shader
 					${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/foundation/memory
+					${CMAKE_SOURCE_DIR}/foundation/math
 					${CMAKE_SOURCE_DIR}/utilities
 					${CMAKE_SOURCE_DIR}/platform 
 					${CMAKE_SOURCE_DIR}/window

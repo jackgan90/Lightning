@@ -16,7 +16,7 @@ namespace Lightning
 	{
 		using Render::PrimitiveType;
 		using Render::Color32;
-		using Render::Transform;
+		using Foundation::Math::Transform;
 		using Foundation::Math::Quaternionf;
 		class LIGHTNING_SCENE_API Primitive : public IDrawable
 		{

@@ -8,6 +8,7 @@ namespace Lightning
 {
 	namespace Render
 	{
+		using Foundation::Math::Transform;
 		struct LIGHTNING_RENDER_API RenderItem
 		{
 			RenderItem():renderTargets(1){}
