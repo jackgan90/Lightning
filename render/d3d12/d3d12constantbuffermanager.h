@@ -26,7 +26,8 @@ namespace Lightning
 		private:
 			struct BufferResource
 			{
-				ComPtr<ID3D12Resource> resource;
+				//resource is allocated and deallocated frequently,use ComPtr has performance hit
+				ID3D12Resource* resource;
 				std::size_t offset;
 				std::size_t size;
 				void *mapAddress;

@@ -109,6 +109,10 @@ namespace Lightning
 			if (!bufferResources.empty())
 			{
 				//LOG_INFO("Erase range,vector size:%d", bufferResources.size());
+				for (auto it = bufferResources.begin() + 1; it != bufferResources.end();++it)
+				{
+					it->resource->Release();
+				}
 				bufferResources.erase(bufferResources.begin() + 1, bufferResources.end());
 				bufferResources[0].offset = 0;
 			}
