@@ -23,6 +23,10 @@ namespace Lightning
 		{
 			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
+				for (auto it = mBufferResources[i].begin(); it != mBufferResources[i].end();++it)
+				{
+					it->resource->Release();
+				}
 				mBufferResources[i].clear();
 				mAllocations[i].clear();
 			}
