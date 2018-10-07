@@ -43,7 +43,7 @@ namespace Lightning
 			container::list<BufferResource> mBufferResources[RENDER_FRAME_COUNT];
 			container::unordered_map<std::size_t, BufferAllocation> mAllocations[RENDER_FRAME_COUNT];
 			std::size_t mCurrentID;
-			static constexpr std::size_t MIN_BUFFER_SIZE = 4096;
+			static constexpr std::size_t MIN_BUFFER_SIZE = 2048 * 1024;
 			static inline constexpr std::size_t AlignedSize(std::size_t size, std::size_t alignment)
 			{
 				return (size + (alignment - 1)) & ~(alignment - 1);
