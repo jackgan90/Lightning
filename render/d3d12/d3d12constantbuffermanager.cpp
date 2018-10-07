@@ -110,15 +110,11 @@ namespace Lightning
 		void D3D12ConstantBufferManager::ResetBuffers(std::size_t frameIndex)
 		{
 			auto& bufferResources = mBufferResources[frameIndex];
-			if (!bufferResources.empty())
+			while (bufferResources.size() > 1)
 			{
-				//LOG_INFO("Erase range,vector size:%d", bufferResources.size());
-				for (auto it = bufferResources.begin() + 1; it != bufferResources.end();++it)
-				{
-					it->resource->Release();
-				}
-				bufferResources.erase(bufferResources.begin() + 1, bufferResources.end());
-				bufferResources[0].offset = 0;
+				auto& back = bufferResources.back();
+				back.resource->Release();
+				bufferResources.pop_back();
 			}
 			mAllocations[frameIndex].clear();
 		}
