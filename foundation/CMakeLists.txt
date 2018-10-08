@@ -35,7 +35,6 @@ set(HEADERS	common.h
 			)
 set(SOURCES common.cpp
 			filesystem.cpp
-			logger.cpp
 			configmanager.cpp
 			filesystemfactory.cpp
 			murmurhash3.cpp

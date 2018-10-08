@@ -36,7 +36,11 @@ namespace Lightning
 		{
 			friend class Singleton<Logger>;
 		public:
-			~Logger();
+			~Logger()
+			{
+				mFs.flush();
+				mFs.close();
+			}
 			template<typename... Args>
 			void Log(LogLevel level, const std::string& text, Args... args)
 			{
@@ -57,10 +61,30 @@ namespace Lightning
 #endif
 			}
 		protected:
-			Logger();
+			Logger()
+			{
+				mFs.open(LogFileName, std::fstream::out);
+			}
 		private:
-			std::string LogLevelToPrefix(LogLevel level)const;
+			std::string Logger::LogLevelToPrefix(LogLevel level)const
+			{
+				switch (level)
+				{
+				case LogLevel::Debug:
+					return "[Debug]";
+				case LogLevel::Info:
+					return "[Info]";
+				case LogLevel::Warning:
+					return "[Warning]";
+				case LogLevel::Error:
+					return "[Error]";
+				default:
+					return "[Unknown]";
+				}
+				return "";
+			}
 			std::fstream mFs;
+			static constexpr char* LogFileName = "log.txt";
 		};
 	}
 } 
