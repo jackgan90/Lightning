@@ -181,21 +181,18 @@ namespace Lightning
 			{
 				auto& frameResource = mFrameResources[bufferIndex];
 				frameResource.fence->WaitForTarget();
-				auto targetValue = frameResource.fence->GetTargetValue();
-				if (targetValue > RENDER_FRAME_COUNT)
+				auto finishedValue = frameResource.fence->GetCurrentValue();
+				std::uint64_t finishedFrame{ 0 };
+				while (!frameResource.frameEndMarkers.empty() && 
+					frameResource.frameEndMarkers.top().fenceValue <= finishedValue)
 				{
-					std::uint64_t finishedFrame{ 0 };
-					while (!frameResource.frameEndMarkers.empty() && 
-						frameResource.frameEndMarkers.top().fenceValue <= targetValue)
-					{
-						auto frame = frameResource.frameEndMarkers.top().frame;
-						frameResource.frameEndMarkers.pop();
-						if (frame > finishedFrame)
-							finishedFrame = frame;
-					}
-					if(finishedFrame > 0)
-						g_RenderAllocator.ReleaseFramesBefore(finishedFrame);
+					auto frame = frameResource.frameEndMarkers.top().frame;
+					frameResource.frameEndMarkers.pop();
+					if (frame > finishedFrame)
+						finishedFrame = frame;
 				}
+				if(finishedFrame > 0)
+					g_RenderAllocator.ReleaseFramesBefore(finishedFrame);
 			}
 		}
 
