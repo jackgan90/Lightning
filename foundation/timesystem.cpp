@@ -8,6 +8,7 @@ namespace Lightning
 {
 	namespace Foundation
 	{
+		/*
 		std::string Time::GetCurrentTimeString()
 		{
 			auto now = std::chrono::system_clock::now();
@@ -15,7 +16,7 @@ namespace Lightning
 			std::stringstream ss;
 			ss << std::put_time(std::localtime(&tt), "[%Y-%m-%d %H:%M:%S]");
 			return ss.str();
-		}
+		}*/
 
 		long long Time::Now()
 		{
