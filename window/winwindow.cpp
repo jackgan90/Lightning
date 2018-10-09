@@ -173,7 +173,7 @@ namespace Lightning
 			windowRect.top = 0;
 			windowRect.bottom = mHeight;
 			::AdjustWindowRectEx(&windowRect, WS_OVERLAPPEDWINDOW, FALSE, NULL);
-			LOG_DEBUG("Window width:%d, window height:%d", windowRect.right - windowRect.left, windowRect.bottom - windowRect.top);
+			LOG_DEBUG("Window width:{0}, window height:{1}", windowRect.right - windowRect.left, windowRect.bottom - windowRect.top);
 			HWND hWnd = ::CreateWindowEx(0, sWindowClassName, mCaption.c_str(), 
 				WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 
 				windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, NULL, NULL, hInstance, static_cast<LPVOID>(this));

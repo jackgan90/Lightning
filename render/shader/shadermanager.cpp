@@ -36,7 +36,7 @@ namespace Lightning
 			SharedShaderPtr pShader = CreateConcreteShader(type, shaderName, shaderSource, defineMap);
 			if(pShader)
 			{
-				LOG_INFO("Succeeded in compiling shader:%s", pShader->GetName().c_str());
+				LOG_INFO("Succeeded in compiling shader:{0}", pShader->GetName().c_str());
 				mShaders[hash] = pShader;
 			}
 			return pShader;

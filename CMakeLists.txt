@@ -43,9 +43,9 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/platform 
 					${CMAKE_SOURCE_DIR}/platform/application 
 					${CMAKE_SOURCE_DIR}/window
-					${LIGHTNING_DEPENDENCIES_DIR}/boost
 					${CMAKE_SOURCE_DIR}/utilities
-					${LIGHTNING_DEPENDENCIES_DIR}/eigen)
+					${LIGHTNING_DEPENDENCIES_DIR}/boost
+					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include)
 add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} foundation platform)
 target_link_libraries(${PROJECT_NAME} platform)

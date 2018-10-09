@@ -47,7 +47,7 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/utilities
 					${CMAKE_SOURCE_DIR}/scene
 					${CMAKE_SOURCE_DIR}/entities
-					${LIGHTNING_DEPENDENCIES_DIR}/eigen
+					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
 					${LIGHTNING_DEPENDENCIES_DIR}/boost)
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})

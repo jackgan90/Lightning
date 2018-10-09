@@ -127,7 +127,7 @@ namespace Lightning
 		{
 			if (arg.type == ShaderArgumentType::UNKNOWN)
 			{
-				LOG_WARNING("Unknown shader argument type when set shader %s", mName.c_str());
+				LOG_WARNING("Unknown shader argument type when set shader {0}", mName.c_str());
 				return false;
 			}
 			auto it = mArguments.find(arg.name);

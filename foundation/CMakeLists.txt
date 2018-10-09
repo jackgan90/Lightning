@@ -62,6 +62,7 @@ add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
 define_dll_export_macro(FOUNDATION)
 
 include_directories(${LIGHTNING_DEPENDENCIES_DIR}/boost
+					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
 					${CMAKE_SOURCE_DIR}/foundation)
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 if(MSVC)

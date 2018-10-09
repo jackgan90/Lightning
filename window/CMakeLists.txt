@@ -28,7 +28,7 @@ define_dll_export_macro(WINDOW)
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 
 include_directories(${LIGHTNING_DEPENDENCIES_DIR}/boost
-					${LIGHTNING_DEPENDENCIES_DIR}/eigen
+					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
 					${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/utilities
 					${CMAKE_SOURCE_DIR}/foundation/memory)

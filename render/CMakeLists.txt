@@ -123,7 +123,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/platform 
 					${CMAKE_SOURCE_DIR}/window
 					${LIGHTNING_DEPENDENCIES_DIR}/boost
-					${LIGHTNING_DEPENDENCIES_DIR}/eigen)
+					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include)
 if(LIGHTNING_USE_D3D12)
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/d3d12
 						${LIGHTNING_DEPENDENCIES_DIR}/d3d12)

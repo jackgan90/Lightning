@@ -27,7 +27,7 @@ namespace Lightning
 			}
 			catch (pt::xml_parser_error e)
 			{
-				LOG_ERROR("Error in creating ConfigManager %s", e.what());
+				LOG_ERROR("Error in creating ConfigManager {0}", e.what());
 				std::exit(EXIT_FAILURE);
 			}
 

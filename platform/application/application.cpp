@@ -23,7 +23,7 @@ namespace Lightning
 		{
 			mFileSystem = FileSystemFactory::Instance()->CreateFileSystem();
 			mWindowMgr = std::make_unique<WindowManager>();
-			LOG_INFO("File system created!Current working directory:%s", mFileSystem->GetRoot().c_str());
+			LOG_INFO("File system created!Current working directory:{0}", mFileSystem->GetRoot().c_str());
 			LOG_INFO("Application initialized successfully!");
 		}
 

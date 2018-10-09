@@ -1,14 +1,13 @@
 #pragma once
 #include <string>
 #include <fstream>
-#ifdef _MSC_VER
-#include <Windows.h>
-//windows defines its min as a macro,that makes files include this header see min as the macro
-//that's not the intent.at any rate when we need to use min semantic we should use std::min
-#undef min
-#endif
 #include "singleton.h"
 #include "timesystem.h"
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/basic_file_sink.h"
+#ifdef _MSC_VER
+#include "spdlog/sinks/msvc_sink.h"
+#endif
 #include "foundationexportdef.h"
 
 #define LOG_INFO(text, ...)\
@@ -38,32 +37,43 @@ namespace Lightning
 		public:
 			~Logger()
 			{
-				mFs.flush();
-				mFs.close();
 			}
+			template<typename... Args>
+			void Log(LogLevel level, const char* text, Args... args)
+			{
+				switch (level)
+				{
+				case LogLevel::Info:
+					mLogger->info(text, std::forward<Args>(args)...);
+					break;
+				case LogLevel::Debug:
+					mLogger->debug(text, std::forward<Args>(args)...);
+					break;
+				case LogLevel::Error:
+					mLogger->error(text, std::forward<Args>(args)...);
+					break;
+				case LogLevel::Warning:
+					mLogger->warn(text, std::forward<Args>(args)...);
+					break;
+				}
+			}
+			
 			template<typename... Args>
 			void Log(LogLevel level, const std::string& text, Args... args)
 			{
-				//output to file
-				auto prefix = LogLevelToPrefix(level);
-				auto timeStr = Foundation::Time::GetCurrentTimeString();
-				static char buf[4096];
-#ifdef _MSC_VER
-				sprintf_s(buf, text.c_str(), std::forward<Args>(args)...);
-#else
-				sprintf(buf, text.c_str(), std::forward<Args>(args)...);
-#endif
-				mFs << timeStr << " " << prefix << " " << buf << std::endl;
-#ifdef _MSC_VER
-				static char outputBuffer[4096];
-				sprintf_s(outputBuffer, "%s %s %s\n", timeStr.c_str(), prefix.c_str(), buf);
-				::OutputDebugString(outputBuffer);
-#endif
+				Log(level, text.c_str(), std::forward<Args>(args)...);
 			}
 		protected:
 			Logger()
 			{
-				mFs.open(LogFileName, std::fstream::out);
+				auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(LogFileName, true);
+#ifdef _MSC_VER
+				auto msvcSink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
+				mLogger = std::shared_ptr<spdlog::logger>(new spdlog::logger("Lightning", {fileSink, msvcSink}));
+#else
+				mLogger = std::shared_ptr<spdlog::logger>(new spdlog::logger("Lightning", { fileSink }));
+#endif
+				mLogger->set_level(spdlog::level::debug);
 			}
 		private:
 			std::string Logger::LogLevelToPrefix(LogLevel level)const
@@ -83,7 +93,7 @@ namespace Lightning
 				}
 				return "";
 			}
-			std::fstream mFs;
+			std::shared_ptr<spdlog::logger> mLogger;
 			static constexpr char* LogFileName = "log.txt";
 		};
 	}

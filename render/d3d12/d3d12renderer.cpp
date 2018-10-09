@@ -47,7 +47,7 @@ namespace Lightning
 			auto res = ::D3D12GetDebugInterface(IID_PPV_ARGS(&mD3D12Debug));
 			if (FAILED(res))
 			{
-				LOG_WARNING("Failed to get d3d12 debug interface!You should enable Graphics Tools optional feature!ErrorCode : 0x%x", res);
+				LOG_WARNING("Failed to get d3d12 debug interface!You should enable Graphics Tools optional feature!ErrorCode : {0 : x}", res);
 			}
 			else
 			{
@@ -116,7 +116,7 @@ namespace Lightning
 			HMODULE dxgiDebugHandle = ::LoadLibrary("Dxgidebug.dll");
 			if (!dxgiDebugHandle)
 			{
-				LOG_WARNING("Can't get dxgidebug.dll module,errorCode:0x%x", ::GetLastError());
+				LOG_WARNING("Can't get dxgidebug.dll module,errorCode:{0 : x}", ::GetLastError());
 				return;
 			}
 			//the __stdcall declaration is required because windows APIs conform to stdcall convention
