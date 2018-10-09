@@ -10,13 +10,13 @@ namespace Lightning
 	namespace Foundation
 	{
 		//threaded-safe ring allocator.Typycal use in allocation of frame's temp resources
-		class LIGHTNING_FOUNDATION_API RingAllocator
+		class LIGHTNING_FOUNDATION_API FrameMemoryAllocator
 		{
 		public:
-			RingAllocator();
-			~RingAllocator() = default;
-			RingAllocator(const RingAllocator&) = delete;
-			RingAllocator& operator=(const RingAllocator&) = delete;
+			FrameMemoryAllocator();
+			~FrameMemoryAllocator() = default;
+			FrameMemoryAllocator(const FrameMemoryAllocator&) = delete;
+			FrameMemoryAllocator& operator=(const FrameMemoryAllocator&) = delete;
 			//Allocate elementCount elements of type T ,should not run simultaineously with FinishFrame and ReleaseFramesBefore
 			template<typename T, typename... Args>
 			T* Allocate(std::size_t elementCount, Args&&... args)

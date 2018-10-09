@@ -5,7 +5,7 @@
 #include "filesystemfactory.h"
 #include "filesystem.h"
 #include "logger.h"
-#include "ringallocator.h"
+#include "framememoryallocator.h"
 
 namespace Lightning
 {
@@ -16,9 +16,9 @@ namespace Lightning
 		using Foundation::FilePointerType;
 		using Foundation::FileAccess;
 		using Foundation::FileAnchor;
-		using Foundation::RingAllocator;
+		using Foundation::FrameMemoryAllocator;
 
-		extern RingAllocator g_RenderAllocator;
+		extern FrameMemoryAllocator g_RenderAllocator;
 
 		ShaderManager::ShaderManager(const SharedFileSystemPtr& fs)
 		{

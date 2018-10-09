@@ -9,7 +9,7 @@
 #include "configmanager.h"
 #include "logger.h"
 #include "common.h"
-#include "ringallocator.h"
+#include "framememoryallocator.h"
 
 namespace Lightning
 {

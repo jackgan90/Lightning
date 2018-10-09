@@ -16,7 +16,7 @@
 #include "shadermanager.h"
 #include "logger.h"
 #include "configmanager.h"
-#include "ringallocator.h"
+#include "framememoryallocator.h"
 #include "d3d12descriptorheapmanager.h"
 #include "d3d12constantbuffermanager.h"
 
@@ -26,9 +26,9 @@ namespace Lightning
 	{
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
-		using Foundation::RingAllocator;
+		using Foundation::FrameMemoryAllocator;
 
-		extern RingAllocator g_RenderAllocator;
+		extern FrameMemoryAllocator g_RenderAllocator;
 		const char* const DEFAULT_VS_SOURCE =
 			"cbuffer VSConstants : register(b0)\n"
 			"{\n"

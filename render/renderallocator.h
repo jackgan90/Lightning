@@ -1,5 +1,5 @@
 #pragma once
-#include "ringallocator.h"
+#include "framememoryallocator.h"
 
 namespace Lightning
 {

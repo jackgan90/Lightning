@@ -7,7 +7,7 @@
 #include "d3d12shader.h"
 #include "d3d12constantbuffermanager.h"
 #include "rendererhelper.h"
-#include "ringallocator.h"
+#include "framememoryallocator.h"
 
 namespace Lightning
 {
@@ -16,9 +16,9 @@ namespace Lightning
 		using Foundation::FileSize;
 		using Foundation::FilePointerType;
 		using Foundation::FileAnchor;
-		using Foundation::RingAllocator;
+		using Foundation::FrameMemoryAllocator;
 
-		extern RingAllocator g_RenderAllocator;
+		extern FrameMemoryAllocator g_RenderAllocator;
 
 		D3D12Shader::D3D12Shader(ID3D12Device* device, ShaderType type, const std::string& name, const std::string& entry, const char* const shaderSource):
 			Shader(type, name, entry, shaderSource)

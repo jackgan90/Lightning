@@ -1,17 +1,17 @@
 #include <algorithm>
-#include "ringallocator.h"
+#include "framememoryallocator.h"
 
 namespace Lightning
 {
 	namespace Foundation
 	{
-		RingAllocator::RingBuffer::RingBuffer(std::size_t size):
+		FrameMemoryAllocator::RingBuffer::RingBuffer(std::size_t size):
 			mMaxSize(size < MIN_BUFFER_SIZE ? MIN_BUFFER_SIZE : size), mUsedSize(0), mHead(0), mTail(0), mFrameSize(0)
 		{
 			mBuffer = new std::uint8_t[mMaxSize];
 		}
 
-		RingAllocator::RingBuffer::~RingBuffer()
+		FrameMemoryAllocator::RingBuffer::~RingBuffer()
 		{
 			if (mBuffer)
 			{
@@ -20,7 +20,7 @@ namespace Lightning
 			}
 		}
 
-		RingAllocator::RingBuffer::RingBuffer(RingBuffer&& buffer)noexcept:
+		FrameMemoryAllocator::RingBuffer::RingBuffer(RingBuffer&& buffer)noexcept:
 			mBuffer(buffer.mBuffer), mMaxSize(buffer.mMaxSize), mUsedSize(buffer.mUsedSize)
 			,mHead(buffer.mHead), mTail(buffer.mTail), mFrameSize(buffer.mFrameSize),
 			mFrameMarkers(std::move(buffer.mFrameMarkers))
@@ -28,7 +28,7 @@ namespace Lightning
 			buffer.mBuffer = nullptr;
 		}
 
-		RingAllocator::RingBuffer& RingAllocator::RingBuffer::operator=(RingBuffer&& buffer)noexcept
+		FrameMemoryAllocator::RingBuffer& FrameMemoryAllocator::RingBuffer::operator=(RingBuffer&& buffer)noexcept
 		{
 			if (&buffer == this)
 				return *this;
@@ -44,7 +44,7 @@ namespace Lightning
 			return *this;
 		}
 
-		std::uint8_t* RingAllocator::RingBuffer::Allocate(std::size_t size)
+		std::uint8_t* FrameMemoryAllocator::RingBuffer::Allocate(std::size_t size)
 		{
 			if (mUsedSize >= mMaxSize)
 			{
@@ -86,13 +86,13 @@ namespace Lightning
 			return nullptr;
 		}
 
-		void RingAllocator::RingBuffer::FinishFrame(std::uint64_t frame)
+		void FrameMemoryAllocator::RingBuffer::FinishFrame(std::uint64_t frame)
 		{
 			mFrameMarkers.emplace_back(mTail, mFrameSize, frame);
 			mFrameSize = 0;
 		}
 
-		void RingAllocator::RingBuffer::ReleaseFramesBefore(std::uint64_t frame)
+		void FrameMemoryAllocator::RingBuffer::ReleaseFramesBefore(std::uint64_t frame)
 		{
 			while (!mFrameMarkers.empty() && mFrameMarkers.front().frame <= frame)
 			{
@@ -103,13 +103,13 @@ namespace Lightning
 			}
 		}
 
-		RingAllocator::RingAllocator():mLastFinishFrame(0)
+		FrameMemoryAllocator::FrameMemoryAllocator():mLastFinishFrame(0)
 		{
 
 		}
 
 
-		std::uint8_t* RingAllocator::AllocateBytes(std::size_t size)
+		std::uint8_t* FrameMemoryAllocator::AllocateBytes(std::size_t size)
 		{
 			auto thread_id = std::this_thread::get_id();
 			if (mBuffers.find(thread_id) == mBuffers.end())
@@ -138,7 +138,7 @@ namespace Lightning
 			return ptr;
 		}
 
-		void RingAllocator::ReleaseFramesBefore(std::uint64_t frame)
+		void FrameMemoryAllocator::ReleaseFramesBefore(std::uint64_t frame)
 		{
 			for (auto it = mBuffers.begin();it != mBuffers.end();++it)
 			{
@@ -159,7 +159,7 @@ namespace Lightning
 			}
 		}
 
-		void RingAllocator::FinishFrame(std::uint64_t frame)
+		void FrameMemoryAllocator::FinishFrame(std::uint64_t frame)
 		{
 			for (auto it = mBuffers.begin(); it != mBuffers.end(); ++it)
 			{
@@ -174,7 +174,7 @@ namespace Lightning
 			mLastFinishFrame = frame;
 		}
 
-		std::size_t RingAllocator::GetAllocatedMemorySize()const
+		std::size_t FrameMemoryAllocator::GetAllocatedMemorySize()const
 		{
 			std::size_t totalSize{ 0 };
 			for (auto it = mBuffers.begin(); it != mBuffers.end(); ++it)
@@ -187,7 +187,7 @@ namespace Lightning
 			return totalSize;
 		}
 
-		std::size_t RingAllocator::GetUsedMemorySize()const
+		std::size_t FrameMemoryAllocator::GetUsedMemorySize()const
 		{
 			std::size_t totalSize{ 0 };
 			for (auto it = mBuffers.begin(); it != mBuffers.end(); ++it)

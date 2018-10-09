@@ -3,7 +3,7 @@
 #include "renderer.h"
 #include "forwardrenderpass.h"
 #include "deferedrenderpass.h"
-#include "ringallocator.h"
+#include "framememoryallocator.h"
 
 #define INVOKE_CALLBACK(Callback)\
 for(auto& callback : mCallbacks)\
@@ -16,7 +16,7 @@ namespace Lightning
 	namespace Render
 	{
 		Renderer* Renderer::sInstance{ nullptr };
-		Foundation::RingAllocator g_RenderAllocator;
+		Foundation::FrameMemoryAllocator g_RenderAllocator;
 		Renderer::Renderer(const SharedFileSystemPtr& fs, const SharedWindowPtr& pWindow, RenderPassType renderPassType) :
 			mOutputWindow(pWindow),
 			mFrameCount(0), mFs(fs), mCurrentBackBufferIndex(0), mClearColor(0.5f, 0.5f, 0.5f, 1.0f)

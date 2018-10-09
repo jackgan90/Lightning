@@ -4,10 +4,10 @@ message(STATUS "Configuring project foundation")
 set(MEMORY_HEADERS	memory/imemoryallocator.h
 					memory/poolallocator.h
 					memory/stackallocator.h
-					memory/ringallocator.h
+					memory/framememoryallocator.h
 					memory/memorypool.h)
 
-set(MEMORY_SOURCES	memory/ringallocator.cpp)
+set(MEMORY_SOURCES	memory/framememoryallocator.cpp)
 
 set(MATH_HEADERS	math/common.h
 					math/vector.h
