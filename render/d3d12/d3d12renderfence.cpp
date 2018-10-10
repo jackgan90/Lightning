@@ -43,7 +43,7 @@ namespace Lightning
 			return mTargetValue;
 		}
 
-		std::uint64_t D3D12RenderFence::GetCurrentValue()
+		std::uint64_t D3D12RenderFence::GetCompletedValue()
 		{
 			return mFence->GetCompletedValue();
 		}

@@ -181,7 +181,7 @@ namespace Lightning
 			{
 				auto& frameResource = mFrameResources[bufferIndex];
 				frameResource.fence->WaitForTarget();
-				auto finishedValue = frameResource.fence->GetCurrentValue();
+				auto finishedValue = frameResource.fence->GetCompletedValue();
 				std::uint64_t finishedFrame{ 0 };
 				while (!frameResource.frameEndMarkers.empty() && 
 					frameResource.frameEndMarkers.top().fenceValue <= finishedValue)

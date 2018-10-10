@@ -22,7 +22,7 @@ namespace Lightning
 			~D3D12RenderFence()override;
 			void SetTargetValue(std::uint64_t value)override;
 			std::uint64_t GetTargetValue()override;
-			std::uint64_t GetCurrentValue()override;
+			std::uint64_t GetCompletedValue()override;
 			void WaitForTarget()override;
 		private:
 			D3D12Device *mDevice;
