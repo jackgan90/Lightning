@@ -29,8 +29,6 @@ namespace Lightning
 			virtual SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap) = 0;
 			virtual SharedShaderPtr GetDefaultShader(ShaderType type) = 0;
 			virtual void ApplyPipelineState(const PipelineState& state) = 0;
-			//copy all data pointed to by pBuffer to GPU
-			virtual void CommitGPUBuffer(const SharedGPUBufferPtr& pBuffer) = 0;
 			//bind pBuffer to a GPU slot(does not copy data,just binding), each invocation will override previous binding
 			virtual void BindGPUBuffers(std::uint8_t startSlot, const container::vector<SharedGPUBufferPtr>& buffers) = 0;
 			virtual void DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset) = 0;

@@ -137,11 +137,7 @@ namespace Lightning
 			{
 				if (!geometry->vbs[i])
 					continue;
-				if (geometry->vbs[i]->IsDirty())
-				{
-					pDevice->CommitGPUBuffer(geometry->vbs[i]);
-					geometry->vbs[i]->ResetDirty();
-				}
+				geometry->vbs[i]->Commit();
 				if (bufferBinding.empty())
 				{
 					bufferBinding.insert(std::make_pair(i, container::vector<SharedGPUBufferPtr>()));
@@ -160,11 +156,7 @@ namespace Lightning
 			}
 			if (geometry->ib)
 			{
-				if (geometry->ib->IsDirty())
-				{
-					pDevice->CommitGPUBuffer(geometry->ib);
-					geometry->ib->ResetDirty();
-				}
+				geometry->ib->Commit();
 				bufferBinding.insert(std::make_pair(MAX_GEOMETRY_BUFFER_COUNT, container::vector<SharedGPUBufferPtr>()));
 				bufferBinding[MAX_GEOMETRY_BUFFER_COUNT].push_back(geometry->ib);
 			}

@@ -220,12 +220,12 @@ namespace Lightning
 
 		SharedVertexBufferPtr D3D12Device::CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor)
 		{
-			return std::make_shared<D3D12VertexBuffer>(mDevice.Get(), bufferSize, descriptor);
+			return std::make_shared<D3D12VertexBuffer>(this, bufferSize, descriptor);
 		}
 
 		SharedIndexBufferPtr D3D12Device::CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)
 		{
-			return std::make_shared<D3D12IndexBuffer>(mDevice.Get(), bufferSize, type);
+			return std::make_shared<D3D12IndexBuffer>(this, bufferSize, type);
 		}
 
 		void D3D12Device::ApplyRasterizerState(const RasterizerState& state)
@@ -624,45 +624,6 @@ namespace Lightning
 			mCurrentDSBuffer = dsBuffer;
 			CacheResourceReference(dsBuffer);
 			mPipelineDesc.NumRenderTargets = targetCount;
-		}
-
-		void D3D12Device::CommitGPUBuffer(const SharedGPUBufferPtr& pBuffer)
-		{
-			CacheResourceReference(pBuffer);
-			auto bufferState = D3D12_RESOURCE_STATE_COMMON;
-			ComPtr<ID3D12Resource> d3dResource;
-			ComPtr<ID3D12Resource> intermediateResource;
-			switch (pBuffer->GetType())
-			{
-			case GPUBufferType::VERTEX:
-			{
-				D3D12VertexBuffer* pvb = static_cast<D3D12VertexBuffer*>(pBuffer.get());
-				bufferState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
-				d3dResource = pvb->GetResource();
-				intermediateResource = pvb->GetIntermediateResource();
-				break;
-			}
-			case GPUBufferType::INDEX:
-			{
-				D3D12IndexBuffer* pib = static_cast<D3D12IndexBuffer*>(pBuffer.get());
-				bufferState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
-				d3dResource = pib->GetResource();
-				intermediateResource = pib->GetIntermediateResource();
-				break;
-			}
-			default:
-				break;
-			}
-			assert(d3dResource && intermediateResource);
-			mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(d3dResource.Get(), bufferState, D3D12_RESOURCE_STATE_COPY_DEST));
-			
-			D3D12_SUBRESOURCE_DATA subResourceData{};
-			subResourceData.pData = pBuffer->GetBuffer();
-			subResourceData.RowPitch = pBuffer->GetBufferSize();
-			subResourceData.SlicePitch = pBuffer->GetBufferSize();
-			UpdateSubresources(mCommandList.Get(), d3dResource.Get(), intermediateResource.Get(), 0, 0, 1, &subResourceData);
-
-			mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(d3dResource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, bufferState));
 		}
 
 		void D3D12Device::BindGPUBuffers(std::uint8_t startSlot, const container::vector<SharedGPUBufferPtr>& pBuffers)
