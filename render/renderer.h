@@ -15,21 +15,10 @@ namespace Lightning
 		using Foundation::container;
 		using WindowSystem::SharedWindowPtr;
 
-		struct FrameFenceValue
-		{
-			std::uint64_t frame;
-			std::uint64_t fenceValue;
-
-			bool operator>(const FrameFenceValue& other)const noexcept
-			{
-				return fenceValue > other.fenceValue;
-			}
-		};
-
 		struct FrameResource
 		{
 			IRenderFence *fence{ nullptr };
-			std::priority_queue<FrameFenceValue, container::vector<FrameFenceValue>, std::greater<FrameFenceValue>> frameEndMarkers;
+			std::uint64_t frame;
 			void Release(bool perFrame)
 			{
 				if (!perFrame)

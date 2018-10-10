@@ -67,7 +67,7 @@ namespace Lightning
 			INVOKE_CALLBACK(OnEndFrame)
 			auto fence = mFrameResources[mCurrentBackBufferIndex].fence;
 			auto fenceValue = fence->GetTargetValue() + 1;
-			mFrameResources[mCurrentBackBufferIndex].frameEndMarkers.push({mFrameCount, fenceValue});
+			mFrameResources[mCurrentBackBufferIndex].frame = mFrameCount;
 			fence->SetTargetValue(fenceValue);
 			mSwapChain->Present();
 			g_RenderAllocator.FinishFrame(mFrameCount);
@@ -181,18 +181,7 @@ namespace Lightning
 			{
 				auto& frameResource = mFrameResources[bufferIndex];
 				frameResource.fence->WaitForTarget();
-				auto finishedValue = frameResource.fence->GetCompletedValue();
-				std::uint64_t finishedFrame{ 0 };
-				while (!frameResource.frameEndMarkers.empty() && 
-					frameResource.frameEndMarkers.top().fenceValue <= finishedValue)
-				{
-					auto frame = frameResource.frameEndMarkers.top().frame;
-					frameResource.frameEndMarkers.pop();
-					if (frame > finishedFrame)
-						finishedFrame = frame;
-				}
-				if(finishedFrame > 0)
-					g_RenderAllocator.ReleaseFramesBefore(finishedFrame);
+				g_RenderAllocator.ReleaseFramesBefore(frameResource.frame);
 			}
 		}
 
