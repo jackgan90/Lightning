@@ -18,7 +18,7 @@ namespace Lightning
 		struct FrameResource
 		{
 			IRenderFence *fence{ nullptr };
-			std::uint64_t frame;
+			std::uint64_t frame{ 0 };
 			void Release(bool perFrame)
 			{
 				if (!perFrame)

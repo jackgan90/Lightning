@@ -103,7 +103,7 @@ namespace Lightning
 			}
 		}
 
-		FrameMemoryAllocator::FrameMemoryAllocator():mLastFinishFrame(0)
+		FrameMemoryAllocator::FrameMemoryAllocator()
 		{
 
 		}
@@ -121,20 +121,19 @@ namespace Lightning
 			auto& threadBuffers = mBuffers[thread_id];
 			if (threadBuffers.empty())
 			{
-				threadBuffers.emplace_back(size, mLastFinishFrame);
+				threadBuffers.emplace_back(size);
 			}
 			auto& allocBuffer = threadBuffers.back();
-			auto ptr = allocBuffer.buffer.Allocate(size);
+			auto ptr = allocBuffer.Allocate(size);
 			if (!ptr)
 			{
-				std::size_t newBufferSize = allocBuffer.buffer.GetSize() * 2;
+				std::size_t newBufferSize = allocBuffer.GetSize() * 2;
 				while (newBufferSize < size)
 					newBufferSize *= 2;
-				threadBuffers.emplace_back(newBufferSize, mLastFinishFrame);
+				threadBuffers.emplace_back(newBufferSize);
 				auto& newAllocBuffer = threadBuffers.back();
-				ptr = newAllocBuffer.buffer.Allocate(size);
+				ptr = newAllocBuffer.Allocate(size);
 			}
-			threadBuffers.back().lastAllocatedFrame = mLastFinishFrame;
 			return ptr;
 		}
 
@@ -146,8 +145,8 @@ namespace Lightning
 				std::size_t numBuffersToDelete{ 0 };
 				for (std::size_t i = 0;i < threadBuffers.size();++i)
 				{
-					threadBuffers[i].buffer.ReleaseFramesBefore(frame);
-					if (i < threadBuffers.size() - 1 && threadBuffers[i].buffer.Empty())//at lease keep one
+					threadBuffers[i].ReleaseFramesBefore(frame);
+					if (i < threadBuffers.size() - 1 && threadBuffers[i].Empty())//at lease keep one
 					{
 						numBuffersToDelete++;
 					}
@@ -166,12 +165,9 @@ namespace Lightning
 				auto& threadBuffers = it->second;
 				for (std::size_t i = 0;i < threadBuffers.size();++i)
 				{
-					if (threadBuffers[i].lastAllocatedFrame != mLastFinishFrame)
-						continue;
-					threadBuffers[i].buffer.FinishFrame(frame);
+					threadBuffers[i].FinishFrame(frame);
 				}
 			}
-			mLastFinishFrame = frame;
 		}
 
 		std::size_t FrameMemoryAllocator::GetAllocatedMemorySize()const
@@ -179,9 +175,9 @@ namespace Lightning
 			std::size_t totalSize{ 0 };
 			for (auto it = mBuffers.begin(); it != mBuffers.end(); ++it)
 			{
-				for (const auto& allocation : it->second)
+				for (const auto& buffer : it->second)
 				{
-					totalSize += allocation.buffer.GetSize();
+					totalSize += buffer.GetSize();
 				}
 			}
 			return totalSize;
@@ -192,9 +188,9 @@ namespace Lightning
 			std::size_t totalSize{ 0 };
 			for (auto it = mBuffers.begin(); it != mBuffers.end(); ++it)
 			{
-				for (const auto& allocation : it->second)
+				for (const auto& buffer : it->second)
 				{
-					totalSize += allocation.buffer.GetUsedSize();
+					totalSize += buffer.GetUsedSize();
 				}
 			}
 			return totalSize;

@@ -69,14 +69,7 @@ namespace Lightning
 				container::deque<FrameMarker> mFrameMarkers;
 			};
 
-			struct RingBufferAllocation
-			{
-				RingBufferAllocation(std::size_t size, std::uint64_t frame):buffer(size), lastAllocatedFrame(frame){}
-				RingBuffer buffer;
-				std::uint64_t lastAllocatedFrame;
-			};
-			container::unordered_map<std::thread::id, container::vector<RingBufferAllocation>> mBuffers;
-			std::uint64_t mLastFinishFrame;
+			container::unordered_map<std::thread::id, container::vector<RingBuffer>> mBuffers;
 		};
 	}
 }
