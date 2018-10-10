@@ -132,37 +132,17 @@ namespace Lightning
 		void ForwardRenderPass::CommitBuffers(const SharedGeometryPtr& geometry)
 		{
 			auto pDevice = Renderer::Instance()->GetDevice();
-			container::unordered_map<std::uint8_t, container::vector<SharedGPUBufferPtr>> bufferBinding;
 			for (std::uint8_t i = 0; i < MAX_GEOMETRY_BUFFER_COUNT; i++)
 			{
 				if (!geometry->vbs[i])
 					continue;
 				geometry->vbs[i]->Commit();
-				if (bufferBinding.empty())
-				{
-					bufferBinding.insert(std::make_pair(i, container::vector<SharedGPUBufferPtr>()));
-					bufferBinding[i].push_back(geometry->vbs[i]);
-				}
-				else
-				{
-					if (bufferBinding.find(i - 1) != bufferBinding.end())
-						bufferBinding[i - 1].push_back(geometry->vbs[i]);
-					else
-					{
-						bufferBinding.insert(std::make_pair(i, container::vector<SharedGPUBufferPtr>()));
-						bufferBinding[i].push_back(geometry->vbs[i]);
-					}
-				}
+				pDevice->BindGPUBuffer(i, geometry->vbs[i]);
 			}
 			if (geometry->ib)
 			{
 				geometry->ib->Commit();
-				bufferBinding.insert(std::make_pair(MAX_GEOMETRY_BUFFER_COUNT, container::vector<SharedGPUBufferPtr>()));
-				bufferBinding[MAX_GEOMETRY_BUFFER_COUNT].push_back(geometry->ib);
-			}
-			for (auto it = bufferBinding.cbegin();it != bufferBinding.cend();++it)
-			{
-				pDevice->BindGPUBuffers(it->first, it->second);
+				pDevice->BindGPUBuffer(0, geometry->ib);
 			}
 		}
 

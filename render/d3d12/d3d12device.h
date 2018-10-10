@@ -32,7 +32,7 @@ namespace Lightning
 			ID3D12GraphicsCommandList* GetGraphicsCommandList()const { return mCommandList.Get(); }
 			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)override;
 			void ApplyPipelineState(const PipelineState& state)override;
-			void BindGPUBuffers(std::uint8_t startSlot, const container::vector<SharedGPUBufferPtr>& buffers)override;
+			void BindGPUBuffer(std::uint8_t slot, const SharedGPUBufferPtr& buffer)override;
 			void DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset)override;
 			void DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset)override;
 			void BeginFrame(const std::size_t frameResourceIndex)override;

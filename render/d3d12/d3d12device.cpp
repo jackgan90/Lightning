@@ -626,29 +626,26 @@ namespace Lightning
 			mPipelineDesc.NumRenderTargets = targetCount;
 		}
 
-		void D3D12Device::BindGPUBuffers(std::uint8_t startSlot, const container::vector<SharedGPUBufferPtr>& pBuffers)
+		void D3D12Device::BindGPUBuffer(std::uint8_t slot, const SharedGPUBufferPtr& pBuffer)
 		{
-			if (pBuffers.empty())
+			if (!pBuffer)
 				return;
-			auto bufferType = pBuffers[0]->GetType();
+			auto bufferType = pBuffer->GetType();
 			switch (bufferType)
 			{
 			case GPUBufferType::VERTEX:
 			{
-				D3D12_VERTEX_BUFFER_VIEW* bufferViews = g_RenderAllocator.Allocate<D3D12_VERTEX_BUFFER_VIEW>(pBuffers.size());
-				for (std::uint8_t i = startSlot; i < startSlot + pBuffers.size();++i)
-				{
-					bufferViews[i] = static_cast<D3D12VertexBuffer*>(pBuffers[i].get())->GetBufferView();
-					CacheResourceReference(pBuffers[i]);
-				}
-				mCommandList->IASetVertexBuffers(startSlot, pBuffers.size(), bufferViews);
+				D3D12_VERTEX_BUFFER_VIEW* bufferViews = g_RenderAllocator.Allocate<D3D12_VERTEX_BUFFER_VIEW>(1);
+				bufferViews[0] = static_cast<D3D12VertexBuffer*>(pBuffer.get())->GetBufferView();
+				CacheResourceReference(pBuffer);
+				mCommandList->IASetVertexBuffers(slot, 1, bufferViews);
 				break;
 			}
 			case GPUBufferType::INDEX:
 			{
 				D3D12_INDEX_BUFFER_VIEW* bufferView = g_RenderAllocator.Allocate<D3D12_INDEX_BUFFER_VIEW>(1);
-				bufferView[0] = static_cast<D3D12IndexBuffer*>(pBuffers[0].get())->GetBufferView();
-				CacheResourceReference(pBuffers[0]);
+				bufferView[0] = static_cast<D3D12IndexBuffer*>(pBuffer.get())->GetBufferView();
+				CacheResourceReference(pBuffer);
 				mCommandList->IASetIndexBuffer(bufferView);
 				break;
 			}
