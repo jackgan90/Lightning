@@ -3,6 +3,8 @@
 #include "container.h"
 #include "geometry.h"
 #include "material.h"
+#include "irendertarget.h"
+#include "idepthstencilbuffer.h"
 #include "transform.h"
 
 namespace Lightning
@@ -12,13 +14,13 @@ namespace Lightning
 		using Foundation::Math::Transform;
 		struct LIGHTNING_RENDER_API RenderNode
 		{
-			RenderNode():renderTargets(1){}
 			SharedGeometryPtr geometry;	//vb ib 
 			SharedMaterialPtr material;	//shader material attributes
 			Transform transform;		//position rotation scale
 			Matrix4f viewMatrix;		//camera view matrix
 			Matrix4f projectionMatrix;//camera projection matrix
-			std::uint8_t renderTargets;
+			container::vector<SharedRenderTargetPtr> renderTargets;
+			SharedDepthStencilBufferPtr depthStencilBuffer;
 		};
 		//RenderQueue is a very important concept.Every drawable object will encode there data to a RenderNode struct.
 		//After enqueue,the nodes remain unchangeable.The responsibility for render pass

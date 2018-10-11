@@ -38,7 +38,7 @@ namespace Lightning
 			void SetTransparency(std::uint8_t transparency);
 			void SetTransparency(float transparency);
 		protected:
-			void UpdateRenderNode();
+			void GenerateRenderNode();
 			virtual std::uint8_t *GetVertices() = 0;
 			virtual std::uint16_t *GetIndices() = 0;
 			virtual Vector3f GetScale() = 0;

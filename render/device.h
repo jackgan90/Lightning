@@ -21,7 +21,6 @@ namespace Lightning
 			virtual void ApplyDepthStencilState(const DepthStencilState& state);
 			virtual void ApplyViewports(const RectFList& vp);
 			virtual void ApplyScissorRects(const RectFList& scissorRects);
-			virtual void ApplyRenderTargets(const SharedRenderTargetPtr* renderTargets, const std::uint8_t targetCount, const SharedDepthStencilBufferPtr& dsBuffer) = 0;
 			using DefaultShaderMap = container::unordered_map<ShaderType, SharedShaderPtr>;
 			std::unique_ptr<IShaderManager> mShaderMgr;
 			PipelineState mDevicePipelineState;

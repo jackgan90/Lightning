@@ -1,7 +1,6 @@
 #include <d3dx12.h>
 #include <d3dcompiler.h>
 #include <functional>
-//#include "rendererfactory.h"
 #include "common.h"
 #include "irenderer.h"
 #include "d3d12device.h"
@@ -160,7 +159,6 @@ namespace Lightning
 			}
 
 			//cache render target to prevent it from being released before GPU execute ClearRenderTargetView
-			CacheResourceReference(rt);
 
 			const float clearColor[] = { color.r, color.g, color.b, color.a };
 			auto rtvHandle = pTarget->GetCPUHandle();
@@ -196,7 +194,6 @@ namespace Lightning
 				clearFlags |= D3D12_CLEAR_FLAG_STENCIL;
 			}
 			auto dsvHandle = static_cast<D3D12DepthStencilBuffer*>(buffer.get())->GetCPUHandle();
-			CacheResourceReference(buffer);
 			if (rects && !rects->empty())
 			{
 				//TODO : This implementation is wrong.Should allocate frame memory not local memory,must fix later
@@ -425,7 +422,7 @@ namespace Lightning
 		{
 			ComPtr<ID3D12PipelineState> pipelineState;
 			ApplyRasterizerState(state.rasterizerState);
-			ApplyBlendStates(0, state.blendStates, state.outputRenderTargetCount);
+			ApplyBlendStates(0, state.blendStates, state.renderTargetCount);
 			ApplyDepthStencilState(state.depthStencilState);
 			container::vector<IShader*> shaders;
 			ApplyShader(state.vs);
@@ -448,10 +445,10 @@ namespace Lightning
 			mPipelineDesc.pRootSignature = rootSignature.Get();
 			mPipelineDesc.PrimitiveTopologyType = D3D12TypeMapper::MapPrimitiveType(state.primType);
 			//TODO : should apply pipeline state based on PipelineState
-			mPipelineDesc.NumRenderTargets = mDevicePipelineState.outputRenderTargetCount;
+			mPipelineDesc.NumRenderTargets = mDevicePipelineState.renderTargetCount;
 			for (size_t i = 0; i < sizeof(mPipelineDesc.RTVFormats) / sizeof(DXGI_FORMAT); i++)
 			{
-				if (i < mDevicePipelineState.outputRenderTargetCount)
+				if (i < mDevicePipelineState.renderTargetCount)
 				{
 					mPipelineDesc.RTVFormats[i] = D3D12TypeMapper::MapRenderFormat(mDevicePipelineState.renderTargets[i]->GetRenderFormat());
 				}
@@ -602,14 +599,14 @@ namespace Lightning
 			mCommandList->Reset(mFrameResources[frameResourceIndex].commandAllocator.Get(), nullptr);
 		}
 
-		void D3D12Device::ApplyRenderTargets(const SharedRenderTargetPtr* renderTargets, const std::uint8_t targetCount, const SharedDepthStencilBufferPtr& dsBuffer)
+		void D3D12Device::ApplyRenderTargets(const container::vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)
 		{
-			assert(targetCount <= MAX_RENDER_TARGET_COUNT);
+			assert(renderTargets.size() <= MAX_RENDER_TARGET_COUNT);
+			auto renderTargetCount = renderTargets.size();
 			//TODO : actually should set pipeline description based on PipelineState rather than set them here
-			auto rtvHandles = g_RenderAllocator.Allocate<D3D12_CPU_DESCRIPTOR_HANDLE>(targetCount);
-			for (std::size_t i = 0; i < targetCount;++i)
+			auto rtvHandles = g_RenderAllocator.Allocate<D3D12_CPU_DESCRIPTOR_HANDLE>(renderTargetCount);
+			for (std::size_t i = 0; i < renderTargetCount;++i)
 			{
-				CacheResourceReference(renderTargets[i]);
 				rtvHandles[i] = static_cast<const D3D12RenderTarget*>(renderTargets[i].get())->GetCPUHandle();
 				//TODO : Is it correct to use the first render target's sample description to set the pipeline desc?
 				if (i == 0)
@@ -620,10 +617,9 @@ namespace Lightning
 				mPipelineDesc.RTVFormats[i] = D3D12TypeMapper::MapRenderFormat(renderTargets[i]->GetRenderFormat());
 			}
 			auto dsHandle = static_cast<const D3D12DepthStencilBuffer*>(dsBuffer.get())->GetCPUHandle();
-			mCommandList->OMSetRenderTargets(targetCount, rtvHandles, FALSE, &dsHandle);
+			mCommandList->OMSetRenderTargets(renderTargetCount, rtvHandles, FALSE, &dsHandle);
 			mCurrentDSBuffer = dsBuffer;
-			CacheResourceReference(dsBuffer);
-			mPipelineDesc.NumRenderTargets = targetCount;
+			mPipelineDesc.NumRenderTargets = renderTargetCount;
 		}
 
 		void D3D12Device::BindGPUBuffer(std::uint8_t slot, const SharedGPUBufferPtr& pBuffer)
@@ -637,7 +633,6 @@ namespace Lightning
 			{
 				D3D12_VERTEX_BUFFER_VIEW* bufferViews = g_RenderAllocator.Allocate<D3D12_VERTEX_BUFFER_VIEW>(1);
 				bufferViews[0] = static_cast<D3D12VertexBuffer*>(pBuffer.get())->GetBufferView();
-				CacheResourceReference(pBuffer);
 				mCommandList->IASetVertexBuffers(slot, 1, bufferViews);
 				break;
 			}
@@ -645,7 +640,6 @@ namespace Lightning
 			{
 				D3D12_INDEX_BUFFER_VIEW* bufferView = g_RenderAllocator.Allocate<D3D12_INDEX_BUFFER_VIEW>(1);
 				bufferView[0] = static_cast<D3D12IndexBuffer*>(pBuffer.get())->GetBufferView();
-				CacheResourceReference(pBuffer);
 				mCommandList->IASetIndexBuffer(bufferView);
 				break;
 			}
@@ -681,30 +675,5 @@ namespace Lightning
 			mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			mCommandList->DrawIndexedInstanced(indexCountPerInstance, instanceCount, firstIndex, indexDataOffset, instanceDataOffset);
 		}
-
-		void D3D12Device::CacheResourceReference(const SharedDepthStencilBufferPtr& resource)
-		{
-			auto& frameDSBuffers = mFrameResources[mFrameResourceIndex].depthStencilBuffers;
-			auto rawPointer = resource.get();
-			if (frameDSBuffers.find(rawPointer) == frameDSBuffers.end())
-				frameDSBuffers.emplace(rawPointer, resource);
-		}
-
-		void D3D12Device::CacheResourceReference(const SharedRenderTargetPtr& resource)
-		{
-			auto& frameRenderTargets = mFrameResources[mFrameResourceIndex].renderTargets;
-			auto rawPointer = resource.get();
-			if (frameRenderTargets.find(rawPointer) == frameRenderTargets.end())
-				frameRenderTargets.emplace(rawPointer, resource);
-		}
-
-		void D3D12Device::CacheResourceReference(const SharedGPUBufferPtr& resource)
-		{
-			auto& frameGPUBuffers = mFrameResources[mFrameResourceIndex].buffers;
-			auto rawPointer = resource.get();
-			if (frameGPUBuffers.find(rawPointer) == frameGPUBuffers.end())
-				frameGPUBuffers.emplace(rawPointer, resource);
-		}
-
 	}
 }

@@ -150,7 +150,7 @@ namespace Lightning
 		struct PipelineState : Foundation::PlainObject<PipelineState>
 		{
 			PrimitiveType primType;
-			std::uint8_t outputRenderTargetCount;
+			std::uint8_t renderTargetCount;
 			RasterizerState rasterizerState;
 			BlendState blendStates[MAX_RENDER_TARGET_COUNT];
 			DepthStencilState depthStencilState;

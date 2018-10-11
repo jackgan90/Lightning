@@ -24,7 +24,7 @@ namespace Lightning
 			static container::vector<VertexInputLayout> layouts;
 			PipelineState state{};
 			//TODO : set render target count based on model setting
-			state.outputRenderTargetCount = node.renderTargets;
+			state.renderTargetCount = node.renderTargets.size();
 			auto pSwapChain = Renderer::Instance()->GetSwapChain();
 			state.renderTargets[0] = pSwapChain->GetDefaultRenderTarget().get();
 			if (node.material)
@@ -34,7 +34,7 @@ namespace Lightning
 				state.gs = node.material->GetShader(ShaderType::GEOMETRY);
 				state.hs = node.material->GetShader(ShaderType::TESSELATION_CONTROL);
 				state.ds = node.material->GetShader(ShaderType::TESSELATION_EVALUATION);
-				for (auto i = 0;i < node.renderTargets;++i)
+				for (auto i = 0;i < state.renderTargetCount;++i)
 				{
 					state.blendStates[i] = node.material->GetBlendState();
 					if (state.blendStates[i].enable)
@@ -58,6 +58,7 @@ namespace Lightning
 				state.inputLayouts = nullptr;
 				state.inputLayoutCount = 0;
 			}
+			pDevice->ApplyRenderTargets(node.renderTargets, node.depthStencilBuffer);
 			pDevice->ApplyPipelineState(state);
 		}
 

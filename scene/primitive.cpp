@@ -69,8 +69,13 @@ namespace Lightning
 			if (mFirstDraw)
 			{
 				mFirstDraw = false;
-				UpdateRenderNode();
+				GenerateRenderNode();
 			}
+			mRenderNode.renderTargets.clear();
+			auto swapChain = Renderer::Instance()->GetSwapChain();
+			auto defaultRT = swapChain->GetDefaultRenderTarget();
+			mRenderNode.renderTargets.push_back(defaultRT);
+			mRenderNode.depthStencilBuffer = Renderer::Instance()->GetDefaultDepthStencilBuffer();
 			if (sceneRenderData.camera)
 			{
 				mRenderNode.viewMatrix = sceneRenderData.camera->GetViewMatrix();
@@ -79,7 +84,7 @@ namespace Lightning
 			renderer.Draw(mRenderNode);
 		}
 
-		void Primitive::UpdateRenderNode()
+		void Primitive::GenerateRenderNode()
 		{
 			Render::VertexDescriptor descriptor;
 			Render::VertexComponent compPosition;

@@ -59,7 +59,6 @@ namespace Lightning
 			mDevice->ClearRenderTarget(defaultRenderTarget, mClearColor);
 			mDevice->ClearDepthStencilBuffer(mDefaultDepthStencilBuffer, DepthStencilClearFlags::CLEAR_DEPTH | DepthStencilClearFlags::CLEAR_STENCIL,
 				mDefaultDepthStencilBuffer->GetDepthClearValue(), mDefaultDepthStencilBuffer->GetStencilClearValue(), nullptr);
-			static_cast<Device*>(mDevice.get())->ApplyRenderTargets(&defaultRenderTarget, 1, mDefaultDepthStencilBuffer);
 			INVOKE_CALLBACK(OnDoFrame)
 		}
 

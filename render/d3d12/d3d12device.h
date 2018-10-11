@@ -36,26 +36,20 @@ namespace Lightning
 			void DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset)override;
 			void DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset)override;
 			void BeginFrame(const std::size_t frameResourceIndex)override;
+			void ApplyRenderTargets(const container::vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)override;
 		protected:
 			void ApplyRasterizerState(const RasterizerState& state)override;
 			void ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount)override;
 			void ApplyDepthStencilState(const DepthStencilState& state)override;
 			void ApplyViewports(const RectFList& vp)override;
 			void ApplyScissorRects(const RectFList& scissorRects)override;
-			void ApplyRenderTargets(const SharedRenderTargetPtr* renderTargets, const std::uint8_t targetCount, const SharedDepthStencilBufferPtr& dsBuffer)override;
 		private:
 			struct FrameResource
 			{
-				container::unordered_map<IDepthStencilBuffer*, SharedDepthStencilBufferPtr> depthStencilBuffers;
-				container::unordered_map<IRenderTarget*, SharedRenderTargetPtr> renderTargets;
-				container::unordered_map<IGPUBuffer*, SharedGPUBufferPtr> buffers;
 				ComPtr<ID3D12CommandAllocator> commandAllocator;
 
 				void Release(bool perFrame)
 				{
-					depthStencilBuffers.clear();
-					renderTargets.clear();
-					buffers.clear();
 					commandAllocator->Reset();
 					if (!perFrame)
 					{
@@ -75,9 +69,6 @@ namespace Lightning
 			void ExtractShaderDescriptorHeaps(IShader* pShader, container::vector<ID3D12DescriptorHeap*>& heaps);
 			void BindShaderResources();
 			void BindShaderResources(IShader* pShader, UINT rootParameterIndex);
-			void CacheResourceReference(const SharedDepthStencilBufferPtr& resource);
-			void CacheResourceReference(const SharedRenderTargetPtr& resource);
-			void CacheResourceReference(const SharedGPUBufferPtr& resource);
 			SharedFileSystemPtr mFs;
 			ComPtr<ID3D12Device> mDevice;
 			ComPtr<ID3D12CommandQueue> mCommandQueue;
