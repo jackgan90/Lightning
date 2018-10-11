@@ -53,6 +53,7 @@ namespace Lightning
 			static Renderer* Instance() { return sInstance; }
 			IWindow* GetOutputWindow()override { return mOutputWindow.get(); }
 			const RenderQueue& GetRenderQueue()override;
+			SharedDepthStencilBufferPtr GetDefaultDepthStencilBuffer()override { return mDefaultDepthStencilBuffer; };
 		protected:
 			Renderer(const SharedFileSystemPtr& fs, const SharedWindowPtr& pWindow, RenderPassType renderPassType = RenderPassType::FORWARD);
 			void WaitForPreviousFrame(bool waitAll);
@@ -75,7 +76,7 @@ namespace Lightning
 			container::vector<std::unique_ptr<RenderPass>> mRenderPasses;
 			std::size_t mCurrentBackBufferIndex;
 			ColorF mClearColor;
-			SharedDepthStencilBufferPtr mDepthStencilBuffer;
+			SharedDepthStencilBufferPtr mDefaultDepthStencilBuffer;
 			container::vector<IRendererCallback*> mCallbacks;
 			FrameResource mFrameResources[RENDER_FRAME_COUNT];
 			SharedWindowPtr mOutputWindow;

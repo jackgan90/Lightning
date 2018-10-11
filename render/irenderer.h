@@ -70,7 +70,7 @@ namespace Lightning
 			//get render queue of current frame
 			virtual const RenderQueue& GetRenderQueue() = 0;
 			//get default depth stencil buffer
-			//virtual SharedDepthStencilBufferPtr GetDefaultDepthStencilBuffer() = 0;
+			virtual SharedDepthStencilBufferPtr GetDefaultDepthStencilBuffer() = 0;
 		};
 	}
 }

@@ -32,7 +32,7 @@ namespace Lightning
 			sInstance = nullptr;
 			mDevice.reset();
 			mSwapChain.reset();
-			mDepthStencilBuffer.reset();
+			mDefaultDepthStencilBuffer.reset();
 		}
 
 		void Renderer::Render()
@@ -57,9 +57,9 @@ namespace Lightning
 		{
 			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
 			mDevice->ClearRenderTarget(defaultRenderTarget, mClearColor);
-			mDevice->ClearDepthStencilBuffer(mDepthStencilBuffer, DepthStencilClearFlags::CLEAR_DEPTH | DepthStencilClearFlags::CLEAR_STENCIL,
-				mDepthStencilBuffer->GetDepthClearValue(), mDepthStencilBuffer->GetStencilClearValue(), nullptr);
-			static_cast<Device*>(mDevice.get())->ApplyRenderTargets(&defaultRenderTarget, 1, mDepthStencilBuffer);
+			mDevice->ClearDepthStencilBuffer(mDefaultDepthStencilBuffer, DepthStencilClearFlags::CLEAR_DEPTH | DepthStencilClearFlags::CLEAR_STENCIL,
+				mDefaultDepthStencilBuffer->GetDepthClearValue(), mDefaultDepthStencilBuffer->GetStencilClearValue(), nullptr);
+			static_cast<Device*>(mDevice.get())->ApplyRenderTargets(&defaultRenderTarget, 1, mDefaultDepthStencilBuffer);
 			INVOKE_CALLBACK(OnDoFrame)
 		}
 
@@ -138,7 +138,7 @@ namespace Lightning
 		{
 			mDevice.reset(CreateDevice());
 			mSwapChain.reset(CreateSwapChain());
-			mDepthStencilBuffer.reset(CreateDepthStencilBuffer(mOutputWindow->GetWidth(), mOutputWindow->GetHeight()));
+			mDefaultDepthStencilBuffer.reset(CreateDepthStencilBuffer(mOutputWindow->GetWidth(), mOutputWindow->GetHeight()));
 			for (size_t i = 0; i < RENDER_FRAME_COUNT; i++)
 			{
 				mFrameResources[i].fence = CreateRenderFence();
@@ -157,7 +157,7 @@ namespace Lightning
 			mOutputWindow.reset();
 			mDevice.reset();
 			mSwapChain.reset();
-			mDepthStencilBuffer.reset();
+			mDefaultDepthStencilBuffer.reset();
 		}
 
 		const RenderQueue& Renderer::GetRenderQueue()
