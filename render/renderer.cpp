@@ -152,6 +152,7 @@ namespace Lightning
 			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
 				mFrameResources[i].Release(false);
+				mRenderQueue[i].clear();
 			}
 			mOutputWindow.reset();
 			mDevice.reset();
@@ -159,7 +160,7 @@ namespace Lightning
 			mDepthStencilBuffer.reset();
 		}
 
-		const const RenderQueue& Renderer::GetRenderQueue()
+		const RenderQueue& Renderer::GetRenderQueue()
 		{
 			return mRenderQueue[mCurrentBackBufferIndex];
 		}
