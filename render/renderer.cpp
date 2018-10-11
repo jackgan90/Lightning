@@ -48,6 +48,7 @@ namespace Lightning
 			WaitForPreviousFrame(false);
 			mFrameCount++;
 			mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
+			mRenderQueue[mCurrentBackBufferIndex].clear();
 			mDevice->BeginFrame(mCurrentBackBufferIndex);
 			INVOKE_CALLBACK(OnBeginFrame)
 		}
@@ -105,10 +106,7 @@ namespace Lightning
 
 		void Renderer::Draw(const RenderNode& item)
 		{
-			for (auto& pass : mRenderPasses)
-			{
-				pass->Draw(item);
-			}
+			mRenderQueue[mCurrentBackBufferIndex].push_back(item);
 		}
 
 		void Renderer::AddRenderPass(RenderPassType type)
@@ -159,6 +157,11 @@ namespace Lightning
 			mDevice.reset();
 			mSwapChain.reset();
 			mDepthStencilBuffer.reset();
+		}
+
+		const const RenderQueue& Renderer::GetRenderQueue()
+		{
+			return mRenderQueue[mCurrentBackBufferIndex];
 		}
 
 		void Renderer::WaitForPreviousFrame(bool waitAll)

@@ -52,6 +52,7 @@ namespace Lightning
 			void RegisterCallback(IRendererCallback* callback)override;
 			static Renderer* Instance() { return sInstance; }
 			IWindow* GetOutputWindow()override { return mOutputWindow.get(); }
+			const RenderQueue& GetRenderQueue()override;
 		protected:
 			Renderer(const SharedFileSystemPtr& fs, const SharedWindowPtr& pWindow, RenderPassType renderPassType = RenderPassType::FORWARD);
 			void WaitForPreviousFrame(bool waitAll);
@@ -78,6 +79,7 @@ namespace Lightning
 			container::vector<IRendererCallback*> mCallbacks;
 			FrameResource mFrameResources[RENDER_FRAME_COUNT];
 			SharedWindowPtr mOutputWindow;
+			RenderQueue mRenderQueue[RENDER_FRAME_COUNT];
 		};
 	}
 }

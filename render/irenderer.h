@@ -66,6 +66,8 @@ namespace Lightning
 			virtual void Start() = 0;
 			//Shut down the renderer
 			virtual void ShutDown() = 0;
+			//get render queue of current frame
+			virtual const RenderQueue& GetRenderQueue() = 0;
 		};
 	}
 }

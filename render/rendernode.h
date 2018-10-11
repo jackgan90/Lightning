@@ -1,5 +1,6 @@
 #pragma once
 #include "rendererexportdef.h"
+#include "container.h"
 #include "geometry.h"
 #include "material.h"
 #include "transform.h"
@@ -19,5 +20,6 @@ namespace Lightning
 			Matrix4f projectionMatrix;//camera projection matrix
 			std::uint8_t renderTargets;
 		};
+		using RenderQueue = container::vector<RenderNode>;
 	}
 }

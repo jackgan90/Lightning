@@ -16,7 +16,6 @@ namespace Lightning
 		{
 		public:
 			virtual ~RenderPass(){}
-			virtual void Draw(const RenderNode& item) = 0;
 			//Apply is called by renderer once per frame.Subclasses should commit render resources to device in this method.
 			virtual void Apply() = 0;
 			RenderPassType GetType()const { return mType; }
