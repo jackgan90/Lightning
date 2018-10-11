@@ -38,15 +38,8 @@ namespace Lightning
 				void *mapAddress;
 				D3D12_GPU_VIRTUAL_ADDRESS virtualAddress;
 			};
-			struct BufferAllocation
-			{
-				BufferResource *resource;
-				std::size_t offset;
-				std::size_t size;
-			};
 			D3D12ConstantBufferManager();
 			container::list<BufferResource> mBufferResources[RENDER_FRAME_COUNT];
-			container::unordered_map<std::size_t, BufferAllocation> mAllocations[RENDER_FRAME_COUNT];
 			std::size_t mCurrentID;
 			static constexpr std::size_t MIN_BUFFER_SIZE = 2048 * 1024;
 			static inline constexpr std::size_t AlignedSize(std::size_t size, std::size_t alignment)

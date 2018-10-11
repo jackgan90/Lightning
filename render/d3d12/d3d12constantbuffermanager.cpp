@@ -28,7 +28,6 @@ namespace Lightning
 					it->resource->Release();
 				}
 				mBufferResources[i].clear();
-				mAllocations[i].clear();
 			}
 		}
 
@@ -55,17 +54,12 @@ namespace Lightning
 			}
 			auto realSize = AlignedSize(bufferSize, 256);
 			BufferResource& resource = bufferResources.back();
-			BufferAllocation allocation;
-			allocation.offset = resource.offset;
-			allocation.resource = &resource;
-			allocation.size = realSize;
-			mAllocations[resourceIndex][++mCurrentID] = allocation;
-			resource.offset += realSize;
-
 			D3D12ConstantBuffer cbuffer;
 			cbuffer.size = realSize;
-			cbuffer.userMemory = reinterpret_cast<std::uint8_t*>(resource.mapAddress) + allocation.offset;
-			cbuffer.virtualAdress = resource.virtualAddress + allocation.offset;
+			cbuffer.userMemory = reinterpret_cast<std::uint8_t*>(resource.mapAddress) + resource.offset;
+			cbuffer.virtualAdress = resource.virtualAddress + resource.offset;
+			resource.offset += realSize;
+
 			return cbuffer;
 		}
 
@@ -84,7 +78,6 @@ namespace Lightning
 				back.resource->Release();
 				bufferResources.pop_back();
 			}
-			mAllocations[frameIndex].clear();
 		}
 	}
 }
