@@ -162,13 +162,12 @@ namespace Lightning
 			for (std::size_t i = 0;i < mDesc.ConstantBuffers;++i)
 			{
 				auto bufferSize = mConstantBufferInfo[i].size;
-				auto bufferId = D3D12ConstantBufferManager::Instance()->AllocBuffer(bufferSize);
-				auto buffer = D3D12ConstantBufferManager::Instance()->LockBuffer(bufferId);
-				std::memcpy(buffer, mIntermediateBuffer + mConstantBufferInfo[i].offset, bufferSize);
+				auto cbuffer = D3D12ConstantBufferManager::Instance()->AllocBuffer(bufferSize);
+				std::memcpy(cbuffer.userMemory, mIntermediateBuffer + mConstantBufferInfo[i].offset, bufferSize);
 
 				D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
-				cbvDesc.BufferLocation = D3D12ConstantBufferManager::Instance()->GetVirtualAddress(bufferId);
-				cbvDesc.SizeInBytes = D3D12ConstantBufferManager::Instance()->GetBufferSize(bufferId);
+				cbvDesc.BufferLocation = cbuffer.virtualAdress;
+				cbvDesc.SizeInBytes = cbuffer.size;
 				auto nativeDevice = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNative();
 				handle.Offset(i * constantHeap->incrementSize);
 				nativeDevice->CreateConstantBufferView(&cbvDesc, handle);

@@ -32,7 +32,7 @@ namespace Lightning
 			}
 		}
 
-		std::size_t D3D12ConstantBufferManager::AllocBuffer(std::size_t bufferSize)
+		D3D12ConstantBuffer D3D12ConstantBufferManager::AllocBuffer(std::size_t bufferSize)
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto& bufferResources = mBufferResources[resourceIndex];
@@ -62,19 +62,11 @@ namespace Lightning
 			mAllocations[resourceIndex][++mCurrentID] = allocation;
 			resource.offset += realSize;
 
-			return mCurrentID;
-		}
-
-		std::uint8_t* D3D12ConstantBufferManager::LockBuffer(std::size_t bufferId)
-		{
-			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			auto it = mAllocations[resourceIndex].find(bufferId);
-			if (it == mAllocations[resourceIndex].end())
-			{
-				return nullptr;
-			}
-			auto pBufferResource = it->second.resource;
-			return reinterpret_cast<std::uint8_t*>(pBufferResource->mapAddress) + it->second.offset;
+			D3D12ConstantBuffer cbuffer;
+			cbuffer.size = realSize;
+			cbuffer.userMemory = reinterpret_cast<std::uint8_t*>(resource.mapAddress) + allocation.offset;
+			cbuffer.virtualAdress = resource.virtualAddress + allocation.offset;
+			return cbuffer;
 		}
 
 		/*
@@ -82,30 +74,6 @@ namespace Lightning
 		{
 
 		}*/
-
-		D3D12_GPU_VIRTUAL_ADDRESS D3D12ConstantBufferManager::GetVirtualAddress(std::size_t bufferId)
-		{
-			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			auto it = mAllocations[resourceIndex].find(bufferId);
-			if (it == mAllocations[resourceIndex].end())
-			{
-				return D3D12_GPU_VIRTUAL_ADDRESS(0);
-			}
-			auto pBufferResource = it->second.resource;
-			return pBufferResource->virtualAddress + it->second.offset;
-		}
-
-		std::size_t D3D12ConstantBufferManager::GetBufferSize(std::size_t bufferId)
-		{
-			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			auto it = mAllocations[resourceIndex].find(bufferId);
-			if (it == mAllocations[resourceIndex].end())
-			{
-				return 0;
-			}
-			auto pBufferResource = it->second;
-			return pBufferResource.size;
-		}
 
 		void D3D12ConstantBufferManager::ResetBuffers(std::size_t frameIndex)
 		{
