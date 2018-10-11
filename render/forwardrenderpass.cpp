@@ -6,53 +6,53 @@ namespace Lightning
 {
 	namespace Render
 	{
-		void ForwardRenderPass::Draw(const RenderItem& item)
+		void ForwardRenderPass::Draw(const RenderNode& item)
 		{
-			mRenderItems.push_back(item);
+			mRenderNodes.push_back(item);
 		}
 
 		//Apply is called by renderer once per frame.Subclasses should commit render resources to device in this method.
 		void ForwardRenderPass::Apply()
 		{
-			for (auto& renderItem : mRenderItems)
+			for (auto& node : mRenderNodes)
 			{
-				CommitShaderArguments(renderItem);
-				CommitPipelineStates(renderItem);
-				CommitBuffers(renderItem.geometry);
-				Draw(renderItem.geometry);
+				CommitShaderArguments(node);
+				CommitPipelineStates(node);
+				CommitBuffers(node.geometry);
+				Draw(node.geometry);
 			}
-			mRenderItems.clear();
+			mRenderNodes.clear();
 		}
 
-		void ForwardRenderPass::CommitPipelineStates(const RenderItem& item)
+		void ForwardRenderPass::CommitPipelineStates(const RenderNode& node)
 		{
 			static container::vector<VertexInputLayout> layouts;
 			PipelineState state{};
 			//TODO : set render target count based on model setting
-			state.outputRenderTargetCount = item.renderTargets;
+			state.outputRenderTargetCount = node.renderTargets;
 			auto pSwapChain = Renderer::Instance()->GetSwapChain();
 			state.renderTargets[0] = pSwapChain->GetPrimaryRenderTarget().get();
-			if (item.material)
+			if (node.material)
 			{
-				state.vs = item.material->GetShader(ShaderType::VERTEX);
-				state.fs = item.material->GetShader(ShaderType::FRAGMENT);
-				state.gs = item.material->GetShader(ShaderType::GEOMETRY);
-				state.hs = item.material->GetShader(ShaderType::TESSELATION_CONTROL);
-				state.ds = item.material->GetShader(ShaderType::TESSELATION_EVALUATION);
-				for (auto i = 0;i < item.renderTargets;++i)
+				state.vs = node.material->GetShader(ShaderType::VERTEX);
+				state.fs = node.material->GetShader(ShaderType::FRAGMENT);
+				state.gs = node.material->GetShader(ShaderType::GEOMETRY);
+				state.hs = node.material->GetShader(ShaderType::TESSELATION_CONTROL);
+				state.ds = node.material->GetShader(ShaderType::TESSELATION_EVALUATION);
+				for (auto i = 0;i < node.renderTargets;++i)
 				{
-					state.blendStates[i] = item.material->GetBlendState();
+					state.blendStates[i] = node.material->GetBlendState();
 					if (state.blendStates[i].enable)
 					{
 						state.depthStencilState.depthWriteEnable = false;
 					}
 				}
 			}
-			state.primType = item.geometry->primType;
+			state.primType = node.geometry->primType;
 			//TODO : Apply other pipeline states(blend state, rasterizer state etc)
 			auto pDevice = Renderer::Instance()->GetDevice();
 			layouts.clear();
-			GetInputLayouts(item.geometry, layouts);
+			GetInputLayouts(node.geometry, layouts);
 			if (!layouts.empty())
 			{
 				state.inputLayouts = &layouts[0];
@@ -66,11 +66,11 @@ namespace Lightning
 			pDevice->ApplyPipelineState(state);
 		}
 
-		void ForwardRenderPass::CommitShaderArguments(const RenderItem& item)
+		void ForwardRenderPass::CommitShaderArguments(const RenderNode& node)
 		{
-			if (!item.material)
+			if (!node.material)
 				return;
-			const auto& shaderMap = item.material->GetMaterialShaderMap();
+			const auto& shaderMap = node.material->GetMaterialShaderMap();
 			for (const auto& shaderAndArgs : shaderMap)
 			{
 				for (const auto& arg : shaderAndArgs.second.arguments)
@@ -78,19 +78,19 @@ namespace Lightning
 					shaderAndArgs.second.shader->SetArgument(arg);
 				}
 			}
-			auto semantics = item.material->GetSemanticRequirements();
+			auto semantics = node.material->GetSemanticRequirements();
 			for (auto semantic : semantics)
 			{
 				switch (semantic)
 				{
 				case RenderSemantics::WVP:
 				{
-					auto vs = item.material->GetShader(ShaderType::VERTEX);
+					auto vs = node.material->GetShader(ShaderType::VERTEX);
 					if (vs)
 					{
 						//We know that transform.ToMatrix4 may change it's internal matrix
-						auto worldMatrix = const_cast<RenderItem&>(item).transform.LocalToGlobalMatrix4();
-						auto wvp = item.projectionMatrix * item.viewMatrix * worldMatrix;
+						auto worldMatrix = const_cast<RenderNode&>(node).transform.LocalToGlobalMatrix4();
+						auto wvp = node.projectionMatrix * node.viewMatrix * worldMatrix;
 						vs->SetArgument(ShaderArgument("wvp", wvp));
 					}
 					break;

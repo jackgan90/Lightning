@@ -8,7 +8,7 @@
 #include "irendertargetmanager.h"
 #include "color.h"
 #include "math/matrix.h"
-#include "renderitem.h"
+#include "rendernode.h"
 #include "renderpass.h"
 #include "iwindow.h"
 
@@ -54,7 +54,7 @@ namespace Lightning
 			virtual std::uint64_t GetCurrentFrameCount()const = 0;
 			virtual std::size_t GetFrameResourceIndex()const = 0;
 			virtual void AddRenderPass(RenderPassType type) = 0;
-			virtual void Draw(const RenderItem& item) = 0;
+			virtual void Draw(const RenderNode& item) = 0;
 			//register renderer event callback.The callback will be called on certain moment of rendering
 			virtual void RegisterCallback(IRendererCallback* callback) = 0;
 			//get near plane value corresponding to normalized device coordinate

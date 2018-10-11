@@ -69,17 +69,17 @@ namespace Lightning
 			if (mFirstDraw)
 			{
 				mFirstDraw = false;
-				UpdateRenderItem();
+				UpdateRenderNode();
 			}
 			if (sceneRenderData.camera)
 			{
-				mRenderItem.viewMatrix = sceneRenderData.camera->GetViewMatrix();
-				mRenderItem.projectionMatrix = sceneRenderData.camera->GetProjectionMatrix();
+				mRenderNode.viewMatrix = sceneRenderData.camera->GetViewMatrix();
+				mRenderNode.projectionMatrix = sceneRenderData.camera->GetProjectionMatrix();
 			}
-			renderer.Draw(mRenderItem);
+			renderer.Draw(mRenderNode);
 		}
 
-		void Primitive::UpdateRenderItem()
+		void Primitive::UpdateRenderNode()
 		{
 			Render::VertexDescriptor descriptor;
 			Render::VertexComponent compPosition;
@@ -99,40 +99,40 @@ namespace Lightning
 			compNormal.semanticItem = { Render::RenderSemantics::NORMAL, "NORMAL" };
 			descriptor.components.push_back(compNormal);
 
-			mRenderItem.geometry = std::make_shared<Render::Geometry>();
+			mRenderNode.geometry = std::make_shared<Render::Geometry>();
 			auto pDevice = Renderer::Instance()->GetDevice();
 			auto vbSize = GetVertexBufferSize();
 			auto ibSize = GetIndexBufferSize();
-			mRenderItem.geometry->vbs[0] = pDevice->CreateVertexBuffer(vbSize, descriptor);
-			mRenderItem.geometry->ib = pDevice->CreateIndexBuffer(ibSize, Render::IndexType::UINT16);
+			mRenderNode.geometry->vbs[0] = pDevice->CreateVertexBuffer(vbSize, descriptor);
+			mRenderNode.geometry->ib = pDevice->CreateIndexBuffer(ibSize, Render::IndexType::UINT16);
 			
 			
 			auto vertices = GetVertices();
 
 			auto indices = GetIndices();
 
-			auto mem = mRenderItem.geometry->vbs[0]->Lock(0, vbSize);
+			auto mem = mRenderNode.geometry->vbs[0]->Lock(0, vbSize);
 			std::memcpy(mem, vertices, vbSize);
-			mRenderItem.geometry->vbs[0]->Unlock(0, vbSize);
+			mRenderNode.geometry->vbs[0]->Unlock(0, vbSize);
 
-			mem = mRenderItem.geometry->ib->Lock(0, ibSize);
+			mem = mRenderNode.geometry->ib->Lock(0, ibSize);
 			std::memcpy(mem, indices, ibSize);
-			mRenderItem.geometry->ib->Unlock(0, ibSize);
-			mRenderItem.geometry->primType = Render::PrimitiveType::TRIANGLE_LIST;
+			mRenderNode.geometry->ib->Unlock(0, ibSize);
+			mRenderNode.geometry->primType = Render::PrimitiveType::TRIANGLE_LIST;
 			
-			mRenderItem.material = std::make_shared<Render::Material>();
-			mRenderItem.material->RequireSemantic(Render::RenderSemantics::WVP);
+			mRenderNode.material = std::make_shared<Render::Material>();
+			mRenderNode.material->RequireSemantic(Render::RenderSemantics::WVP);
 			auto device = Renderer::Instance()->GetDevice();
-			mRenderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::VERTEX));
-			mRenderItem.material->SetShader(device->GetDefaultShader(Render::ShaderType::FRAGMENT));
+			mRenderNode.material->SetShader(device->GetDefaultShader(Render::ShaderType::VERTEX));
+			mRenderNode.material->SetShader(device->GetDefaultShader(Render::ShaderType::FRAGMENT));
 			float a, r, g, b;
 			GetColor(a, r, g, b);
-			mRenderItem.material->SetArgument(Render::ShaderType::FRAGMENT, ShaderArgument("color", Vector4f(r, g, b, a)));
-			mRenderItem.material->SetArgument(Render::ShaderType::FRAGMENT, ShaderArgument("light", Vector3f(3, 3, 3)));
+			mRenderNode.material->SetArgument(Render::ShaderType::FRAGMENT, ShaderArgument("color", Vector4f(r, g, b, a)));
+			mRenderNode.material->SetArgument(Render::ShaderType::FRAGMENT, ShaderArgument("light", Vector3f(3, 3, 3)));
 
-			mRenderItem.material->EnableBlend(mColor.a != 0xff);
+			mRenderNode.material->EnableBlend(mColor.a != 0xff);
 			mTransform.SetScale(GetScale());
-			mRenderItem.transform = mTransform;
+			mRenderNode.transform = mTransform;
 		}
 
 		

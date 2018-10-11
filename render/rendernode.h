@@ -9,9 +9,9 @@ namespace Lightning
 	namespace Render
 	{
 		using Foundation::Math::Transform;
-		struct LIGHTNING_RENDER_API RenderItem
+		struct LIGHTNING_RENDER_API RenderNode
 		{
-			RenderItem():renderTargets(1){}
+			RenderNode():renderTargets(1){}
 			SharedGeometryPtr geometry;	//vb ib 
 			SharedMaterialPtr material;	//shader material attributes
 			Transform transform;		//position rotation scale

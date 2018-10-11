@@ -4,7 +4,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		void DeferedRenderPass::Draw(const RenderItem& item)
+		void DeferedRenderPass::Draw(const RenderNode& item)
 		{
 
 		}

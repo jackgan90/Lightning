@@ -103,7 +103,7 @@ namespace Lightning
 		}
 
 
-		void Renderer::Draw(const RenderItem& item)
+		void Renderer::Draw(const RenderNode& item)
 		{
 			for (auto& pass : mRenderPasses)
 			{
