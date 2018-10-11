@@ -5,6 +5,7 @@
 #include "rendererexportdef.h"
 #include "idevice.h"
 #include "iswapchain.h"
+#include "idepthstencilbuffer.h"
 #include "irendertargetmanager.h"
 #include "color.h"
 #include "math/matrix.h"
@@ -68,6 +69,8 @@ namespace Lightning
 			virtual void ShutDown() = 0;
 			//get render queue of current frame
 			virtual const RenderQueue& GetRenderQueue() = 0;
+			//get default depth stencil buffer
+			//virtual SharedDepthStencilBufferPtr GetDefaultDepthStencilBuffer() = 0;
 		};
 	}
 }

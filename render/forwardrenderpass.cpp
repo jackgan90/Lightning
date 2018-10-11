@@ -26,7 +26,7 @@ namespace Lightning
 			//TODO : set render target count based on model setting
 			state.outputRenderTargetCount = node.renderTargets;
 			auto pSwapChain = Renderer::Instance()->GetSwapChain();
-			state.renderTargets[0] = pSwapChain->GetPrimaryRenderTarget().get();
+			state.renderTargets[0] = pSwapChain->GetDefaultRenderTarget().get();
 			if (node.material)
 			{
 				state.vs = node.material->GetShader(ShaderType::VERTEX);

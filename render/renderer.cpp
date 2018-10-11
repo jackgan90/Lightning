@@ -55,11 +55,11 @@ namespace Lightning
 
 		void Renderer::DoFrame()
 		{
-			auto currentSwapChainRT = mSwapChain->GetBufferRenderTarget(mCurrentBackBufferIndex);
-			mDevice->ClearRenderTarget(currentSwapChainRT, mClearColor);
+			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
+			mDevice->ClearRenderTarget(defaultRenderTarget, mClearColor);
 			mDevice->ClearDepthStencilBuffer(mDepthStencilBuffer, DepthStencilClearFlags::CLEAR_DEPTH | DepthStencilClearFlags::CLEAR_STENCIL,
 				mDepthStencilBuffer->GetDepthClearValue(), mDepthStencilBuffer->GetStencilClearValue(), nullptr);
-			static_cast<Device*>(mDevice.get())->ApplyRenderTargets(&currentSwapChainRT, 1, mDepthStencilBuffer);
+			static_cast<Device*>(mDevice.get())->ApplyRenderTargets(&defaultRenderTarget, 1, mDepthStencilBuffer);
 			INVOKE_CALLBACK(OnDoFrame)
 		}
 

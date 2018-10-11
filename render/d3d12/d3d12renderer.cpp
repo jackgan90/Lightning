@@ -144,8 +144,8 @@ namespace Lightning
 
 		void D3D12Renderer::EndFrame()
 		{
-			auto currentSwapChainRT = mSwapChain->GetBufferRenderTarget(mCurrentBackBufferIndex);
-			auto nativeRT = static_cast<D3D12RenderTarget*>(currentSwapChainRT.get());
+			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
+			auto nativeRT = static_cast<D3D12RenderTarget*>(defaultRenderTarget.get());
 			auto commandList = GetGraphicsCommandList();
 			commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRT->GetNative().Get(),
 				D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));

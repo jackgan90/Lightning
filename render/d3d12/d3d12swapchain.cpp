@@ -96,22 +96,17 @@ namespace Lightning
 			}
 		}
 
-		SharedRenderTargetPtr D3D12SwapChain::GetBufferRenderTarget(unsigned int bufferIndex)
-		{
-			auto it = mRenderTargets.find(bufferIndex);
-			if (it == mRenderTargets.end())
-				return SharedRenderTargetPtr();
-			return D3D12RenderTargetManager::Instance()->GetRenderTarget(it->second);
-		}
-
 		std::size_t D3D12SwapChain::GetCurrentBackBufferIndex()const
 		{
 			return mSwapChain->GetCurrentBackBufferIndex();
 		}
 
-		SharedRenderTargetPtr D3D12SwapChain::GetPrimaryRenderTarget()
+		SharedRenderTargetPtr D3D12SwapChain::GetDefaultRenderTarget()
 		{
-			return GetBufferRenderTarget(GetCurrentBackBufferIndex());
+			auto it = mRenderTargets.find(GetCurrentBackBufferIndex());
+			if (it == mRenderTargets.end())
+				return SharedRenderTargetPtr();
+			return D3D12RenderTargetManager::Instance()->GetRenderTarget(it->second);
 		}
 
 	}
