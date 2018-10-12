@@ -122,6 +122,7 @@ namespace Lightning
 			std::uint8_t stencilWriteMask{0xff};
 			StencilFace frontFace{};
 			StencilFace backFace{};
+			RenderFormat bufferFormat;
 		};
 
 		struct VertexInputLayout : Foundation::PlainObject<VertexInputLayout>

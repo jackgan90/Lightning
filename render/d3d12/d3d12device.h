@@ -79,7 +79,6 @@ namespace Lightning
 			ComPtr<ID3D12GraphicsCommandList> mCommandList;
 			PipelineCacheMap mPipelineCache;
 			RootSignatureMap mRootSignatures;
-			SharedDepthStencilBufferPtr mCurrentDSBuffer;
 			FrameResource mFrameResources[RENDER_FRAME_COUNT];
 		};
 	}

@@ -58,6 +58,10 @@ namespace Lightning
 				state.inputLayouts = nullptr;
 				state.inputLayoutCount = 0;
 			}
+			if (node.depthStencilBuffer)
+			{
+				state.depthStencilState.bufferFormat = node.depthStencilBuffer->GetRenderFormat();
+			}
 			pDevice->ApplyRenderTargets(node.renderTargets, node.depthStencilBuffer);
 			pDevice->ApplyPipelineState(state);
 		}

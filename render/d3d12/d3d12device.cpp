@@ -276,15 +276,7 @@ namespace Lightning
 			pDesc->BackFace.StencilPassOp = D3D12TypeMapper::MapStencilOp(state.backFace.passOp);
 			pDesc->BackFace.StencilFailOp = D3D12TypeMapper::MapStencilOp(state.backFace.failOp);
 			pDesc->BackFace.StencilDepthFailOp = D3D12TypeMapper::MapStencilOp(state.backFace.depthFailOp);
-			desc.DSVFormat = DXGI_FORMAT_UNKNOWN;
-			if (state.depthTestEnable || state.stencilEnable)
-			{
-				if (mCurrentDSBuffer)
-				{
-					desc.DSVFormat = D3D12TypeMapper::MapRenderFormat(mCurrentDSBuffer->GetRenderFormat());
-				}
-			}
-
+			desc.DSVFormat = D3D12TypeMapper::MapRenderFormat(state.bufferFormat);
 		}
 
 		void D3D12Device::ApplyPipelineState(const PipelineState& state)
@@ -465,8 +457,6 @@ namespace Lightning
 					desc.RTVFormats[i] = DXGI_FORMAT_UNKNOWN;
 				}
 			}
-			desc.SampleDesc.Count = 1;
-			desc.SampleDesc.Quality = 0;
 			desc.SampleMask = 0xfffffff;
 			auto hr = mDevice->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&stateAndSignature.pipelineState));
 			if (FAILED(hr))
@@ -620,7 +610,6 @@ namespace Lightning
 			}
 			auto dsHandle = static_cast<const D3D12DepthStencilBuffer*>(dsBuffer.get())->GetCPUHandle();
 			mCommandList->OMSetRenderTargets(renderTargetCount, rtvHandles, FALSE, &dsHandle);
-			mCurrentDSBuffer = dsBuffer;
 		}
 
 		void D3D12Device::BindGPUBuffer(std::uint8_t slot, const SharedGPUBufferPtr& pBuffer)
