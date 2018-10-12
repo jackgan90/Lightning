@@ -73,7 +73,7 @@ namespace Lightning
 			"	return float4(color.rgb * diffuse, color.a) ;\n"
 			"}\n";
 		D3D12Device::D3D12Device(IDXGIFactory4* factory, const SharedFileSystemPtr& fs)
-			:Device(), mFs(fs), mPipelineDesc{}
+			:Device(), mFs(fs)
 		{
 			CreateNativeDevice(factory);
 			D3D12_COMMAND_QUEUE_DESC desc = {};
@@ -96,7 +96,6 @@ namespace Lightning
 				throw DeviceInitException("Failed to create command list!");
 			}
 			mShaderMgr = std::make_unique<D3D12ShaderManager>(this, fs);
-			mPipelineDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 			//should create first default pipeline state
 			mDefaultShaders[ShaderType::VERTEX] = mShaderMgr->CreateShaderFromSource(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
 			mDefaultShaders[ShaderType::FRAGMENT] = mShaderMgr->CreateShaderFromSource(ShaderType::FRAGMENT, "[Built-in]default.ps", DEFAULT_PS_SOURCE, ShaderDefine()); 
@@ -225,21 +224,26 @@ namespace Lightning
 			return std::make_shared<D3D12IndexBuffer>(this, bufferSize, type);
 		}
 
-		void D3D12Device::ApplyRasterizerState(const RasterizerState& state)
+		void D3D12Device::ApplyRasterizerState(const RasterizerState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
-			Device::ApplyRasterizerState(state);
-			D3D12_RASTERIZER_DESC* pDesc = &mPipelineDesc.RasterizerState;
+			D3D12_RASTERIZER_DESC* pDesc = &desc.RasterizerState;
 			pDesc->FillMode = D3D12TypeMapper::MapFillMode(state.fillMode);
 			pDesc->CullMode = D3D12TypeMapper::MapCullMode(state.cullMode);
+			pDesc->ForcedSampleCount = 0;
 			pDesc->FrontCounterClockwise = state.frontFace == WindingOrder::COUNTER_CLOCKWISE;
 		}
 
-		void D3D12Device::ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount)
+		void D3D12Device::ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount, 
+			D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
-			Device::ApplyBlendStates(firstRTIndex, states, stateCount);
 			for (int i = firstRTIndex; i < firstRTIndex + stateCount;++i)
 			{
-				D3D12_RENDER_TARGET_BLEND_DESC* pDesc = &mPipelineDesc.BlendState.RenderTarget[i];
+				//TODO these values should be set based on render node status
+				desc.BlendState.AlphaToCoverageEnable = FALSE;
+				desc.BlendState.IndependentBlendEnable = FALSE;
+				D3D12_RENDER_TARGET_BLEND_DESC* pDesc = &desc.BlendState.RenderTarget[i];
+				//TODO logic enable is conflict with blend enable, can't be set to true both
+				pDesc->LogicOpEnable = FALSE;
 				pDesc->BlendEnable = states[i].enable;
 				pDesc->BlendOp = D3D12TypeMapper::MapBlendOp(states[i].colorOp);
 				pDesc->BlendOpAlpha = D3D12TypeMapper::MapBlendOp(states[i].alphaOp);
@@ -253,10 +257,9 @@ namespace Lightning
 			}
 		}
 
-		void D3D12Device::ApplyDepthStencilState(const DepthStencilState& state)
+		void D3D12Device::ApplyDepthStencilState(const DepthStencilState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
-			Device::ApplyDepthStencilState(state);
-			D3D12_DEPTH_STENCIL_DESC* pDesc = &mPipelineDesc.DepthStencilState;
+			D3D12_DEPTH_STENCIL_DESC* pDesc = &desc.DepthStencilState;
 			pDesc->DepthEnable = state.depthTestEnable;
 			pDesc->DepthFunc = D3D12TypeMapper::MapCmpFunc(state.depthCmpFunc);
 			pDesc->DepthWriteMask = state.depthWriteEnable ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;
@@ -273,12 +276,12 @@ namespace Lightning
 			pDesc->BackFace.StencilPassOp = D3D12TypeMapper::MapStencilOp(state.backFace.passOp);
 			pDesc->BackFace.StencilFailOp = D3D12TypeMapper::MapStencilOp(state.backFace.failOp);
 			pDesc->BackFace.StencilDepthFailOp = D3D12TypeMapper::MapStencilOp(state.backFace.depthFailOp);
-			mPipelineDesc.DSVFormat = DXGI_FORMAT_UNKNOWN;
+			desc.DSVFormat = DXGI_FORMAT_UNKNOWN;
 			if (state.depthTestEnable || state.stencilEnable)
 			{
 				if (mCurrentDSBuffer)
 				{
-					mPipelineDesc.DSVFormat = D3D12TypeMapper::MapRenderFormat(mCurrentDSBuffer->GetRenderFormat());
+					desc.DSVFormat = D3D12TypeMapper::MapRenderFormat(mCurrentDSBuffer->GetRenderFormat());
 				}
 			}
 
@@ -286,42 +289,41 @@ namespace Lightning
 
 		void D3D12Device::ApplyPipelineState(const PipelineState& state)
 		{
-			Device::ApplyPipelineState(state);
-			ComPtr<ID3D12PipelineState> pipelineState;
+			PipelineStateRootSignature stateAndSignature;
 			auto hashValue = std::hash<PipelineState>{}(state);
 			auto cachedStateObject = mPipelineCache.find(hashValue);
 			if (cachedStateObject != mPipelineCache.end())
 			{
-				pipelineState = cachedStateObject->second;
+				stateAndSignature = cachedStateObject->second;
 			}
 			else
 			{
-				pipelineState = CreateAndCachePipelineState(state, hashValue);
+				stateAndSignature = CreateAndCachePipelineState(state, hashValue);
 			}
-			mD3D12PipelineState = pipelineState;
-			mCommandList->SetPipelineState(mD3D12PipelineState.Get());
-			if (mPipelineDesc.pRootSignature)
+
+			mCommandList->SetPipelineState(stateAndSignature.pipelineState.Get());
+			if (stateAndSignature.rootSignature)
 			{
-				mCommandList->SetGraphicsRootSignature(mPipelineDesc.pRootSignature);
+				mCommandList->SetGraphicsRootSignature(stateAndSignature.rootSignature.Get());
 				auto& frameResource = mFrameResources[mFrameResourceIndex];
 				container::vector<ID3D12DescriptorHeap*> heaps;
-				ExtractShaderDescriptorHeaps(heaps);
+				ExtractShaderDescriptorHeaps(heaps, state);
 				//TODO : cancel all heap binding when empty?
 				if (!heaps.empty())
 				{
 					mCommandList->SetDescriptorHeaps(heaps.size(), &heaps[0]);
 				}
-				BindShaderResources();
+				BindShaderResources(state);
 			}
 		}
 
-		void D3D12Device::ExtractShaderDescriptorHeaps(container::vector<ID3D12DescriptorHeap*>& heaps)
+		void D3D12Device::ExtractShaderDescriptorHeaps(container::vector<ID3D12DescriptorHeap*>& heaps, const PipelineState& state)
 		{
-			ExtractShaderDescriptorHeaps(mDevicePipelineState.vs, heaps);
-			ExtractShaderDescriptorHeaps(mDevicePipelineState.fs, heaps);
-			ExtractShaderDescriptorHeaps(mDevicePipelineState.gs, heaps);
-			ExtractShaderDescriptorHeaps(mDevicePipelineState.hs, heaps);
-			ExtractShaderDescriptorHeaps(mDevicePipelineState.ds, heaps);
+			ExtractShaderDescriptorHeaps(state.vs, heaps);
+			ExtractShaderDescriptorHeaps(state.fs, heaps);
+			ExtractShaderDescriptorHeaps(state.gs, heaps);
+			ExtractShaderDescriptorHeaps(state.hs, heaps);
+			ExtractShaderDescriptorHeaps(state.ds, heaps);
 		}
 
 		void D3D12Device::ExtractShaderDescriptorHeaps(IShader* pShader, container::vector<ID3D12DescriptorHeap*>& heaps)
@@ -348,33 +350,33 @@ namespace Lightning
 			}
 		}
 
-		void D3D12Device::BindShaderResources()
+		void D3D12Device::BindShaderResources(const PipelineState& state)
 		{
 			std::size_t rootParameterIndex{ 0 };
-			if (mDevicePipelineState.vs)
+			if (state.vs)
 			{
-				BindShaderResources(mDevicePipelineState.vs, rootParameterIndex);
-				rootParameterIndex += static_cast<D3D12Shader*>(mDevicePipelineState.vs)->GetRootParameterCount();
+				BindShaderResources(state.vs, rootParameterIndex);
+				rootParameterIndex += static_cast<D3D12Shader*>(state.vs)->GetRootParameterCount();
 			}
-			if (mDevicePipelineState.fs)
+			if (state.fs)
 			{
-				BindShaderResources(mDevicePipelineState.fs, rootParameterIndex);
-				rootParameterIndex += static_cast<D3D12Shader*>(mDevicePipelineState.fs)->GetRootParameterCount();
+				BindShaderResources(state.fs, rootParameterIndex);
+				rootParameterIndex += static_cast<D3D12Shader*>(state.fs)->GetRootParameterCount();
 			}
-			if (mDevicePipelineState.gs)
+			if (state.gs)
 			{
-				BindShaderResources(mDevicePipelineState.gs, rootParameterIndex);
-				rootParameterIndex += static_cast<D3D12Shader*>(mDevicePipelineState.gs)->GetRootParameterCount();
+				BindShaderResources(state.gs, rootParameterIndex);
+				rootParameterIndex += static_cast<D3D12Shader*>(state.gs)->GetRootParameterCount();
 			}
-			if (mDevicePipelineState.hs)
+			if (state.hs)
 			{
-				BindShaderResources(mDevicePipelineState.hs, rootParameterIndex);
-				rootParameterIndex += static_cast<D3D12Shader*>(mDevicePipelineState.hs)->GetRootParameterCount();
+				BindShaderResources(state.hs, rootParameterIndex);
+				rootParameterIndex += static_cast<D3D12Shader*>(state.hs)->GetRootParameterCount();
 			}
-			if (mDevicePipelineState.ds)
+			if (state.ds)
 			{
-				BindShaderResources(mDevicePipelineState.ds, rootParameterIndex);
-				rootParameterIndex += static_cast<D3D12Shader*>(mDevicePipelineState.ds)->GetRootParameterCount();
+				BindShaderResources(state.ds, rootParameterIndex);
+				rootParameterIndex += static_cast<D3D12Shader*>(state.ds)->GetRootParameterCount();
 			}
 		}
 
@@ -408,28 +410,29 @@ namespace Lightning
 			}
 		}
 
-		void D3D12Device::ApplyViewports(const RectFList& vp)
+		void D3D12Device::ApplyViewports(const RectFList& vp, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
 
 		}
 
-		void D3D12Device::ApplyScissorRects(const RectFList& scissorRects)
+		void D3D12Device::ApplyScissorRects(const RectFList& scissorRects, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
 
 		}
 
-		ComPtr<ID3D12PipelineState> D3D12Device::CreateAndCachePipelineState(const PipelineState& state, std::size_t hashValue)
+		D3D12Device::PipelineStateRootSignature D3D12Device::CreateAndCachePipelineState(const PipelineState& state, std::size_t hashValue)
 		{
-			ComPtr<ID3D12PipelineState> pipelineState;
-			ApplyRasterizerState(state.rasterizerState);
-			ApplyBlendStates(0, state.blendStates, state.renderTargetCount);
-			ApplyDepthStencilState(state.depthStencilState);
+			PipelineStateRootSignature stateAndSignature;
+			D3D12_GRAPHICS_PIPELINE_STATE_DESC desc{};
+			ApplyRasterizerState(state.rasterizerState, desc);
+			ApplyBlendStates(0, state.blendStates, state.renderTargetCount, desc);
+			ApplyDepthStencilState(state.depthStencilState, desc);
 			container::vector<IShader*> shaders;
-			ApplyShader(state.vs);
-			ApplyShader(state.fs);
-			ApplyShader(state.gs);
-			ApplyShader(state.hs);
-			ApplyShader(state.ds);
+			ApplyShader(state.vs, desc);
+			ApplyShader(state.fs, desc);
+			ApplyShader(state.gs, desc);
+			ApplyShader(state.hs, desc);
+			ApplyShader(state.ds, desc);
 			if (state.vs)
 				shaders.push_back(state.vs);
 			if (state.fs)
@@ -440,34 +443,39 @@ namespace Lightning
 				shaders.push_back(state.hs);
 			if (state.ds)
 				shaders.push_back(state.ds);
-			UpdatePSOInputLayout(state.inputLayouts, state.inputLayoutCount);
-			auto rootSignature = GetRootSignature(shaders);
-			mPipelineDesc.pRootSignature = rootSignature.Get();
-			mPipelineDesc.PrimitiveTopologyType = D3D12TypeMapper::MapPrimitiveType(state.primType);
+			UpdatePSOInputLayout(state.inputLayouts, state.inputLayoutCount, desc);
+			stateAndSignature.rootSignature = GetRootSignature(shaders);
+			desc.pRootSignature = stateAndSignature.rootSignature.Get();
+			desc.PrimitiveTopologyType = D3D12TypeMapper::MapPrimitiveType(state.primType);
 			//TODO : should apply pipeline state based on PipelineState
-			mPipelineDesc.NumRenderTargets = mDevicePipelineState.renderTargetCount;
-			for (size_t i = 0; i < sizeof(mPipelineDesc.RTVFormats) / sizeof(DXGI_FORMAT); i++)
+			desc.NumRenderTargets = state.renderTargetCount;
+			for (size_t i = 0; i < sizeof(desc.RTVFormats) / sizeof(DXGI_FORMAT); i++)
 			{
-				if (i < mDevicePipelineState.renderTargetCount)
+				if (i == 0)
 				{
-					mPipelineDesc.RTVFormats[i] = D3D12TypeMapper::MapRenderFormat(mDevicePipelineState.renderTargets[i]->GetRenderFormat());
+					desc.SampleDesc.Count = state.renderTargets[i]->GetSampleCount();
+					desc.SampleDesc.Quality = state.renderTargets[i]->GetSampleQuality();
+				}
+				if (i < state.renderTargetCount)
+				{
+					desc.RTVFormats[i] = D3D12TypeMapper::MapRenderFormat(state.renderTargets[i]->GetRenderFormat());
 				}
 				else
 				{
-					mPipelineDesc.RTVFormats[i] = DXGI_FORMAT_UNKNOWN;
+					desc.RTVFormats[i] = DXGI_FORMAT_UNKNOWN;
 				}
 			}
-			mPipelineDesc.SampleDesc.Count = 1;
-			mPipelineDesc.SampleDesc.Quality = 0;
-			mPipelineDesc.SampleMask = 0xfffffff;
-			auto hr = mDevice->CreateGraphicsPipelineState(&mPipelineDesc, IID_PPV_ARGS(&pipelineState));
+			desc.SampleDesc.Count = 1;
+			desc.SampleDesc.Quality = 0;
+			desc.SampleMask = 0xfffffff;
+			auto hr = mDevice->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&stateAndSignature.pipelineState));
 			if (FAILED(hr))
 			{
 				LOG_ERROR("Failed to apply pipeline state!");
-				return pipelineState;
+				return stateAndSignature;
 			} 
-			mPipelineCache.emplace(hashValue, pipelineState);
-			return pipelineState;
+			mPipelineCache.emplace(hashValue, stateAndSignature);
+			return stateAndSignature;
 		}
 
 		SharedShaderPtr D3D12Device::CreateShader(ShaderType type, const std::string& shaderName, 
@@ -476,7 +484,7 @@ namespace Lightning
 			return std::make_shared<D3D12Shader>(mDevice.Get(), type, shaderName, DEFAULT_SHADER_ENTRY, shaderSource);
 		}
 
-		void D3D12Device::ApplyShader(IShader* pShader)
+		void D3D12Device::ApplyShader(IShader* pShader, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
 			if (pShader)
 			{
@@ -486,24 +494,24 @@ namespace Lightning
 				switch (pShader->GetType())
 				{
 				case ShaderType::VERTEX:
-					mPipelineDesc.VS.pShaderBytecode = byteCode;
-					mPipelineDesc.VS.BytecodeLength = byteCodeLength;
+					desc.VS.pShaderBytecode = byteCode;
+					desc.VS.BytecodeLength = byteCodeLength;
 					break;
 				case ShaderType::FRAGMENT:
-					mPipelineDesc.PS.pShaderBytecode = byteCode;
-					mPipelineDesc.PS.BytecodeLength = byteCodeLength;
+					desc.PS.pShaderBytecode = byteCode;
+					desc.PS.BytecodeLength = byteCodeLength;
 					break;
 				case ShaderType::GEOMETRY:
-					mPipelineDesc.GS.pShaderBytecode = byteCode;
-					mPipelineDesc.GS.BytecodeLength = byteCodeLength;
+					desc.GS.pShaderBytecode = byteCode;
+					desc.GS.BytecodeLength = byteCodeLength;
 					break;
 				case ShaderType::TESSELATION_CONTROL:
-					mPipelineDesc.HS.pShaderBytecode = byteCode;
-					mPipelineDesc.HS.BytecodeLength = byteCodeLength;
+					desc.HS.pShaderBytecode = byteCode;
+					desc.HS.BytecodeLength = byteCodeLength;
 					break;
 				case ShaderType::TESSELATION_EVALUATION:
-					mPipelineDesc.DS.pShaderBytecode = byteCode;
-					mPipelineDesc.DS.BytecodeLength = byteCodeLength;
+					desc.DS.pShaderBytecode = byteCode;
+					desc.DS.BytecodeLength = byteCodeLength;
 					break;
 				default:
 					break;
@@ -511,9 +519,9 @@ namespace Lightning
 			}
 		}
 
-		void D3D12Device::UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::uint8_t  layoutCount)
+		void D3D12Device::UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::uint8_t  layoutCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
-			D3D12_INPUT_LAYOUT_DESC& inputLayoutDesc = mPipelineDesc.InputLayout;
+			D3D12_INPUT_LAYOUT_DESC& inputLayoutDesc = desc.InputLayout;
 			if (layoutCount == 0)
 			{
 				inputLayoutDesc.NumElements = 0;
@@ -609,17 +617,10 @@ namespace Lightning
 			{
 				rtvHandles[i] = static_cast<const D3D12RenderTarget*>(renderTargets[i].get())->GetCPUHandle();
 				//TODO : Is it correct to use the first render target's sample description to set the pipeline desc?
-				if (i == 0)
-				{
-					mPipelineDesc.SampleDesc.Count = renderTargets[i]->GetSampleCount();
-					mPipelineDesc.SampleDesc.Quality = renderTargets[i]->GetSampleQuality();
-				}
-				mPipelineDesc.RTVFormats[i] = D3D12TypeMapper::MapRenderFormat(renderTargets[i]->GetRenderFormat());
 			}
 			auto dsHandle = static_cast<const D3D12DepthStencilBuffer*>(dsBuffer.get())->GetCPUHandle();
 			mCommandList->OMSetRenderTargets(renderTargetCount, rtvHandles, FALSE, &dsHandle);
 			mCurrentDSBuffer = dsBuffer;
-			mPipelineDesc.NumRenderTargets = renderTargetCount;
 		}
 
 		void D3D12Device::BindGPUBuffer(std::uint8_t slot, const SharedGPUBufferPtr& pBuffer)
