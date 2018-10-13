@@ -63,6 +63,7 @@ define_dll_export_macro(FOUNDATION)
 
 include_directories(${LIGHTNING_DEPENDENCIES_DIR}/boost
 					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
+					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include
 					${CMAKE_SOURCE_DIR}/foundation)
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 if(MSVC)
@@ -82,10 +83,13 @@ endif()
 
 if(MSVC)
 	get_msvc_postfix(POSTFIX)
+	get_msvc_major_version(VC_MAJOR_VERSION)
 	target_link_libraries(${PROJECT_NAME} debug ${Boost_LIBRARY_DIRS}/libboost_filesystem-vc${POSTFIX}-mt-gd-1_65_1.lib)
 	target_link_libraries(${PROJECT_NAME} debug ${Boost_LIBRARY_DIRS}/libboost_system-vc${POSTFIX}-mt-gd-1_65_1.lib)
 	target_link_libraries(${PROJECT_NAME} optimized ${Boost_LIBRARY_DIRS}/libboost_filesystem-vc${POSTFIX}-mt-1_65_1.lib)
 	target_link_libraries(${PROJECT_NAME} optimized ${Boost_LIBRARY_DIRS}/libboost_system-vc${POSTFIX}-mt-1_65_1.lib)
+	target_link_libraries(${PROJECT_NAME} debug ${LIGHTNING_DEPENDENCIES_DIR}/tbb/lib/ia32/vc${VC_MAJOR_VERSION}/tbb_debug.lib)
+	target_link_libraries(${PROJECT_NAME} optimized ${LIGHTNING_DEPENDENCIES_DIR}/tbb/lib/ia32/vc${VC_MAJOR_VERSION}/tbb.lib)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi")
 	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)

@@ -7,6 +7,7 @@ include(helpers)
 
 # options start
 option(LIGHTNING_USE_D3D12 "Enable DirectX 12 renderer." ON)
+option(LIGHTNING_RENDER_MT "Enable Multithreading rendering." ON)
 set(LIGHTNING_DEPENDENCIES_DIR "${CMAKE_SOURCE_DIR}/../Lightning_dependency" CACHE PATH "Dependencies directory")
 get_filename_component(LIGHTNING_DEPENDENCIES_DIR ${LIGHTNING_DEPENDENCIES_DIR} ABSOLUTE)
 message(STATUS "Dependencies directory is ${LIGHTNING_DEPENDENCIES_DIR}")
@@ -45,7 +46,8 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/window
 					${CMAKE_SOURCE_DIR}/utilities
 					${LIGHTNING_DEPENDENCIES_DIR}/boost
-					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include)
+					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
+					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include)
 add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} foundation platform)
 target_link_libraries(${PROJECT_NAME} platform)
@@ -55,4 +57,7 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc")
 	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
+	get_msvc_major_version(VC_MAJOR_VERSION)
+	file(COPY ${LIGHTNING_DEPENDENCIES_DIR}/tbb/bin/ia32/vc${VC_MAJOR_VERSION}/Debug/tbb_debug.dll DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
+	file(COPY ${LIGHTNING_DEPENDENCIES_DIR}/tbb/bin/ia32/vc${VC_MAJOR_VERSION}/Release/tbb.dll DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release)
 endif()

@@ -9,7 +9,6 @@ namespace Lightning
 	{
 
 		D3D12ConstantBufferManager::D3D12ConstantBufferManager() 
-			:mCurrentID(0)
 		{
 
 		}
@@ -23,10 +22,6 @@ namespace Lightning
 		{
 			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
-				for (auto it = mBufferResources[i].begin(); it != mBufferResources[i].end();++it)
-				{
-					it->resource->Release();
-				}
 				mBufferResources[i].clear();
 			}
 		}
@@ -44,7 +39,7 @@ namespace Lightning
 				nativeDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE,
 					&CD3DX12_RESOURCE_DESC::Buffer(resourceSize),
 					D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&newResource.resource));
-				CD3DX12_RANGE range(0, 0);
+				static const CD3DX12_RANGE range(0, 0);
 				//map to process virtual memory on creation to prevent mapping everytime change buffer content
 				newResource.resource->Map(0, &range, &newResource.mapAddress);
 				newResource.offset = 0;
@@ -72,12 +67,16 @@ namespace Lightning
 		void D3D12ConstantBufferManager::ResetBuffers(std::size_t frameIndex)
 		{
 			auto& bufferResources = mBufferResources[frameIndex];
+#ifdef LIGHTNING_RENDER_MT
+			bufferResources.resize(1);
+			bufferResources.shrink_to_fit();
+#else
 			while (bufferResources.size() > 1)
 			{
 				auto& back = bufferResources.back();
-				back.resource->Release();
 				bufferResources.pop_back();
 			}
+#endif
 		}
 	}
 }

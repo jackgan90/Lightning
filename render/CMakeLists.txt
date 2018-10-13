@@ -72,6 +72,9 @@ endif()
 if(LIGHTNING_USE_D3D12)
 	add_definitions(-DLIGHTNING_USE_D3D12)
 endif()
+if(LIGHTNING_RENDER_MT)
+	add_definitions(-DLIGHTNING_RENDER_MT)
+endif()
 
 if(LIGHTNING_USE_D3D12)
 	add_definitions(-DLIGHTNING_USE_D3D12)
@@ -123,7 +126,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/platform 
 					${CMAKE_SOURCE_DIR}/window
 					${LIGHTNING_DEPENDENCIES_DIR}/boost
-					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include)
+					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
+					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include)
 if(LIGHTNING_USE_D3D12)
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/d3d12
 						${LIGHTNING_DEPENDENCIES_DIR}/d3d12)

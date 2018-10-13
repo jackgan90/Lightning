@@ -7,6 +7,7 @@ namespace Lightning
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
+		//Thread unsafe
 		class D3D12BufferResource
 		{
 		public:

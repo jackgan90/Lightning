@@ -24,7 +24,7 @@ namespace Lightning
 			static container::vector<VertexInputLayout> layouts;
 			PipelineState state{};
 			//TODO : set render target count based on model setting
-			state.renderTargetCount = node.renderTargets.size();
+			state.renderTargetCount = static_cast<std::uint8_t>(node.renderTargets.size());
 			auto pSwapChain = Renderer::Instance()->GetSwapChain();
 			state.renderTargets[0] = pSwapChain->GetDefaultRenderTarget().get();
 			if (node.material)

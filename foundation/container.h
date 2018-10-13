@@ -9,6 +9,8 @@
 #include <deque>
 #include <queue>
 #include <tuple>
+#include "tbb/concurrent_vector.h"
+#include "tbb/concurrent_queue.h"
 
 
 namespace Lightning
@@ -19,6 +21,9 @@ namespace Lightning
 		{
 			template<typename T>
 			using vector = std::vector<T>;
+
+			template<typename T>
+			using concurrent_vector = tbb::concurrent_vector<T>;
 
 			template<typename T>
 			using list = std::list<T>;
@@ -40,6 +45,9 @@ namespace Lightning
 
 			template<typename T>
 			using queue = std::queue<T>;
+
+			template<typename T>
+			using concurrent_queue = tbb::concurrent_queue<T>;
 
 			template<typename T, std::size_t Size>
 			using array = std::array<T, Size>;
