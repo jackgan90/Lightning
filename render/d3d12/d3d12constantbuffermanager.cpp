@@ -30,7 +30,14 @@ namespace Lightning
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto& bufferResources = mBufferResources[resourceIndex];
-			if (bufferResources.empty() || bufferResources.back().offset + bufferSize >= bufferResources.back().size)
+			auto genNewBuffer = bufferResources.empty();
+			if (!genNewBuffer)
+			{
+				auto& lastBuffer = bufferResources.back();
+				if (lastBuffer.offset + bufferSize >= lastBuffer.size)
+					genNewBuffer = true;
+			}
+			if (genNewBuffer)
 			{
 				BufferResource newResource;
 				auto nativeDevice = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNative();

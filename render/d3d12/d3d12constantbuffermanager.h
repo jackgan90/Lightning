@@ -19,6 +19,7 @@ namespace Lightning
 			D3D12_GPU_VIRTUAL_ADDRESS virtualAdress;
 		};
 
+		//Thread safe
 		class D3D12ConstantBufferManager : public Foundation::Singleton<D3D12ConstantBufferManager>
 		{
 			friend class Foundation::Singleton<D3D12ConstantBufferManager>;
