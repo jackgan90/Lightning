@@ -2,6 +2,9 @@
 #include <d3d12.h>
 #include <wrl/client.h>
 #include <cstdint>
+#ifdef LIGHTNING_RENDER_MT
+#include "tbb/enumerable_thread_specific.h"
+#endif
 #include "singleton.h"
 #include "container.h"
 #include "renderconstants.h"
@@ -19,14 +22,16 @@ namespace Lightning
 			D3D12_GPU_VIRTUAL_ADDRESS virtualAdress;
 		};
 
-		//Thread safe
 		class D3D12ConstantBufferManager : public Foundation::Singleton<D3D12ConstantBufferManager>
 		{
 			friend class Foundation::Singleton<D3D12ConstantBufferManager>;
 		public:
 			~D3D12ConstantBufferManager();
+			//Thread safe
 			D3D12ConstantBuffer AllocBuffer(std::size_t bufferSize);
+			//Thread unsafe
 			void ResetBuffers(std::size_t frameIndex);
+			//Thread unsafe
 			void Clear();
 		private:
 			struct BufferResource
@@ -39,11 +44,12 @@ namespace Lightning
 			};
 			D3D12ConstantBufferManager();
 #ifdef LIGHTNING_RENDER_MT
-			container::concurrent_vector<BufferResource> mBufferResources[RENDER_FRAME_COUNT];
+			using ThreadedBufferResources = tbb::enumerable_thread_specific<container::vector<BufferResource>>;
+			ThreadedBufferResources mBufferResources[RENDER_FRAME_COUNT];
 #else
 			container::vector<BufferResource> mBufferResources[RENDER_FRAME_COUNT];
 #endif
-			static constexpr std::size_t MIN_BUFFER_SIZE = 2048 * 1024;
+			static constexpr std::size_t MIN_BUFFER_SIZE = 2048 * 128;
 			static inline constexpr std::size_t AlignedSize(std::size_t size, std::size_t alignment)
 			{
 				return (size + (alignment - 1)) & ~(alignment - 1);

@@ -18,6 +18,7 @@ namespace Lightning
 			Clear();
 		}
 
+		//Thread unsafe
 		void D3D12ConstantBufferManager::Clear()
 		{
 			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
@@ -29,7 +30,11 @@ namespace Lightning
 		D3D12ConstantBuffer D3D12ConstantBufferManager::AllocBuffer(std::size_t bufferSize)
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
+#ifdef LIGHTNING_RENDER_MT
+			auto& bufferResources = mBufferResources[resourceIndex].local();
+#else
 			auto& bufferResources = mBufferResources[resourceIndex];
+#endif
 			auto genNewBuffer = bufferResources.empty();
 			if (!genNewBuffer)
 			{
@@ -65,23 +70,20 @@ namespace Lightning
 			return cbuffer;
 		}
 
-		/*
-		void D3D12ConstantBufferManager::UnlockBuffer(std::size_t bufferId, container::tuple<std::size_t, std::size_t> dirtyRange)
-		{
-
-		}*/
-
+		//Thread unsafe
 		void D3D12ConstantBufferManager::ResetBuffers(std::size_t frameIndex)
 		{
 			auto& bufferResources = mBufferResources[frameIndex];
 #ifdef LIGHTNING_RENDER_MT
-			bufferResources.resize(1);
-			bufferResources.shrink_to_fit();
-#else
-			while (bufferResources.size() > 1)
+			for (auto it = bufferResources.begin(); it != bufferResources.end();++it)
 			{
-				auto& back = bufferResources.back();
-				bufferResources.pop_back();
+				if (it->size() > 1)
+					it->resize(1);
+			}
+#else
+			if (bufferResources.size() > 1)
+			{
+				bufferResources.resize(1);
 			}
 #endif
 		}
