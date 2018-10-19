@@ -82,21 +82,6 @@ namespace Lightning
 			{
 				throw DeviceInitException("Failed to create command queue!");
 			}
-			for (size_t i = 0; i < RENDER_FRAME_COUNT; i++)
-			{
-				hr = mDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&mFrameResources[i].commandAllocator));
-				if (FAILED(hr))
-				{
-					throw DeviceInitException("Failed to create command allocator!");
-				}
-				hr = mDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, 
-					mFrameResources[i].commandAllocator.Get(), nullptr, IID_PPV_ARGS(&mFrameResources[i].commandList));
-				if (FAILED(hr))
-				{
-					throw DeviceInitException("Failed to create command list!");
-				}
-				mFrameResources[i].commandList->Close();
-			}
 			mShaderMgr = std::make_unique<D3D12ShaderManager>(this, fs);
 			//should create first default pipeline state
 			mDefaultShaders[ShaderType::VERTEX] = mShaderMgr->CreateShaderFromSource(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
@@ -110,7 +95,12 @@ namespace Lightning
 
 		ID3D12GraphicsCommandList* D3D12Device::GetGraphicsCommandList()
 		{
-			return mFrameResources[mFrameResourceIndex].commandList.Get();
+#ifdef LIGHTNING_RENDER_MT
+			auto& frameResources = mFrameResources[mFrameResourceIndex].local();
+#else
+			auto& frameResources = mFrameResources[mFrameResourceIndex];
+#endif
+			return frameResources.GetCommandList();
 		}
 
 		void D3D12Device::CreateNativeDevice(IDXGIFactory4* factory)
@@ -603,7 +593,12 @@ namespace Lightning
 			Device::BeginFrame(frameResourceIndex);
 			D3D12DescriptorHeapManager::Instance()->EraseTransientAllocation(frameResourceIndex);
 			D3D12ConstantBufferManager::Instance()->ResetBuffers(frameResourceIndex);
-			mFrameResources[frameResourceIndex].Release(true);
+#ifdef LIGHTNING_RENDER_MT
+			auto& frameResources = mFrameResources[frameResourceIndex].local();
+#else
+			auto& frameResources = mFrameResources[frameResourceIndex];
+#endif
+			frameResources.Release(true);
 		}
 
 		void D3D12Device::ApplyRenderTargets(const container::vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)

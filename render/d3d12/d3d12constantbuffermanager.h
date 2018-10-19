@@ -2,12 +2,12 @@
 #include <d3d12.h>
 #include <wrl/client.h>
 #include <cstdint>
-#ifdef LIGHTNING_RENDER_MT
-#include "tbb/enumerable_thread_specific.h"
-#endif
 #include "singleton.h"
 #include "container.h"
 #include "renderconstants.h"
+#ifdef LIGHTNING_RENDER_MT
+#include "tbb/enumerable_thread_specific.h"
+#endif
 
 namespace Lightning
 {

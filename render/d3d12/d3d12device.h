@@ -8,6 +8,11 @@
 #include "stackallocator.h"
 #include "filesystem.h"
 #include "d3d12shadermanager.h"
+#include "d3d12frameresources.h"
+#ifdef LIGHTNING_RENDER_MT
+#include "tbb/enumerable_thread_specific.h"
+#endif
+
 
 namespace Lightning
 {
@@ -38,25 +43,6 @@ namespace Lightning
 			void BeginFrame(const std::size_t frameResourceIndex)override;
 			void ApplyRenderTargets(const container::vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)override;
 		private:
-			struct FrameResource
-			{
-				ComPtr<ID3D12CommandAllocator> commandAllocator;
-				ComPtr<ID3D12GraphicsCommandList> commandList;
-
-				void Release(bool perFrame)
-				{
-					commandAllocator->Reset();
-					if (!perFrame)
-					{
-						commandAllocator.Reset();
-						commandList.Reset();
-					}
-					else
-					{
-						commandList->Reset(commandAllocator.Get(), nullptr);
-					}
-				}
-			};
 			struct PipelineStateRootSignature
 			{
 				ComPtr<ID3D12PipelineState> pipelineState;
@@ -83,7 +69,11 @@ namespace Lightning
 			ComPtr<ID3D12CommandQueue> mCommandQueue;
 			PipelineCacheMap mPipelineCache;
 			RootSignatureMap mRootSignatures;
-			FrameResource mFrameResources[RENDER_FRAME_COUNT];
+#ifdef LIGHTNING_RENDER_MT
+			tbb::enumerable_thread_specific<D3D12FrameResources> mFrameResources[RENDER_FRAME_COUNT];
+#else
+			D3D12FrameResources mFrameResources[RENDER_FRAME_COUNT];
+#endif
 		};
 	}
 }
