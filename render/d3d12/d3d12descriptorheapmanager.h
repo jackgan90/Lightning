@@ -55,8 +55,8 @@ namespace Lightning
 			container::tuple<bool, DescriptorHeap*> TryAllocateDescriptorHeap(container::vector<DescriptorHeapStore*>& heapList, UINT count, bool transient);
 			void Deallocate(DescriptorHeapEx* pHeapEx);
 			container::unordered_map<UINT, container::vector<DescriptorHeapStore*>> mHeaps;
-			container::unordered_map<D3D12_DESCRIPTOR_HEAP_TYPE, UINT> mIncrementSizes;
 			container::unordered_map<std::size_t, container::vector<DescriptorHeapEx*>> mFrameTransientHeaps;
+			UINT sIncrementSizes[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
 #ifndef NDEBUG
 			container::unordered_set<DescriptorHeapEx*> mAllocHeaps;
 #endif

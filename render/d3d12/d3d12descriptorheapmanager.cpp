@@ -10,7 +10,11 @@ namespace Lightning
 		using Foundation::container;
 		D3D12DescriptorHeapManager::D3D12DescriptorHeapManager()
 		{
-
+			auto nativeDevice = GetNativeDevice();
+			for (auto i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES;++i)
+			{
+				sIncrementSizes[i] = nativeDevice->GetDescriptorHandleIncrementSize(static_cast<D3D12_DESCRIPTOR_HEAP_TYPE>(i));
+			}
 		}
 
 		D3D12DescriptorHeapManager::~D3D12DescriptorHeapManager()
@@ -233,12 +237,7 @@ namespace Lightning
 
 		UINT D3D12DescriptorHeapManager::GetIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type)
 		{
-			if (mIncrementSizes.find(type) == mIncrementSizes.end())
-			{
-				auto nativeDevice = GetNativeDevice();
-				mIncrementSizes[type] = nativeDevice->GetDescriptorHandleIncrementSize(type);
-			}
-			return mIncrementSizes[type];
+			return sIncrementSizes[type];
 		}
 
 		void D3D12DescriptorHeapManager::Clear()
