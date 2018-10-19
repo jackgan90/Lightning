@@ -73,7 +73,7 @@ namespace Lightning
 			"	return float4(color.rgb * diffuse, color.a) ;\n"
 			"}\n";
 		D3D12Device::D3D12Device(IDXGIFactory4* factory, const SharedFileSystemPtr& fs)
-			:Device(), mFs(fs)
+			:Device()
 		{
 			CreateNativeDevice(factory);
 			D3D12_COMMAND_QUEUE_DESC desc = {};
@@ -89,22 +89,28 @@ namespace Lightning
 				{
 					throw DeviceInitException("Failed to create command allocator!");
 				}
-			}
-			hr = mDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mFrameResources[0].commandAllocator.Get(), nullptr, IID_PPV_ARGS(&mCommandList));
-			if (FAILED(hr))
-			{
-				throw DeviceInitException("Failed to create command list!");
+				hr = mDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, 
+					mFrameResources[i].commandAllocator.Get(), nullptr, IID_PPV_ARGS(&mFrameResources[i].commandList));
+				if (FAILED(hr))
+				{
+					throw DeviceInitException("Failed to create command list!");
+				}
+				mFrameResources[i].commandList->Close();
 			}
 			mShaderMgr = std::make_unique<D3D12ShaderManager>(this, fs);
 			//should create first default pipeline state
 			mDefaultShaders[ShaderType::VERTEX] = mShaderMgr->CreateShaderFromSource(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
 			mDefaultShaders[ShaderType::FRAGMENT] = mShaderMgr->CreateShaderFromSource(ShaderType::FRAGMENT, "[Built-in]default.ps", DEFAULT_PS_SOURCE, ShaderDefine()); 
-			mCommandList->Close();
 		}
 
 		D3D12Device::~D3D12Device()
 		{
 			mShaderMgr.reset();
+		}
+
+		ID3D12GraphicsCommandList* D3D12Device::GetGraphicsCommandList()
+		{
+			return mFrameResources[mFrameResourceIndex].commandList.Get();
 		}
 
 		void D3D12Device::CreateNativeDevice(IDXGIFactory4* factory)
@@ -151,9 +157,10 @@ namespace Lightning
 			ComPtr<ID3D12Resource> nativeRenderTarget = pTarget->GetNative();
 			//should check the type of the rt to transit it from previous state to render target state
 			//currently just check back buffer render target
+			auto commandList = GetGraphicsCommandList();
 			if (rt->IsSwapChainRenderTarget())
 			{
-				mCommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget.Get(),
+				commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget.Get(),
 					D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 			}
 
@@ -172,11 +179,11 @@ namespace Lightning
 					d3dRect[i].top = (*rects)[i].top;
 					d3dRect[i].bottom = (*rects)[i].bottom();
 				}
-				mCommandList->ClearRenderTargetView(rtvHandle, clearColor, rects->size(), d3dRect);
+				commandList->ClearRenderTargetView(rtvHandle, clearColor, rects->size(), d3dRect);
 			}
 			else
 			{
-				mCommandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+				commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 			}
 		}
 
@@ -193,6 +200,7 @@ namespace Lightning
 				clearFlags |= D3D12_CLEAR_FLAG_STENCIL;
 			}
 			auto dsvHandle = static_cast<D3D12DepthStencilBuffer*>(buffer.get())->GetCPUHandle();
+			auto commandList = GetGraphicsCommandList();
 			if (rects && !rects->empty())
 			{
 				//TODO : This implementation is wrong.Should allocate frame memory not local memory,must fix later
@@ -204,11 +212,11 @@ namespace Lightning
 					d3dRect[i].top = (*rects)[i].top;
 					d3dRect[i].bottom = (*rects)[i].bottom();
 				}
-				mCommandList->ClearDepthStencilView(dsvHandle, clearFlags, depth, stencil, rects->size(), d3dRect);
+				commandList->ClearDepthStencilView(dsvHandle, clearFlags, depth, stencil, rects->size(), d3dRect);
 			}
 			else
 			{
-				mCommandList->ClearDepthStencilView(dsvHandle, clearFlags, depth, stencil, 0, nullptr);
+				commandList->ClearDepthStencilView(dsvHandle, clearFlags, depth, stencil, 0, nullptr);
 			}
 		}
 
@@ -293,17 +301,18 @@ namespace Lightning
 				stateAndSignature = CreateAndCachePipelineState(state, hashValue);
 			}
 
-			mCommandList->SetPipelineState(stateAndSignature.pipelineState.Get());
+			auto commandList = GetGraphicsCommandList();
+			commandList->SetPipelineState(stateAndSignature.pipelineState.Get());
 			if (stateAndSignature.rootSignature)
 			{
-				mCommandList->SetGraphicsRootSignature(stateAndSignature.rootSignature.Get());
+				commandList->SetGraphicsRootSignature(stateAndSignature.rootSignature.Get());
 				auto& frameResource = mFrameResources[mFrameResourceIndex];
 				container::vector<ID3D12DescriptorHeap*> heaps;
 				ExtractShaderDescriptorHeaps(heaps, state);
 				//TODO : cancel all heap binding when empty?
 				if (!heaps.empty())
 				{
-					mCommandList->SetDescriptorHeaps(heaps.size(), &heaps[0]);
+					commandList->SetDescriptorHeaps(heaps.size(), &heaps[0]);
 				}
 				BindShaderResources(state);
 			}
@@ -376,25 +385,26 @@ namespace Lightning
 		{
 			auto pD3D12Shader = static_cast<D3D12Shader*>(pShader);
 			auto const& boundResources = pD3D12Shader->GetRootBoundResources();
+			auto commandList = GetGraphicsCommandList();
 			for (std::size_t i = 0;i < boundResources.size();++i)
 			{
 				const auto& boundResource = boundResources[i];
 				switch (boundResource.type)
 				{
 				case D3D12RootBoundResourceType::DescriptorTable:
-					mCommandList->SetGraphicsRootDescriptorTable(rootParameterIndex + i, boundResource.descriptorTableHandle);
+					commandList->SetGraphicsRootDescriptorTable(rootParameterIndex + i, boundResource.descriptorTableHandle);
 					break;
 				case D3D12RootBoundResourceType::ConstantBufferView:
-					mCommandList->SetGraphicsRootConstantBufferView(rootParameterIndex + i, boundResource.GPUVirtualAddress);
+					commandList->SetGraphicsRootConstantBufferView(rootParameterIndex + i, boundResource.GPUVirtualAddress);
 					break;
 				case D3D12RootBoundResourceType::ShaderResourceView:
-					mCommandList->SetGraphicsRootShaderResourceView(rootParameterIndex + i, boundResource.GPUVirtualAddress);
+					commandList->SetGraphicsRootShaderResourceView(rootParameterIndex + i, boundResource.GPUVirtualAddress);
 					break;
 				case D3D12RootBoundResourceType::UnorderedAccessView:
-					mCommandList->SetGraphicsRootUnorderedAccessView(rootParameterIndex + i, boundResource.GPUVirtualAddress);
+					commandList->SetGraphicsRootUnorderedAccessView(rootParameterIndex + i, boundResource.GPUVirtualAddress);
 					break;
 				case D3D12RootBoundResourceType::Constant:
-					mCommandList->SetGraphicsRoot32BitConstants(rootParameterIndex + i, boundResource.constant32BitValue.num32BitValues, boundResource.constant32BitValue.p32BitValues, boundResource.constant32BitValue.dest32BitValueOffset);
+					commandList->SetGraphicsRoot32BitConstants(rootParameterIndex + i, boundResource.constant32BitValue.num32BitValues, boundResource.constant32BitValue.p32BitValues, boundResource.constant32BitValue.dest32BitValueOffset);
 					break;
 				default:
 					break;
@@ -594,12 +604,12 @@ namespace Lightning
 			D3D12DescriptorHeapManager::Instance()->EraseTransientAllocation(frameResourceIndex);
 			D3D12ConstantBufferManager::Instance()->ResetBuffers(frameResourceIndex);
 			mFrameResources[frameResourceIndex].Release(true);
-			mCommandList->Reset(mFrameResources[frameResourceIndex].commandAllocator.Get(), nullptr);
 		}
 
 		void D3D12Device::ApplyRenderTargets(const container::vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)
 		{
 			assert(renderTargets.size() <= MAX_RENDER_TARGET_COUNT);
+			auto commandList = GetGraphicsCommandList();
 			auto renderTargetCount = renderTargets.size();
 			//TODO : actually should set pipeline description based on PipelineState rather than set them here
 			auto rtvHandles = g_RenderAllocator.Allocate<D3D12_CPU_DESCRIPTOR_HANDLE>(renderTargetCount);
@@ -609,7 +619,7 @@ namespace Lightning
 				//TODO : Is it correct to use the first render target's sample description to set the pipeline desc?
 			}
 			auto dsHandle = static_cast<const D3D12DepthStencilBuffer*>(dsBuffer.get())->GetCPUHandle();
-			mCommandList->OMSetRenderTargets(renderTargetCount, rtvHandles, FALSE, &dsHandle);
+			commandList->OMSetRenderTargets(renderTargetCount, rtvHandles, FALSE, &dsHandle);
 		}
 
 		void D3D12Device::BindGPUBuffer(std::uint8_t slot, const SharedGPUBufferPtr& pBuffer)
@@ -617,20 +627,21 @@ namespace Lightning
 			if (!pBuffer)
 				return;
 			auto bufferType = pBuffer->GetType();
+			auto commandList = GetGraphicsCommandList();
 			switch (bufferType)
 			{
 			case GPUBufferType::VERTEX:
 			{
 				D3D12_VERTEX_BUFFER_VIEW* bufferViews = g_RenderAllocator.Allocate<D3D12_VERTEX_BUFFER_VIEW>(1);
 				bufferViews[0] = static_cast<D3D12VertexBuffer*>(pBuffer.get())->GetBufferView();
-				mCommandList->IASetVertexBuffers(slot, 1, bufferViews);
+				commandList->IASetVertexBuffers(slot, 1, bufferViews);
 				break;
 			}
 			case GPUBufferType::INDEX:
 			{
 				D3D12_INDEX_BUFFER_VIEW* bufferView = g_RenderAllocator.Allocate<D3D12_INDEX_BUFFER_VIEW>(1);
 				bufferView[0] = static_cast<D3D12IndexBuffer*>(pBuffer.get())->GetBufferView();
-				mCommandList->IASetIndexBuffer(bufferView);
+				commandList->IASetIndexBuffer(bufferView);
 				break;
 			}
 			default:
@@ -640,13 +651,15 @@ namespace Lightning
 
 		void D3D12Device::DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset)
 		{
+			auto commandList = GetGraphicsCommandList();
 			//TODO : set topology based on pipeline state
-			mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			mCommandList->DrawInstanced(vertexCountPerInstance, instanceCount, firstVertexIndex, instanceDataOffset);
+			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			commandList->DrawInstanced(vertexCountPerInstance, instanceCount, firstVertexIndex, instanceDataOffset);
 		}
 
 		void D3D12Device::DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset)
 		{
+			auto commandList = GetGraphicsCommandList();
 			//TODO : set topology based on pipeline state
 			D3D12_VIEWPORT	vp{};
 			vp.Width = 800;
@@ -660,10 +673,10 @@ namespace Lightning
 			scissorRect.left = scissorRect.top = 0;
 			scissorRect.right = 800;
 			scissorRect.bottom = 600;
-			mCommandList->RSSetScissorRects(1, &scissorRect);
-			mCommandList->RSSetViewports(1, &vp);
-			mCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			mCommandList->DrawIndexedInstanced(indexCountPerInstance, instanceCount, firstIndex, indexDataOffset, instanceDataOffset);
+			commandList->RSSetScissorRects(1, &scissorRect);
+			commandList->RSSetViewports(1, &vp);
+			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			commandList->DrawIndexedInstanced(indexCountPerInstance, instanceCount, firstIndex, indexDataOffset, instanceDataOffset);
 		}
 	}
 }

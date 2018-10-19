@@ -29,7 +29,7 @@ namespace Lightning
 			SharedIndexBufferPtr CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;
 			ID3D12Device* GetNative()const { return mDevice.Get(); }
 			ID3D12CommandQueue* GetCommandQueue()const { return mCommandQueue.Get(); }
-			ID3D12GraphicsCommandList* GetGraphicsCommandList()const { return mCommandList.Get(); }
+			ID3D12GraphicsCommandList* GetGraphicsCommandList();
 			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)override;
 			void ApplyPipelineState(const PipelineState& state)override;
 			void BindGPUBuffer(std::uint8_t slot, const SharedGPUBufferPtr& buffer)override;
@@ -41,6 +41,7 @@ namespace Lightning
 			struct FrameResource
 			{
 				ComPtr<ID3D12CommandAllocator> commandAllocator;
+				ComPtr<ID3D12GraphicsCommandList> commandList;
 
 				void Release(bool perFrame)
 				{
@@ -48,6 +49,11 @@ namespace Lightning
 					if (!perFrame)
 					{
 						commandAllocator.Reset();
+						commandList.Reset();
+					}
+					else
+					{
+						commandList->Reset(commandAllocator.Get(), nullptr);
 					}
 				}
 			};
@@ -73,10 +79,8 @@ namespace Lightning
 			void ExtractShaderDescriptorHeaps(IShader* pShader, container::vector<ID3D12DescriptorHeap*>& heaps);
 			void BindShaderResources(const PipelineState& state);
 			void BindShaderResources(IShader* pShader, UINT rootParameterIndex);
-			SharedFileSystemPtr mFs;
 			ComPtr<ID3D12Device> mDevice;
 			ComPtr<ID3D12CommandQueue> mCommandQueue;
-			ComPtr<ID3D12GraphicsCommandList> mCommandList;
 			PipelineCacheMap mPipelineCache;
 			RootSignatureMap mRootSignatures;
 			FrameResource mFrameResources[RENDER_FRAME_COUNT];
