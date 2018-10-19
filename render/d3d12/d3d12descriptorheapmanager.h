@@ -31,8 +31,11 @@ namespace Lightning
 			DescriptorHeap* Allocate(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count, bool frameTransient);
 			ComPtr<ID3D12DescriptorHeap> GetHeap(DescriptorHeap* pHeap)const;
 			void Deallocate(DescriptorHeap* pHeap);
+			//Thread unsafe
 			void EraseTransientAllocation(std::size_t frameIndex);
+			//Thread safe
 			UINT GetIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type);
+			//Thread unsafe
 			void Clear();
 		private:
 			static constexpr int HEAP_DESCRIPTOR_ALLOC_SIZE = 100;
@@ -49,13 +52,19 @@ namespace Lightning
 				container::tuple<UINT, UINT> interval;
 			};
 			ID3D12Device* GetNativeDevice();
-			UINT HeapTypeHash(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible) { return static_cast<UINT>(type) << 1 | static_cast<UINT>(shaderVisible); }
 			container::tuple<bool, DescriptorHeapStore*> CreateHeapStore(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT descriptorCount, ID3D12Device* pDevice);
 			container::tuple<bool, DescriptorHeap*> TryAllocateDescriptorHeap(DescriptorHeapStore* heapInfo, UINT count, bool transient);
-			container::tuple<bool, DescriptorHeap*> TryAllocateDescriptorHeap(container::vector<DescriptorHeapStore*>& heapList, UINT count, bool transient);
 			void Deallocate(DescriptorHeapEx* pHeapEx);
-			container::unordered_map<UINT, container::vector<DescriptorHeapStore*>> mHeaps;
+			static std::size_t HeapIndex(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible);
+#ifdef LIGHTNING_RENDER_MT
+			container::tuple<bool, DescriptorHeap*> TryAllocateDescriptorHeap(container::concurrent_vector<DescriptorHeapStore*>& heapList, UINT count, bool transient);
+			container::concurrent_vector<DescriptorHeapEx*> mFrameTransientHeaps[RENDER_FRAME_COUNT];
+			container::concurrent_vector<DescriptorHeapStore*>* mHeaps;
+#else
+			container::tuple<bool, DescriptorHeap*> TryAllocateDescriptorHeap(container::vector<DescriptorHeapStore*>& heapList, UINT count, bool transient);
 			container::vector<DescriptorHeapEx*> mFrameTransientHeaps[RENDER_FRAME_COUNT];
+			container::vector<DescriptorHeapStore*>* mHeaps;
+#endif
 			UINT sIncrementSizes[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
 #ifndef NDEBUG
 			container::unordered_set<DescriptorHeapEx*> mAllocHeaps;
