@@ -67,7 +67,7 @@ namespace Lightning
 			heapStore->freeIntervals.emplace_back(std::make_tuple(0, descriptorCount));
 			heapStore->cpuHandle = heapStore->heap->GetCPUDescriptorHandleForHeapStart();
 			heapStore->gpuHandle = heapStore->heap->GetGPUDescriptorHandleForHeapStart();
-			heapStore->incrementSize = GetIncrementSize(type, pDevice);
+			heapStore->incrementSize = GetIncrementSize(type);
 			
 			auto typeHash = HeapTypeHash(type, shaderVisible);
 			if (mHeaps.find(typeHash) == mHeaps.end())
@@ -231,11 +231,11 @@ namespace Lightning
 			}
 		}
 
-		UINT D3D12DescriptorHeapManager::GetIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type, ID3D12Device* pDevice)
+		UINT D3D12DescriptorHeapManager::GetIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type)
 		{
 			if (mIncrementSizes.find(type) == mIncrementSizes.end())
 			{
-				auto nativeDevice = pDevice ? pDevice : GetNativeDevice();
+				auto nativeDevice = GetNativeDevice();
 				mIncrementSizes[type] = nativeDevice->GetDescriptorHandleIncrementSize(type);
 			}
 			return mIncrementSizes[type];

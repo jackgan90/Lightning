@@ -9,6 +9,7 @@ namespace Lightning
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
+		//Thread unsafe
 		class LIGHTNING_RENDER_API D3D12DepthStencilBuffer : public IDepthStencilBuffer
 		{
 		public:

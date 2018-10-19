@@ -32,7 +32,7 @@ namespace Lightning
 			ComPtr<ID3D12DescriptorHeap> GetHeap(DescriptorHeap* pHeap)const;
 			void Deallocate(DescriptorHeap* pHeap);
 			void EraseTransientAllocation(std::size_t frameIndex);
-			UINT GetIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type, ID3D12Device* pDevice=nullptr);
+			UINT GetIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type);
 			void Clear();
 		private:
 			static constexpr int HEAP_DESCRIPTOR_ALLOC_SIZE = 100;
