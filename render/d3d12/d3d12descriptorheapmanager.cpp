@@ -140,10 +140,6 @@ namespace Lightning
 					if (transient)
 					{
 						auto frameIndex = Renderer::Instance()->GetFrameResourceIndex();
-						if (mFrameTransientHeaps.find(frameIndex) == mFrameTransientHeaps.end())
-						{
-							mFrameTransientHeaps.emplace(std::piecewise_construct, std::make_tuple(frameIndex), std::make_tuple());
-						}
 						mFrameTransientHeaps[frameIndex].push_back(pHeapEx);
 					}
 #ifndef NDEBUG
@@ -243,14 +239,14 @@ namespace Lightning
 		void D3D12DescriptorHeapManager::Clear()
 		{
 #ifndef NDEBUG
-			for (auto it = mFrameTransientHeaps.begin(); it != mFrameTransientHeaps.end();++it)
+			for (auto i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
-				for (auto pHeapEx : it->second)
+				for (auto pHeapEx : mFrameTransientHeaps[i])
 				{
 					Deallocate(static_cast<DescriptorHeap*>(pHeapEx));
 				}
+				mFrameTransientHeaps[i].clear();
 			}
-			mFrameTransientHeaps.clear();
 #endif
 			for(auto it = mHeaps.begin(); it != mHeaps.end();++it)
 			{
