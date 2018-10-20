@@ -49,8 +49,13 @@ namespace Lightning
 				ComPtr<ID3D12RootSignature> rootSignature;
 			};
 			//if parameter pState is nullptr,this method will create a default pipeline state
+#ifdef LIGHTNING_RENDER_MT
+			using PipelineCacheMap = container::concurrent_unordered_map<std::size_t, PipelineStateRootSignature>;
+			using RootSignatureMap = container::concurrent_unordered_map<std::size_t, ComPtr<ID3D12RootSignature>>;
+#else
 			using PipelineCacheMap = container::unordered_map<std::size_t, PipelineStateRootSignature>;
 			using RootSignatureMap = container::unordered_map<std::size_t, ComPtr<ID3D12RootSignature>>;
+#endif
 			void CreateNativeDevice(IDXGIFactory4* factory);
 			void ApplyRasterizerState(const RasterizerState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			void ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);

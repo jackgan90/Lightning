@@ -11,6 +11,7 @@
 #include <tuple>
 #include "tbb/concurrent_vector.h"
 #include "tbb/concurrent_queue.h"
+#include "tbb/concurrent_unordered_map.h"
 
 
 namespace Lightning
@@ -30,6 +31,9 @@ namespace Lightning
 
 			template<typename K, typename V>
 			using unordered_map = std::unordered_map<K, V>;
+
+			template<typename K, typename V>
+			using concurrent_unordered_map = tbb::concurrent_unordered_map<K, V>;
 
 			template<typename K, typename V>
 			using map = std::map<K, V>;
