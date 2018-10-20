@@ -51,8 +51,10 @@ namespace Lightning
 			SharedRenderTargetPtr GetRenderTarget(const RenderTargetID targetID) override
 			{
 				static SharedRenderTargetPtr s_null_ptr;
+#ifdef LIGHTNING_RENDER_MT
 				if (mDestroyedTargetIDs.find(targetID) != mDestroyedTargetIDs.end())
 					return s_null_ptr;
+#endif
 
 				auto it = mRenderTargets.find(targetID);
 				if (it == mRenderTargets.end())
