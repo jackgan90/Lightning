@@ -12,6 +12,7 @@
 #include "tbb/concurrent_vector.h"
 #include "tbb/concurrent_queue.h"
 #include "tbb/concurrent_unordered_map.h"
+#include "tbb/concurrent_unordered_set.h"
 
 
 namespace Lightning
@@ -40,6 +41,9 @@ namespace Lightning
 
 			template<typename T>
 			using unordered_set = std::unordered_set<T>;
+
+			template<typename T>
+			using concurrent_unordered_set = tbb::concurrent_unordered_set<T>;
 
 			template<typename T>
 			using set = std::set<T>;

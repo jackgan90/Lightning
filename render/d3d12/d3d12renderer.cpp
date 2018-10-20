@@ -153,6 +153,7 @@ namespace Lightning
 			ID3D12CommandList* commandListArray[] = { commandList, };
 			auto commandQueue = GetCommandQueue();
 			commandQueue->ExecuteCommandLists(_countof(commandListArray), commandListArray);
+			D3D12RenderTargetManager::Instance()->Synchronize();
 			Renderer::EndFrame();
 		}
 

@@ -10,6 +10,7 @@ namespace Lightning
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
+		//Thread safe
 		class LIGHTNING_RENDER_API D3D12RenderTarget : public IRenderTarget
 		{
 		public:

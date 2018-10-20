@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include <unordered_map>
+#include "container.h"
 #include "rendererexportdef.h"
 #include "irendertarget.h"
 #include "singleton.h"
@@ -23,7 +23,11 @@ namespace Lightning
 		};
 		using SharedRenderTargetManagerPtr = std::shared_ptr<IRenderTargetManager>;
 
+#ifdef LIGHTNING_RENDER_MT
+		using RenderTargetMap = container::concurrent_unordered_map<RenderTargetID, SharedRenderTargetPtr>;
+#else
 		using RenderTargetMap = container::unordered_map<RenderTargetID, SharedRenderTargetPtr>;
+#endif
 		template<typename Derived>
 		class RenderTargetManager : public IRenderTargetManager, public Foundation::Singleton<Derived>
 		{
@@ -32,27 +36,56 @@ namespace Lightning
 			{
 				Clear();
 			}
+			//Thread unsafe
+			void Synchronize()
+			{
+#ifdef LIGHTNING_RENDER_MT
+				for (auto it = mDestroyedTargetIDs.begin(); it != mDestroyedTargetIDs.end();++it)
+				{
+					mRenderTargets.unsafe_erase(*it);
+				}
+				mDestroyedTargetIDs.clear();
+#endif
+			}
+			//Thread safe
 			SharedRenderTargetPtr GetRenderTarget(const RenderTargetID targetID) override
 			{
+				static SharedRenderTargetPtr s_null_ptr;
+				if (mDestroyedTargetIDs.find(targetID) != mDestroyedTargetIDs.end())
+					return s_null_ptr;
+
 				auto it = mRenderTargets.find(targetID);
 				if (it == mRenderTargets.end())
-				{
-					return SharedRenderTargetPtr();
-				}
+					return s_null_ptr;
+
 				return it->second;
 			}
+			//Thread unsafe
 			void Clear()
 			{
 				mRenderTargets.clear();
 			}
-			void DestroyRenderTarget(const RenderTargetID rtID)
+
+			void DestroyRenderTarget(const RenderTargetID rtID)override
 			{
+#ifdef LIGHTNING_RENDER_MT
+				mDestroyedTargetIDs.insert(rtID);
+#else
 				auto it = mRenderTargets.find(rtID);
 				if (it != mRenderTargets.end())
 					mRenderTargets.erase(it);
+#endif
 			}
 		protected:
+			//Thread safe
+			void StoreRenderTarget(RenderTargetID rtID, const SharedRenderTargetPtr& ptr)
+			{
+				mRenderTargets[rtID] = ptr;
+			}
 			RenderTargetMap mRenderTargets;
+#ifdef LIGHTNING_RENDER_MT
+			container::concurrent_unordered_set<RenderTargetID> mDestroyedTargetIDs;
+#endif
 		};
 	}
 }

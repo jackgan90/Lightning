@@ -14,7 +14,7 @@ namespace Lightning
 		public:
 			FenceInitDexception(const char* w) : RendererException(w){}
 		};
-
+		//Thread safe
 		class D3D12RenderFence : public IRenderFence
 		{
 		public:
