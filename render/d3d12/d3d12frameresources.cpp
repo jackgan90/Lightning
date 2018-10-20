@@ -8,12 +8,11 @@ namespace Lightning
 	{
 		D3D12FrameResources::D3D12FrameResources()
 		{
-
+			CreateResources();
 		}
 
-		void D3D12FrameResources::Release(bool perFrame)
+		void D3D12FrameResources::Reset(bool perFrame)
 		{
-			CreateResources();
 			mCmdAllocator->Reset();
 			if (!perFrame)
 			{
@@ -38,13 +37,13 @@ namespace Lightning
 			{
 				nativeDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mCmdAllocator.Get(), nullptr, IID_PPV_ARGS(&mCmdList));
 				mCmdList->Close();
+				Reset(true);
 			}
 		}
 
 
 		ID3D12GraphicsCommandList* D3D12FrameResources::GetCommandList()
 		{
-			CreateResources();
 			return mCmdList.Get();
 		}
 	}

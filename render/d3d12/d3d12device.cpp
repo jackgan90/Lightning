@@ -296,7 +296,6 @@ namespace Lightning
 			if (stateAndSignature.rootSignature)
 			{
 				commandList->SetGraphicsRootSignature(stateAndSignature.rootSignature.Get());
-				auto& frameResource = mFrameResources[mFrameResourceIndex];
 				container::vector<ID3D12DescriptorHeap*> heaps;
 				ExtractShaderDescriptorHeaps(heaps, state);
 				//TODO : cancel all heap binding when empty?
@@ -323,7 +322,6 @@ namespace Lightning
 			{
 				auto pD3D12Shader = static_cast<D3D12Shader*>(pShader);
 				auto const& boundResources = pD3D12Shader->GetRootBoundResources();
-				auto& frameResource = mFrameResources[mFrameResourceIndex];
 				for (std::size_t i = 0; i < boundResources.size(); ++i)
 				{
 					const auto& boundResource = boundResources[i];
@@ -594,11 +592,15 @@ namespace Lightning
 			D3D12DescriptorHeapManager::Instance()->EraseTransientAllocation(frameResourceIndex);
 			D3D12ConstantBufferManager::Instance()->ResetBuffers(frameResourceIndex);
 #ifdef LIGHTNING_RENDER_MT
-			auto& frameResources = mFrameResources[frameResourceIndex].local();
+			auto& frameResources = mFrameResources[frameResourceIndex];
+			for (auto it = frameResources.begin(); it != frameResources.end(); ++it)
+			{
+				it->Reset(true);
+			}
 #else
 			auto& frameResources = mFrameResources[frameResourceIndex];
+			frameResources.Reset(true);
 #endif
-			frameResources.Release(true);
 		}
 
 		void D3D12Device::ApplyRenderTargets(const container::vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)

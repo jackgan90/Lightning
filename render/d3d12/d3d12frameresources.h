@@ -8,11 +8,13 @@ namespace Lightning
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
+		//Thread unsafe
 		class D3D12FrameResources
 		{
 		public:
 			D3D12FrameResources();
-			void Release(bool perFrame);
+			//Thread unsafe
+			void Reset(bool perFrame);
 			ID3D12GraphicsCommandList* GetCommandList();
 		private:
 			void CreateResources();
