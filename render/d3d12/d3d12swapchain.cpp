@@ -71,7 +71,6 @@ namespace Lightning
 
 		D3D12SwapChain::~D3D12SwapChain()
 		{
-			mRenderTargets.clear();
 		}
 
 		bool D3D12SwapChain::Present()
@@ -103,10 +102,7 @@ namespace Lightning
 
 		SharedRenderTargetPtr D3D12SwapChain::GetDefaultRenderTarget()
 		{
-			auto it = mRenderTargets.find(GetCurrentBackBufferIndex());
-			if (it == mRenderTargets.end())
-				return SharedRenderTargetPtr();
-			return D3D12RenderTargetManager::Instance()->GetRenderTarget(it->second);
+			return D3D12RenderTargetManager::Instance()->GetRenderTarget(mRenderTargets[GetCurrentBackBufferIndex()]);
 		}
 
 	}

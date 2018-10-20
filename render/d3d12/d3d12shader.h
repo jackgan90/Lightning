@@ -41,6 +41,7 @@ namespace Lightning
 			};
 		};
 
+		//Thread unsafe
 		class D3D12Shader : public Shader
 		{
 		public:
@@ -76,7 +77,6 @@ namespace Lightning
 			ComPtr<ID3D10Blob> mByteCode;
 			D3D12_SHADER_DESC mDesc;
 			container::unordered_map<std::string, ArgumentInfo> mArguments;
-			container::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC> mInputBindDescs;
 			container::vector<D3D12_ROOT_PARAMETER> mRootParameters;
 			container::unordered_map<std::size_t, container::vector<D3D12RootBoundResource>> mRootBoundResources;
 			//each offset corresponds to mIntermediateBuffer

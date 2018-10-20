@@ -7,6 +7,7 @@ namespace Lightning
 {
 	namespace Render
 	{
+		//Thread unsafe
 		class LIGHTNING_RENDER_API D3D12VertexBuffer : public VertexBuffer 
 		{
 		public:

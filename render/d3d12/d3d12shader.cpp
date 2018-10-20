@@ -29,11 +29,12 @@ namespace Lightning
 			ComPtr<ID3D12ShaderReflection> shaderReflection;
 			D3DReflect(mByteCode->GetBufferPointer(), mByteCode->GetBufferSize(), IID_PPV_ARGS(&shaderReflection));
 			shaderReflection->GetDesc(&mDesc);
+			container::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC> inputBindDescs;
 			for (std::size_t i = 0;i < mDesc.BoundResources;++i)
 			{
 				D3D12_SHADER_INPUT_BIND_DESC bindDesc;
 				shaderReflection->GetResourceBindingDesc(i, &bindDesc);
-				mInputBindDescs[bindDesc.Name] = bindDesc;
+				inputBindDescs[bindDesc.Name] = bindDesc;
 			}
 			//create heap descriptor(samplers excluded)
 			//TODO : should create sampler descriptor heap
@@ -62,7 +63,7 @@ namespace Lightning
 						info.offsetInBuffer = shaderVarDesc.StartOffset;
 						mArguments[shaderVarDesc.Name] = info;
 					}
-					D3D12_SHADER_INPUT_BIND_DESC& bindDesc = mInputBindDescs[bufferDesc.Name];
+					D3D12_SHADER_INPUT_BIND_DESC& bindDesc = inputBindDescs[bufferDesc.Name];
 					mDescriptorRanges[i].BaseShaderRegister = bindDesc.BindPoint;
 					mDescriptorRanges[i].NumDescriptors = 1;
 					mDescriptorRanges[i].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
