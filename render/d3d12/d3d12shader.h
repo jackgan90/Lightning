@@ -6,6 +6,9 @@
 #include "d3d12shadermanager.h"
 #include "d3d12descriptorheapmanager.h"
 #include "ishader.h"
+#ifdef LIGHTNING_RENDER_MT
+#include "tbb/enumerable_thread_specific.h"
+#endif
 
 namespace Lightning
 {
@@ -71,6 +74,18 @@ namespace Lightning
 				UINT offset;
 				UINT size;
 			};
+			class ShaderResourceProxy
+			{
+			public:
+				ShaderResourceProxy();
+				std::uint8_t* GetConstantBuffer(std::size_t size);
+				container::vector<D3D12RootBoundResource>& GetRootBoundResources();
+				~ShaderResourceProxy();
+			private:
+				container::vector<D3D12RootBoundResource> mRootBoundResources[RENDER_FRAME_COUNT];
+				std::uint8_t *mConstantBuffer;
+				std::size_t mBufferSize;
+			};
 			void CompileImpl();
 			D3D12_SHADER_VISIBILITY GetParameterVisibility()const;
 			void UpdateRootBoundResources();
@@ -78,12 +93,16 @@ namespace Lightning
 			D3D12_SHADER_DESC mDesc;
 			container::unordered_map<std::string, ArgumentInfo> mArguments;
 			container::vector<D3D12_ROOT_PARAMETER> mRootParameters;
-			container::unordered_map<std::size_t, container::vector<D3D12RootBoundResource>> mRootBoundResources;
 			//each offset corresponds to mIntermediateBuffer
 			container::unordered_map<std::size_t, ConstantBufferInfo> mConstantBufferInfo;
 			D3D12_DESCRIPTOR_RANGE *mDescriptorRanges;
+			std::size_t mTotalConstantBufferSize;
 			//buffer used to cache constant buffer value
-			std::uint8_t *mIntermediateBuffer;
+#ifdef LIGHTNING_RENDER_MT
+			tbb::enumerable_thread_specific<ShaderResourceProxy> mResourceProxy;
+#else
+			ShaderResourceProxy mResourceProxy;
+#endif
 		};
 	}
 }
