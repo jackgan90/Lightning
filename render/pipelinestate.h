@@ -2,6 +2,7 @@
 #include <unordered_map>
 #include <cstdint>
 #include <boost/functional/hash.hpp>
+#include <cassert>
 #include "plainobject.h"
 #include "ishader.h"
 #include "irendertarget.h"
@@ -171,9 +172,43 @@ namespace Lightning
 }
 PLAIN_OBJECT_HASH_SPECILIZATION(Lightning::Render::BlendState)
 PLAIN_OBJECT_HASH_SPECILIZATION(Lightning::Render::RasterizerState)
-PLAIN_OBJECT_HASH_SPECILIZATION(Lightning::Render::PipelineState)
 PLAIN_OBJECT_HASH_SPECILIZATION(Lightning::Render::ScissorRect)
 PLAIN_OBJECT_HASH_SPECILIZATION(Lightning::Render::Viewport)
-PLAIN_OBJECT_HASH_SPECILIZATION(Lightning::Render::VertexInputLayout)
 PLAIN_OBJECT_HASH_SPECILIZATION(Lightning::Render::DepthStencilState)
 PLAIN_OBJECT_HASH_SPECILIZATION(Lightning::Render::StencilFace)
+
+namespace std{
+	template<> struct std::hash<Lightning::Render::VertexInputLayout>
+	{
+		std::size_t operator()(const Lightning::Render::VertexInputLayout& state)const noexcept
+		{
+			static constexpr std::size_t MAX_COMPONENT_COUNT{ 32 };
+			static constexpr std::size_t VERTEX_COMPONENT_SIZE = sizeof(Lightning::Render::VertexComponent);
+			assert(state.componentCount < MAX_COMPONENT_COUNT);
+			std::uint8_t buffer[2 + MAX_COMPONENT_COUNT * VERTEX_COMPONENT_SIZE];
+			std::memset(buffer, 0, sizeof(buffer));
+			buffer[0] = state.slot;
+			buffer[1] = state.componentCount;
+			for (auto i = 0;i < state.componentCount;++i)
+			{
+				std::memcpy(buffer + 2 + i * VERTEX_COMPONENT_SIZE, &state.components[i], VERTEX_COMPONENT_SIZE);
+			}
+			return Lightning::Foundation::Hash(buffer, sizeof(buffer), 0x12345678u);
+		}
+	};
+
+	template<> struct std::hash<Lightning::Render::PipelineState>
+	{
+		std::size_t operator()(const Lightning::Render::PipelineState& state)const noexcept
+		{
+			std::uint8_t buffer[sizeof(state) + sizeof(std::uint32_t)];
+			std::memcpy(buffer, &state, sizeof(state));
+			auto inputLayoutOffset = reinterpret_cast<const std::uint8_t*>(&state.inputLayouts) - \
+				reinterpret_cast<const std::uint8_t*>(&state);
+			std::memset(&buffer[inputLayoutOffset], 0, sizeof(state.inputLayouts));
+			*reinterpret_cast<std::uint32_t*>(&buffer[sizeof(state)]) = \
+				std::hash<Lightning::Render::VertexInputLayout>{}(*state.inputLayouts);
+			return Lightning::Foundation::Hash(buffer, sizeof(buffer), 0x12345678u);
+		}
+	};
+}
