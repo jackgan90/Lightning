@@ -7,6 +7,7 @@
 #include "device.h"
 #include "stackallocator.h"
 #include "filesystem.h"
+#include "d3d12shader.h"
 #include "d3d12shadermanager.h"
 #include "d3d12frameresources.h"
 #ifdef LIGHTNING_RENDER_MT
@@ -48,6 +49,12 @@ namespace Lightning
 				ComPtr<ID3D12PipelineState> pipelineState;
 				ComPtr<ID3D12RootSignature> rootSignature;
 			};
+			struct ShaderResourceHandle
+			{
+				explicit ShaderResourceHandle(const D3D12RootBoundResource& res) : resource(res) {}
+				D3D12RootBoundResource resource;
+				D3D12_GPU_DESCRIPTOR_HANDLE handle;
+			};
 			//if parameter pState is nullptr,this method will create a default pipeline state
 #ifdef LIGHTNING_RENDER_MT
 			using PipelineCacheMap = container::concurrent_unordered_map<std::size_t, PipelineStateRootSignature>;
@@ -66,10 +73,10 @@ namespace Lightning
 			void UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::uint8_t  layoutCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			ComPtr<ID3D12RootSignature> GetRootSignature(const container::vector<IShader*>& shaders);
 			PipelineStateRootSignature CreateAndCachePipelineState(const PipelineState& pState, std::size_t hashValue);
-			void ExtractShaderDescriptorHeaps(container::vector<ID3D12DescriptorHeap*>& heaps, const PipelineState& state);
-			void ExtractShaderDescriptorHeaps(IShader* pShader, container::vector<ID3D12DescriptorHeap*>& heaps);
 			void BindShaderResources(const PipelineState& state);
-			void BindShaderResources(IShader* pShader, UINT rootParameterIndex);
+			//Analyze shader root resources.
+			//Returns number of constant buffers used by this shader
+			std::size_t AnalyzeShaderRootResources(IShader *pShader, container::unordered_map<ShaderType, container::vector<ShaderResourceHandle>>& resourceHandles);
 			ComPtr<ID3D12Device> mDevice;
 			ComPtr<ID3D12CommandQueue> mCommandQueue;
 			PipelineCacheMap mPipelineCache;

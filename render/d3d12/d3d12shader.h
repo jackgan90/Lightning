@@ -4,6 +4,7 @@
 #include <d3dcompiler.h>
 #include "container.h"
 #include "d3d12shadermanager.h"
+#include "d3d12constantbuffermanager.h"
 #include "d3d12descriptorheapmanager.h"
 #include "ishader.h"
 #ifdef LIGHTNING_RENDER_MT
@@ -16,13 +17,9 @@ namespace Lightning
 	{
 		using Microsoft::WRL::ComPtr;
 		using Foundation::container;
-		enum class D3D12RootBoundResourceType
+		enum class D3D12RootResourceType
 		{
-			DescriptorTable,
-			ConstantBufferView,
-			ShaderResourceView,
-			UnorderedAccessView,
-			Constant
+			ConstantBuffers,
 		};
 
 		struct D3D12Constant32BitValue
@@ -34,14 +31,8 @@ namespace Lightning
 
 		struct D3D12RootBoundResource
 		{
-			D3D12RootBoundResourceType type;
-			ComPtr<ID3D12DescriptorHeap> descriptorTableHeap;
-			union
-			{
-				D3D12_GPU_DESCRIPTOR_HANDLE descriptorTableHandle;
-				D3D12_GPU_VIRTUAL_ADDRESS GPUVirtualAddress;
-				D3D12Constant32BitValue constant32BitValue;
-			};
+			D3D12RootResourceType type;
+			container::vector<D3D12ConstantBuffer> buffers;
 		};
 
 		//Thread unsafe

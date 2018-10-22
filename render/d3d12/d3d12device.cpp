@@ -6,7 +6,6 @@
 #include "d3d12device.h"
 #include "d3d12rendertarget.h"
 #include "d3d12depthstencilbuffer.h"
-#include "d3d12shader.h"
 #include "d3d12typemapper.h"
 #include "d3d12vertexbuffer.h"
 #include "d3d12indexbuffer.h"
@@ -296,79 +295,97 @@ namespace Lightning
 			if (stateAndSignature.rootSignature)
 			{
 				commandList->SetGraphicsRootSignature(stateAndSignature.rootSignature.Get());
-				container::vector<ID3D12DescriptorHeap*> heaps;
-				ExtractShaderDescriptorHeaps(heaps, state);
-				//TODO : cancel all heap binding when empty?
-				if (!heaps.empty())
-				{
-					commandList->SetDescriptorHeaps(heaps.size(), &heaps[0]);
-				}
 				BindShaderResources(state);
 			}
 		}
 
-		void D3D12Device::ExtractShaderDescriptorHeaps(container::vector<ID3D12DescriptorHeap*>& heaps, const PipelineState& state)
+		std::size_t D3D12Device::AnalyzeShaderRootResources(IShader *pShader, 
+			container::unordered_map<ShaderType, container::vector<D3D12Device::ShaderResourceHandle>>& resourceHandles)
 		{
-			ExtractShaderDescriptorHeaps(state.vs, heaps);
-			ExtractShaderDescriptorHeaps(state.fs, heaps);
-			ExtractShaderDescriptorHeaps(state.gs, heaps);
-			ExtractShaderDescriptorHeaps(state.hs, heaps);
-			ExtractShaderDescriptorHeaps(state.ds, heaps);
-		}
-
-		void D3D12Device::ExtractShaderDescriptorHeaps(IShader* pShader, container::vector<ID3D12DescriptorHeap*>& heaps)
-		{
-			if (pShader)
+			std::size_t constantBuffers{ 0 };
+			for (const auto& resource : static_cast<D3D12Shader*>(pShader)->GetRootBoundResources())
 			{
-				auto pD3D12Shader = static_cast<D3D12Shader*>(pShader);
-				auto const& boundResources = pD3D12Shader->GetRootBoundResources();
-				for (std::size_t i = 0; i < boundResources.size(); ++i)
-				{
-					const auto& boundResource = boundResources[i];
-					if (boundResource.type == D3D12RootBoundResourceType::DescriptorTable)
-					{
-						auto heap = boundResource.descriptorTableHeap.Get();
-						for (auto& pHeap : heaps)
-						{
-							if (heap == pHeap)
-								return;
-						}
-						heaps.push_back(heap);
-					}
-				}
+				resourceHandles[pShader->GetType()].emplace_back(resource);
+				if (resource.type == D3D12RootResourceType::ConstantBuffers)
+					constantBuffers += resource.buffers.size();
 			}
+			return constantBuffers;
 		}
 
 		void D3D12Device::BindShaderResources(const PipelineState& state)
 		{
-			std::size_t rootParameterIndex{ 0 };
+			std::size_t constantBuffers{ 0 };
+			container::unordered_map<ShaderType, container::vector<ShaderResourceHandle>> boundResources;
 			if (state.vs)
 			{
-				BindShaderResources(state.vs, rootParameterIndex);
-				rootParameterIndex += static_cast<D3D12Shader*>(state.vs)->GetRootParameterCount();
+				constantBuffers += AnalyzeShaderRootResources(state.vs, boundResources);
 			}
 			if (state.fs)
 			{
-				BindShaderResources(state.fs, rootParameterIndex);
-				rootParameterIndex += static_cast<D3D12Shader*>(state.fs)->GetRootParameterCount();
+				constantBuffers += AnalyzeShaderRootResources(state.fs, boundResources);
 			}
 			if (state.gs)
 			{
-				BindShaderResources(state.gs, rootParameterIndex);
-				rootParameterIndex += static_cast<D3D12Shader*>(state.gs)->GetRootParameterCount();
+				constantBuffers += AnalyzeShaderRootResources(state.gs, boundResources);
 			}
 			if (state.hs)
 			{
-				BindShaderResources(state.hs, rootParameterIndex);
-				rootParameterIndex += static_cast<D3D12Shader*>(state.hs)->GetRootParameterCount();
+				constantBuffers += AnalyzeShaderRootResources(state.hs, boundResources);
 			}
 			if (state.ds)
 			{
-				BindShaderResources(state.ds, rootParameterIndex);
-				rootParameterIndex += static_cast<D3D12Shader*>(state.ds)->GetRootParameterCount();
+				constantBuffers += AnalyzeShaderRootResources(state.ds, boundResources);
+			}
+			container::vector<ID3D12DescriptorHeap*> descriptorHeaps;
+			if (constantBuffers > 0)
+			{
+				auto constantHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+					true, constantBuffers, true);
+				CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(constantHeap->cpuHandle);
+				CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(constantHeap->gpuHandle);
+				for (auto it = boundResources.begin(); it != boundResources.end();++it)
+				{
+					for (auto& resourceHandle : it->second)
+					{
+						auto& resource = resourceHandle.resource;
+						if (resource.type == D3D12RootResourceType::ConstantBuffers)
+						{
+							resourceHandle.handle = gpuHandle;
+							for (auto& cbuffer : resource.buffers)
+							{
+								D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
+								cbvDesc.BufferLocation = cbuffer.virtualAdress;
+								cbvDesc.SizeInBytes = cbuffer.size;
+								mDevice->CreateConstantBufferView(&cbvDesc, cpuHandle);
+								cpuHandle.Offset(constantHeap->incrementSize);
+								gpuHandle.Offset(constantHeap->incrementSize);
+							}
+						}
+					}
+				}
+				descriptorHeaps.push_back(D3D12DescriptorHeapManager::Instance()->GetHeap(constantHeap).Get());
+			}
+			auto commandList = GetGraphicsCommandList();
+			if (!descriptorHeaps.empty())
+			{
+				commandList->SetDescriptorHeaps(descriptorHeaps.size(), &descriptorHeaps[0]);
+			}
+			UINT rootParameterIndex{ 0 };
+			for (const auto& pair : boundResources)
+			{
+				for (auto i = 0;i < pair.second.size();++i)
+				{
+					const auto& resource = pair.second[i].resource;
+					const auto& handle = pair.second[i].handle;
+					if (resource.type == D3D12RootResourceType::ConstantBuffers)
+					{
+						commandList->SetGraphicsRootDescriptorTable(rootParameterIndex, handle);
+						++rootParameterIndex;
+					}
+				}
 			}
 		}
-
+		/*
 		void D3D12Device::BindShaderResources(IShader* pShader, UINT rootParameterIndex)
 		{
 			auto pD3D12Shader = static_cast<D3D12Shader*>(pShader);
@@ -379,26 +396,26 @@ namespace Lightning
 				const auto& boundResource = boundResources[i];
 				switch (boundResource.type)
 				{
-				case D3D12RootBoundResourceType::DescriptorTable:
+				case D3D12RootResourceType::DescriptorTable:
 					commandList->SetGraphicsRootDescriptorTable(rootParameterIndex + i, boundResource.descriptorTableHandle);
 					break;
-				case D3D12RootBoundResourceType::ConstantBufferView:
+				case D3D12RootResourceType::ConstantBufferView:
 					commandList->SetGraphicsRootConstantBufferView(rootParameterIndex + i, boundResource.GPUVirtualAddress);
 					break;
-				case D3D12RootBoundResourceType::ShaderResourceView:
+				case D3D12RootResourceType::ShaderResourceView:
 					commandList->SetGraphicsRootShaderResourceView(rootParameterIndex + i, boundResource.GPUVirtualAddress);
 					break;
-				case D3D12RootBoundResourceType::UnorderedAccessView:
+				case D3D12RootResourceType::UnorderedAccessView:
 					commandList->SetGraphicsRootUnorderedAccessView(rootParameterIndex + i, boundResource.GPUVirtualAddress);
 					break;
-				case D3D12RootBoundResourceType::Constant:
+				case D3D12RootResourceType::Constant:
 					commandList->SetGraphicsRoot32BitConstants(rootParameterIndex + i, boundResource.constant32BitValue.num32BitValues, boundResource.constant32BitValue.p32BitValues, boundResource.constant32BitValue.dest32BitValueOffset);
 					break;
 				default:
 					break;
 				}
 			}
-		}
+		}*/
 
 		void D3D12Device::ApplyViewports(const RectFList& vp, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{

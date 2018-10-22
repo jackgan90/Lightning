@@ -5,7 +5,6 @@
 #include "renderer.h"
 #include "shadermanager.h"
 #include "d3d12shader.h"
-#include "d3d12constantbuffermanager.h"
 #include "rendererhelper.h"
 #include "framememoryallocator.h"
 
@@ -191,27 +190,16 @@ namespace Lightning
 			auto& rootBoundResources = mResourceProxy.GetRootBoundResources();
 			rootBoundResources.clear();
 #endif
-			auto constantHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-				true, mDesc.ConstantBuffers, true);
-			CD3DX12_CPU_DESCRIPTOR_HANDLE handle(constantHeap->cpuHandle);
+			D3D12RootBoundResource boundResource;
+			boundResource.type = D3D12RootResourceType::ConstantBuffers;
 			for (std::size_t i = 0;i < mDesc.ConstantBuffers;++i)
 			{
 				auto bufferSize = mConstantBufferInfo[i].size;
 				auto cbuffer = D3D12ConstantBufferManager::Instance()->AllocBuffer(bufferSize);
 				std::memcpy(cbuffer.userMemory, ptr + mConstantBufferInfo[i].offset, bufferSize);
 
-				D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
-				cbvDesc.BufferLocation = cbuffer.virtualAdress;
-				cbvDesc.SizeInBytes = cbuffer.size;
-				auto nativeDevice = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNative();
-				handle.Offset(i * constantHeap->incrementSize);
-				nativeDevice->CreateConstantBufferView(&cbvDesc, handle);
+				boundResource.buffers.push_back(cbuffer);
 			}
-			D3D12RootBoundResource boundResource;
-			boundResource.type = D3D12RootBoundResourceType::DescriptorTable;
-			boundResource.descriptorTableHeap = D3D12DescriptorHeapManager::Instance()->GetHeap(constantHeap);
-			CD3DX12_GPU_DESCRIPTOR_HANDLE gpuAddress(constantHeap->gpuHandle);
-			boundResource.descriptorTableHandle = gpuAddress;
 			rootBoundResources.push_back(boundResource);
 		}
 

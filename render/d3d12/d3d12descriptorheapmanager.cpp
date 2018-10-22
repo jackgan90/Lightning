@@ -1,7 +1,12 @@
 #include <iterator>
+#include <mutex>
 #include "d3d12descriptorheapmanager.h"
 #include "renderer.h"
 #include "logger.h"
+
+namespace {
+	static std::mutex mtxHeap;
+}
 
 namespace Lightning
 {
@@ -11,11 +16,6 @@ namespace Lightning
 		D3D12DescriptorHeapManager::D3D12DescriptorHeapManager()
 		{
 			auto nativeDevice = GetNativeDevice();
-#ifdef LIGHTNING_RENDER_MT
-			mHeaps = new container::concurrent_vector<DescriptorHeapStore*>[2 * D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
-#else
-			mHeaps = new container::vector<DescriptorHeapStore*>[2 * D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
-#endif
 			for (auto i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES;++i)
 			{
 				sIncrementSizes[i] = nativeDevice->GetDescriptorHandleIncrementSize(static_cast<D3D12_DESCRIPTOR_HEAP_TYPE>(i));
@@ -24,22 +24,7 @@ namespace Lightning
 
 		D3D12DescriptorHeapManager::~D3D12DescriptorHeapManager()
 		{
-			delete[] mHeaps;
 			LOG_INFO("Descriptor heap manager destruct!");
-#ifndef NDEBUG
-			assert(mAllocHeaps.size() == 0 && "D3D12DescriptorHeapManager is destroyed, yet there's still\
-				heaps in used which will cause this pointer dangling.It's dangerous.");
-#endif
-		}
-
-		std::size_t D3D12DescriptorHeapManager::HeapIndex(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible)
-		{
-			auto index = static_cast<std::size_t>(type) * 2;
-			if (shaderVisible)
-			{
-				++index;
-			}
-			return index;
 		}
 
 		ID3D12Device* D3D12DescriptorHeapManager::GetNativeDevice()
@@ -49,18 +34,74 @@ namespace Lightning
 
 		DescriptorHeap* D3D12DescriptorHeapManager::Allocate(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count, bool frameTransient)
 		{
-			auto nativeDevice = GetNativeDevice();
-			auto heapIndex = HeapIndex(type, shaderVisible);
-			if (mHeaps[heapIndex].empty())
+			if (frameTransient)
 			{
-				CreateHeapStore(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE, nativeDevice);
+				return AllocateFrameHeap(type, shaderVisible, count);
 			}
-			auto res = TryAllocateDescriptorHeap(mHeaps[heapIndex], count, frameTransient);
+			else
+			{
+				return AllocatePersistentHeap(type, shaderVisible, count);
+			}
+		}
+
+		DescriptorHeap* D3D12DescriptorHeapManager::AllocateFrameHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count)
+		{
+			auto nativeDevice = GetNativeDevice();
+			auto& frameHeap = mFrameHeaps.local();
+			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
+			auto i = shaderVisible ? 1 : 0;
+			auto createNewHeap{ false };
+			if (frameHeap.heaps[resourceIndex][type][i].empty())
+				createNewHeap = true;
+
+			if (!createNewHeap)
+			{
+				auto& last = frameHeap.heaps[resourceIndex][type][i].back();
+				if (frameHeap.next[resourceIndex][type][i] + count >= last->freeDescriptors)
+					createNewHeap = true;
+			}
+
+			if (createNewHeap)
+			{
+				auto res = CreateHeapStore(type, shaderVisible,
+					count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE, nativeDevice);
+				frameHeap.heaps[resourceIndex][type][i].push_back(std::get<1>(res));
+				frameHeap.next[resourceIndex][type][i] = 0;
+			}
+
+			auto& last = frameHeap.heaps[resourceIndex][type][i].back();
+			CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(last->cpuHandle);
+			CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(last->gpuHandle);
+			cpuHandle.Offset(frameHeap.next[resourceIndex][type][i] * last->incrementSize);
+			gpuHandle.Offset(frameHeap.next[resourceIndex][type][i] * last->incrementSize);
+			auto heap = new DescriptorHeapEx;
+			heap->cpuHandle = cpuHandle;
+			heap->gpuHandle = gpuHandle;
+			heap->incrementSize = last->incrementSize;
+			heap->pStore = last;
+
+			frameHeap.next[resourceIndex][type][i] += count;
+			frameHeap.allocations[resourceIndex][type][i].push_back(heap);
+			return heap;
+		}
+
+		DescriptorHeap* D3D12DescriptorHeapManager::AllocatePersistentHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count)
+		{
+			auto nativeDevice = GetNativeDevice();
+			std::lock_guard<std::mutex> lock(mtxHeap);
+			auto i = shaderVisible ? 1 : 0;
+			if (mPersistentHeaps[type][i].empty())
+			{
+				auto store = CreateHeapStore(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE, nativeDevice);
+				mPersistentHeaps[type][i].push_back(std::get<1>(store));
+			}
+			auto res = TryAllocatePersistentHeap(mPersistentHeaps[type][i], count);
 			if (std::get<0>(res))
 				return std::get<1>(res);
 			//if reach here,the existing heaps can not allocate more descriptors, so just allocate a new heap
-			CreateHeapStore(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE, nativeDevice);
-			res = TryAllocateDescriptorHeap(mHeaps[heapIndex], count, frameTransient);
+			auto store = CreateHeapStore(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE, nativeDevice);
+			mPersistentHeaps[type][i].push_back(std::get<1>(store));
+			res = TryAllocatePersistentHeap(mPersistentHeaps[type][i], count);
 			return std::get<1>(res);
 		}
 
@@ -86,29 +127,23 @@ namespace Lightning
 			heapStore->gpuHandle = heapStore->heap->GetGPUDescriptorHandleForHeapStart();
 			heapStore->incrementSize = GetIncrementSize(type);
 			
-			auto heapIndex = HeapIndex(type, shaderVisible);
-			mHeaps[heapIndex].push_back(heapStore);
 			std::get<0>(res) =  true;
 			return res;
 		}
 
-#ifdef LIGHTNING_RENDER_MT
-		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocateDescriptorHeap(container::concurrent_vector<DescriptorHeapStore*>& heapList, UINT count, bool transient)
-#else
-		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocateDescriptorHeap(container::vector<DescriptorHeapStore*>& heapList, UINT count, bool transient)
-#endif
+		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocatePersistentHeap(container::vector<DescriptorHeapStore*>& heapList, UINT count)
 		{
 			//loop over existing heap list reversely and try to allocate from it
 			for (int i = heapList.size() - 1; i >= 0;i--)
 			{
-				auto res = TryAllocateDescriptorHeap(heapList[i], count, transient);
+				auto res = TryAllocatePersistentHeap(heapList[i], count);
 				if (std::get<0>(res))
 					return res;
 			}
 			return std::make_tuple<bool, DescriptorHeap*>(false, nullptr);
 		}
 
-		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocateDescriptorHeap(DescriptorHeapStore* heapStore, UINT count, bool transient)
+		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocatePersistentHeap(DescriptorHeapStore* heapStore, UINT count)
 		{
 			auto res = std::make_tuple<bool, DescriptorHeap*>(false, nullptr);
 			if(count > heapStore->freeDescriptors)
@@ -150,14 +185,6 @@ namespace Lightning
 					//pHeapEx->offsetInDescriptors = std::get<0>(interval);
 					pHeapEx->interval = interval;
 					pHeapEx->pStore = heapStore;
-					if (transient)
-					{
-						auto frameIndex = Renderer::Instance()->GetFrameResourceIndex();
-						mFrameTransientHeaps[frameIndex].push_back(pHeapEx);
-					}
-#ifndef NDEBUG
-					mAllocHeaps.emplace(pHeapEx);
-#endif
 					break;
 				}
 			}
@@ -167,18 +194,7 @@ namespace Lightning
 		void D3D12DescriptorHeapManager::Deallocate(DescriptorHeap* pHeap)
 		{
 			assert(pHeap != nullptr && "pHeap must be a valid heap pointer!");
-#ifndef NDEBUG
-			auto it = mAllocHeaps.find(static_cast<DescriptorHeapEx*>(pHeap));
-			if (it == mAllocHeaps.end())
-			{
-				LOG_ERROR("pHeap is not allocated by this manager!");
-				return;
-			}
-			Deallocate(*it);
-			mAllocHeaps.erase(it);
-#else
 			Deallocate(static_cast<DescriptorHeapEx*>(pHeap));
-#endif
 			delete pHeap;
 		}
 
@@ -253,41 +269,50 @@ namespace Lightning
 		{
 			for (auto i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
-				for (auto pHeapEx : mFrameTransientHeaps[i])
-				{
-					Deallocate(static_cast<DescriptorHeap*>(pHeapEx));
-				}
-				mFrameTransientHeaps[i].clear();
+				EraseTransientAllocation(i, 0);
 			}
-			for(auto i = 0;i < 2 * D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES;++i)
+			for (auto i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES;++i)
 			{
-				for (auto p : mHeaps[i])
-					delete p;
-				mHeaps[i].clear();
+				for (auto j = 0;j < 2;++j)
+				{
+					for (auto p : mPersistentHeaps[i][j])
+					{
+						delete p;
+					}
+					mPersistentHeaps[i][j].clear();
+				}
 			}
 		}
 
 		ComPtr<ID3D12DescriptorHeap> D3D12DescriptorHeapManager::GetHeap(DescriptorHeap* pHeap)const
 		{
-#ifndef NDEBUG
-			auto it = mAllocHeaps.find(static_cast<DescriptorHeapEx*>(pHeap));
-			if (it == mAllocHeaps.end())
-			{
-				LOG_ERROR("Invalid descriptor heap in GetHeap:%s:%d", __FILE__, __LINE__);
-				return ComPtr<ID3D12DescriptorHeap>();
-			}
-#endif
 			auto pHeapEx = static_cast<DescriptorHeapEx*>(pHeap);
 			return pHeapEx->pStore->heap;
 		}
 
-		void D3D12DescriptorHeapManager::EraseTransientAllocation(std::size_t frameIndex)
+		void D3D12DescriptorHeapManager::EraseTransientAllocation(std::size_t frameIndex, std::size_t reservedSize)
 		{
-			for (auto pHeapEx : mFrameTransientHeaps[frameIndex])
+			for (auto it = mFrameHeaps.begin(); it != mFrameHeaps.end(); ++it)
 			{
-				Deallocate(static_cast<DescriptorHeap*>(pHeapEx));
+				for (auto i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++i)
+				{
+					for (auto j = 0; j < 2; ++j)
+					{
+						for (auto k = reservedSize;k < it->heaps[frameIndex][i][j].size();++k)
+						{
+							delete it->heaps[frameIndex][i][j][k];
+						}
+						for (auto mem : it->allocations[frameIndex][i][j])
+						{
+							delete mem;
+						}
+						it->allocations[frameIndex][i][j].clear();
+						if(it->heaps[frameIndex][i][j].size() > reservedSize)
+							it->heaps[frameIndex][i][j].resize(reservedSize);
+						it->next[frameIndex][i][j] = 0;
+					}
+				}
 			}
-			mFrameTransientHeaps[frameIndex].clear();
 		}
 	}
 }
