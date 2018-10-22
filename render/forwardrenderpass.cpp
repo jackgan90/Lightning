@@ -1,6 +1,7 @@
 #include <unordered_map>
 #include "forwardrenderpass.h"
 #include "renderer.h"
+#include "framememoryallocator.h"
 #ifdef LIGHTNING_RENDER_MT
 #include "tbb/flow_graph.h"
 #include "tbb/parallel_for.h"
@@ -11,6 +12,7 @@ namespace Lightning
 {
 	namespace Render
 	{
+		extern Foundation::FrameMemoryAllocator g_RenderAllocator;
 		//Apply is called by renderer once per frame.Subclasses should commit render resources to device in this method.
 		void ForwardRenderPass::Apply()
 		{
@@ -46,7 +48,6 @@ namespace Lightning
 
 		void ForwardRenderPass::CommitPipelineStates(const RenderNode& node)
 		{
-			static container::vector<VertexInputLayout> layouts;
 			PipelineState state{};
 			//TODO : set render target count based on model setting
 			state.renderTargetCount = static_cast<std::uint8_t>(node.renderTargets.size());
@@ -71,18 +72,9 @@ namespace Lightning
 			state.primType = node.geometry->primType;
 			//TODO : Apply other pipeline states(blend state, rasterizer state etc)
 			auto pDevice = Renderer::Instance()->GetDevice();
-			layouts.clear();
-			GetInputLayouts(node.geometry, layouts);
-			if (!layouts.empty())
-			{
-				state.inputLayouts = &layouts[0];
-				state.inputLayoutCount = static_cast<std::uint8_t>(layouts.size());
-			}
-			else
-			{
-				state.inputLayouts = nullptr;
-				state.inputLayoutCount = 0;
-			}
+			
+			GetInputLayouts(node.geometry, &state.inputLayouts, state.inputLayoutCount);
+
 			if (node.depthStencilBuffer)
 			{
 				state.depthStencilState.bufferFormat = node.depthStencilBuffer->GetRenderFormat();
@@ -126,31 +118,29 @@ namespace Lightning
 			}
 		}
 
-		void ForwardRenderPass::GetInputLayouts(const SharedGeometryPtr& geometry, container::vector<VertexInputLayout>& layouts)
+		void ForwardRenderPass::GetInputLayouts(const SharedGeometryPtr& geometry, VertexInputLayout** layouts, std::uint8_t& layoutCount)
 		{
-			static container::array<container::vector<VertexComponent>, MAX_GEOMETRY_BUFFER_COUNT> components;
+			*layouts = nullptr;
+			layoutCount = 0;
 			for (std::size_t i = 0;i < MAX_GEOMETRY_BUFFER_COUNT;i++)
 			{
 				if (!geometry->vbs[i])
 					continue;
-				components[i].clear();
-				VertexInputLayout layout;
+				if (*layouts == nullptr)
+					*layouts = g_RenderAllocator.Allocate<VertexInputLayout>(MAX_GEOMETRY_BUFFER_COUNT);
+				auto& layout = (*layouts)[layoutCount];
 				layout.slot = static_cast<std::uint8_t>(i);
-				for (std::size_t j = 0;j < geometry->vbs[i]->GetVertexComponentCount();++j)
+				layout.componentCount = geometry->vbs[i]->GetVertexComponentCount();
+				layout.components = nullptr;
+				if (layout.componentCount > 0)
 				{
-					components[i].push_back(geometry->vbs[i]->GetVertexComponent(j));
+					layout.components = g_RenderAllocator.Allocate<VertexComponent>(layout.componentCount);
+					for (std::size_t j = 0;j < layout.componentCount;++j)
+					{
+						layout.components[j] = geometry->vbs[i]->GetVertexComponent(j);
+					}
 				}
-				if (!components[i].empty())
-				{
-					layout.components = &components[i][0];
-					layout.componentCount = static_cast<std::uint8_t>(components[i].size());
-				}
-				else
-				{
-					layout.components = nullptr;
-					layout.componentCount = 0;
-				}
-				layouts.push_back(layout);
+				++layoutCount;
 			}
 		}
 

@@ -20,7 +20,7 @@ namespace Lightning
 			void CommitPipelineStates(const RenderNode& item);
 			void CommitShaderArguments(const RenderNode& item);
 			void Draw(const SharedGeometryPtr& geometry);
-			void GetInputLayouts(const SharedGeometryPtr& geometry, container::vector<VertexInputLayout>& layouts);
+			void GetInputLayouts(const SharedGeometryPtr& geometry, VertexInputLayout** layouts, std::uint8_t& layoutCount);
 		};
 	}
 }
