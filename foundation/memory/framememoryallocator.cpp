@@ -112,13 +112,7 @@ namespace Lightning
 		std::uint8_t* FrameMemoryAllocator::AllocateBytes(std::size_t size)
 		{
 			auto thread_id = std::this_thread::get_id();
-			if (mBuffers.find(thread_id) == mBuffers.end())
-			{
-				{
-					mBuffers.emplace(std::piecewise_construct, std::make_tuple(thread_id), std::make_tuple());
-				}
-			}
-			auto& threadBuffers = mBuffers[thread_id];
+			auto& threadBuffers = mBuffers.local();
 			if (threadBuffers.empty())
 			{
 				threadBuffers.emplace_back(size);
@@ -141,7 +135,7 @@ namespace Lightning
 		{
 			for (auto it = mBuffers.begin();it != mBuffers.end();++it)
 			{
-				auto& threadBuffers = it->second;
+				auto& threadBuffers = *it;
 				std::size_t numBuffersToDelete{ 0 };
 				for (std::size_t i = 0;i < threadBuffers.size();++i)
 				{
@@ -162,7 +156,7 @@ namespace Lightning
 		{
 			for (auto it = mBuffers.begin(); it != mBuffers.end(); ++it)
 			{
-				auto& threadBuffers = it->second;
+				auto& threadBuffers = *it;
 				for (std::size_t i = 0;i < threadBuffers.size();++i)
 				{
 					threadBuffers[i].FinishFrame(frame);
@@ -175,7 +169,7 @@ namespace Lightning
 			std::size_t totalSize{ 0 };
 			for (auto it = mBuffers.begin(); it != mBuffers.end(); ++it)
 			{
-				for (const auto& buffer : it->second)
+				for (const auto& buffer : *it)
 				{
 					totalSize += buffer.GetSize();
 				}
@@ -188,7 +182,7 @@ namespace Lightning
 			std::size_t totalSize{ 0 };
 			for (auto it = mBuffers.begin(); it != mBuffers.end(); ++it)
 			{
-				for (const auto& buffer : it->second)
+				for (const auto& buffer : *it)
 				{
 					totalSize += buffer.GetUsedSize();
 				}

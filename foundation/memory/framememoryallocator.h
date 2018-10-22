@@ -4,6 +4,7 @@
 #include <thread>
 #include "container.h"
 #include "foundationexportdef.h"
+#include "tbb/enumerable_thread_specific.h"
 
 namespace Lightning
 {
@@ -69,7 +70,7 @@ namespace Lightning
 				container::deque<FrameMarker> mFrameMarkers;
 			};
 
-			container::unordered_map<std::thread::id, container::vector<RingBuffer>> mBuffers;
+			tbb::enumerable_thread_specific<container::vector<RingBuffer>> mBuffers;
 		};
 	}
 }
