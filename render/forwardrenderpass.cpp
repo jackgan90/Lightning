@@ -1,6 +1,11 @@
 #include <unordered_map>
 #include "forwardrenderpass.h"
 #include "renderer.h"
+#ifdef LIGHTNING_RENDER_MT
+#include "tbb/flow_graph.h"
+#include "tbb/parallel_for.h"
+#endif
+
 
 namespace Lightning
 {
@@ -10,6 +15,25 @@ namespace Lightning
 		void ForwardRenderPass::Apply()
 		{
 			const auto& renderQueue = Renderer::Instance()->GetRenderQueue();
+#ifdef LIGHTNING_RENDER_MT
+			tbb::flow::graph g;
+			tbb::flow::continue_node<tbb::flow::continue_msg> node(g, 
+				[&renderQueue, this](const tbb::flow::continue_msg&) {
+				tbb::parallel_for(tbb::blocked_range<std::size_t>(0, renderQueue.size()), 
+					[&renderQueue, this](const tbb::blocked_range<std::size_t>& range) {
+					for (std::size_t i = range.begin(); i != range.end();++i)
+					{
+						const auto& node = renderQueue[i];
+						CommitShaderArguments(node);
+						CommitPipelineStates(node);
+						CommitBuffers(node.geometry);
+						Draw(node.geometry);
+					}
+				});
+			});
+			node.try_put(tbb::flow::continue_msg());
+			g.wait_for_all();
+#else
 			for (const auto& node : renderQueue)
 			{
 				CommitShaderArguments(node);
@@ -17,6 +41,7 @@ namespace Lightning
 				CommitBuffers(node.geometry);
 				Draw(node.geometry);
 			}
+#endif
 		}
 
 		void ForwardRenderPass::CommitPipelineStates(const RenderNode& node)
