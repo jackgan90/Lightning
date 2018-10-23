@@ -93,7 +93,7 @@ namespace Lightning
 				pos.z = rDist(mt);
 				p->SetWorldPosition(pos);
 				Render::Color32 color;
-				color.a = cDist(mt);
+				color.a = 255;
 				color.r = cDist(mt);
 				color.g = cDist(mt);
 				color.b = cDist(mt);

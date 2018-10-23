@@ -124,7 +124,7 @@ namespace Lightning
 					*layouts = g_RenderAllocator.Allocate<VertexInputLayout>(MAX_GEOMETRY_BUFFER_COUNT);
 				auto& layout = (*layouts)[layoutCount];
 				layout.slot = static_cast<std::uint8_t>(i);
-				layout.componentCount = geometry->vbs[i]->GetVertexComponentCount();
+				layout.componentCount = static_cast<std::uint8_t>(geometry->vbs[i]->GetVertexComponentCount());
 				layout.components = nullptr;
 				if (layout.componentCount > 0)
 				{

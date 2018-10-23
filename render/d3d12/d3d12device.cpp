@@ -386,7 +386,7 @@ namespace Lightning
 			UINT rootParameterIndex{ 0 };
 			for (const auto& pair : boundResources)
 			{
-				for (auto i = 0;i < pair.second.size();++i)
+				for (std::size_t i = 0;i < pair.second.size();++i)
 				{
 					const auto& resource = pair.second[i].resource;
 					const auto& handle = pair.second[i].handle;
