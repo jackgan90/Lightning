@@ -146,9 +146,7 @@ namespace Lightning
 			ComPtr<ID3D12Resource> nativeRenderTarget = pTarget->GetNative();
 			//should check the type of the rt to transit it from previous state to render target state
 			//currently just check back buffer render target
-			container::vector<ID3D12CommandList*> commandLists;
 			auto commandList = GetGraphicsCommandList();
-			GetAllCommandLists(mFrameResourceIndex, commandLists);
 			if (rt->IsSwapChainRenderTarget())
 			{
 				commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget.Get(),
