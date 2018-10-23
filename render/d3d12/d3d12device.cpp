@@ -147,15 +147,12 @@ namespace Lightning
 			//should check the type of the rt to transit it from previous state to render target state
 			//currently just check back buffer render target
 			container::vector<ID3D12CommandList*> commandLists;
-			GetAllCommandLists(mFrameResourceIndex, commandLists);
 			auto commandList = GetGraphicsCommandList();
+			GetAllCommandLists(mFrameResourceIndex, commandLists);
 			if (rt->IsSwapChainRenderTarget())
 			{
-				for (auto cmdList : commandLists)
-				{
-					static_cast<ID3D12GraphicsCommandList*>(cmdList)->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget.Get(),
-						D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
-				}
+				commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget.Get(),
+					D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 			}
 
 			//cache render target to prevent it from being released before GPU execute ClearRenderTargetView
@@ -390,37 +387,6 @@ namespace Lightning
 				}
 			}
 		}
-		/*
-		void D3D12Device::BindShaderResources(IShader* pShader, UINT rootParameterIndex)
-		{
-			auto pD3D12Shader = static_cast<D3D12Shader*>(pShader);
-			auto const& boundResources = pD3D12Shader->GetRootBoundResources();
-			auto commandList = GetGraphicsCommandList();
-			for (std::size_t i = 0;i < boundResources.size();++i)
-			{
-				const auto& boundResource = boundResources[i];
-				switch (boundResource.type)
-				{
-				case D3D12RootResourceType::DescriptorTable:
-					commandList->SetGraphicsRootDescriptorTable(rootParameterIndex + i, boundResource.descriptorTableHandle);
-					break;
-				case D3D12RootResourceType::ConstantBufferView:
-					commandList->SetGraphicsRootConstantBufferView(rootParameterIndex + i, boundResource.GPUVirtualAddress);
-					break;
-				case D3D12RootResourceType::ShaderResourceView:
-					commandList->SetGraphicsRootShaderResourceView(rootParameterIndex + i, boundResource.GPUVirtualAddress);
-					break;
-				case D3D12RootResourceType::UnorderedAccessView:
-					commandList->SetGraphicsRootUnorderedAccessView(rootParameterIndex + i, boundResource.GPUVirtualAddress);
-					break;
-				case D3D12RootResourceType::Constant:
-					commandList->SetGraphicsRoot32BitConstants(rootParameterIndex + i, boundResource.constant32BitValue.num32BitValues, boundResource.constant32BitValue.p32BitValues, boundResource.constant32BitValue.dest32BitValueOffset);
-					break;
-				default:
-					break;
-				}
-			}
-		}*/
 
 		void D3D12Device::ApplyViewports(const RectFList& vp, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
