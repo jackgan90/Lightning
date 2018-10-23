@@ -17,6 +17,13 @@
 #include "framememoryallocator.h"
 #include "d3d12descriptorheapmanager.h"
 #include "d3d12constantbuffermanager.h"
+#include "tbb/spin_mutex.h"
+
+namespace
+{
+	static tbb::spin_mutex mtxPipelineCache;
+	static tbb::spin_mutex mtxRootSignature;
+}
 
 namespace Lightning
 {
@@ -280,12 +287,18 @@ namespace Lightning
 		{
 			PipelineStateRootSignature stateAndSignature;
 			auto hashValue = std::hash<PipelineState>{}(state);
-			auto cachedStateObject = mPipelineCache.find(hashValue);
-			if (cachedStateObject != mPipelineCache.end())
+			bool createNewPSO{ true };
 			{
-				stateAndSignature = cachedStateObject->second;
+				tbb::spin_mutex::scoped_lock lock(mtxPipelineCache);
+				auto it = mPipelineCache.find(hashValue);
+				if (it != mPipelineCache.end())
+				{
+					stateAndSignature = it->second;
+					createNewPSO = false;
+				}
 			}
-			else
+
+			if(createNewPSO)
 			{
 				stateAndSignature = CreateAndCachePipelineState(state, hashValue);
 			}
@@ -448,7 +461,15 @@ namespace Lightning
 				LOG_ERROR("Failed to apply pipeline state!");
 				return stateAndSignature;
 			} 
-			mPipelineCache.emplace(hashValue, stateAndSignature);
+			{
+				tbb::spin_mutex::scoped_lock lock(mtxPipelineCache);
+				//Must check again because other threads may create the same pipeline state object simultaneously
+				auto it = mPipelineCache.find(hashValue);
+				if (it == mPipelineCache.end())
+					mPipelineCache.emplace(hashValue, stateAndSignature);
+				else
+					stateAndSignature = it->second;
+			}
 			return stateAndSignature;
 		}
 
@@ -541,9 +562,13 @@ namespace Lightning
 			{
 				boost::hash_combine(seed, s->GetHashValue());
 			}
-			auto it = mRootSignatures.find(seed);
-			if (it != mRootSignatures.end())
-				return it->second;
+
+			{
+				tbb::spin_mutex::scoped_lock lock(mtxRootSignature);
+				auto it = mRootSignatures.find(seed);
+				if (it != mRootSignatures.end())
+					return it->second;
+			}
 
 			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
 			container::vector<D3D12_ROOT_PARAMETER> cbParameters;
@@ -568,7 +593,17 @@ namespace Lightning
 			{
 				return ComPtr<ID3D12RootSignature>();
 			}
-			mRootSignatures[seed] = rootSignature;
+
+			{
+				tbb::spin_mutex::scoped_lock lock(mtxRootSignature);
+				auto it = mRootSignatures.find(seed);
+				if (it == mRootSignatures.end())
+				{
+					mRootSignatures[seed] = rootSignature;
+				}
+				else
+					rootSignature = it->second;
+			}
 			return rootSignature;
 		}
 
