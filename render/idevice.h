@@ -35,6 +35,7 @@ namespace Lightning
 			virtual void DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset) = 0;
 			virtual void DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset) = 0;
 			virtual void BeginFrame(const std::size_t frameResourceIndex) = 0;
+			virtual void EndFrame(const std::size_t frameResourceIndex) = 0;
 		};
 		using SharedDevicePtr = std::shared_ptr<IDevice>;
 	}

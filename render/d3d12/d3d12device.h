@@ -42,6 +42,8 @@ namespace Lightning
 			void DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset)override;
 			void DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset)override;
 			void BeginFrame(const std::size_t frameResourceIndex)override;
+			void EndFrame(const std::size_t frameResourceIndex)override;
+			void GetAllCommandLists(std::size_t frameResourceIndex, container::vector<ID3D12CommandList*>& lists, bool close);
 			void ApplyRenderTargets(const container::vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)override;
 		private:
 			struct PipelineStateRootSignature

@@ -149,11 +149,11 @@ namespace Lightning
 			auto commandList = GetGraphicsCommandList();
 			commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRT->GetNative().Get(),
 				D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
-			commandList->Close();
-			ID3D12CommandList* commandListArray[] = { commandList, };
-			auto commandQueue = GetCommandQueue();
-			commandQueue->ExecuteCommandLists(_countof(commandListArray), commandListArray);
+			container::vector<ID3D12CommandList*> commandLists;
 			D3D12RenderTargetManager::Instance()->Synchronize();
+			static_cast<D3D12Device*>(mDevice.get())->GetAllCommandLists(mCurrentBackBufferIndex, commandLists, true);
+			auto commandQueue = GetCommandQueue();
+			commandQueue->ExecuteCommandLists(commandLists.size(), &commandLists[0]);
 			Renderer::EndFrame();
 		}
 

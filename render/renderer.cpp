@@ -69,6 +69,7 @@ namespace Lightning
 			auto fenceValue = fence->GetTargetValue() + 1;
 			mFrameResources[mCurrentBackBufferIndex].frame = mFrameCount;
 			fence->SetTargetValue(fenceValue);
+			mDevice->EndFrame(mCurrentBackBufferIndex);
 			mSwapChain->Present();
 			g_RenderAllocator.FinishFrame(mFrameCount);
 		}

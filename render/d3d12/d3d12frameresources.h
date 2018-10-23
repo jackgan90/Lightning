@@ -15,6 +15,7 @@ namespace Lightning
 			D3D12FrameResources();
 			//Thread unsafe
 			void Reset(bool perFrame);
+			void Close();
 			ID3D12GraphicsCommandList* GetCommandList();
 		private:
 			void CreateResources();

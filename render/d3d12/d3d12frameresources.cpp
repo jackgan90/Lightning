@@ -11,12 +11,16 @@ namespace Lightning
 			CreateResources();
 		}
 
+		void D3D12FrameResources::Close()
+		{
+			if (mCmdList)
+			{
+				mCmdList->Close();
+			}
+		}
+
 		void D3D12FrameResources::Reset(bool perFrame)
 		{
-			if (!perFrame)
-				CreateResources();
-			if(mCmdAllocator)
-				mCmdAllocator->Reset();
 			if (!perFrame)
 			{
 				mCmdAllocator.Reset();
@@ -24,8 +28,11 @@ namespace Lightning
 			}
 			else
 			{
-				if(mCmdList)
+				if (mCmdList)
+				{
+					mCmdAllocator->Reset();
 					mCmdList->Reset(mCmdAllocator.Get(), nullptr);
+				}
 			}
 		}
 
@@ -42,8 +49,6 @@ namespace Lightning
 				if (!mCmdList)
 				{
 					nativeDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mCmdAllocator.Get(), nullptr, IID_PPV_ARGS(&mCmdList));
-					mCmdList->Close();
-					Reset(true);
 				}
 			}
 		}

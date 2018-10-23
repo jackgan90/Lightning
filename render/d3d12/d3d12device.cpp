@@ -603,6 +603,28 @@ namespace Lightning
 			return rootSignature;
 		}
 
+		void D3D12Device::GetAllCommandLists(std::size_t frameResourceIndex, container::vector<ID3D12CommandList*>& lists, bool close)
+		{
+#ifdef LIGHTNING_RENDER_MT
+			auto& frameResources = mFrameResources[frameResourceIndex];
+			for (auto it = frameResources.begin(); it != frameResources.end(); ++it)
+			{
+				lists.push_back(it->GetCommandList());
+				if(close)
+					it->Close();
+			}
+#else
+			auto& frameResources = mFrameResources[frameResourceIndex];
+			lists.push_back(frameResources.GetCommandList());
+			if(close)
+				frameResources.Close();
+#endif
+		}
+
+		void D3D12Device::EndFrame(const std::size_t frameResourceIndex)
+		{
+		}
+
 		void D3D12Device::BeginFrame(const std::size_t frameResourceIndex)
 		{
 			Device::BeginFrame(frameResourceIndex);
