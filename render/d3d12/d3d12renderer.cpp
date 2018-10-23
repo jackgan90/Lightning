@@ -146,12 +146,18 @@ namespace Lightning
 		{
 			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
 			auto nativeRT = static_cast<D3D12RenderTarget*>(defaultRenderTarget.get());
-			auto commandList = GetGraphicsCommandList();
-			commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRT->GetNative().Get(),
-				D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 			container::vector<ID3D12CommandList*> commandLists;
+			static_cast<D3D12Device*>(mDevice.get())->GetAllCommandLists(mCurrentBackBufferIndex, commandLists);
+			for (auto cmdList : commandLists)
+			{
+				static_cast<ID3D12GraphicsCommandList*>(cmdList)->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRT->GetNative().Get(),
+					D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+			}
 			D3D12RenderTargetManager::Instance()->Synchronize();
-			static_cast<D3D12Device*>(mDevice.get())->GetAllCommandLists(mCurrentBackBufferIndex, commandLists, true);
+			for (auto cmdList : commandLists)
+			{
+				static_cast<ID3D12GraphicsCommandList*>(cmdList)->Close();
+			}
 			auto commandQueue = GetCommandQueue();
 			commandQueue->ExecuteCommandLists(commandLists.size(), &commandLists[0]);
 			Renderer::EndFrame();

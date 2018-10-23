@@ -146,11 +146,16 @@ namespace Lightning
 			ComPtr<ID3D12Resource> nativeRenderTarget = pTarget->GetNative();
 			//should check the type of the rt to transit it from previous state to render target state
 			//currently just check back buffer render target
+			container::vector<ID3D12CommandList*> commandLists;
+			GetAllCommandLists(mFrameResourceIndex, commandLists);
 			auto commandList = GetGraphicsCommandList();
 			if (rt->IsSwapChainRenderTarget())
 			{
-				commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget.Get(),
-					D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+				for (auto cmdList : commandLists)
+				{
+					static_cast<ID3D12GraphicsCommandList*>(cmdList)->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget.Get(),
+						D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+				}
 			}
 
 			//cache render target to prevent it from being released before GPU execute ClearRenderTargetView
@@ -603,21 +608,17 @@ namespace Lightning
 			return rootSignature;
 		}
 
-		void D3D12Device::GetAllCommandLists(std::size_t frameResourceIndex, container::vector<ID3D12CommandList*>& lists, bool close)
+		void D3D12Device::GetAllCommandLists(std::size_t frameResourceIndex, container::vector<ID3D12CommandList*>& lists)
 		{
 #ifdef LIGHTNING_RENDER_MT
 			auto& frameResources = mFrameResources[frameResourceIndex];
 			for (auto it = frameResources.begin(); it != frameResources.end(); ++it)
 			{
 				lists.push_back(it->GetCommandList());
-				if(close)
-					it->Close();
 			}
 #else
 			auto& frameResources = mFrameResources[frameResourceIndex];
 			lists.push_back(frameResources.GetCommandList());
-			if(close)
-				frameResources.Close();
 #endif
 		}
 
