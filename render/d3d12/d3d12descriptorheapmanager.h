@@ -5,9 +5,9 @@
 #include <functional>
 #include <wrl\client.h>
 #include "container.h"
+#include "threadlocalsingleton.h"
 #include "singleton.h"
 #include "d3d12device.h"
-#include "tbb/enumerable_thread_specific.h"
 
 namespace Lightning
 {
@@ -70,7 +70,7 @@ namespace Lightning
 			//persistent heaps are heaps persist longer than one frame.Examples are RTV and DSV heaps
 			container::vector<DescriptorHeapStore*> mPersistentHeaps[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES][2];
 			//frame heaps are heaps that only needs validation in one frame.After a frame finished,the content of heaps doesn't matter
-			tbb::enumerable_thread_specific<FrameHeaps> mFrameHeaps;
+			Foundation::ThreadLocalSingleton<FrameHeaps> mFrameHeaps;
 
 			UINT sIncrementSizes[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
 		};

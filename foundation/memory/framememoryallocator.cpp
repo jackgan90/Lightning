@@ -112,7 +112,7 @@ namespace Lightning
 		std::uint8_t* FrameMemoryAllocator::AllocateBytes(std::size_t size)
 		{
 			auto thread_id = std::this_thread::get_id();
-			auto& threadBuffers = mBuffers.local();
+			auto& threadBuffers = *mBuffers;
 			if (threadBuffers.empty())
 			{
 				threadBuffers.emplace_back(size);
@@ -133,9 +133,7 @@ namespace Lightning
 
 		void FrameMemoryAllocator::ReleaseFramesBefore(std::uint64_t frame)
 		{
-			for (auto it = mBuffers.begin();it != mBuffers.end();++it)
-			{
-				auto& threadBuffers = *it;
+			mBuffers.for_each([this, frame](container::vector<RingBuffer>& threadBuffers) {
 				std::size_t numBuffersToDelete{ 0 };
 				for (std::size_t i = 0;i < threadBuffers.size();++i)
 				{
@@ -149,7 +147,7 @@ namespace Lightning
 				{
 					threadBuffers.erase(threadBuffers.begin(), threadBuffers.begin() + numBuffersToDelete);
 				}
-			}
+			});
 		}
 
 		void FrameMemoryAllocator::FinishFrame(std::uint64_t frame)
@@ -167,26 +165,24 @@ namespace Lightning
 		std::size_t FrameMemoryAllocator::GetAllocatedMemorySize()const
 		{
 			std::size_t totalSize{ 0 };
-			for (auto it = mBuffers.begin(); it != mBuffers.end(); ++it)
-			{
-				for (const auto& buffer : *it)
+			mBuffers.for_each([&totalSize](const container::vector<RingBuffer>& threadBuffers) {
+				for (const auto& buffer : threadBuffers)
 				{
 					totalSize += buffer.GetSize();
 				}
-			}
+			});
 			return totalSize;
 		}
 
 		std::size_t FrameMemoryAllocator::GetUsedMemorySize()const
 		{
 			std::size_t totalSize{ 0 };
-			for (auto it = mBuffers.begin(); it != mBuffers.end(); ++it)
-			{
-				for (const auto& buffer : *it)
+			mBuffers.for_each([&totalSize](const container::vector<RingBuffer>& threadBuffers) {
+				for (const auto& buffer : threadBuffers)
 				{
 					totalSize += buffer.GetUsedSize();
 				}
-			}
+			});
 			return totalSize;
 		}
 

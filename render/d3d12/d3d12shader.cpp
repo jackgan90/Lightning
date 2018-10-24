@@ -156,8 +156,7 @@ namespace Lightning
 			auto data = arg.Buffer(size);
 			if (data)
 			{
-				auto& proxy = mResourceProxy.local();
-				std::uint8_t *p = proxy.GetConstantBuffer(mTotalConstantBufferSize);
+				std::uint8_t *p = mResourceProxy->GetConstantBuffer(mTotalConstantBufferSize);
 				std::uint8_t *buffer = p + mConstantBufferInfo[bindingInfo.bufferIndex].offset;
 				std::memcpy(buffer + bindingInfo.offsetInBuffer, data, size);
 				return true;
@@ -176,9 +175,8 @@ namespace Lightning
 		void D3D12Shader::UpdateRootBoundResources()
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			auto& proxy = mResourceProxy.local();
-			auto ptr = proxy.GetConstantBuffer(mTotalConstantBufferSize);
-			auto& rootBoundResources = proxy.GetRootBoundResources();
+			auto ptr = mResourceProxy->GetConstantBuffer(mTotalConstantBufferSize);
+			auto& rootBoundResources = mResourceProxy->GetRootBoundResources();
 			rootBoundResources.clear();
 			D3D12RootBoundResource boundResource;
 			boundResource.type = D3D12RootResourceType::ConstantBuffers;
@@ -207,7 +205,7 @@ namespace Lightning
 		const container::vector<D3D12RootBoundResource>& D3D12Shader::GetRootBoundResources()
 		{
 			UpdateRootBoundResources();
-			return mResourceProxy.local().GetRootBoundResources();
+			return mResourceProxy->GetRootBoundResources();
 		}
 
 		D3D12_SHADER_VISIBILITY D3D12Shader::GetParameterVisibility()const

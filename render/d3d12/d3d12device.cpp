@@ -101,8 +101,7 @@ namespace Lightning
 
 		ID3D12GraphicsCommandList* D3D12Device::GetGraphicsCommandList()
 		{
-			auto& frameResources = mFrameResources[mFrameResourceIndex].local();
-			return frameResources.GetCommandList();
+			return mFrameResources[mFrameResourceIndex]->GetCommandList();
 		}
 
 		void D3D12Device::CreateNativeDevice(IDXGIFactory4* factory)

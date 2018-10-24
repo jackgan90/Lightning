@@ -41,7 +41,7 @@ namespace Lightning
 
 		DescriptorHeap* D3D12DescriptorHeapManager::AllocateFrameHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count)
 		{
-			auto& frameHeap = mFrameHeaps.local();
+			auto& frameHeap = *mFrameHeaps;
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto i = shaderVisible ? 1 : 0;
 			auto createNewHeap{ false };

@@ -4,7 +4,7 @@
 #include <thread>
 #include "container.h"
 #include "foundationexportdef.h"
-#include "tbb/enumerable_thread_specific.h"
+#include "threadlocalsingleton.h"
 
 namespace Lightning
 {
@@ -69,8 +69,7 @@ namespace Lightning
 				std::size_t mFrameSize;
 				container::deque<FrameMarker> mFrameMarkers;
 			};
-
-			tbb::enumerable_thread_specific<container::vector<RingBuffer>> mBuffers;
+			ThreadLocalSingleton<container::vector<RingBuffer>> mBuffers;
 		};
 	}
 }

@@ -23,14 +23,16 @@ namespace Lightning
 		{
 			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
-				mBufferResources[i].clear();
+				mBufferResources[i].for_each([](container::vector<BufferResource>& resources) {
+					resources.clear();
+				});
 			}
 		}
 
 		D3D12ConstantBuffer D3D12ConstantBufferManager::AllocBuffer(std::size_t bufferSize)
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			auto& bufferResources = mBufferResources[resourceIndex].local();
+			auto& bufferResources = *mBufferResources[resourceIndex];
 			auto genNewBuffer = bufferResources.empty();
 			if (!genNewBuffer)
 			{

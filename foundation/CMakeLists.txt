@@ -32,6 +32,7 @@ set(HEADERS	common.h
 			timermanager.h
 			container.h
 			enumoperation.h
+			threadlocalsingleton.h
 			)
 set(SOURCES common.cpp
 			filesystem.cpp

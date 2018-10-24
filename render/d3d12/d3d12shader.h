@@ -2,7 +2,7 @@
 #include <d3d12.h>
 #include <wrl/client.h>
 #include <d3dcompiler.h>
-#include "tbb/enumerable_thread_specific.h"
+#include "threadlocalsingleton.h"
 #include "container.h"
 #include "d3d12shadermanager.h"
 #include "d3d12constantbuffermanager.h"
@@ -87,7 +87,7 @@ namespace Lightning
 			D3D12_DESCRIPTOR_RANGE *mDescriptorRanges;
 			std::size_t mTotalConstantBufferSize;
 			//buffer used to cache constant buffer value
-			tbb::enumerable_thread_specific<ShaderResourceProxy> mResourceProxy;
+			Foundation::ThreadLocalSingleton<ShaderResourceProxy> mResourceProxy;
 		};
 	}
 }

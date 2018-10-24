@@ -3,7 +3,7 @@
 #include <dxgi1_4.h>
 #include <wrl\client.h>
 #include <memory>
-#include "tbb/enumerable_thread_specific.h"
+#include "threadlocalsingleton.h"
 #include "container.h"
 #include "device.h"
 #include "stackallocator.h"
@@ -101,7 +101,7 @@ namespace Lightning
 			ComPtr<ID3D12CommandQueue> mCommandQueue;
 			PipelineCacheMap mPipelineCache;
 			RootSignatureMap mRootSignatures;
-			tbb::enumerable_thread_specific<D3D12FrameResources> mFrameResources[RENDER_FRAME_COUNT];
+			Foundation::ThreadLocalSingleton<D3D12FrameResources> mFrameResources[RENDER_FRAME_COUNT];
 		};
 	}
 }
