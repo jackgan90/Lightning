@@ -50,7 +50,7 @@ namespace Lightning
 			void Start()override;
 			void ShutDown()override;
 			void RegisterCallback(IRendererCallback* callback)override;
-			static Renderer* Instance() { return sInstance; }
+			static IRenderer* Instance() { return sInstance; }
 			IWindow* GetOutputWindow()override { return mOutputWindow.get(); }
 			const RenderQueue& GetRenderQueue()override;
 			SharedDepthStencilBufferPtr GetDefaultDepthStencilBuffer()override { return mDefaultDepthStencilBuffer; };
@@ -68,7 +68,7 @@ namespace Lightning
 			//CreateSwapChain is called in Start,ensuring the device is already created
 			virtual ISwapChain* CreateSwapChain() = 0;
 			virtual IDepthStencilBuffer* CreateDepthStencilBuffer(std::size_t width, std::size_t height) = 0;
-			static Renderer* sInstance;
+			static IRenderer* sInstance;
 			std::uint64_t mFrameCount;
 			SharedFileSystemPtr mFs;
 			std::unique_ptr<IDevice> mDevice;

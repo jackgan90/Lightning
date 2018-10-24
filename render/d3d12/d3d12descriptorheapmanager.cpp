@@ -15,21 +15,16 @@ namespace Lightning
 		using Foundation::container;
 		D3D12DescriptorHeapManager::D3D12DescriptorHeapManager()
 		{
-			auto nativeDevice = GetNativeDevice();
+			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
 			for (auto i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES;++i)
 			{
-				sIncrementSizes[i] = nativeDevice->GetDescriptorHandleIncrementSize(static_cast<D3D12_DESCRIPTOR_HEAP_TYPE>(i));
+				sIncrementSizes[i] = device->GetDescriptorHandleIncrementSize(static_cast<D3D12_DESCRIPTOR_HEAP_TYPE>(i));
 			}
 		}
 
 		D3D12DescriptorHeapManager::~D3D12DescriptorHeapManager()
 		{
 			LOG_INFO("Descriptor heap manager destruct!");
-		}
-
-		ID3D12Device* D3D12DescriptorHeapManager::GetNativeDevice()
-		{
-			return static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNative();
 		}
 
 		DescriptorHeap* D3D12DescriptorHeapManager::Allocate(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count, bool frameTransient)
@@ -46,7 +41,6 @@ namespace Lightning
 
 		DescriptorHeap* D3D12DescriptorHeapManager::AllocateFrameHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count)
 		{
-			auto nativeDevice = GetNativeDevice();
 			auto& frameHeap = mFrameHeaps.local();
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto i = shaderVisible ? 1 : 0;
@@ -64,7 +58,7 @@ namespace Lightning
 			if (createNewHeap)
 			{
 				auto res = CreateHeapStore(type, shaderVisible,
-					count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE, nativeDevice);
+					count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE);
 				frameHeap.heaps[resourceIndex][type][i].push_back(std::get<1>(res));
 				frameHeap.next[resourceIndex][type][i] = 0;
 			}
@@ -87,35 +81,35 @@ namespace Lightning
 
 		DescriptorHeap* D3D12DescriptorHeapManager::AllocatePersistentHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count)
 		{
-			auto nativeDevice = GetNativeDevice();
 			std::lock_guard<std::mutex> lock(mtxHeap);
 			auto i = shaderVisible ? 1 : 0;
 			if (mPersistentHeaps[type][i].empty())
 			{
-				auto store = CreateHeapStore(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE, nativeDevice);
+				auto store = CreateHeapStore(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE);
 				mPersistentHeaps[type][i].push_back(std::get<1>(store));
 			}
 			auto res = TryAllocatePersistentHeap(mPersistentHeaps[type][i], count);
 			if (std::get<0>(res))
 				return std::get<1>(res);
 			//if reach here,the existing heaps can not allocate more descriptors, so just allocate a new heap
-			auto store = CreateHeapStore(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE, nativeDevice);
+			auto store = CreateHeapStore(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE);
 			mPersistentHeaps[type][i].push_back(std::get<1>(store));
 			res = TryAllocatePersistentHeap(mPersistentHeaps[type][i], count);
 			return std::get<1>(res);
 		}
 
 		container::tuple<bool, D3D12DescriptorHeapManager::DescriptorHeapStore*> D3D12DescriptorHeapManager::CreateHeapStore(
-			D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT descriptorCount, ID3D12Device* pDevice)
+			D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT descriptorCount)
 		{
+			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
 			auto res = std::make_tuple(false, new DescriptorHeapStore);
 			auto& heapStore = std::get<1>(res);
 			heapStore->desc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 			heapStore->desc.NodeMask = 0;
 			heapStore->desc.NumDescriptors = descriptorCount;
 			heapStore->desc.Type = type;
-			auto hr = pDevice->CreateDescriptorHeap(&heapStore->desc, IID_PPV_ARGS(&heapStore->heap));
-			if (FAILED(hr))
+			heapStore->heap = device->CreateDescriptorHeap(&heapStore->desc);
+			if (!heapStore->heap)
 			{
 				LOG_ERROR("Failed to create d3d12 descriptor heap!type:%d, flags:%d, number of descriptors:%d", 
 					heapStore->desc.Type, heapStore->desc.Flags, heapStore->desc.NumDescriptors);

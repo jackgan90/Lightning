@@ -13,13 +13,12 @@ namespace Lightning
 				initState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
 			mDirtyRange.Begin = 0;
 			mDirtyRange.End = bufferSize;
-			auto nativeDevice = device->GetNative();
-			nativeDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
-						D3D12_HEAP_FLAG_NONE, &CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
-						initState, nullptr, IID_PPV_ARGS(&mResource));
-			nativeDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-						D3D12_HEAP_FLAG_NONE, &CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
-						D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&mIntermediateRes));
+			mResource = device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+				D3D12_HEAP_FLAG_NONE, &CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
+				initState, nullptr);
+			mIntermediateRes = device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+				D3D12_HEAP_FLAG_NONE, &CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
+				D3D12_RESOURCE_STATE_GENERIC_READ, nullptr);
 		}
 
 		std::uint8_t* D3D12BufferResource::Lock(std::size_t start, std::size_t size)

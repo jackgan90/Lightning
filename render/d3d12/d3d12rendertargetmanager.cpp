@@ -22,14 +22,14 @@ namespace Lightning
 		}
 
 		SharedRenderTargetPtr D3D12RenderTargetManager::CreateSwapChainRenderTarget(
-			const ComPtr<ID3D12Resource>& resource, ID3D12Device* pDevice, D3D12SwapChain* pSwapChain)
+			const ComPtr<ID3D12Resource>& resource, D3D12SwapChain* pSwapChain)
 		{
 #ifdef LIGHTNING_RENDER_MT
 			RenderTargetID rtID = mCurrentID.fetch_add(1, std::memory_order_relaxed);
 #else
 			RenderTargetID rtID = mCurrentID++;
 #endif
-			auto ptr = SharedRenderTargetPtr(new D3D12RenderTarget(rtID, resource, pDevice, pSwapChain));
+			auto ptr = SharedRenderTargetPtr(new D3D12RenderTarget(rtID, resource, pSwapChain));
 			StoreRenderTarget(rtID, ptr);
 			return ptr;
 		}

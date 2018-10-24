@@ -15,7 +15,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		Renderer* Renderer::sInstance{ nullptr };
+		IRenderer* Renderer::sInstance{ nullptr };
 		Foundation::FrameMemoryAllocator g_RenderAllocator;
 		Renderer::Renderer(const SharedFileSystemPtr& fs, const SharedWindowPtr& pWindow, RenderPassType renderPassType) :
 			mOutputWindow(pWindow),

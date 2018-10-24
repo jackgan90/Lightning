@@ -3,6 +3,7 @@
 #include "common.h"
 #include "logger.h"
 #include "winwindow.h"
+#include "renderer.h"
 #include "d3d12renderer.h"
 #include "d3d12swapchain.h"
 #include "d3d12rendertarget.h"
@@ -17,19 +18,20 @@ namespace Lightning
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
 		using WindowSystem::WinWindow;
-		D3D12SwapChain::D3D12SwapChain(IDXGIFactory4* factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow)
+		D3D12SwapChain::D3D12SwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow)
 		{
-			CreateNativeSwapChain(factory, pDevice, pCommandQueue, pWindow);
+			CreateNativeSwapChain(factory, pCommandQueue, pWindow);
 			mSwapChain->GetDesc(&mDesc);
-			BindRenderTargets(pDevice);
+			BindRenderTargets();
 		}
 
-		void D3D12SwapChain::CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12Device* pDevice, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow)
+		void D3D12SwapChain::CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow)
 		{
 			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
 			UINT sampleCount = 1;
 			bool msaaEnabled = false;
 			UINT qualityLevels = 0;
+			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
 			if (config.MSAAEnabled)
 			{
 				D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels;
@@ -37,7 +39,7 @@ namespace Lightning
 				msQualityLevels.Flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE;
 				msQualityLevels.SampleCount = config.MSAASampleCount > 0 ? config.MSAASampleCount : 1;
 				msQualityLevels.NumQualityLevels = 0;
-				pDevice->CheckFeatureSupport(
+				device->CheckFeatureSupport(
 					D3D12_FEATURE_MULTISAMPLE_QUALITY_LEVELS, &msQualityLevels, sizeof(msQualityLevels));
 				qualityLevels = msQualityLevels.NumQualityLevels;
 				sampleCount = msQualityLevels.SampleCount;
@@ -79,7 +81,7 @@ namespace Lightning
 			return SUCCEEDED(hr);
 		}
 
-		void D3D12SwapChain::BindRenderTargets(ID3D12Device* pDevice)
+		void D3D12SwapChain::BindRenderTargets()
 		{
 			ComPtr<ID3D12Resource> resources[RENDER_FRAME_COUNT];
 			auto rtMgr = D3D12RenderTargetManager::Instance();
@@ -90,7 +92,7 @@ namespace Lightning
 				{
 					throw SwapChainInitException("Failed to get d3d12 swap chain buffer.");
 				}
-				auto renderTarget = rtMgr->CreateSwapChainRenderTarget(resources[i], pDevice, this);
+				auto renderTarget = rtMgr->CreateSwapChainRenderTarget(resources[i], this);
 				mRenderTargets[i] = renderTarget->GetID();
 			}
 		}

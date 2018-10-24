@@ -8,9 +8,8 @@ namespace Lightning
 		D3D12RenderFence::D3D12RenderFence(D3D12Device* device, std::uint64_t initial_value) : 
 			mDevice(device), mTargetValue(initial_value)
 		{
-			auto nativeDevice = device->GetNative();
-			auto hr = nativeDevice->CreateFence(initial_value, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&mFence));
-			if (FAILED(hr))
+			mFence = device->CreateFence(initial_value, D3D12_FENCE_FLAG_NONE);
+			if (!mFence)
 			{
 				throw FenceInitDexception("Failed to create d3d12 fence!");
 			}

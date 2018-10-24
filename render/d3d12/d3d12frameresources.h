@@ -20,7 +20,7 @@ namespace Lightning
 		private:
 			void CreateResources();
 			ComPtr<ID3D12CommandAllocator> mCmdAllocator;
-			ComPtr<ID3D12GraphicsCommandList> mCmdList;
+			ComPtr<ID3D12CommandList> mCmdList;
 		};
 	}
 }

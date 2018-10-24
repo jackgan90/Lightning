@@ -15,7 +15,7 @@ namespace Lightning
 		{
 			if (mCmdList)
 			{
-				mCmdList->Close();
+				static_cast<ID3D12GraphicsCommandList*>(mCmdList.Get())->Close();
 			}
 		}
 
@@ -31,7 +31,7 @@ namespace Lightning
 				if (mCmdList)
 				{
 					mCmdAllocator->Reset();
-					mCmdList->Reset(mCmdAllocator.Get(), nullptr);
+					static_cast<ID3D12GraphicsCommandList*>(mCmdList.Get())->Reset(mCmdAllocator.Get(), nullptr);
 				}
 			}
 		}
@@ -41,14 +41,14 @@ namespace Lightning
 			auto device = Renderer::Instance()->GetDevice();
 			if (device)
 			{
-				auto nativeDevice = static_cast<D3D12Device*>(device)->GetNative();
+				auto d3d12Device = static_cast<D3D12Device*>(device);
 				if (!mCmdAllocator)
 				{
-					nativeDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&mCmdAllocator));
+					mCmdAllocator = d3d12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
 				}
 				if (!mCmdList)
 				{
-					nativeDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mCmdAllocator.Get(), nullptr, IID_PPV_ARGS(&mCmdList));
+					mCmdList = d3d12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mCmdAllocator.Get(), nullptr);
 				}
 			}
 		}
@@ -57,7 +57,7 @@ namespace Lightning
 		ID3D12GraphicsCommandList* D3D12FrameResources::GetCommandList()
 		{
 			CreateResources();
-			return mCmdList.Get();
+			return static_cast<ID3D12GraphicsCommandList*>(mCmdList.Get());
 		}
 	}
 }

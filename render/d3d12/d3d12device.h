@@ -33,7 +33,6 @@ namespace Lightning
 			void ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr)override;
 			SharedVertexBufferPtr CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor)override;
 			SharedIndexBufferPtr CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;
-			ID3D12Device* GetNative()const { return mDevice.Get(); }
 			ID3D12CommandQueue* GetCommandQueue()const { return mCommandQueue.Get(); }
 			ID3D12GraphicsCommandList* GetGraphicsCommandList();
 			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)override;
@@ -45,6 +44,32 @@ namespace Lightning
 			void EndFrame(const std::size_t frameResourceIndex)override;
 			void GetAllCommandLists(std::size_t frameResourceIndex, container::vector<ID3D12CommandList*>& lists);
 			void ApplyRenderTargets(const container::vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)override;
+			//native device method wrapper start
+			ComPtr<ID3D12Resource> CreateCommittedResource(
+				const D3D12_HEAP_PROPERTIES *pHeapProperties,
+				D3D12_HEAP_FLAGS HeapFlags,
+				const D3D12_RESOURCE_DESC *pDesc,
+				D3D12_RESOURCE_STATES InitialResourceState,
+				const D3D12_CLEAR_VALUE *pOptimizedClearValue);
+			void CreateRenderTargetView( 
+				ID3D12Resource *pResource,
+				const D3D12_RENDER_TARGET_VIEW_DESC *pDesc,
+				D3D12_CPU_DESCRIPTOR_HANDLE DestDescriptor);
+			void CreateDepthStencilView(
+				ID3D12Resource *pResource,
+				const D3D12_DEPTH_STENCIL_VIEW_DESC *pDesc,
+				D3D12_CPU_DESCRIPTOR_HANDLE DestDescriptor);
+			UINT GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE DescriptorHeapType);
+			ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap( const D3D12_DESCRIPTOR_HEAP_DESC *pDescriptorHeapDesc);
+			ComPtr<ID3D12CommandAllocator> CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE type);
+			ComPtr<ID3D12CommandList> CreateCommandList( 
+				UINT nodeMask,
+				D3D12_COMMAND_LIST_TYPE type,
+				ID3D12CommandAllocator *pCommandAllocator,
+				ID3D12PipelineState *pInitialState);
+			HRESULT CheckFeatureSupport( D3D12_FEATURE Feature, void *pFeatureSupportData, UINT FeatureSupportDataSize);
+			ComPtr<ID3D12Fence> CreateFence( UINT64 InitialValue, D3D12_FENCE_FLAGS Flags);
+			//native device method wrapper end
 		private:
 			struct PipelineStateRootSignature
 			{

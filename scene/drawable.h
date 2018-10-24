@@ -8,12 +8,12 @@ namespace Lightning
 {
 	namespace Scene
 	{
-		using Render::Renderer;
+		using Render::IRenderer;
 		class LIGHTNING_SCENE_API IDrawable
 		{
 		public:
 			virtual ~IDrawable() = default;
-			virtual void Draw(Renderer& renderer, const SceneRenderData& sceneRenderData) = 0;
+			virtual void Draw(IRenderer&, const SceneRenderData&) = 0;
 		};
 		using SharedDrawablePtr = std::shared_ptr<IDrawable>;
 	}

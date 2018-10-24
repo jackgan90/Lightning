@@ -1,10 +1,12 @@
 #pragma once
 #include "scenemanager.h"
+#include "renderer.h"
 
 namespace Lightning
 {
 	namespace Scene
 	{
+		using Render::Renderer;
 		void SceneManager::Update()
 		{
 			for (auto& scene : mScenes)

@@ -45,14 +45,14 @@ namespace Lightning
 			if (genNewBuffer)
 			{
 				BufferResource newResource;
-				auto nativeDevice = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice())->GetNative();
 				//D3D12 requires constant buffer having a size multiple of 256
 				auto resourceSize = AlignedSize(bufferSize > MIN_BUFFER_SIZE ? bufferSize : MIN_BUFFER_SIZE, 256);
-				nativeDevice->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE,
+				D3D12Device* device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
+				newResource.resource = device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE,
 					&CD3DX12_RESOURCE_DESC::Buffer(resourceSize),
-					D3D12_RESOURCE_STATE_GENERIC_READ, nullptr, IID_PPV_ARGS(&newResource.resource));
+					D3D12_RESOURCE_STATE_GENERIC_READ, nullptr);
 				static const CD3DX12_RANGE range(0, 0);
-				//map to process virtual memory on creation to prevent mapping everytime change buffer content
+				//map to process virtual memory on creation to prevent mapping every time change buffer content
 				newResource.resource->Map(0, &range, &newResource.mapAddress);
 				newResource.offset = 0;
 				newResource.size = resourceSize;

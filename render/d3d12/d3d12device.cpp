@@ -714,5 +714,79 @@ namespace Lightning
 			commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			commandList->DrawIndexedInstanced(indexCountPerInstance, instanceCount, firstIndex, indexDataOffset, instanceDataOffset);
 		}
+		//native device method wrappers begin
+		ComPtr<ID3D12Resource> D3D12Device::CreateCommittedResource(
+			const D3D12_HEAP_PROPERTIES *pHeapProperties,
+			D3D12_HEAP_FLAGS HeapFlags,
+			const D3D12_RESOURCE_DESC *pDesc,
+			D3D12_RESOURCE_STATES InitialResourceState,
+			const D3D12_CLEAR_VALUE *pOptimizedClearValue)
+		{
+			ComPtr<ID3D12Resource> resource;
+			mDevice->CreateCommittedResource(pHeapProperties, HeapFlags, pDesc,
+				InitialResourceState, pOptimizedClearValue, IID_PPV_ARGS(&resource));
+
+			return resource;
+		}
+
+		void D3D12Device::CreateRenderTargetView(
+			ID3D12Resource *pResource,
+			const D3D12_RENDER_TARGET_VIEW_DESC *pDesc,
+			D3D12_CPU_DESCRIPTOR_HANDLE DestDescriptor)
+		{
+			mDevice->CreateRenderTargetView(pResource, pDesc, DestDescriptor);
+		}
+
+		void D3D12Device::CreateDepthStencilView(
+			ID3D12Resource *pResource,
+			const D3D12_DEPTH_STENCIL_VIEW_DESC *pDesc,
+			D3D12_CPU_DESCRIPTOR_HANDLE DestDescriptor)
+		{
+			mDevice->CreateDepthStencilView(pResource, pDesc, DestDescriptor);
+		}
+
+		UINT D3D12Device::GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE DescriptorHeapType)
+		{
+			return mDevice->GetDescriptorHandleIncrementSize(DescriptorHeapType);
+		}
+
+		ComPtr<ID3D12DescriptorHeap> D3D12Device::CreateDescriptorHeap(const D3D12_DESCRIPTOR_HEAP_DESC *pDescriptorHeapDesc)
+		{
+			ComPtr<ID3D12DescriptorHeap> heap;
+			mDevice->CreateDescriptorHeap(pDescriptorHeapDesc, IID_PPV_ARGS(&heap));
+			return heap;
+		}
+
+		ComPtr<ID3D12CommandAllocator> D3D12Device::CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE type)
+		{
+			ComPtr<ID3D12CommandAllocator> commandAllocator;
+			mDevice->CreateCommandAllocator(type, IID_PPV_ARGS(&commandAllocator));
+			return commandAllocator;
+		}
+
+		ComPtr<ID3D12CommandList> D3D12Device::CreateCommandList(
+			UINT nodeMask,
+			D3D12_COMMAND_LIST_TYPE type,
+			ID3D12CommandAllocator *pCommandAllocator,
+			ID3D12PipelineState *pInitialState)
+		{
+			ComPtr<ID3D12CommandList> commandList;
+			mDevice->CreateCommandList(nodeMask, type, pCommandAllocator, pInitialState, IID_PPV_ARGS(&commandList));
+			return commandList;
+		}
+
+		HRESULT D3D12Device::CheckFeatureSupport(D3D12_FEATURE Feature, void *pFeatureSupportData, UINT FeatureSupportDataSize)
+		{
+			return mDevice->CheckFeatureSupport(Feature, pFeatureSupportData, FeatureSupportDataSize);
+		}
+
+		ComPtr<ID3D12Fence> D3D12Device::CreateFence(UINT64 InitialValue, D3D12_FENCE_FLAGS Flags)
+		{
+			ComPtr<ID3D12Fence> fence;
+			mDevice->CreateFence(InitialValue, Flags, IID_PPV_ARGS(&fence));
+			return fence;
+		}
+
+		//native device method wrappers end
 	}
 }

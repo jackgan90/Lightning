@@ -64,18 +64,18 @@ namespace Lightning
 			mColor.a = static_cast<std::uint8_t>(255 * transparency);
 		}
 
-		void Primitive::Draw(Render::Renderer& renderer, const SceneRenderData& sceneRenderData)
+		void Primitive::Draw(IRenderer& renderer, const SceneRenderData& sceneRenderData)
 		{
 			if (mFirstDraw)
 			{
 				mFirstDraw = false;
-				GenerateRenderNode();
+				GenerateRenderNode(renderer);
 			}
 			mRenderNode.renderTargets.clear();
-			auto swapChain = Renderer::Instance()->GetSwapChain();
+			auto swapChain = renderer.GetSwapChain();
 			auto defaultRT = swapChain->GetDefaultRenderTarget();
 			mRenderNode.renderTargets.push_back(defaultRT);
-			mRenderNode.depthStencilBuffer = Renderer::Instance()->GetDefaultDepthStencilBuffer();
+			mRenderNode.depthStencilBuffer = renderer.GetDefaultDepthStencilBuffer();
 			if (sceneRenderData.camera)
 			{
 				mRenderNode.viewMatrix = sceneRenderData.camera->GetViewMatrix();
@@ -84,7 +84,7 @@ namespace Lightning
 			renderer.Draw(mRenderNode);
 		}
 
-		void Primitive::GenerateRenderNode()
+		void Primitive::GenerateRenderNode(IRenderer& renderer)
 		{
 			Render::VertexDescriptor descriptor;
 			Render::VertexComponent compPosition;
@@ -105,7 +105,7 @@ namespace Lightning
 			descriptor.components.push_back(compNormal);
 
 			mRenderNode.geometry = std::make_shared<Render::Geometry>();
-			auto pDevice = Renderer::Instance()->GetDevice();
+			auto pDevice = renderer.GetDevice();
 			auto vbSize = GetVertexBufferSize();
 			auto ibSize = GetIndexBufferSize();
 			mRenderNode.geometry->vbs[0] = pDevice->CreateVertexBuffer(vbSize, descriptor);
@@ -127,7 +127,7 @@ namespace Lightning
 			
 			mRenderNode.material = std::make_shared<Render::Material>();
 			mRenderNode.material->RequireSemantic(Render::RenderSemantics::WVP);
-			auto device = Renderer::Instance()->GetDevice();
+			auto device = renderer.GetDevice();
 			mRenderNode.material->SetShader(device->GetDefaultShader(Render::ShaderType::VERTEX));
 			mRenderNode.material->SetShader(device->GetDefaultShader(Render::ShaderType::FRAGMENT));
 			float a, r, g, b;

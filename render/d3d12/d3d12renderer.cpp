@@ -98,8 +98,7 @@ namespace Lightning
 
 		ISwapChain* D3D12Renderer::CreateSwapChain()
 		{
-			auto nativeDevice = static_cast<D3D12Device*>(mDevice.get())->GetNative();
-			return new D3D12SwapChain(mDXGIFactory.Get(), nativeDevice, GetCommandQueue(), mOutputWindow.get());
+			return new D3D12SwapChain(mDXGIFactory.Get(), GetCommandQueue(), mOutputWindow.get());
 		}
 
 		IDepthStencilBuffer* D3D12Renderer::CreateDepthStencilBuffer(std::size_t width, std::size_t height)

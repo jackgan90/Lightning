@@ -23,7 +23,7 @@ namespace Lightning
 		public:
 			Primitive();
 			virtual ~Primitive();
-			void Draw(Render::Renderer& renderer, const SceneRenderData& sceneRenderData) override;
+			void Draw(IRenderer& renderer, const SceneRenderData& sceneRenderData) override;
 			PrimitiveType GetPrimitiveType()const { return mRenderNode.geometry->primType; }
 			void SetWorldPosition(const Vector3f& pos) { mTransform.SetPosition(pos); }
 			Vector3f GetWorldPosition()const { return mTransform.GetPosition(); }
@@ -38,7 +38,7 @@ namespace Lightning
 			void SetTransparency(std::uint8_t transparency);
 			void SetTransparency(float transparency);
 		protected:
-			void GenerateRenderNode();
+			void GenerateRenderNode(IRenderer&);
 			virtual std::uint8_t *GetVertices() = 0;
 			virtual std::uint16_t *GetIndices() = 0;
 			virtual Vector3f GetScale() = 0;

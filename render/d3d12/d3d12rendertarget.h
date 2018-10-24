@@ -15,7 +15,7 @@ namespace Lightning
 		{
 		public:
 			friend class D3D12RenderTargetManager;
-			D3D12RenderTarget(const RenderTargetID rtID, const ComPtr<ID3D12Resource>& resource, ID3D12Device* pNativeDevice, ISwapChain* pSwapChain);
+			D3D12RenderTarget(const RenderTargetID rtID, const ComPtr<ID3D12Resource>& resource, ISwapChain* pSwapChain);
 			~D3D12RenderTarget()override;
 			bool IsSwapChainRenderTarget()const override;
 			RenderTargetID GetID() const override { return mID; }
