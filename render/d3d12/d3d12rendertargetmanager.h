@@ -5,9 +5,7 @@
 #include <d3d12.h>
 #include "irendertargetmanager.h"
 #include "d3d12device.h"
-#ifdef LIGHTNING_RENDER_MT
 #include <atomic>
-#endif
 
 namespace Lightning
 {
@@ -23,11 +21,7 @@ namespace Lightning
 			SharedRenderTargetPtr CreateRenderTarget()override;
 			SharedRenderTargetPtr CreateSwapChainRenderTarget(const ComPtr<ID3D12Resource>& resource, D3D12SwapChain* pSwapChain);
 		private:
-#ifdef LIGHTNING_RENDER_MT
 			std::atomic<RenderTargetID> mCurrentID;
-#else
-			RenderTargetID mCurrentID;
-#endif
 		};
 	}
 }

@@ -23,11 +23,7 @@ namespace Lightning
 		};
 		using SharedRenderTargetManagerPtr = std::shared_ptr<IRenderTargetManager>;
 
-#ifdef LIGHTNING_RENDER_MT
 		using RenderTargetMap = container::concurrent_unordered_map<RenderTargetID, SharedRenderTargetPtr>;
-#else
-		using RenderTargetMap = container::unordered_map<RenderTargetID, SharedRenderTargetPtr>;
-#endif
 		template<typename Derived>
 		class RenderTargetManager : public IRenderTargetManager, public Foundation::Singleton<Derived>
 		{
@@ -39,22 +35,18 @@ namespace Lightning
 			//Thread unsafe
 			void Synchronize()
 			{
-#ifdef LIGHTNING_RENDER_MT
 				for (auto it = mDestroyedTargetIDs.begin(); it != mDestroyedTargetIDs.end();++it)
 				{
 					mRenderTargets.unsafe_erase(*it);
 				}
 				mDestroyedTargetIDs.clear();
-#endif
 			}
 			//Thread safe
 			SharedRenderTargetPtr GetRenderTarget(const RenderTargetID targetID) override
 			{
 				static SharedRenderTargetPtr s_null_ptr;
-#ifdef LIGHTNING_RENDER_MT
 				if (mDestroyedTargetIDs.find(targetID) != mDestroyedTargetIDs.end())
 					return s_null_ptr;
-#endif
 
 				auto it = mRenderTargets.find(targetID);
 				if (it == mRenderTargets.end())
@@ -70,13 +62,7 @@ namespace Lightning
 
 			void DestroyRenderTarget(const RenderTargetID rtID)override
 			{
-#ifdef LIGHTNING_RENDER_MT
 				mDestroyedTargetIDs.insert(rtID);
-#else
-				auto it = mRenderTargets.find(rtID);
-				if (it != mRenderTargets.end())
-					mRenderTargets.erase(it);
-#endif
 			}
 		protected:
 			//Thread safe
@@ -85,9 +71,7 @@ namespace Lightning
 				mRenderTargets[rtID] = ptr;
 			}
 			RenderTargetMap mRenderTargets;
-#ifdef LIGHTNING_RENDER_MT
 			container::concurrent_unordered_set<RenderTargetID> mDestroyedTargetIDs;
-#endif
 		};
 	}
 }

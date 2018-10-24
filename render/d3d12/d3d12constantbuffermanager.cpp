@@ -30,11 +30,7 @@ namespace Lightning
 		D3D12ConstantBuffer D3D12ConstantBufferManager::AllocBuffer(std::size_t bufferSize)
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-#ifdef LIGHTNING_RENDER_MT
 			auto& bufferResources = mBufferResources[resourceIndex].local();
-#else
-			auto& bufferResources = mBufferResources[resourceIndex];
-#endif
 			auto genNewBuffer = bufferResources.empty();
 			if (!genNewBuffer)
 			{
@@ -74,18 +70,11 @@ namespace Lightning
 		void D3D12ConstantBufferManager::ResetBuffers(std::size_t frameIndex)
 		{
 			auto& bufferResources = mBufferResources[frameIndex];
-#ifdef LIGHTNING_RENDER_MT
 			for (auto it = bufferResources.begin(); it != bufferResources.end();++it)
 			{
 				if (it->size() > 1)
 					it->resize(1);
 			}
-#else
-			if (bufferResources.size() > 1)
-			{
-				bufferResources.resize(1);
-			}
-#endif
 		}
 	}
 }

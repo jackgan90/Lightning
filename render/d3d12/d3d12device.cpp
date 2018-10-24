@@ -101,11 +101,7 @@ namespace Lightning
 
 		ID3D12GraphicsCommandList* D3D12Device::GetGraphicsCommandList()
 		{
-#ifdef LIGHTNING_RENDER_MT
 			auto& frameResources = mFrameResources[mFrameResourceIndex].local();
-#else
-			auto& frameResources = mFrameResources[mFrameResourceIndex];
-#endif
 			return frameResources.GetCommandList();
 		}
 
@@ -609,16 +605,11 @@ namespace Lightning
 
 		void D3D12Device::GetAllCommandLists(std::size_t frameResourceIndex, container::vector<ID3D12CommandList*>& lists)
 		{
-#ifdef LIGHTNING_RENDER_MT
 			auto& frameResources = mFrameResources[frameResourceIndex];
 			for (auto it = frameResources.begin(); it != frameResources.end(); ++it)
 			{
 				lists.push_back(it->GetCommandList());
 			}
-#else
-			auto& frameResources = mFrameResources[frameResourceIndex];
-			lists.push_back(frameResources.GetCommandList());
-#endif
 		}
 
 		void D3D12Device::EndFrame(const std::size_t frameResourceIndex)
@@ -630,16 +621,11 @@ namespace Lightning
 			Device::BeginFrame(frameResourceIndex);
 			D3D12DescriptorHeapManager::Instance()->EraseTransientAllocation(frameResourceIndex);
 			D3D12ConstantBufferManager::Instance()->ResetBuffers(frameResourceIndex);
-#ifdef LIGHTNING_RENDER_MT
 			auto& frameResources = mFrameResources[frameResourceIndex];
 			for (auto it = frameResources.begin(); it != frameResources.end(); ++it)
 			{
 				it->Reset(true);
 			}
-#else
-			auto& frameResources = mFrameResources[frameResourceIndex];
-			frameResources.Reset(true);
-#endif
 		}
 
 		void D3D12Device::ApplyRenderTargets(const container::vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)

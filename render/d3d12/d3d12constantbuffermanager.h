@@ -2,12 +2,10 @@
 #include <d3d12.h>
 #include <wrl/client.h>
 #include <cstdint>
+#include "tbb/enumerable_thread_specific.h"
 #include "singleton.h"
 #include "container.h"
 #include "renderconstants.h"
-#ifdef LIGHTNING_RENDER_MT
-#include "tbb/enumerable_thread_specific.h"
-#endif
 
 namespace Lightning
 {
@@ -43,12 +41,8 @@ namespace Lightning
 				D3D12_GPU_VIRTUAL_ADDRESS virtualAddress;
 			};
 			D3D12ConstantBufferManager();
-#ifdef LIGHTNING_RENDER_MT
 			using ThreadedBufferResources = tbb::enumerable_thread_specific<container::vector<BufferResource>>;
 			ThreadedBufferResources mBufferResources[RENDER_FRAME_COUNT];
-#else
-			container::vector<BufferResource> mBufferResources[RENDER_FRAME_COUNT];
-#endif
 			static constexpr std::size_t MIN_BUFFER_SIZE = 2048 * 128;
 			static inline constexpr std::size_t AlignedSize(std::size_t size, std::size_t alignment)
 			{

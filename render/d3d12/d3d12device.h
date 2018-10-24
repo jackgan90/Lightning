@@ -3,6 +3,7 @@
 #include <dxgi1_4.h>
 #include <wrl\client.h>
 #include <memory>
+#include "tbb/enumerable_thread_specific.h"
 #include "container.h"
 #include "device.h"
 #include "stackallocator.h"
@@ -10,9 +11,6 @@
 #include "d3d12shader.h"
 #include "d3d12shadermanager.h"
 #include "d3d12frameresources.h"
-#ifdef LIGHTNING_RENDER_MT
-#include "tbb/enumerable_thread_specific.h"
-#endif
 
 
 namespace Lightning
@@ -103,11 +101,7 @@ namespace Lightning
 			ComPtr<ID3D12CommandQueue> mCommandQueue;
 			PipelineCacheMap mPipelineCache;
 			RootSignatureMap mRootSignatures;
-#ifdef LIGHTNING_RENDER_MT
 			tbb::enumerable_thread_specific<D3D12FrameResources> mFrameResources[RENDER_FRAME_COUNT];
-#else
-			D3D12FrameResources mFrameResources[RENDER_FRAME_COUNT];
-#endif
 		};
 	}
 }
