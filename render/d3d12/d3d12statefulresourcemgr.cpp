@@ -37,7 +37,7 @@ namespace Lightning
 					auto globalState = resource->GetGlobalState();
 					if (localFirstState != globalState)
 					{
-						CD3DX12_RESOURCE_BARRIER desc;
+						D3D12_RESOURCE_BARRIER desc;
 						ZeroMemory(&desc, sizeof(desc));
 						D3D12_RESOURCE_BARRIER &barrier = desc;
 						desc.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -50,6 +50,7 @@ namespace Lightning
 					}
 					resource->UpdateGlobalState(localFinalState);
 				}
+				mCmdListResources[cmdList].clear();
 				if (!barrierDescs.empty())
 				{
 					auto pMem = g_RenderAllocator.Allocate<D3D12_RESOURCE_BARRIER>(barrierDescs.size());
@@ -85,5 +86,11 @@ namespace Lightning
 			auto& encoder = mStateFixCmdLists[mFixCmdListIndex++];
 			return static_cast<ID3D12GraphicsCommandList*>(encoder.commandList.Get());
 		}
+
+		void D3D12StatefulResourceMgr::Clear()
+		{
+			mStateFixCmdLists.clear();
+		}
+
 	}
 }

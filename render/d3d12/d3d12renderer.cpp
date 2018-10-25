@@ -72,6 +72,7 @@ namespace Lightning
 			D3D12RenderTargetManager::Instance()->Clear();
 			D3D12DescriptorHeapManager::Instance()->Clear();
 			D3D12ConstantBufferManager::Instance()->Clear();
+			D3D12StatefulResourceMgr::Instance()->Clear();
 			mDXGIFactory.Reset();
 			REPORT_LIVE_OBJECTS;
 			LOG_INFO("Finished reporting live objects!");

@@ -13,6 +13,7 @@ namespace Lightning
 		public:
 			void Notify(ID3D12GraphicsCommandList* cmdList, D3D12StatefulResource* resource);
 			void FixResourceStates(container::vector<ID3D12CommandList*>& commandLists);
+			void Clear();
 		private:
 			struct D3D12CommandEncoder
 			{
