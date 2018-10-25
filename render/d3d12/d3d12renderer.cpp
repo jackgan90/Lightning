@@ -235,13 +235,13 @@ namespace Lightning
 
 			D3D12RenderTargetManager::Instance()->Synchronize();
 			renderTarget->TransitToPresentState(mBackCmdEncoder[mFrameResourceIndex].GetCommandList());
+			D3D12StatefulResourceMgr::Instance()->FixResourceStates(commandLists);
 
 			for (auto cmdList : commandLists)
 			{
 				static_cast<ID3D12GraphicsCommandList*>(cmdList)->Close();
 			}
 			auto commandQueue = GetCommandQueue();
-			D3D12StatefulResourceMgr::Instance()->FixResourceStates(commandLists);
 			commandQueue->ExecuteCommandLists(commandLists.size(), &commandLists[0]);
 			Renderer::EndFrame();
 		}

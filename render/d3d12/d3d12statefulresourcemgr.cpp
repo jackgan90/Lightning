@@ -57,7 +57,6 @@ namespace Lightning
 					std::memcpy(pMem, &barrierDescs[0], sizeof(D3D12_RESOURCE_BARRIER) * barrierDescs.size());
 					auto commandList = GetCommandList();
 					commandList->ResourceBarrier(barrierDescs.size(), pMem);
-					commandList->Close();
 					commandLists.insert(commandLists.begin() + i, static_cast<ID3D12CommandList*>(commandList));
 					++i;
 				}
@@ -67,23 +66,27 @@ namespace Lightning
 
 		ID3D12GraphicsCommandList* D3D12StatefulResourceMgr::GetCommandList()
 		{
-			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
-			if (mFixCmdListIndex >= mStateFixCmdLists.size())
+			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
+			auto& commandLists = mStateFixCmdLists[resourceIndex];
+
+			if (mFixCmdListIndex >= commandLists.size())
 			{
-				mStateFixCmdLists.emplace_back();
+				commandLists.emplace_back();
 			}
 			else
 			{
-				auto& encoder = mStateFixCmdLists[mFixCmdListIndex];
-				encoder.Reset();
+				commandLists[mFixCmdListIndex].Reset();
 			}
-			auto& encoder = mStateFixCmdLists[mFixCmdListIndex++];
+			auto& encoder = commandLists[mFixCmdListIndex++];
 			return encoder.GetCommandList();
 		}
 
 		void D3D12StatefulResourceMgr::Clear()
 		{
-			mStateFixCmdLists.clear();
+			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
+			{
+				mStateFixCmdLists[i].clear();
+			}
 		}
 
 	}
