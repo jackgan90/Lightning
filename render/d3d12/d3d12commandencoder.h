@@ -16,6 +16,7 @@ namespace Lightning
 			//Thread unsafe
 			void Reset();
 			void Close();
+			void Clear();
 			ID3D12GraphicsCommandList* GetCommandList();
 		private:
 			void CreateResources();

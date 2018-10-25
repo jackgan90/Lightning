@@ -19,6 +19,12 @@ namespace Lightning
 			}
 		}
 
+		void D3D12CommandEncoder::Clear()
+		{
+			mCmdAllocator.Reset();
+			mCmdList.Reset();
+		}
+
 		void D3D12CommandEncoder::Reset()
 		{
 			if (mCmdList)

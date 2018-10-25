@@ -75,7 +75,16 @@ namespace Lightning
 			D3D12DescriptorHeapManager::Instance()->Clear();
 			D3D12ConstantBufferManager::Instance()->Clear();
 			D3D12StatefulResourceMgr::Instance()->Clear();
+			mCommandQueue.Reset();
 			mDXGIFactory.Reset();
+			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
+			{
+				mFrontCmdEncoder[i].Clear();
+				mBackCmdEncoder[i].Clear();
+				mCmdEncoders[i].for_each([](D3D12CommandEncoder& encoder) {
+					encoder.Clear();
+				});
+			}
 			REPORT_LIVE_OBJECTS;
 			LOG_INFO("Finished reporting live objects!");
 		}
