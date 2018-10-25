@@ -66,9 +66,8 @@ namespace Lightning
 		{
 			INVOKE_CALLBACK(OnEndFrame)
 			auto fence = mFrameResources[mFrameResourceIndex].fence;
-			auto fenceValue = fence->GetTargetValue() + 1;
 			mFrameResources[mFrameResourceIndex].frame = mFrameCount;
-			fence->SetTargetValue(fenceValue);
+			fence->SetTargetValue(mFrameCount);
 			mDevice->EndFrame(mFrameResourceIndex);
 			mSwapChain->Present();
 			g_RenderAllocator.FinishFrame(mFrameCount);
