@@ -67,17 +67,17 @@ namespace Lightning
 		ID3D12GraphicsCommandList* D3D12StatefulResourceMgr::GetCommandList()
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			auto& commandLists = mEncoders[resourceIndex];
+			auto& encoders = mEncoders[resourceIndex];
 
-			if (mEncoderIndex >= commandLists.size())
+			if (mEncoderIndex >= encoders.size())
 			{
-				commandLists.emplace_back();
+				encoders.emplace_back();
 			}
 			else
 			{
-				commandLists[mEncoderIndex].Reset();
+				encoders[mEncoderIndex].Reset();
 			}
-			auto& encoder = commandLists[mEncoderIndex++];
+			auto& encoder = encoders[mEncoderIndex++];
 			return encoder.GetCommandList();
 		}
 
