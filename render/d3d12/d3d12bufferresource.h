@@ -1,6 +1,7 @@
 #pragma once
 #include <wrl\client.h>
 #include "d3d12device.h"
+#include "d3d12statefulresource.h"
 
 namespace Lightning
 {
@@ -15,10 +16,12 @@ namespace Lightning
 			std::uint8_t* Lock(std::size_t start, std::size_t size);
 			void Unlock(std::size_t start, std::size_t size);
 			void Commit();
-			D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress()const { return mResource->GetGPUVirtualAddress(); }
+			D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress()const { 
+				return (*mResource)->GetGPUVirtualAddress();
+			}
 		private:
-			ComPtr<ID3D12Resource> mIntermediateRes;
-			ComPtr<ID3D12Resource> mResource;
+			D3D12StatefulResourcePtr mIntermediateRes;
+			D3D12StatefulResourcePtr mResource;
 			D3D12_RANGE mDirtyRange;
 			GPUBufferType mBufferType;
 			D3D12Device* mDevice;

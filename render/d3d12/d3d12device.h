@@ -11,6 +11,7 @@
 #include "d3d12shader.h"
 #include "d3d12shadermanager.h"
 #include "d3d12frameresources.h"
+#include "d3d12statefulresource.h"
 
 
 namespace Lightning
@@ -43,7 +44,7 @@ namespace Lightning
 			void GetAllCommandLists(std::size_t frameResourceIndex, container::vector<ID3D12CommandList*>& lists);
 			void ApplyRenderTargets(const container::vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)override;
 			//native device method wrapper start
-			ComPtr<ID3D12Resource> CreateCommittedResource(
+			D3D12StatefulResourcePtr CreateCommittedResource(
 				const D3D12_HEAP_PROPERTIES *pHeapProperties,
 				D3D12_HEAP_FLAGS HeapFlags,
 				const D3D12_RESOURCE_DESC *pDesc,

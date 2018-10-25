@@ -3,6 +3,7 @@
 #include <wrl\client.h>
 #include "idepthstencilbuffer.h"
 #include "d3d12descriptorheapmanager.h"
+#include "d3d12statefulresource.h"
 
 namespace Lightning
 {
@@ -25,7 +26,7 @@ namespace Lightning
 			std::uint32_t GetHeight()const override { return mHeight; }
 		private:
 			void CreateResource();
-			ComPtr<ID3D12Resource> mResource;
+			D3D12StatefulResourcePtr mResource;
 			float mDepthClearValue;
 			std::uint32_t mStencilClearValue;
 			RenderFormat mFormat;

@@ -6,6 +6,7 @@
 #include "singleton.h"
 #include "container.h"
 #include "renderconstants.h"
+#include "d3d12statefulresource.h"
 
 namespace Lightning
 {
@@ -34,7 +35,7 @@ namespace Lightning
 		private:
 			struct BufferResource
 			{
-				ComPtr<ID3D12Resource> resource;
+				D3D12StatefulResourcePtr resource;
 				std::size_t offset;
 				std::size_t size;
 				void *mapAddress;

@@ -92,7 +92,8 @@ namespace Lightning
 				{
 					throw SwapChainInitException("Failed to get d3d12 swap chain buffer.");
 				}
-				auto renderTarget = rtMgr->CreateSwapChainRenderTarget(resources[i], this);
+				auto statefulResource = std::make_shared<D3D12StatefulResource>(resources[i], D3D12_RESOURCE_STATE_PRESENT);
+				auto renderTarget = rtMgr->CreateSwapChainRenderTarget(statefulResource, this);
 				mRenderTargets[i] = renderTarget->GetID();
 			}
 		}

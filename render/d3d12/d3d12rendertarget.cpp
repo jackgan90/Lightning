@@ -5,7 +5,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		D3D12RenderTarget::D3D12RenderTarget(const RenderTargetID rtID, const ComPtr<ID3D12Resource>& resource, ISwapChain* pSwapChain)
+		D3D12RenderTarget::D3D12RenderTarget(const RenderTargetID rtID, const D3D12StatefulResourcePtr& resource, ISwapChain* pSwapChain)
 			:mResource(resource)
 			,mIsSwapChainTarget(true)
 			,mID(rtID)
@@ -15,12 +15,11 @@ namespace Lightning
 			mSampleQuality = pSwapChain->GetSampleQuality();
 			mFormat = pSwapChain->GetRenderFormat();
 			mHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, false, 1, false);
-			device->CreateRenderTargetView(resource.Get(), nullptr, mHeap->cpuHandle);
+			device->CreateRenderTargetView(*resource, nullptr, mHeap->cpuHandle);
 		}
 
 		D3D12RenderTarget::~D3D12RenderTarget()
 		{
-			mResource.Reset();
 			D3D12DescriptorHeapManager::Instance()->Deallocate(mHeap);
 			mHeap = nullptr;
 		}

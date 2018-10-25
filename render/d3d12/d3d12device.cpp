@@ -145,13 +145,13 @@ namespace Lightning
 		{
 			D3D12RenderTarget *pTarget = static_cast<D3D12RenderTarget*>(rt.get());
 			assert(pTarget);
-			ComPtr<ID3D12Resource> nativeRenderTarget = pTarget->GetNative();
+			auto nativeRenderTarget = pTarget->GetNative();
 			//should check the type of the rt to transit it from previous state to render target state
 			//currently just check back buffer render target
 			auto commandList = GetGraphicsCommandList();
 			if (rt->IsSwapChainRenderTarget())
 			{
-				commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget.Get(),
+				commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget,
 					D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 			}
 
@@ -700,7 +700,7 @@ namespace Lightning
 			commandList->DrawIndexedInstanced(indexCountPerInstance, instanceCount, firstIndex, indexDataOffset, instanceDataOffset);
 		}
 		//native device method wrappers begin
-		ComPtr<ID3D12Resource> D3D12Device::CreateCommittedResource(
+		D3D12StatefulResourcePtr D3D12Device::CreateCommittedResource(
 			const D3D12_HEAP_PROPERTIES *pHeapProperties,
 			D3D12_HEAP_FLAGS HeapFlags,
 			const D3D12_RESOURCE_DESC *pDesc,
@@ -711,7 +711,7 @@ namespace Lightning
 			mDevice->CreateCommittedResource(pHeapProperties, HeapFlags, pDesc,
 				InitialResourceState, pOptimizedClearValue, IID_PPV_ARGS(&resource));
 
-			return resource;
+			return std::make_shared<D3D12StatefulResource>(resource, InitialResourceState);
 		}
 
 		void D3D12Device::CreateRenderTargetView(

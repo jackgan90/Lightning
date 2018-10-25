@@ -2,8 +2,11 @@
 #include <wrl\client.h>
 #include <d3d12.h>
 #include <cstdint>
+#include <memory>
+#include "boost/noncopyable.hpp"
 #include "container.h"
 #include "threadlocalsingleton.h"
+#include "tbb/spin_mutex.h"
 
 namespace Lightning
 {
@@ -11,11 +14,13 @@ namespace Lightning
 	{
 		using Microsoft::WRL::ComPtr;
 		using Foundation::container;
-		class D3D12StatefulResource
+		class D3D12StatefulResource : private boost::noncopyable
 		{
 		public:
-			D3D12StatefulResource(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState);
+			explicit D3D12StatefulResource(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState);
 			void TransitTo(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState);
+			ID3D12Resource* operator->()const { return mResource.Get();}
+			operator ID3D12Resource*()const{return mResource.Get();}
 		private:
 			struct ResourceState
 			{
@@ -29,7 +34,9 @@ namespace Lightning
 			using CommandListResourceStates = container::unordered_map<ID3D12CommandList*, ResourceState>;
 			ComPtr<ID3D12Resource> mResource;
 			ResourceState mGlobalState;
-			Foundation::ThreadLocalSingleton<CommandListResourceStates> mLocalStates;
+			CommandListResourceStates mLocalStates;
+			tbb::spin_mutex mtxLocalStates;
 		};
+		using D3D12StatefulResourcePtr = std::shared_ptr<D3D12StatefulResource>;
 	}
 }

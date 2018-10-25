@@ -148,7 +148,7 @@ namespace Lightning
 			container::vector<ID3D12CommandList*> commandLists;
 			static_cast<D3D12Device*>(mDevice.get())->GetAllCommandLists(mCurrentBackBufferIndex, commandLists);
 			D3D12RenderTargetManager::Instance()->Synchronize();
-			static_cast<ID3D12GraphicsCommandList*>(commandLists.back())->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRT->GetNative().Get(),
+			static_cast<ID3D12GraphicsCommandList*>(commandLists.back())->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRT->GetNative(),
 				D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
 			for (auto cmdList : commandLists)
 			{

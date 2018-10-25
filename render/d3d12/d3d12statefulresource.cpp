@@ -1,5 +1,6 @@
 #include <d3dx12.h>
 #include "d3d12statefulresource.h"
+#include "d3d12statefulresourcemgr.h"
 #include "renderer.h"
 
 namespace Lightning
@@ -16,25 +17,29 @@ namespace Lightning
 		void D3D12StatefulResource::TransitTo(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState)
 		{
 			auto currentFrame = Renderer::Instance()->GetCurrentFrameCount();
-			auto localStates = *mLocalStates;
-			auto& localState = localStates[commandList];
+			ResourceState *pLocalState{ nullptr };
+			{
+				tbb::spin_mutex::scoped_lock lock(mtxLocalStates);
+				pLocalState = &mLocalStates[commandList];
+			}
 			//for every command list the first access in a frame should treat this resource as if it is in unknown state
-			if (localState.lastAccessFrame < currentFrame)
+			if (pLocalState->lastAccessFrame < currentFrame)
 			{
 				//record first state after initial transition
 				//we will fix the state before the execution of this command list
-				localState.firstState = newState;
+				pLocalState->firstState = newState;
+				D3D12StatefulResourceMgr::Instance()->Notify(commandList, this);
 			}
 			else
 			{
 				//not the first time this command list request transition.Execute the transition right away
-				if (localState.state != newState)
+				if (pLocalState->state != newState)
 				{
-					commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mResource.Get(), localState.state, newState));
+					commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mResource.Get(), pLocalState->state, newState));
 				}
 			}
-			localState.lastAccessFrame = currentFrame;
-			localState.state = newState;
+			pLocalState->lastAccessFrame = currentFrame;
+			pLocalState->state = newState;
 		}
 	}
 }

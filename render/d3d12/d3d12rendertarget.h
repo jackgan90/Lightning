@@ -4,6 +4,7 @@
 #include "iswapchain.h"
 #include "irendertarget.h"
 #include "d3d12descriptorheapmanager.h"
+#include "d3d12statefulresource.h"
 
 namespace Lightning
 {
@@ -15,18 +16,18 @@ namespace Lightning
 		{
 		public:
 			friend class D3D12RenderTargetManager;
-			D3D12RenderTarget(const RenderTargetID rtID, const ComPtr<ID3D12Resource>& resource, ISwapChain* pSwapChain);
+			D3D12RenderTarget(const RenderTargetID rtID, const D3D12StatefulResourcePtr& resource, ISwapChain* pSwapChain);
 			~D3D12RenderTarget()override;
 			bool IsSwapChainRenderTarget()const override;
 			RenderTargetID GetID() const override { return mID; }
-			ComPtr<ID3D12Resource> GetNative()const { return mResource; }
+			ID3D12Resource* GetNative()const { return (*mResource); }
 			const D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return mHeap->cpuHandle; }
 			const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle()const { return mHeap->gpuHandle; }
 			std::size_t GetSampleCount()override { return mSampleCount; }
 			int GetSampleQuality()override { return mSampleQuality; }
 			RenderFormat GetRenderFormat()const override { return mFormat; }
 		private:
-			ComPtr<ID3D12Resource> mResource;
+			D3D12StatefulResourcePtr mResource;
 			bool mIsSwapChainTarget;
 			RenderTargetID mID;
 			DescriptorHeap *mHeap;

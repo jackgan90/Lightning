@@ -27,7 +27,7 @@ namespace Lightning
 			if (mLockedPtr)
 				return nullptr;
 			static const D3D12_RANGE readRange{0, 0};
-			mIntermediateRes->Map(0, &readRange, &mLockedPtr);
+			(*mIntermediateRes)->Map(0, &readRange, &mLockedPtr);
 			return reinterpret_cast<std::uint8_t*>(mLockedPtr) + start;
 		}
 
@@ -41,7 +41,7 @@ namespace Lightning
 			if (end > mDirtyRange.End)
 				mDirtyRange.End = end;
 			D3D12_RANGE dirtyRange{start, start + size};
-			mIntermediateRes->Unmap(0, &dirtyRange);
+			(*mIntermediateRes)->Unmap(0, &dirtyRange);
 			mLockedPtr = nullptr;
 		}
 
@@ -54,12 +54,12 @@ namespace Lightning
 				bufferState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
 
 			auto commandList = mDevice->GetGraphicsCommandList();
-			commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mResource.Get(), bufferState, D3D12_RESOURCE_STATE_COPY_DEST));
+			commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition((*mResource), bufferState, D3D12_RESOURCE_STATE_COPY_DEST));
 			
 			commandList->CopyBufferRegion(
-				mResource.Get(), mDirtyRange.Begin, mIntermediateRes.Get(), mDirtyRange.Begin, mDirtyRange.End - mDirtyRange.Begin);
+				(*mResource), mDirtyRange.Begin, (*mIntermediateRes), mDirtyRange.Begin, mDirtyRange.End - mDirtyRange.Begin);
 
-			commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(mResource.Get(), D3D12_RESOURCE_STATE_COPY_DEST, bufferState));
+			commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition((*mResource), D3D12_RESOURCE_STATE_COPY_DEST, bufferState));
 			mDirtyRange.Begin = mDirtyRange.End = 0;
 		}
 	}
