@@ -24,7 +24,7 @@ namespace Lightning
 		{
 			tbb::spin_mutex::scoped_lock lock(mtxResources);
 			std::size_t i{ 0 };
-			mFixCmdListIndex = 0;
+			mEncoderIndex = 0;
 			container::vector<D3D12_RESOURCE_BARRIER> barrierDescs;
 			while (i < commandLists.size())
 			{
@@ -67,17 +67,17 @@ namespace Lightning
 		ID3D12GraphicsCommandList* D3D12StatefulResourceMgr::GetCommandList()
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			auto& commandLists = mStateFixCmdLists[resourceIndex];
+			auto& commandLists = mEncoders[resourceIndex];
 
-			if (mFixCmdListIndex >= commandLists.size())
+			if (mEncoderIndex >= commandLists.size())
 			{
 				commandLists.emplace_back();
 			}
 			else
 			{
-				commandLists[mFixCmdListIndex].Reset();
+				commandLists[mEncoderIndex].Reset();
 			}
-			auto& encoder = commandLists[mFixCmdListIndex++];
+			auto& encoder = commandLists[mEncoderIndex++];
 			return encoder.GetCommandList();
 		}
 
@@ -85,7 +85,7 @@ namespace Lightning
 		{
 			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
-				mStateFixCmdLists[i].clear();
+				mEncoders[i].clear();
 			}
 		}
 

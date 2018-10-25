@@ -23,8 +23,8 @@ namespace Lightning
 			D3D12StatefulResourceMgr() = default;
 			container::unordered_map<ID3D12GraphicsCommandList*, CommandListResources> mCmdListResources;
 			//command lists that only use to fix resource states.
-			container::vector<D3D12CommandEncoder> mStateFixCmdLists[RENDER_FRAME_COUNT];
-			std::size_t mFixCmdListIndex;
+			container::vector<D3D12CommandEncoder> mEncoders[RENDER_FRAME_COUNT];
+			std::size_t mEncoderIndex;
 		};
 	}
 }
