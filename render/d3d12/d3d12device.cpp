@@ -145,14 +145,12 @@ namespace Lightning
 		{
 			D3D12RenderTarget *pTarget = static_cast<D3D12RenderTarget*>(rt.get());
 			assert(pTarget);
-			auto nativeRenderTarget = pTarget->GetNative();
 			//should check the type of the rt to transit it from previous state to render target state
 			//currently just check back buffer render target
 			auto commandList = GetGraphicsCommandList();
 			if (rt->IsSwapChainRenderTarget())
 			{
-				commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRenderTarget,
-					D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+				pTarget->TransitToRTState(commandList);
 			}
 
 			//cache render target to prevent it from being released before GPU execute ClearRenderTargetView

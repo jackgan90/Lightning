@@ -28,5 +28,15 @@ namespace Lightning
 		{
 			return mIsSwapChainTarget;
 		}
+
+		void D3D12RenderTarget::TransitToRTState(ID3D12GraphicsCommandList* commandList)
+		{
+			mResource->TransitTo(commandList, D3D12_RESOURCE_STATE_RENDER_TARGET);
+		}
+
+		void D3D12RenderTarget::TransitToPresentState(ID3D12GraphicsCommandList* commandList)
+		{
+			mResource->TransitTo(commandList, D3D12_RESOURCE_STATE_PRESENT);
+		}
 	}
 }

@@ -10,6 +10,7 @@
 #include "logger.h"
 #include "common.h"
 #include "framememoryallocator.h"
+#include "d3d12statefulresourcemgr.h"
 
 namespace Lightning
 {
@@ -144,17 +145,19 @@ namespace Lightning
 		void D3D12Renderer::EndFrame()
 		{
 			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
-			auto nativeRT = static_cast<D3D12RenderTarget*>(defaultRenderTarget.get());
+			auto renderTarget = static_cast<D3D12RenderTarget*>(defaultRenderTarget.get());
 			container::vector<ID3D12CommandList*> commandLists;
 			static_cast<D3D12Device*>(mDevice.get())->GetAllCommandLists(mCurrentBackBufferIndex, commandLists);
 			D3D12RenderTargetManager::Instance()->Synchronize();
-			static_cast<ID3D12GraphicsCommandList*>(commandLists.back())->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(nativeRT->GetNative(),
-				D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+			auto lastCommandList = static_cast<ID3D12GraphicsCommandList*>(commandLists.back());
+			renderTarget->TransitToPresentState(lastCommandList);
+
 			for (auto cmdList : commandLists)
 			{
 				static_cast<ID3D12GraphicsCommandList*>(cmdList)->Close();
 			}
 			auto commandQueue = GetCommandQueue();
+			D3D12StatefulResourceMgr::Instance()->FixResourceStates(commandLists);
 			commandQueue->ExecuteCommandLists(commandLists.size(), &commandLists[0]);
 			Renderer::EndFrame();
 		}

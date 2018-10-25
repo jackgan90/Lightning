@@ -19,6 +19,9 @@ namespace Lightning
 		public:
 			explicit D3D12StatefulResource(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState);
 			void TransitTo(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState);
+			void GetLocalStates(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES& firstState, D3D12_RESOURCE_STATES& finalState);
+			D3D12_RESOURCE_STATES GetGlobalState()const { return mGlobalState.state; }
+			void UpdateGlobalState(D3D12_RESOURCE_STATES state) { mGlobalState.state = state; }
 			ID3D12Resource* operator->()const { return mResource.Get();}
 			operator ID3D12Resource*()const{return mResource.Get();}
 		private:
@@ -31,7 +34,7 @@ namespace Lightning
 				//basically this state is only for local state.Global state doesn't need it
 				D3D12_RESOURCE_STATES firstState;
 			};
-			using CommandListResourceStates = container::unordered_map<ID3D12CommandList*, ResourceState>;
+			using CommandListResourceStates = container::unordered_map<ID3D12GraphicsCommandList*, ResourceState>;
 			ComPtr<ID3D12Resource> mResource;
 			ResourceState mGlobalState;
 			CommandListResourceStates mLocalStates;

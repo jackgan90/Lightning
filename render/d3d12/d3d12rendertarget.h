@@ -20,12 +20,13 @@ namespace Lightning
 			~D3D12RenderTarget()override;
 			bool IsSwapChainRenderTarget()const override;
 			RenderTargetID GetID() const override { return mID; }
-			ID3D12Resource* GetNative()const { return (*mResource); }
 			const D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return mHeap->cpuHandle; }
 			const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle()const { return mHeap->gpuHandle; }
 			std::size_t GetSampleCount()override { return mSampleCount; }
 			int GetSampleQuality()override { return mSampleQuality; }
 			RenderFormat GetRenderFormat()const override { return mFormat; }
+			void TransitToRTState(ID3D12GraphicsCommandList* commandList);
+			void TransitToPresentState(ID3D12GraphicsCommandList* commandList);
 		private:
 			D3D12StatefulResourcePtr mResource;
 			bool mIsSwapChainTarget;

@@ -41,5 +41,13 @@ namespace Lightning
 			pLocalState->lastAccessFrame = currentFrame;
 			pLocalState->state = newState;
 		}
+
+		void D3D12StatefulResource::GetLocalStates(ID3D12GraphicsCommandList* cmdList, 
+			D3D12_RESOURCE_STATES& firstState, D3D12_RESOURCE_STATES& finalState)
+		{
+			tbb::spin_mutex::scoped_lock lock(mtxLocalStates);
+			firstState = mLocalStates[cmdList].firstState;
+			finalState = mLocalStates[cmdList].state;
+		}
 	}
 }

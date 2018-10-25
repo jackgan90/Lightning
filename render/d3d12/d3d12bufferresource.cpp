@@ -54,12 +54,12 @@ namespace Lightning
 				bufferState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
 
 			auto commandList = mDevice->GetGraphicsCommandList();
-			commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition((*mResource), bufferState, D3D12_RESOURCE_STATE_COPY_DEST));
+			mResource->TransitTo(commandList, D3D12_RESOURCE_STATE_COPY_DEST);
 			
 			commandList->CopyBufferRegion(
 				(*mResource), mDirtyRange.Begin, (*mIntermediateRes), mDirtyRange.Begin, mDirtyRange.End - mDirtyRange.Begin);
 
-			commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition((*mResource), D3D12_RESOURCE_STATE_COPY_DEST, bufferState));
+			mResource->TransitTo(commandList, bufferState);
 			mDirtyRange.Begin = mDirtyRange.End = 0;
 		}
 	}
