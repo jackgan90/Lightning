@@ -70,21 +70,15 @@ namespace Lightning
 			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
 			if (mFixCmdListIndex >= mStateFixCmdLists.size())
 			{
-				D3D12CommandEncoder encoder;
-				encoder.commandAllocator = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT);
-				encoder.commandList = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, 
-					encoder.commandAllocator.Get(), nullptr);
-				mStateFixCmdLists.push_back(encoder);
+				mStateFixCmdLists.emplace_back();
 			}
 			else
 			{
 				auto& encoder = mStateFixCmdLists[mFixCmdListIndex];
-				encoder.commandAllocator->Reset();
-				auto commandList = static_cast<ID3D12GraphicsCommandList*>(encoder.commandList.Get());
-				commandList->Reset(encoder.commandAllocator.Get(), nullptr);
+				encoder.Reset();
 			}
 			auto& encoder = mStateFixCmdLists[mFixCmdListIndex++];
-			return static_cast<ID3D12GraphicsCommandList*>(encoder.commandList.Get());
+			return encoder.GetCommandList();
 		}
 
 		void D3D12StatefulResourceMgr::Clear()

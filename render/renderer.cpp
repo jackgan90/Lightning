@@ -19,7 +19,7 @@ namespace Lightning
 		Foundation::FrameMemoryAllocator g_RenderAllocator;
 		Renderer::Renderer(const SharedFileSystemPtr& fs, const SharedWindowPtr& pWindow, RenderPassType renderPassType) :
 			mOutputWindow(pWindow),
-			mFrameCount(0), mFs(fs), mCurrentBackBufferIndex(0), mClearColor(0.5f, 0.5f, 0.5f, 1.0f)
+			mFrameCount(0), mFs(fs), mFrameResourceIndex(0), mClearColor(0.5f, 0.5f, 0.5f, 1.0f)
 		{
 			assert(!sInstance);
 			sInstance = this;
@@ -47,17 +47,17 @@ namespace Lightning
 		{
 			WaitForPreviousFrame(false);
 			mFrameCount++;
-			mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
-			mRenderQueue[mCurrentBackBufferIndex].clear();
-			mDevice->BeginFrame(mCurrentBackBufferIndex);
+			mFrameResourceIndex = mSwapChain->GetCurrentBackBufferIndex();
+			mRenderQueue[mFrameResourceIndex].clear();
+			mDevice->BeginFrame(mFrameResourceIndex);
 			INVOKE_CALLBACK(OnBeginFrame)
 		}
 
 		void Renderer::DoFrame()
 		{
 			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
-			mDevice->ClearRenderTarget(defaultRenderTarget, mClearColor);
-			mDevice->ClearDepthStencilBuffer(mDefaultDepthStencilBuffer, DepthStencilClearFlags::CLEAR_DEPTH | DepthStencilClearFlags::CLEAR_STENCIL,
+			ClearRenderTarget(defaultRenderTarget, mClearColor);
+			ClearDepthStencilBuffer(mDefaultDepthStencilBuffer, DepthStencilClearFlags::CLEAR_DEPTH | DepthStencilClearFlags::CLEAR_STENCIL,
 				mDefaultDepthStencilBuffer->GetDepthClearValue(), mDefaultDepthStencilBuffer->GetStencilClearValue(), nullptr);
 			INVOKE_CALLBACK(OnDoFrame)
 		}
@@ -65,11 +65,11 @@ namespace Lightning
 		void Renderer::EndFrame()
 		{
 			INVOKE_CALLBACK(OnEndFrame)
-			auto fence = mFrameResources[mCurrentBackBufferIndex].fence;
+			auto fence = mFrameResources[mFrameResourceIndex].fence;
 			auto fenceValue = fence->GetTargetValue() + 1;
-			mFrameResources[mCurrentBackBufferIndex].frame = mFrameCount;
+			mFrameResources[mFrameResourceIndex].frame = mFrameCount;
 			fence->SetTargetValue(fenceValue);
-			mDevice->EndFrame(mCurrentBackBufferIndex);
+			mDevice->EndFrame(mFrameResourceIndex);
 			mSwapChain->Present();
 			g_RenderAllocator.FinishFrame(mFrameCount);
 		}
@@ -106,7 +106,7 @@ namespace Lightning
 
 		void Renderer::Draw(const RenderNode& item)
 		{
-			mRenderQueue[mCurrentBackBufferIndex].push_back(item);
+			mRenderQueue[mFrameResourceIndex].push_back(item);
 		}
 
 		void Renderer::AddRenderPass(RenderPassType type)
@@ -126,7 +126,7 @@ namespace Lightning
 
 		std::size_t Renderer::GetFrameResourceIndex()const
 		{
-			return mCurrentBackBufferIndex;
+			return mFrameResourceIndex;
 		}
 
 		void Renderer::RegisterCallback(IRendererCallback* callback)
@@ -143,7 +143,7 @@ namespace Lightning
 			{
 				mFrameResources[i].fence = CreateRenderFence();
 			}
-			mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
+			mFrameResourceIndex = mSwapChain->GetCurrentBackBufferIndex();
 		}
 
 		void Renderer::ShutDown()
@@ -162,7 +162,7 @@ namespace Lightning
 
 		const RenderQueue& Renderer::GetRenderQueue()
 		{
-			return mRenderQueue[mCurrentBackBufferIndex];
+			return mRenderQueue[mFrameResourceIndex];
 		}
 
 		void Renderer::WaitForPreviousFrame(bool waitAll)

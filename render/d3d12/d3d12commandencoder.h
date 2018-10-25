@@ -9,12 +9,12 @@ namespace Lightning
 	{
 		using Microsoft::WRL::ComPtr;
 		//Thread unsafe
-		class D3D12FrameResources
+		class D3D12CommandEncoder
 		{
 		public:
-			D3D12FrameResources();
+			D3D12CommandEncoder();
 			//Thread unsafe
-			void Reset(bool perFrame);
+			void Reset();
 			void Close();
 			ID3D12GraphicsCommandList* GetCommandList();
 		private:

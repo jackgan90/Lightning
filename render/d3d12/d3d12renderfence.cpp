@@ -1,12 +1,13 @@
 #include <cassert>
 #include "d3d12renderfence.h"
+#include "d3d12renderer.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
 		D3D12RenderFence::D3D12RenderFence(D3D12Device* device, std::uint64_t initial_value) : 
-			mDevice(device), mTargetValue(initial_value)
+			mTargetValue(initial_value)
 		{
 			mFence = device->CreateFence(initial_value, D3D12_FENCE_FLAG_NONE);
 			if (!mFence)
@@ -31,7 +32,7 @@ namespace Lightning
 			if (value > mFence->GetCompletedValue())
 			{
 				mTargetValue = value;
-				auto commandQueue = mDevice->GetCommandQueue();
+				auto commandQueue = static_cast<D3D12Renderer*>(Renderer::Instance())->GetCommandQueue();
 				commandQueue->Signal(mFence.Get(), value);
 				mFence->SetEventOnCompletion(value, mEvent);
 			}

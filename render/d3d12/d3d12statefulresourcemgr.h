@@ -2,6 +2,7 @@
 #include <memory>
 #include "singleton.h"
 #include "container.h"
+#include "d3d12commandencoder.h"
 #include "d3d12statefulresource.h"
 
 namespace Lightning
@@ -15,11 +16,6 @@ namespace Lightning
 			void FixResourceStates(container::vector<ID3D12CommandList*>& commandLists);
 			void Clear();
 		private:
-			struct D3D12CommandEncoder
-			{
-				ComPtr<ID3D12CommandAllocator> commandAllocator;
-				ComPtr<ID3D12CommandList> commandList;
-			};
 			friend class Foundation::Singleton<D3D12StatefulResourceMgr>;
 			ID3D12GraphicsCommandList* GetCommandList();
 			using CommandListResources = container::unordered_set<D3D12StatefulResource*>;

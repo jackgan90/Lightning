@@ -10,7 +10,7 @@
 #include "filesystem.h"
 #include "d3d12shader.h"
 #include "d3d12shadermanager.h"
-#include "d3d12frameresources.h"
+#include "d3d12commandencoder.h"
 #include "d3d12statefulresource.h"
 
 
@@ -28,11 +28,8 @@ namespace Lightning
 			friend class D3D12Renderer;
 			D3D12Device(IDXGIFactory4* factory, const SharedFileSystemPtr& fs);
 			~D3D12Device()override;
-			void ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectIList* rects=nullptr)override;
-			void ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr)override;
 			SharedVertexBufferPtr CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor)override;
 			SharedIndexBufferPtr CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;
-			ID3D12CommandQueue* GetCommandQueue()const { return mCommandQueue.Get(); }
 			ID3D12GraphicsCommandList* GetGraphicsCommandList();
 			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)override;
 			void ApplyPipelineState(const PipelineState& state)override;
@@ -41,7 +38,6 @@ namespace Lightning
 			void DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset)override;
 			void BeginFrame(const std::size_t frameResourceIndex)override;
 			void EndFrame(const std::size_t frameResourceIndex)override;
-			void GetAllCommandLists(std::size_t frameResourceIndex, container::vector<ID3D12CommandList*>& lists);
 			void ApplyRenderTargets(const container::vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)override;
 			//native device method wrapper start
 			D3D12StatefulResourcePtr CreateCommittedResource(
@@ -61,6 +57,7 @@ namespace Lightning
 			UINT GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE DescriptorHeapType);
 			ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap( const D3D12_DESCRIPTOR_HEAP_DESC *pDescriptorHeapDesc);
 			ComPtr<ID3D12CommandAllocator> CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE type);
+			ComPtr<ID3D12CommandQueue> CreateCommandQueue(const D3D12_COMMAND_QUEUE_DESC *pDesc);
 			ComPtr<ID3D12CommandList> CreateCommandList( 
 				UINT nodeMask,
 				D3D12_COMMAND_LIST_TYPE type,
@@ -99,10 +96,8 @@ namespace Lightning
 			//Returns number of constant buffers used by this shader
 			std::size_t AnalyzeShaderRootResources(IShader *pShader, container::unordered_map<ShaderType, container::vector<ShaderResourceHandle>>& resourceHandles);
 			ComPtr<ID3D12Device> mDevice;
-			ComPtr<ID3D12CommandQueue> mCommandQueue;
 			PipelineCacheMap mPipelineCache;
 			RootSignatureMap mRootSignatures;
-			Foundation::ThreadLocalSingleton<D3D12FrameResources> mFrameResources[RENDER_FRAME_COUNT];
 		};
 	}
 }

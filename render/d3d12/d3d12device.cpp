@@ -2,7 +2,7 @@
 #include <d3dcompiler.h>
 #include <functional>
 #include "common.h"
-#include "irenderer.h"
+#include "d3d12renderer.h"
 #include "d3d12device.h"
 #include "d3d12rendertarget.h"
 #include "d3d12depthstencilbuffer.h"
@@ -83,11 +83,6 @@ namespace Lightning
 		{
 			CreateNativeDevice(factory);
 			D3D12_COMMAND_QUEUE_DESC desc = {};
-			HRESULT hr = mDevice->CreateCommandQueue(&desc, IID_PPV_ARGS(&mCommandQueue));
-			if (FAILED(hr))
-			{
-				throw DeviceInitException("Failed to create command queue!");
-			}
 			mShaderMgr = std::make_unique<D3D12ShaderManager>(this, fs);
 			//should create first default pipeline state
 			mDefaultShaders[ShaderType::VERTEX] = mShaderMgr->CreateShaderFromSource(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
@@ -97,11 +92,6 @@ namespace Lightning
 		D3D12Device::~D3D12Device()
 		{
 			mShaderMgr.reset();
-		}
-
-		ID3D12GraphicsCommandList* D3D12Device::GetGraphicsCommandList()
-		{
-			return mFrameResources[mFrameResourceIndex]->GetCommandList();
 		}
 
 		void D3D12Device::CreateNativeDevice(IDXGIFactory4* factory)
@@ -140,74 +130,6 @@ namespace Lightning
 			}
 		}
 
-
-		void D3D12Device::ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectIList* rects)
-		{
-			D3D12RenderTarget *pTarget = static_cast<D3D12RenderTarget*>(rt.get());
-			assert(pTarget);
-			//should check the type of the rt to transit it from previous state to render target state
-			//currently just check back buffer render target
-			auto commandList = GetGraphicsCommandList();
-			if (rt->IsSwapChainRenderTarget())
-			{
-				pTarget->TransitToRTState(commandList);
-			}
-
-			//cache render target to prevent it from being released before GPU execute ClearRenderTargetView
-
-			const float clearColor[] = { color.r, color.g, color.b, color.a };
-			auto rtvHandle = pTarget->GetCPUHandle();
-			if (rects && !rects->empty())
-			{
-				//TODO : This implementation is wrong.Should allocate frame memory not local memory,must fix later
-				D3D12_RECT* d3dRect = g_RenderAllocator.Allocate<D3D12_RECT>(rects->size());
-				for (size_t i = 0; i < rects->size(); i++)
-				{
-					d3dRect[i].left = (*rects)[i].left;
-					d3dRect[i].right = (*rects)[i].right();
-					d3dRect[i].top = (*rects)[i].top;
-					d3dRect[i].bottom = (*rects)[i].bottom();
-				}
-				commandList->ClearRenderTargetView(rtvHandle, clearColor, rects->size(), d3dRect);
-			}
-			else
-			{
-				commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-			}
-		}
-
-		void D3D12Device::ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, 
-			float depth, std::uint8_t stencil, const RectIList* rects)
-		{
-			D3D12_CLEAR_FLAGS clearFlags = D3D12_CLEAR_FLAG_DEPTH;
-			if ((flags & DepthStencilClearFlags::CLEAR_DEPTH) != DepthStencilClearFlags::CLEAR_DEPTH)
-			{
-				clearFlags &= ~D3D12_CLEAR_FLAG_DEPTH;
-			}
-			if ((flags & DepthStencilClearFlags::CLEAR_STENCIL) == DepthStencilClearFlags::CLEAR_STENCIL)
-			{
-				clearFlags |= D3D12_CLEAR_FLAG_STENCIL;
-			}
-			auto dsvHandle = static_cast<D3D12DepthStencilBuffer*>(buffer.get())->GetCPUHandle();
-			auto commandList = GetGraphicsCommandList();
-			if (rects && !rects->empty())
-			{
-				//TODO : This implementation is wrong.Should allocate frame memory not local memory,must fix later
-				D3D12_RECT* d3dRect = g_RenderAllocator.Allocate<D3D12_RECT>(rects->size());
-				for (size_t i = 0; i < rects->size(); i++)
-				{
-					d3dRect[i].left = (*rects)[i].left;
-					d3dRect[i].right = (*rects)[i].right();
-					d3dRect[i].top = (*rects)[i].top;
-					d3dRect[i].bottom = (*rects)[i].bottom();
-				}
-				commandList->ClearDepthStencilView(dsvHandle, clearFlags, depth, stencil, rects->size(), d3dRect);
-			}
-			else
-			{
-				commandList->ClearDepthStencilView(dsvHandle, clearFlags, depth, stencil, 0, nullptr);
-			}
-		}
 
 
 
@@ -600,15 +522,6 @@ namespace Lightning
 			return rootSignature;
 		}
 
-		void D3D12Device::GetAllCommandLists(std::size_t frameResourceIndex, container::vector<ID3D12CommandList*>& lists)
-		{
-			auto& frameResources = mFrameResources[frameResourceIndex];
-			for (auto it = frameResources.begin(); it != frameResources.end(); ++it)
-			{
-				lists.push_back(it->GetCommandList());
-			}
-		}
-
 		void D3D12Device::EndFrame(const std::size_t frameResourceIndex)
 		{
 		}
@@ -618,11 +531,11 @@ namespace Lightning
 			Device::BeginFrame(frameResourceIndex);
 			D3D12DescriptorHeapManager::Instance()->EraseTransientAllocation(frameResourceIndex);
 			D3D12ConstantBufferManager::Instance()->ResetBuffers(frameResourceIndex);
-			auto& frameResources = mFrameResources[frameResourceIndex];
-			for (auto it = frameResources.begin(); it != frameResources.end(); ++it)
-			{
-				it->Reset(true);
-			}
+		}
+
+		ID3D12GraphicsCommandList* D3D12Device::GetGraphicsCommandList()
+		{
+			return static_cast<D3D12Renderer*>(Renderer::Instance())->GetGraphicsCommandList();
 		}
 
 		void D3D12Device::ApplyRenderTargets(const container::vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)
@@ -745,6 +658,13 @@ namespace Lightning
 			ComPtr<ID3D12CommandAllocator> commandAllocator;
 			mDevice->CreateCommandAllocator(type, IID_PPV_ARGS(&commandAllocator));
 			return commandAllocator;
+		}
+
+		ComPtr<ID3D12CommandQueue> D3D12Device::CreateCommandQueue(const D3D12_COMMAND_QUEUE_DESC *pDesc)
+		{
+			ComPtr<ID3D12CommandQueue> queue;
+			mDevice->CreateCommandQueue(pDesc, IID_PPV_ARGS(&queue));
+			return queue;
 		}
 
 		ComPtr<ID3D12CommandList> D3D12Device::CreateCommandList(

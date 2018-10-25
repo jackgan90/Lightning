@@ -25,7 +25,6 @@ namespace Lightning
 			std::uint64_t GetCompletedValue()override;
 			void WaitForTarget()override;
 		private:
-			D3D12Device *mDevice;
 			ComPtr<ID3D12Fence> mFence;
 			HANDLE mEvent;
 			std::uint64_t mTargetValue;

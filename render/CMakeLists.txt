@@ -93,7 +93,7 @@ if(LIGHTNING_USE_D3D12)
 						d3d12/d3d12vertexbuffer.h
 						d3d12/d3d12indexbuffer.h
 						d3d12/d3d12constantbuffermanager.h
-						d3d12/d3d12frameresources.h
+						d3d12/d3d12commandencoder.h
 						d3d12/d3d12statefulresource.h
 						d3d12/d3d12statefulresourcemgr.h)
 	set(D3D12_SOURCES	d3d12/d3d12device.cpp
@@ -110,7 +110,7 @@ if(LIGHTNING_USE_D3D12)
 						d3d12/d3d12vertexbuffer.cpp
 						d3d12/d3d12indexbuffer.cpp
 						d3d12/d3d12constantbuffermanager.cpp
-						d3d12/d3d12frameresources.cpp
+						d3d12/d3d12commandencoder.cpp
 						d3d12/d3d12statefulresource.cpp
 						d3d12/d3d12statefulresourcemgr.cpp)
 	list(APPEND HEADERS ${D3D12_HEADERS})

@@ -56,6 +56,9 @@ namespace Lightning
 			virtual std::size_t GetFrameResourceIndex()const = 0;
 			virtual void AddRenderPass(RenderPassType type) = 0;
 			virtual void Draw(const RenderNode& item) = 0;
+			//clear a specified render target,possibly parts of it defined by an array of rects
+			virtual void ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectIList* rects=nullptr) = 0;
+			virtual void ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr) = 0;
 			//register renderer event callback.The callback will be called on certain moment of rendering
 			virtual void RegisterCallback(IRendererCallback* callback) = 0;
 			//get near plane value corresponding to normalized device coordinate

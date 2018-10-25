@@ -74,7 +74,7 @@ namespace Lightning
 			std::unique_ptr<IDevice> mDevice;
 			std::unique_ptr<ISwapChain> mSwapChain;
 			container::vector<std::unique_ptr<RenderPass>> mRenderPasses;
-			std::size_t mCurrentBackBufferIndex;
+			std::size_t mFrameResourceIndex;
 			ColorF mClearColor;
 			SharedDepthStencilBufferPtr mDefaultDepthStencilBuffer;
 			container::vector<IRendererCallback*> mCallbacks;

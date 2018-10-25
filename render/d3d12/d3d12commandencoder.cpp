@@ -1,4 +1,4 @@
-#include "d3d12frameresources.h"
+#include "d3d12commandencoder.h"
 #include "renderer.h"
 #include "d3d12device.h"
 
@@ -6,12 +6,12 @@ namespace Lightning
 {
 	namespace Render
 	{
-		D3D12FrameResources::D3D12FrameResources()
+		D3D12CommandEncoder::D3D12CommandEncoder()
 		{
 			CreateResources();
 		}
 
-		void D3D12FrameResources::Close()
+		void D3D12CommandEncoder::Close()
 		{
 			if (mCmdList)
 			{
@@ -19,24 +19,16 @@ namespace Lightning
 			}
 		}
 
-		void D3D12FrameResources::Reset(bool perFrame)
+		void D3D12CommandEncoder::Reset()
 		{
-			if (!perFrame)
+			if (mCmdList)
 			{
-				mCmdAllocator.Reset();
-				mCmdList.Reset();
-			}
-			else
-			{
-				if (mCmdList)
-				{
-					mCmdAllocator->Reset();
-					static_cast<ID3D12GraphicsCommandList*>(mCmdList.Get())->Reset(mCmdAllocator.Get(), nullptr);
-				}
+				mCmdAllocator->Reset();
+				static_cast<ID3D12GraphicsCommandList*>(mCmdList.Get())->Reset(mCmdAllocator.Get(), nullptr);
 			}
 		}
 
-		void D3D12FrameResources::CreateResources()
+		void D3D12CommandEncoder::CreateResources()
 		{
 			auto device = Renderer::Instance()->GetDevice();
 			if (device)
@@ -54,7 +46,7 @@ namespace Lightning
 		}
 
 
-		ID3D12GraphicsCommandList* D3D12FrameResources::GetCommandList()
+		ID3D12GraphicsCommandList* D3D12CommandEncoder::GetCommandList()
 		{
 			CreateResources();
 			return static_cast<ID3D12GraphicsCommandList*>(mCmdList.Get());
