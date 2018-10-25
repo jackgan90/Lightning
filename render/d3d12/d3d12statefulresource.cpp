@@ -1,19 +1,19 @@
 #include <d3dx12.h>
-#include "d3d12statedresource.h"
+#include "d3d12statefulresource.h"
 #include "renderer.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		D3D12StatedResource::D3D12StatedResource(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState)
+		D3D12StatefulResource::D3D12StatefulResource(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState)
 			:mResource(resource)
 		{
 			mGlobalState.state = initialState;
 			mGlobalState.lastAccessFrame = Renderer::Instance()->GetCurrentFrameCount();
 		}
 
-		void D3D12StatedResource::TransitTo(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState)
+		void D3D12StatefulResource::TransitTo(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState)
 		{
 			auto currentFrame = Renderer::Instance()->GetCurrentFrameCount();
 			auto localStates = *mLocalStates;

@@ -11,10 +11,10 @@ namespace Lightning
 	{
 		using Microsoft::WRL::ComPtr;
 		using Foundation::container;
-		class D3D12StatedResource
+		class D3D12StatefulResource
 		{
 		public:
-			D3D12StatedResource(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState);
+			D3D12StatefulResource(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState);
 			void TransitTo(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState);
 		private:
 			struct ResourceState
