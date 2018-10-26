@@ -38,7 +38,9 @@ namespace Lightning
 			ComPtr<ID3D12Resource> mResource;
 			ResourceState mGlobalState;
 			CommandListResourceStates mLocalStates;
-			tbb::spin_mutex mtxLocalStates;
+			using Mutex = tbb::spin_mutex;
+			using MutexLock = Mutex::scoped_lock;
+			Mutex mtxLocalStates;
 		};
 		using D3D12StatefulResourcePtr = std::shared_ptr<D3D12StatefulResource>;
 	}

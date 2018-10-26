@@ -19,7 +19,7 @@ namespace Lightning
 			auto currentFrame = Renderer::Instance()->GetCurrentFrameCount();
 			ResourceState *pLocalState{ nullptr };
 			{
-				tbb::spin_mutex::scoped_lock lock(mtxLocalStates);
+				MutexLock lock(mtxLocalStates);
 				pLocalState = &mLocalStates[commandList];
 			}
 			//for every command list the first access in a frame should treat this resource as if it is in unknown state
@@ -45,7 +45,7 @@ namespace Lightning
 		void D3D12StatefulResource::GetLocalStates(ID3D12GraphicsCommandList* cmdList, 
 			D3D12_RESOURCE_STATES& firstState, D3D12_RESOURCE_STATES& finalState)
 		{
-			tbb::spin_mutex::scoped_lock lock(mtxLocalStates);
+			MutexLock lock(mtxLocalStates);
 			firstState = mLocalStates[cmdList].firstState;
 			finalState = mLocalStates[cmdList].state;
 		}

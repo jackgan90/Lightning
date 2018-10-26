@@ -21,8 +21,10 @@
 
 namespace
 {
-	static tbb::spin_mutex mtxPipelineCache;
-	static tbb::spin_mutex mtxRootSignature;
+	using Mutex = tbb::spin_mutex;
+	using MutexLock = Mutex::scoped_lock;
+	static Mutex mtxPipelineCache;
+	static Mutex mtxRootSignature;
 }
 
 namespace Lightning
@@ -204,7 +206,7 @@ namespace Lightning
 			auto hashValue = std::hash<PipelineState>{}(state);
 			bool createNewPSO{ true };
 			{
-				tbb::spin_mutex::scoped_lock lock(mtxPipelineCache);
+				MutexLock lock(mtxPipelineCache);
 				auto it = mPipelineCache.find(hashValue);
 				if (it != mPipelineCache.end())
 				{
@@ -377,7 +379,7 @@ namespace Lightning
 				return stateAndSignature;
 			} 
 			{
-				tbb::spin_mutex::scoped_lock lock(mtxPipelineCache);
+				MutexLock lock(mtxPipelineCache);
 				//Must check again because other threads may create the same pipeline state object simultaneously
 				auto it = mPipelineCache.find(hashValue);
 				if (it == mPipelineCache.end())
@@ -479,7 +481,7 @@ namespace Lightning
 			}
 
 			{
-				tbb::spin_mutex::scoped_lock lock(mtxRootSignature);
+				MutexLock lock(mtxRootSignature);
 				auto it = mRootSignatures.find(seed);
 				if (it != mRootSignatures.end())
 					return it->second;
@@ -510,7 +512,7 @@ namespace Lightning
 			}
 
 			{
-				tbb::spin_mutex::scoped_lock lock(mtxRootSignature);
+				MutexLock lock(mtxRootSignature);
 				auto it = mRootSignatures.find(seed);
 				if (it == mRootSignatures.end())
 				{

@@ -6,7 +6,9 @@
 
 namespace
 {
-	static tbb::spin_mutex mtxResources;
+	using Mutex = tbb::spin_mutex;
+	using MutexLock = Mutex::scoped_lock;
+	static Mutex mtxResources;
 }
 
 namespace Lightning
@@ -16,13 +18,13 @@ namespace Lightning
 		extern Foundation::FrameMemoryAllocator g_RenderAllocator;
 		void D3D12StatefulResourceMgr::Notify(ID3D12GraphicsCommandList* cmdList, D3D12StatefulResource* resource)
 		{
-			tbb::spin_mutex::scoped_lock lock(mtxResources);
+			MutexLock lock(mtxResources);
 			mCmdListResources[cmdList].insert(resource);
 		}
 
 		void D3D12StatefulResourceMgr::FixResourceStates(container::vector<ID3D12CommandList*>& commandLists)
 		{
-			tbb::spin_mutex::scoped_lock lock(mtxResources);
+			MutexLock lock(mtxResources);
 			std::size_t i{ 0 };
 			mEncoderIndex = 0;
 			container::vector<D3D12_RESOURCE_BARRIER> barrierDescs;

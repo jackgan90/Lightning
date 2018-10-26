@@ -1,11 +1,13 @@
 #include <iterator>
-#include <mutex>
+#include "tbb/mutex.h"
 #include "d3d12descriptorheapmanager.h"
 #include "renderer.h"
 #include "logger.h"
 
 namespace {
-	static std::mutex mtxHeap;
+	using Mutex = tbb::mutex;
+	using MutexLock = Mutex::scoped_lock;
+	static Mutex mtxHeap;
 }
 
 namespace Lightning
@@ -81,7 +83,7 @@ namespace Lightning
 
 		DescriptorHeap* D3D12DescriptorHeapManager::AllocatePersistentHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count)
 		{
-			std::lock_guard<std::mutex> lock(mtxHeap);
+			MutexLock lock(mtxHeap);
 			auto i = shaderVisible ? 1 : 0;
 			if (mPersistentHeaps[type][i].empty())
 			{
