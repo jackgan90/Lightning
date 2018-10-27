@@ -204,13 +204,13 @@ namespace Lightning
 		{
 			PipelineStateRootSignature stateAndSignature;
 			auto hashValue = std::hash<PipelineState>{}(state);
+			PipelineCacheMap::iterator it = mPipelineCache.end();
 			bool createNewPSO{ true };
 			{
 				MutexLock lock(mtxPipelineCache);
-				auto it = mPipelineCache.find(hashValue);
+				it = mPipelineCache.find(hashValue);
 				if (it != mPipelineCache.end())
 				{
-					stateAndSignature = it->second;
 					createNewPSO = false;
 				}
 			}
@@ -218,6 +218,10 @@ namespace Lightning
 			if(createNewPSO)
 			{
 				stateAndSignature = CreateAndCachePipelineState(state, hashValue);
+			}
+			else
+			{
+				stateAndSignature = it->second;
 			}
 
 			auto commandList = GetGraphicsCommandList();
