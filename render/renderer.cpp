@@ -32,7 +32,6 @@ namespace Lightning
 			sInstance = nullptr;
 			mDevice.reset();
 			mSwapChain.reset();
-			mDefaultDepthStencilBuffer.reset();
 		}
 
 		void Renderer::Render()
@@ -57,8 +56,9 @@ namespace Lightning
 		{
 			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
 			ClearRenderTarget(defaultRenderTarget, mClearColor);
-			ClearDepthStencilBuffer(mDefaultDepthStencilBuffer, DepthStencilClearFlags::CLEAR_DEPTH | DepthStencilClearFlags::CLEAR_STENCIL,
-				mDefaultDepthStencilBuffer->GetDepthClearValue(), mDefaultDepthStencilBuffer->GetStencilClearValue(), nullptr);
+			auto depthStencilBuffer = GetDefaultDepthStencilBuffer();
+			ClearDepthStencilBuffer(depthStencilBuffer, DepthStencilClearFlags::CLEAR_DEPTH | DepthStencilClearFlags::CLEAR_STENCIL,
+				depthStencilBuffer->GetDepthClearValue(), depthStencilBuffer->GetStencilClearValue(), nullptr);
 			INVOKE_CALLBACK(OnDoFrame)
 		}
 
@@ -137,10 +137,11 @@ namespace Lightning
 		{
 			mDevice.reset(CreateDevice());
 			mSwapChain.reset(CreateSwapChain());
-			mDefaultDepthStencilBuffer.reset(CreateDepthStencilBuffer(mOutputWindow->GetWidth(), mOutputWindow->GetHeight()));
 			for (size_t i = 0; i < RENDER_FRAME_COUNT; i++)
 			{
 				mFrameResources[i].fence = CreateRenderFence();
+				mFrameResources[i].defaultDepthStencilBuffer.reset(
+					CreateDepthStencilBuffer( mOutputWindow->GetWidth(), mOutputWindow->GetHeight()));
 			}
 			mFrameResourceIndex = mSwapChain->GetCurrentBackBufferIndex();
 		}
@@ -150,18 +151,22 @@ namespace Lightning
 			WaitForPreviousFrame(true);
 			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
-				mFrameResources[i].Release(false);
+				mFrameResources[i].Release();
 				mRenderQueue[i].clear();
 			}
 			mOutputWindow.reset();
 			mDevice.reset();
 			mSwapChain.reset();
-			mDefaultDepthStencilBuffer.reset();
 		}
 
 		const RenderQueue& Renderer::GetRenderQueue()
 		{
 			return mRenderQueue[mFrameResourceIndex];
+		}
+
+		SharedDepthStencilBufferPtr Renderer::GetDefaultDepthStencilBuffer()
+		{
+			return mFrameResources[mFrameResourceIndex].defaultDepthStencilBuffer;
 		}
 
 		void Renderer::WaitForPreviousFrame(bool waitAll)
