@@ -88,6 +88,8 @@ namespace Lightning
 			D3D12StatefulResourceMgr::Instance()->Clear();
 			mCommandQueue.Reset();
 			mDXGIFactory.Reset();
+			mPipelineCache.clear();
+			mRootSignatures.clear();
 			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
 				mFrontCmdEncoder[i].Clear();
