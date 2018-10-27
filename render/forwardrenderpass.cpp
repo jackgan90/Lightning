@@ -45,7 +45,8 @@ namespace Lightning
 			PipelineState state{};
 			//TODO : set render target count based on model setting
 			state.renderTargetCount = static_cast<std::uint8_t>(node.renderTargets.size());
-			auto pSwapChain = Renderer::Instance()->GetSwapChain();
+			auto renderer = Renderer::Instance();
+			auto pSwapChain = renderer->GetSwapChain();
 			state.renderTargets[0] = pSwapChain->GetDefaultRenderTarget().get();
 			if (node.material)
 			{
@@ -65,7 +66,6 @@ namespace Lightning
 			}
 			state.primType = node.geometry->primType;
 			//TODO : Apply other pipeline states(blend state, rasterizer state etc)
-			auto pDevice = Renderer::Instance()->GetDevice();
 			
 			GetInputLayouts(node.geometry, &state.inputLayouts, state.inputLayoutCount);
 
@@ -73,8 +73,8 @@ namespace Lightning
 			{
 				state.depthStencilState.bufferFormat = node.depthStencilBuffer->GetRenderFormat();
 			}
-			pDevice->ApplyRenderTargets(node.renderTargets, node.depthStencilBuffer);
-			pDevice->ApplyPipelineState(state);
+			renderer->ApplyRenderTargets(node.renderTargets, node.depthStencilBuffer);
+			renderer->ApplyPipelineState(state);
 		}
 
 		void ForwardRenderPass::CommitShaderArguments(const RenderNode& node)
@@ -140,27 +140,31 @@ namespace Lightning
 
 		void ForwardRenderPass::CommitBuffers(const SharedGeometryPtr& geometry)
 		{
-			auto pDevice = Renderer::Instance()->GetDevice();
+			auto renderer = Renderer::Instance();
 			for (std::uint8_t i = 0; i < MAX_GEOMETRY_BUFFER_COUNT; i++)
 			{
 				if (!geometry->vbs[i])
 					continue;
 				geometry->vbs[i]->Commit();
-				pDevice->BindGPUBuffer(i, geometry->vbs[i]);
+				renderer->BindGPUBuffer(i, geometry->vbs[i]);
 			}
 			if (geometry->ib)
 			{
 				geometry->ib->Commit();
-				pDevice->BindGPUBuffer(0, geometry->ib);
+				renderer->BindGPUBuffer(0, geometry->ib);
 			}
 		}
 
 		void ForwardRenderPass::Draw(const SharedGeometryPtr& geometry)
 		{
-			auto pDevice = Renderer::Instance()->GetDevice();
+			auto renderer = Renderer::Instance();
 			if (geometry->ib)
 			{
-				pDevice->DrawIndexed(geometry->ib->GetIndexCount(), 1, 0, 0, 0);
+				DrawParam param{};
+				param.drawType = DrawType::Index;
+				param.indexCount = geometry->ib->GetIndexCount();
+				param.instanceCount = 1;
+				renderer->Draw(param);
 			}
 			else
 			{

@@ -25,12 +25,6 @@ namespace Lightning
 			virtual SharedIndexBufferPtr CreateIndexBuffer(std::uint32_t bufferSize, IndexType type) = 0;
 			virtual SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap) = 0;
 			virtual SharedShaderPtr GetDefaultShader(ShaderType type) = 0;
-			virtual void ApplyRenderTargets(const container::vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer) = 0;
-			virtual void ApplyPipelineState(const PipelineState& state) = 0;
-			//bind pBuffer to a GPU slot(does not copy data,just binding), each invocation will override previous binding
-			virtual void BindGPUBuffer(std::uint8_t slot, const SharedGPUBufferPtr& buffer) = 0;
-			virtual void DrawVertex(const std::size_t vertexCountPerInstance, const std::size_t instanceCount, const std::size_t firstVertexIndex, const std::size_t instanceDataOffset) = 0;
-			virtual void DrawIndexed(const std::size_t indexCountPerInstance, const std::size_t instanceCount, const std::size_t firstIndex, const std::size_t indexDataOffset, const std::size_t instanceDataOffset) = 0;
 			virtual void BeginFrame(const std::size_t frameResourceIndex) = 0;
 			virtual void EndFrame(const std::size_t frameResourceIndex) = 0;
 		};

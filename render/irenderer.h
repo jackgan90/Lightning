@@ -30,6 +30,32 @@ namespace Lightning
 			SwapChainInitException(const char*const w):RendererException(w){}
 		};
 
+		enum class DrawType
+		{
+			Vertex,
+			Index
+		};
+
+		struct DrawParam
+		{
+			DrawType drawType;
+			union
+			{
+				std::size_t vertexCount;
+				std::size_t indexCount;
+			};
+			std::size_t instanceCount;
+			union
+			{
+				std::size_t firstVertex;
+				std::size_t firstIndex;
+			};
+			//A value added to each index before reading a vertex from the vertex buffer.
+			//only valid for index draw type.Vertex draw type will simply ignore this value
+			std::size_t baseIndex;
+			std::size_t baseInstance;
+		};
+
 		class LIGHTNING_RENDER_API IRendererCallback
 		{
 		public:
@@ -55,10 +81,16 @@ namespace Lightning
 			virtual std::uint64_t GetCurrentFrameCount()const = 0;
 			virtual std::size_t GetFrameResourceIndex()const = 0;
 			virtual void AddRenderPass(RenderPassType type) = 0;
-			virtual void Draw(const RenderNode& item) = 0;
+			virtual void AddRenderNode(const RenderNode& item) = 0;
 			//clear a specified render target,possibly parts of it defined by an array of rects
 			virtual void ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectIList* rects=nullptr) = 0;
 			virtual void ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr) = 0;
+			virtual void ApplyRenderTargets(const container::vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer) = 0;
+			virtual void ApplyPipelineState(const PipelineState& state) = 0;
+			//bind pBuffer to a GPU slot(does not copy data,just binding), each invocation will override previous binding
+			virtual void BindGPUBuffer(std::uint8_t slot, const SharedGPUBufferPtr& buffer) = 0;
+			//issue underlying draw call
+			virtual void Draw(const DrawParam& param) = 0;
 			//register renderer event callback.The callback will be called on certain moment of rendering
 			virtual void RegisterCallback(IRendererCallback* callback) = 0;
 			//get near plane value corresponding to normalized device coordinate

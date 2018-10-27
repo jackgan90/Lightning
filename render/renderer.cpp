@@ -103,7 +103,7 @@ namespace Lightning
 		}
 
 
-		void Renderer::Draw(const RenderNode& item)
+		void Renderer::AddRenderNode(const RenderNode& item)
 		{
 			mRenderQueue[mFrameResourceIndex].push_back(item);
 		}

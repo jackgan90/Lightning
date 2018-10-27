@@ -81,7 +81,7 @@ namespace Lightning
 				mRenderNode.viewMatrix = sceneRenderData.camera->GetViewMatrix();
 				mRenderNode.projectionMatrix = sceneRenderData.camera->GetProjectionMatrix();
 			}
-			renderer.Draw(mRenderNode);
+			renderer.AddRenderNode(mRenderNode);
 		}
 
 		void Primitive::GenerateRenderNode(IRenderer& renderer)

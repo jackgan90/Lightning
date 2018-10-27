@@ -43,7 +43,7 @@ namespace Lightning
 			//return the current frame index
 			std::uint64_t GetCurrentFrameCount()const override;
 			void SetClearColor(const ColorF& color)override;
-			void Draw(const RenderNode& item)override;
+			void AddRenderNode(const RenderNode& item)override;
 			//TODO there can be multiple render passes in effect simultaneously,shoulc change it
 			void AddRenderPass(RenderPassType type)override;
 			std::size_t GetFrameResourceIndex()const override;
