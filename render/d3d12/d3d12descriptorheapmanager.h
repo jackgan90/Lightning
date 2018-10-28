@@ -4,6 +4,7 @@
 #include <tuple>
 #include <functional>
 #include <wrl\client.h>
+#include <atomic>
 #include "container.h"
 #include "threadlocalsingleton.h"
 #include "singleton.h"
@@ -29,11 +30,10 @@ namespace Lightning
 		public:
 			D3D12DescriptorHeapManager();
 			~D3D12DescriptorHeapManager();
+			void ReserveFrameDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count);
 			DescriptorHeap* Allocate(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count, bool frameTransient);
 			ComPtr<ID3D12DescriptorHeap> GetHeap(DescriptorHeap* pHeap)const;
 			void Deallocate(DescriptorHeap* pHeap);
-			//Thread unsafe
-			void EraseTransientAllocation(std::size_t frameIndex, std::size_t reservedSize = 1);
 			//Thread safe
 			UINT GetIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type);
 			//Thread unsafe
@@ -54,11 +54,13 @@ namespace Lightning
 			};
 
 			//represents heaps allocated in one frame
-			struct FrameHeaps
+			struct FrameHeap
 			{
-				std::size_t next[RENDER_FRAME_COUNT][D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES][2];
-				container::vector<DescriptorHeapStore*> heaps[RENDER_FRAME_COUNT][D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES][2];
-				container::vector<DescriptorHeapEx*> allocations[RENDER_FRAME_COUNT][D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES][2];
+				std::atomic<UINT> offset;
+				std::atomic<std::size_t> allocCount;
+				UINT descriptorCount;
+				DescriptorHeapStore* heapStore;
+				DescriptorHeapEx* handles;
 			};
 			DescriptorHeap* AllocatePersistentHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count);
 			DescriptorHeap* AllocateFrameHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count);
@@ -70,7 +72,7 @@ namespace Lightning
 			//persistent heaps are heaps persist longer than one frame.Examples are RTV and DSV heaps
 			container::vector<DescriptorHeapStore*> mPersistentHeaps[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES][2];
 			//frame heaps are heaps that only needs validation in one frame.After a frame finished,the content of heaps doesn't matter
-			Foundation::ThreadLocalSingleton<FrameHeaps> mFrameHeaps;
+			FrameHeap mFrameHeaps[RENDER_FRAME_COUNT][D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES][2];
 
 			UINT sIncrementSizes[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
 		};

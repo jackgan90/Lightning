@@ -697,7 +697,6 @@ namespace Lightning
 		void D3D12Renderer::BeginFrame()
 		{
 			Renderer::BeginFrame();
-			D3D12DescriptorHeapManager::Instance()->EraseTransientAllocation(mFrameResourceIndex);
 			mCmdEncoders[mFrameResourceIndex].for_each([](D3D12CommandEncoder& encoder) {
 				encoder.Reset();
 			});

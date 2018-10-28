@@ -22,11 +22,42 @@ namespace Lightning
 			{
 				sIncrementSizes[i] = device->GetDescriptorHandleIncrementSize(static_cast<D3D12_DESCRIPTOR_HEAP_TYPE>(i));
 			}
+			for (auto i = 0; i < RENDER_FRAME_COUNT; ++i)
+			{
+				for (auto j = 0; j < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++j)
+				{
+					for (auto k = 0; k < 2;++k)
+					{
+						mFrameHeaps[i][j][k].heapStore = nullptr;
+					}
+				}
+			}
 		}
 
 		D3D12DescriptorHeapManager::~D3D12DescriptorHeapManager()
 		{
 			LOG_INFO("Descriptor heap manager destruct!");
+		}
+
+		void D3D12DescriptorHeapManager::ReserveFrameDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count)
+		{
+			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
+			auto i = shaderVisible ? 1 : 0;
+			auto& frameHeap = mFrameHeaps[frameResourceIndex][type][i];
+			if (frameHeap.heapStore && frameHeap.descriptorCount >= count)
+			{
+				frameHeap.allocCount = 0;
+				frameHeap.offset = 0;
+				return;
+			}
+			delete frameHeap.heapStore;
+			delete[] frameHeap.handles;
+			auto res = CreateHeapStore(type, shaderVisible, count);
+			frameHeap.heapStore = std::get<1>(res);
+			frameHeap.handles = new DescriptorHeapEx[count];
+			frameHeap.descriptorCount = count;
+			frameHeap.allocCount = 0;
+			frameHeap.offset = 0;
 		}
 
 		DescriptorHeap* D3D12DescriptorHeapManager::Allocate(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count, bool frameTransient)
@@ -43,41 +74,22 @@ namespace Lightning
 
 		DescriptorHeap* D3D12DescriptorHeapManager::AllocateFrameHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count)
 		{
-			auto& frameHeap = *mFrameHeaps;
+			assert(count > 0);
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto i = shaderVisible ? 1 : 0;
-			auto createNewHeap{ false };
-			if (frameHeap.heaps[resourceIndex][type][i].empty())
-				createNewHeap = true;
-
-			if (!createNewHeap)
-			{
-				auto& last = frameHeap.heaps[resourceIndex][type][i].back();
-				if (frameHeap.next[resourceIndex][type][i] + count >= last->freeDescriptors)
-					createNewHeap = true;
-			}
-
-			if (createNewHeap)
-			{
-				auto res = CreateHeapStore(type, shaderVisible,
-					count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE);
-				frameHeap.heaps[resourceIndex][type][i].push_back(std::get<1>(res));
-				frameHeap.next[resourceIndex][type][i] = 0;
-			}
-
-			auto& last = frameHeap.heaps[resourceIndex][type][i].back();
-			CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(last->cpuHandle);
-			CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(last->gpuHandle);
-			cpuHandle.Offset(frameHeap.next[resourceIndex][type][i] * last->incrementSize);
-			gpuHandle.Offset(frameHeap.next[resourceIndex][type][i] * last->incrementSize);
-			auto heap = new DescriptorHeapEx;
+			auto& frameHeap = mFrameHeaps[resourceIndex][type][i];
+			CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(frameHeap.heapStore->cpuHandle);
+			CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(frameHeap.heapStore->gpuHandle);
+			auto offset = frameHeap.offset.fetch_add(count, std::memory_order_relaxed);
+			cpuHandle.Offset(offset * frameHeap.heapStore->incrementSize);
+			gpuHandle.Offset(offset * frameHeap.heapStore->incrementSize);
+			
+			auto handleIndex = frameHeap.allocCount.fetch_add(1, std::memory_order_relaxed);
+			auto heap = &frameHeap.handles[handleIndex];
 			heap->cpuHandle = cpuHandle;
 			heap->gpuHandle = gpuHandle;
-			heap->incrementSize = last->incrementSize;
-			heap->pStore = last;
-
-			frameHeap.next[resourceIndex][type][i] += count;
-			frameHeap.allocations[resourceIndex][type][i].push_back(heap);
+			heap->incrementSize = frameHeap.heapStore->incrementSize;
+			heap->pStore = frameHeap.heapStore;
 			return heap;
 		}
 
@@ -265,7 +277,19 @@ namespace Lightning
 		{
 			for (auto i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
-				EraseTransientAllocation(i, 0);
+				//TODO : clear frame transient heap
+				for (auto j = 0; j < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++j)
+				{
+					for (auto k = 0; k < 2; ++k)
+					{
+						if (mFrameHeaps[i][j][k].heapStore)
+						{
+							delete mFrameHeaps[i][j][k].heapStore;
+							delete[] mFrameHeaps[i][j][k].handles;
+						}
+						
+					}
+				}
 			}
 			for (auto i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES;++i)
 			{
@@ -284,31 +308,6 @@ namespace Lightning
 		{
 			auto pHeapEx = static_cast<DescriptorHeapEx*>(pHeap);
 			return pHeapEx->pStore->heap;
-		}
-
-		void D3D12DescriptorHeapManager::EraseTransientAllocation(std::size_t frameIndex, std::size_t reservedSize)
-		{
-			for (auto it = mFrameHeaps.begin(); it != mFrameHeaps.end(); ++it)
-			{
-				for (auto i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++i)
-				{
-					for (auto j = 0; j < 2; ++j)
-					{
-						for (auto k = reservedSize;k < it->heaps[frameIndex][i][j].size();++k)
-						{
-							delete it->heaps[frameIndex][i][j][k];
-						}
-						for (auto mem : it->allocations[frameIndex][i][j])
-						{
-							delete mem;
-						}
-						it->allocations[frameIndex][i][j].clear();
-						if(it->heaps[frameIndex][i][j].size() > reservedSize)
-							it->heaps[frameIndex][i][j].resize(reservedSize);
-						it->next[frameIndex][i][j] = 0;
-					}
-				}
-			}
 		}
 	}
 }
