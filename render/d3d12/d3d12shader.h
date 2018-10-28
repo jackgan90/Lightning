@@ -52,6 +52,7 @@ namespace Lightning
 			const container::vector<D3D12_ROOT_PARAMETER>& GetRootParameters()const;
 			std::size_t GetRootParameterCount()const;
 			const container::vector<D3D12RootBoundResource>& GetRootBoundResources();
+			std::size_t GetConstantBufferSize()override;
 		private:
 			struct ArgumentInfo
 			{

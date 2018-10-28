@@ -68,6 +68,10 @@ namespace Lightning
 					mDescriptorRanges[i].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
 					mDescriptorRanges[i].RegisterSpace = bindDesc.Space;
 				}
+				if (mTotalConstantBufferSize > 0)
+				{
+					mTotalConstantBufferSize = D3D12ConstantBufferManager::AlignedSize(mTotalConstantBufferSize);
+				}
 				CD3DX12_ROOT_PARAMETER cbvParameter;
 				cbvParameter.InitAsDescriptorTable(mDesc.ConstantBuffers, mDescriptorRanges, GetParameterVisibility());
 				mRootParameters.push_back(cbvParameter);
@@ -206,6 +210,11 @@ namespace Lightning
 		{
 			UpdateRootBoundResources();
 			return mResourceProxy->GetRootBoundResources();
+		}
+
+		std::size_t D3D12Shader::GetConstantBufferSize()
+		{
+			return mTotalConstantBufferSize;
 		}
 
 		D3D12_SHADER_VISIBILITY D3D12Shader::GetParameterVisibility()const

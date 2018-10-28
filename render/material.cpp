@@ -17,6 +17,25 @@ namespace Lightning
 			return it->second.shader.get();
 		}
 
+		void Material::GetShaders(container::vector<IShader*>& shaders)
+		{
+			auto vs = GetShader(ShaderType::VERTEX);
+			if (vs)
+				shaders.push_back(vs);
+			auto fs = GetShader(ShaderType::FRAGMENT);
+			if (fs)
+				shaders.push_back(fs);
+			auto gs = GetShader(ShaderType::GEOMETRY);
+			if (gs)
+				shaders.push_back(gs);
+			auto tcs = GetShader(ShaderType::TESSELATION_CONTROL);
+			if (tcs)
+				shaders.push_back(tcs);
+			auto tes = GetShader(ShaderType::TESSELATION_EVALUATION);
+			if (tes)
+				shaders.push_back(tes);
+		}
+
 		void Material::SetShader(const SharedShaderPtr& pShader)
 		{
 			if (!pShader)

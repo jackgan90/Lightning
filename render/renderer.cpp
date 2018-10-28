@@ -17,13 +17,12 @@ namespace Lightning
 	{
 		IRenderer* Renderer::sInstance{ nullptr };
 		Foundation::FrameMemoryAllocator g_RenderAllocator;
-		Renderer::Renderer(const SharedFileSystemPtr& fs, const SharedWindowPtr& pWindow, RenderPassType renderPassType) :
+		Renderer::Renderer(const SharedFileSystemPtr& fs, const SharedWindowPtr& pWindow) :
 			mOutputWindow(pWindow),
 			mFrameCount(0), mFs(fs), mFrameResourceIndex(0), mClearColor(0.5f, 0.5f, 0.5f, 1.0f)
 		{
 			assert(!sInstance);
 			sInstance = this;
-			AddRenderPass(renderPassType);
 		}
 
 		Renderer::~Renderer()
@@ -47,8 +46,12 @@ namespace Lightning
 			WaitForPreviousFrame(false);
 			mFrameCount++;
 			mFrameResourceIndex = mSwapChain->GetCurrentBackBufferIndex();
-			mRenderQueue[mFrameResourceIndex].clear();
+			mFrameResources[mFrameResourceIndex].BeginFrame();
 			mDevice->BeginFrame(mFrameResourceIndex);
+			for (auto& pass : mRenderPasses)
+			{
+				pass->OnBeginFrame();
+			}
 			INVOKE_CALLBACK(OnBeginFrame)
 		}
 
@@ -103,24 +106,20 @@ namespace Lightning
 		}
 
 
-		void Renderer::AddRenderNode(const RenderNode& item)
+		void Renderer::AddRenderNode(const RenderNode& node)
 		{
-			mRenderQueue[mFrameResourceIndex].push_back(item);
+			mFrameResources[mFrameResourceIndex].renderQueue.push_back(node);
+			for (auto& pass : mRenderPasses)
+			{
+				pass->OnAddRenderNode(node);
+			}
 		}
 
 		void Renderer::AddRenderPass(RenderPassType type)
 		{
-			switch (type)
-			{
-			case RenderPassType::FORWARD:
-				mRenderPasses.emplace_back(std::make_unique<ForwardRenderPass>());
-				break;
-			case RenderPassType::DEFERED:
-				mRenderPasses.emplace_back(std::make_unique<DeferedRenderPass>());
-				break;
-			default:
-				break;
-			}
+			auto pass = CreateRenderPass(type);
+			if(pass)
+				mRenderPasses.emplace_back(pass);
 		}
 
 		std::size_t Renderer::GetFrameResourceIndex()const
@@ -131,6 +130,20 @@ namespace Lightning
 		void Renderer::RegisterCallback(IRendererCallback* callback)
 		{
 			mCallbacks.push_back(callback);
+		}
+
+		RenderPass* Renderer::CreateRenderPass(RenderPassType type)
+		{
+			switch (type)
+			{
+			case RenderPassType::FORWARD:
+				return new ForwardRenderPass();
+			case RenderPassType::DEFERED:
+				return new DeferedRenderPass();
+			default:
+				break;
+			}
+			return nullptr;
 		}
 
 		void Renderer::Start()
@@ -144,6 +157,7 @@ namespace Lightning
 					CreateDepthStencilBuffer( mOutputWindow->GetWidth(), mOutputWindow->GetHeight()));
 			}
 			mFrameResourceIndex = mSwapChain->GetCurrentBackBufferIndex();
+			AddRenderPass(RenderPassType::FORWARD);
 		}
 
 		void Renderer::ShutDown()
@@ -152,16 +166,16 @@ namespace Lightning
 			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
 				mFrameResources[i].Release();
-				mRenderQueue[i].clear();
 			}
 			mOutputWindow.reset();
 			mDevice.reset();
 			mSwapChain.reset();
+			mRenderPasses.clear();
 		}
 
 		const RenderQueue& Renderer::GetRenderQueue()
 		{
-			return mRenderQueue[mFrameResourceIndex];
+			return mFrameResources[mFrameResourceIndex].renderQueue;
 		}
 
 		SharedDepthStencilBufferPtr Renderer::GetDefaultDepthStencilBuffer()

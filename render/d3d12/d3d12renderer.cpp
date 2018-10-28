@@ -13,6 +13,7 @@
 #include "d3d12statefulresourcemgr.h"
 #include "d3d12vertexbuffer.h"
 #include "d3d12indexbuffer.h"
+#include "d3d12forwardrenderpass.h"
 
 namespace
 {
@@ -660,6 +661,14 @@ namespace Lightning
 			return new D3D12DepthStencilBuffer(width, height);
 		}
 
+		RenderPass* D3D12Renderer::CreateRenderPass(RenderPassType type)
+		{
+			if (type == RenderPassType::FORWARD)
+				return new D3D12ForwardRenderPass;
+			else
+				return Renderer::CreateRenderPass(type);
+		}
+
 #ifndef NDEBUG
 		void D3D12Renderer::InitDXGIDebug()
 		{
@@ -689,7 +698,6 @@ namespace Lightning
 		{
 			Renderer::BeginFrame();
 			D3D12DescriptorHeapManager::Instance()->EraseTransientAllocation(mFrameResourceIndex);
-			D3D12ConstantBufferManager::Instance()->ResetBuffers(mFrameResourceIndex);
 			mCmdEncoders[mFrameResourceIndex].for_each([](D3D12CommandEncoder& encoder) {
 				encoder.Reset();
 			});

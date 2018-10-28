@@ -26,6 +26,7 @@ namespace Lightning
 			void RequireSemantic(RenderSemantics semantic) { mSemantics.emplace(semantic); }
 			const SemanticSet& GetSemanticRequirements()const { return mSemantics; }
 			IShader* GetShader(ShaderType type);
+			void GetShaders(container::vector<IShader*>& shaders);
 			void SetShader(const SharedShaderPtr& pShader);
 			void RemoveShader(ShaderType type);
 			void SetArgument(ShaderType type, const ShaderArgument& arg);

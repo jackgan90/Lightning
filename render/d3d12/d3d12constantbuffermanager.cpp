@@ -23,60 +23,45 @@ namespace Lightning
 		{
 			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
-				mBufferResources[i].for_each([](container::vector<BufferResource>& resources) {
-					resources.clear();
-				});
+				mBufferResources[i].resource.reset();
 			}
+		}
+
+		void D3D12ConstantBufferManager::Reserve(std::size_t bufferSize)
+		{
+			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
+			auto& bufferResource = mBufferResources[resourceIndex];
+			if (bufferResource.resource && bufferResource.size >= bufferSize)
+			{
+				bufferResource.offset = 0;
+				return;
+			}
+			auto resourceSize = AlignedSize(bufferSize);
+			D3D12Device* device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
+			bufferResource.resource = device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE,
+				&CD3DX12_RESOURCE_DESC::Buffer(resourceSize),
+				D3D12_RESOURCE_STATE_GENERIC_READ, nullptr);
+			static const CD3DX12_RANGE range(0, 0);
+			//map to process virtual memory on creation to prevent mapping every time change buffer content
+			(*bufferResource.resource)->Map(0, &range, &bufferResource.mapAddress);
+			bufferResource.offset = 0;
+			bufferResource.size = resourceSize;
+			bufferResource.virtualAddress = (*bufferResource.resource)->GetGPUVirtualAddress();
 		}
 
 		D3D12ConstantBuffer D3D12ConstantBufferManager::AllocBuffer(std::size_t bufferSize)
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			auto& bufferResources = *mBufferResources[resourceIndex];
-			auto genNewBuffer = bufferResources.empty();
-			if (!genNewBuffer)
-			{
-				auto& lastBuffer = bufferResources.back();
-				if (lastBuffer.offset + bufferSize >= lastBuffer.size)
-					genNewBuffer = true;
-			}
-			if (genNewBuffer)
-			{
-				BufferResource newResource;
-				//D3D12 requires constant buffer having a size multiple of 256
-				auto resourceSize = AlignedSize(bufferSize > MIN_BUFFER_SIZE ? bufferSize : MIN_BUFFER_SIZE, 256);
-				D3D12Device* device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
-				newResource.resource = device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE,
-					&CD3DX12_RESOURCE_DESC::Buffer(resourceSize),
-					D3D12_RESOURCE_STATE_GENERIC_READ, nullptr);
-				static const CD3DX12_RANGE range(0, 0);
-				//map to process virtual memory on creation to prevent mapping every time change buffer content
-				(*newResource.resource)->Map(0, &range, &newResource.mapAddress);
-				newResource.offset = 0;
-				newResource.size = resourceSize;
-				newResource.virtualAddress = (*newResource.resource)->GetGPUVirtualAddress();
-				bufferResources.push_back(newResource);
-			}
-			auto realSize = AlignedSize(bufferSize, 256);
-			BufferResource& resource = bufferResources.back();
+			auto& bufferResource = mBufferResources[resourceIndex];
+			auto realSize = AlignedSize(bufferSize);
 			D3D12ConstantBuffer cbuffer;
 			cbuffer.size = realSize;
-			cbuffer.userMemory = reinterpret_cast<std::uint8_t*>(resource.mapAddress) + resource.offset;
-			cbuffer.virtualAdress = resource.virtualAddress + resource.offset;
-			resource.offset += realSize;
+			auto offset = bufferResource.offset.fetch_add(realSize);
+			assert(offset < bufferResource.size);
+			cbuffer.userMemory = reinterpret_cast<std::uint8_t*>(bufferResource.mapAddress) + offset;
+			cbuffer.virtualAdress = bufferResource.virtualAddress + offset;
 
 			return cbuffer;
-		}
-
-		//Thread unsafe
-		void D3D12ConstantBufferManager::ResetBuffers(std::size_t frameIndex)
-		{
-			auto& bufferResources = mBufferResources[frameIndex];
-			for (auto it = bufferResources.begin(); it != bufferResources.end();++it)
-			{
-				if (it->size() > 1)
-					it->resize(1);
-			}
 		}
 	}
 }

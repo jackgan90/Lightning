@@ -20,6 +20,13 @@ namespace Lightning
 			IRenderFence *fence{ nullptr };
 			std::uint64_t frame{ 0 };
 			SharedDepthStencilBufferPtr defaultDepthStencilBuffer;
+			RenderQueue renderQueue;
+
+			void BeginFrame()
+			{
+				renderQueue.clear();
+			}
+
 			void Release()
 			{
 				if (fence)
@@ -28,6 +35,7 @@ namespace Lightning
 					fence = nullptr;
 				}
 				defaultDepthStencilBuffer.reset();
+				renderQueue.clear();
 			}
 		};
 
@@ -54,7 +62,7 @@ namespace Lightning
 			const RenderQueue& GetRenderQueue()override;
 			SharedDepthStencilBufferPtr GetDefaultDepthStencilBuffer()override;
 		protected:
-			Renderer(const SharedFileSystemPtr& fs, const SharedWindowPtr& pWindow, RenderPassType renderPassType = RenderPassType::FORWARD);
+			Renderer(const SharedFileSystemPtr& fs, const SharedWindowPtr& pWindow);
 			void WaitForPreviousFrame(bool waitAll);
 			virtual void BeginFrame();
 			virtual void DoFrame();
@@ -67,6 +75,7 @@ namespace Lightning
 			//CreateSwapChain is called in Start,ensuring the device is already created
 			virtual ISwapChain* CreateSwapChain() = 0;
 			virtual IDepthStencilBuffer* CreateDepthStencilBuffer(std::size_t width, std::size_t height) = 0;
+			virtual RenderPass* CreateRenderPass(RenderPassType type);
 			static IRenderer* sInstance;
 			std::uint64_t mFrameCount;
 			SharedFileSystemPtr mFs;
@@ -78,7 +87,6 @@ namespace Lightning
 			container::vector<IRendererCallback*> mCallbacks;
 			FrameResource mFrameResources[RENDER_FRAME_COUNT];
 			SharedWindowPtr mOutputWindow;
-			RenderQueue mRenderQueue[RENDER_FRAME_COUNT];
 		};
 	}
 }

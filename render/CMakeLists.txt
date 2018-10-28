@@ -95,7 +95,8 @@ if(LIGHTNING_USE_D3D12)
 						d3d12/d3d12constantbuffermanager.h
 						d3d12/d3d12commandencoder.h
 						d3d12/d3d12statefulresource.h
-						d3d12/d3d12statefulresourcemgr.h)
+						d3d12/d3d12statefulresourcemgr.h
+						d3d12/d3d12forwardrenderpass.h)
 	set(D3D12_SOURCES	d3d12/d3d12device.cpp
 						d3d12/d3d12swapchain.cpp
 						d3d12/d3d12rendertarget.cpp
@@ -112,7 +113,8 @@ if(LIGHTNING_USE_D3D12)
 						d3d12/d3d12constantbuffermanager.cpp
 						d3d12/d3d12commandencoder.cpp
 						d3d12/d3d12statefulresource.cpp
-						d3d12/d3d12statefulresourcemgr.cpp)
+						d3d12/d3d12statefulresourcemgr.cpp
+						d3d12/d3d12forwardrenderpass.cpp)
 	list(APPEND HEADERS ${D3D12_HEADERS})
 	list(APPEND SOURCES ${D3D12_SOURCES})
 	source_group("d3d12" FILES ${D3D12_HEADERS} ${D3D12_SOURCES})

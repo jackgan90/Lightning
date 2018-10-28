@@ -52,6 +52,7 @@ namespace Lightning
 			IDevice* CreateDevice()override;
 			ISwapChain* CreateSwapChain()override;
 			IDepthStencilBuffer* CreateDepthStencilBuffer(std::size_t width, std::size_t height)override;
+			RenderPass* CreateRenderPass(RenderPassType type)override;
 		private:
 			struct PipelineStateRootSignature
 			{
