@@ -1,6 +1,7 @@
 #include "d3d12forwardrenderpass.h"
 #include "renderer.h"
 #include "d3d12constantbuffermanager.h"
+#include "d3d12shader.h"
 
 namespace Lightning
 {
@@ -23,7 +24,7 @@ namespace Lightning
 			container::vector<IShader*> shaders;
 			node.material->GetShaders(shaders);
 			std::for_each(shaders.begin(), shaders.end(), [this](IShader* shader) {
-				mTotalConstantBufferSize += shader->GetConstantBufferSize();
+				mTotalConstantBufferSize += static_cast<D3D12Shader*>(shader)->GetConstantBufferSize();
 			});
 		}
 

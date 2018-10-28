@@ -133,7 +133,6 @@ namespace Lightning
 			virtual bool SetArgument(const ShaderArgument& argument) = 0;
 			virtual const char* const GetSource()const = 0;
 			virtual void GetShaderModelVersion(int& major, int& minor) = 0;
-			virtual std::size_t GetConstantBufferSize() = 0;
 		};
 
 		using SharedShaderPtr = std::shared_ptr<IShader>;
