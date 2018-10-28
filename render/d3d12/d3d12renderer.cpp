@@ -423,7 +423,10 @@ namespace Lightning
 		void D3D12Renderer::BindShaderResources(const PipelineState& state)
 		{
 			std::size_t constantBuffers{ 0 };
-			container::unordered_map<ShaderType, container::vector<ShaderResourceHandle>> boundResources;
+			using ResourceContainer = container::unordered_map<ShaderType, container::vector<ShaderResourceHandle>>;
+			static Foundation::ThreadLocalSingleton<ResourceContainer> container;
+			auto& boundResources = *container;
+			boundResources.clear();
 			if (state.vs)
 			{
 				constantBuffers += AnalyzeShaderRootResources(state.vs, boundResources);
