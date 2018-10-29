@@ -16,6 +16,12 @@ namespace Lightning
 	namespace Render
 	{
 		extern Foundation::FrameMemoryAllocator g_RenderAllocator;
+
+		D3D12StatefulResourceMgr::D3D12StatefulResourceMgr()
+		{
+			std::memset(mEncoders, 0, sizeof(mEncoders));
+		}
+
 		void D3D12StatefulResourceMgr::Notify(ID3D12GraphicsCommandList* cmdList, D3D12StatefulResource* resource)
 		{
 			MutexLock lock(mtxResources);
@@ -57,10 +63,17 @@ namespace Lightning
 				{
 					auto pMem = g_RenderAllocator.Allocate<D3D12_RESOURCE_BARRIER>(barrierDescs.size());
 					std::memcpy(pMem, &barrierDescs[0], sizeof(D3D12_RESOURCE_BARRIER) * barrierDescs.size());
-					auto commandList = GetCommandList();
+					ID3D12GraphicsCommandList* commandList{ nullptr };
+					if (i == 0)
+						commandList = GetCommandList();
+					else
+						commandList = static_cast<ID3D12GraphicsCommandList*>(commandLists[i - 1]);
 					commandList->ResourceBarrier(barrierDescs.size(), pMem);
-					commandLists.insert(commandLists.begin() + i, static_cast<ID3D12CommandList*>(commandList));
-					++i;
+					if (i == 0)
+					{
+						commandLists.insert(commandLists.begin(), commandList);
+						++i;
+					}
 				}
 				++i;
 			}
@@ -69,25 +82,24 @@ namespace Lightning
 		ID3D12GraphicsCommandList* D3D12StatefulResourceMgr::GetCommandList()
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			auto& encoders = mEncoders[resourceIndex];
-
-			if (mEncoderIndex >= encoders.size())
+			if (mEncoders[resourceIndex])
 			{
-				encoders.emplace_back();
+				mEncoders[resourceIndex]->Reset();
+				return mEncoders[resourceIndex]->GetCommandList();
 			}
 			else
 			{
-				encoders[mEncoderIndex].Reset();
+				mEncoders[resourceIndex] = new D3D12CommandEncoder;
+				return mEncoders[resourceIndex]->GetCommandList();
 			}
-			auto& encoder = encoders[mEncoderIndex++];
-			return encoder.GetCommandList();
 		}
 
 		void D3D12StatefulResourceMgr::Clear()
 		{
-			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
+			for (auto pEncoder : mEncoders)
 			{
-				mEncoders[i].clear();
+				if (pEncoder)
+					delete pEncoder;
 			}
 		}
 

@@ -20,10 +20,10 @@ namespace Lightning
 			friend class Foundation::Singleton<D3D12StatefulResourceMgr>;
 			ID3D12GraphicsCommandList* GetCommandList();
 			using CommandListResources = container::unordered_set<D3D12StatefulResource*>;
-			D3D12StatefulResourceMgr() = default;
+			D3D12StatefulResourceMgr();
 			container::unordered_map<ID3D12GraphicsCommandList*, CommandListResources> mCmdListResources;
 			//command lists that only use to fix resource states.
-			container::vector<D3D12CommandEncoder> mEncoders[RENDER_FRAME_COUNT];
+			D3D12CommandEncoder* mEncoders[RENDER_FRAME_COUNT];
 			std::size_t mEncoderIndex;
 		};
 	}
