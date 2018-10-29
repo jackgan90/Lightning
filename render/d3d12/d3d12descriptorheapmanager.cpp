@@ -41,6 +41,7 @@ namespace Lightning
 
 		void D3D12DescriptorHeapManager::ReserveFrameDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count)
 		{
+			assert(count > 0 && "descriptor count must be positive!");
 			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto i = shaderVisible ? 1 : 0;
 			auto& frameHeap = mFrameHeaps[frameResourceIndex][type][i];

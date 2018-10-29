@@ -29,6 +29,7 @@ namespace Lightning
 
 		void D3D12ConstantBufferManager::Reserve(std::size_t bufferSize)
 		{
+			assert(bufferSize > 0 && "bufferSize must be a positive value!");
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto& bufferResource = mBufferResources[resourceIndex];
 			if (bufferResource.resource && bufferResource.size >= bufferSize)
