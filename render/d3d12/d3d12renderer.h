@@ -85,8 +85,6 @@ namespace Lightning
 			ComPtr<IDXGIFactory4> mDXGIFactory;
 			ComPtr<ID3D12CommandQueue> mCommandQueue;
 			Foundation::ThreadLocalSingleton<D3D12CommandEncoder> mCmdEncoders[RENDER_FRAME_COUNT];
-			D3D12CommandEncoder mFrontCmdEncoder[RENDER_FRAME_COUNT];
-			D3D12CommandEncoder mBackCmdEncoder[RENDER_FRAME_COUNT];
 			PipelineCacheMap mPipelineCache;
 			RootSignatureMap mRootSignatures;
 #ifndef NDEBUG

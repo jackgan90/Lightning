@@ -93,8 +93,6 @@ namespace Lightning
 			mRootSignatures.clear();
 			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
-				mFrontCmdEncoder[i].Clear();
-				mBackCmdEncoder[i].Clear();
 				mCmdEncoders[i].for_each([](D3D12CommandEncoder& encoder) {
 					encoder.Clear();
 				});
@@ -132,14 +130,11 @@ namespace Lightning
 			assert(pTarget);
 			//should check the type of the rt to transit it from previous state to render target state
 			//currently just check back buffer render target
-			if (rt->IsSwapChainRenderTarget())
-			{
-				pTarget->TransitToRTState(mFrontCmdEncoder[mFrameResourceIndex].GetCommandList());
-			}
+			auto commandList = GetGraphicsCommandList();
+			pTarget->TransitToRTState(commandList);
 
 			//cache render target to prevent it from being released before GPU execute ClearRenderTargetView
 
-			auto commandList = GetGraphicsCommandList();
 			const float clearColor[] = { color.r, color.g, color.b, color.a };
 			auto rtvHandle = pTarget->GetCPUHandle();
 			if (rects && !rects->empty())
@@ -173,8 +168,10 @@ namespace Lightning
 			{
 				clearFlags |= D3D12_CLEAR_FLAG_STENCIL;
 			}
-			auto dsvHandle = static_cast<D3D12DepthStencilBuffer*>(buffer.get())->GetCPUHandle();
 			auto commandList = GetGraphicsCommandList();
+			auto d3d12DSBuffer = static_cast<D3D12DepthStencilBuffer*>(buffer.get());
+			d3d12DSBuffer->TransitToState(commandList, D3D12_RESOURCE_STATE_DEPTH_WRITE);
+			auto dsvHandle = d3d12DSBuffer->GetCPUHandle();
 			if (rects && !rects->empty())
 			{
 				//TODO : This implementation is wrong.Should allocate frame memory not local memory,must fix later
@@ -703,8 +700,12 @@ namespace Lightning
 			mCmdEncoders[mFrameResourceIndex].for_each([](D3D12CommandEncoder& encoder) {
 				encoder.Reset();
 			});
-			mFrontCmdEncoder[mFrameResourceIndex].Reset();
-			mBackCmdEncoder[mFrameResourceIndex].Reset();
+			auto defaultRT = mSwapChain->GetDefaultRenderTarget();
+			auto commandList = GetGraphicsCommandList();
+			static_cast<D3D12RenderTarget*>(defaultRT.get())->TransitToPresentState(commandList);
+			auto d3d12DSBuffer = static_cast<D3D12DepthStencilBuffer*>(
+				mFrameResources[mFrameResourceIndex].defaultDepthStencilBuffer.get());
+			d3d12DSBuffer->TransitToState(commandList, D3D12_RESOURCE_STATE_COMMON);
 		}
 
 		void D3D12Renderer::DoFrame()
@@ -716,16 +717,15 @@ namespace Lightning
 		{
 			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
 			auto renderTarget = static_cast<D3D12RenderTarget*>(defaultRenderTarget.get());
-			container::vector<ID3D12CommandList*> commandLists{
-				mFrontCmdEncoder[mFrameResourceIndex].GetCommandList(),
-			};
+			container::vector<ID3D12CommandList*> commandLists;
 			mCmdEncoders[mFrameResourceIndex].for_each([&commandLists](D3D12CommandEncoder& encoder) {
 				commandLists.push_back(encoder.GetCommandList());
 			});
-			commandLists.push_back(mBackCmdEncoder[mFrameResourceIndex].GetCommandList());
+			auto lastCmdList = static_cast<ID3D12GraphicsCommandList*>(commandLists.back());
+			renderTarget->TransitToRTState(lastCmdList);
+			renderTarget->TransitToPresentState(lastCmdList);
 
 			D3D12RenderTargetManager::Instance()->Synchronize();
-			renderTarget->TransitToPresentState(mBackCmdEncoder[mFrameResourceIndex].GetCommandList());
 			D3D12StatefulResourceMgr::Instance()->FixResourceStates(commandLists);
 
 			for (auto cmdList : commandLists)

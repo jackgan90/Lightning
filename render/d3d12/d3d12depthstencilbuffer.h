@@ -24,6 +24,7 @@ namespace Lightning
 			D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return mHeap->cpuHandle; }
 			std::uint32_t GetWidth()const override { return mWidth; }
 			std::uint32_t GetHeight()const override { return mHeight; }
+			void TransitToState(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES state);
 		private:
 			void CreateResource();
 			D3D12StatefulResourcePtr mResource;

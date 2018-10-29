@@ -71,5 +71,10 @@ namespace Lightning
 		{
 			return mFormat;
 		}
+
+		void D3D12DepthStencilBuffer::TransitToState(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES state)
+		{
+			mResource->TransitTo(commandList, state);
+		}
 	}
 }

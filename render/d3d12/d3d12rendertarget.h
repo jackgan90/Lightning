@@ -18,7 +18,6 @@ namespace Lightning
 			friend class D3D12RenderTargetManager;
 			D3D12RenderTarget(const RenderTargetID rtID, const D3D12StatefulResourcePtr& resource, ISwapChain* pSwapChain);
 			~D3D12RenderTarget()override;
-			bool IsSwapChainRenderTarget()const override;
 			RenderTargetID GetID() const override { return mID; }
 			const D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return mHeap->cpuHandle; }
 			const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle()const { return mHeap->gpuHandle; }
@@ -29,7 +28,6 @@ namespace Lightning
 			void TransitToPresentState(ID3D12GraphicsCommandList* commandList);
 		private:
 			D3D12StatefulResourcePtr mResource;
-			bool mIsSwapChainTarget;
 			RenderTargetID mID;
 			DescriptorHeap *mHeap;
 			std::size_t mSampleCount;
