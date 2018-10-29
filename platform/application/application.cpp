@@ -7,6 +7,8 @@
 //include primitives here just for simple scene construction
 #include "primitive.h"
 #include "transform.h"
+#include "configmanager.h"
+#include "tbb/task_scheduler_init.h"
 
 namespace Lightning
 {
@@ -39,6 +41,16 @@ namespace Lightning
 
 		void Application::Start()
 		{
+			static tbb::task_scheduler_init init(tbb::task_scheduler_init::deferred);
+			auto threadCount = Foundation::ConfigManager::Instance()->GetConfig().ThreadCount;
+			if (threadCount == 0)
+			{
+				init.initialize();
+			}
+			else
+			{
+				init.initialize(threadCount);
+			}
 			mWindow = CreateMainWindow();
 			mRenderer = CreateRenderer();
 			if (mRenderer)

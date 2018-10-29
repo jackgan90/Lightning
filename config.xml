@@ -1,6 +1,9 @@
 <lightning_game_engine_configuration>
+	<general>
+		<threads>0</threads>
+	</general>
 	<resource>
-		<root>E:\Lightning_res</root>
+		<root>F:\Lightning_res</root>
 	</resource>
 	<render>
 		<msaa_enable>true</msaa_enable>

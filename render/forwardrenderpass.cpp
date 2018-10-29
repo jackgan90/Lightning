@@ -2,10 +2,8 @@
 #include "forwardrenderpass.h"
 #include "renderer.h"
 #include "framememoryallocator.h"
-#ifdef LIGHTNING_RENDER_MT
 #include "tbb/flow_graph.h"
 #include "tbb/parallel_for.h"
-#endif
 
 
 namespace Lightning
@@ -17,7 +15,6 @@ namespace Lightning
 		void ForwardRenderPass::Apply()
 		{
 			const auto& renderQueue = Renderer::Instance()->GetRenderQueue();
-#ifdef LIGHTNING_RENDER_MT
 			tbb::parallel_for(tbb::blocked_range<std::size_t>(0, renderQueue.size()), 
 				[&renderQueue, this](const tbb::blocked_range<std::size_t>& range) {
 				for (std::size_t i = range.begin(); i != range.end();++i)
@@ -29,15 +26,6 @@ namespace Lightning
 					Draw(node.geometry);
 				}
 			});
-#else
-			for (const auto& node : renderQueue)
-			{
-				CommitShaderArguments(node);
-				CommitPipelineStates(node);
-				CommitBuffers(node.geometry);
-				Draw(node.geometry);
-			}
-#endif
 		}
 
 		void ForwardRenderPass::OnAddRenderNode(const RenderNode& node)

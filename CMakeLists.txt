@@ -7,7 +7,6 @@ include(helpers)
 
 # options start
 option(LIGHTNING_USE_D3D12 "Enable DirectX 12 renderer." ON)
-option(LIGHTNING_RENDER_MT "Enable Multithreading rendering." ON)
 set(LIGHTNING_DEPENDENCIES_DIR "${CMAKE_SOURCE_DIR}/../Lightning_dependency" CACHE PATH "Dependencies directory")
 get_filename_component(LIGHTNING_DEPENDENCIES_DIR ${LIGHTNING_DEPENDENCIES_DIR} ABSOLUTE)
 message(STATUS "Dependencies directory is ${LIGHTNING_DEPENDENCIES_DIR}")

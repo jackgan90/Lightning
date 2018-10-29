@@ -12,7 +12,8 @@ namespace Lightning
 		{
 			std::string ResourceRoot;		//the root directory of resources(shader,script,mesh etc)
 			bool MSAAEnabled;				//is msaa enabled?
-			unsigned int MSAASampleCount;	// msaa sample count
+			unsigned MSAASampleCount;	// msaa sample count
+			unsigned ThreadCount;		// thread count used for the whole application(0 indicates determined by hardware)
 		};
 
 		class LIGHTNING_FOUNDATION_API ConfigManager : public Singleton<ConfigManager>
