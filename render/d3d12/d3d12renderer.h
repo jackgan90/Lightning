@@ -89,6 +89,7 @@ namespace Lightning
 			RootSignatureMap mRootSignatures;
 #ifndef NDEBUG
 			ComPtr<ID3D12Debug> mD3D12Debug;
+			ComPtr<ID3D12Debug1> mD3D12Debug1;
 			ComPtr<IDXGIDebug> mDXGIDebug;
 			void EnableDebugLayer();
 			void InitDXGIDebug();

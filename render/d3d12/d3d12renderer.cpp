@@ -67,6 +67,8 @@ namespace Lightning
 			else
 			{
 				mD3D12Debug->EnableDebugLayer();
+				mD3D12Debug->QueryInterface(IID_PPV_ARGS(&mD3D12Debug1));
+				mD3D12Debug1->SetEnableGPUBasedValidation(true);
 			}
 		}
 #endif
