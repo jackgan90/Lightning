@@ -72,7 +72,7 @@ namespace Lightning
 					auto size = file->GetSize();
 					if (size <= 0)
 					{
-						LOG_WARNING("File is empty : {0}", file->GetPath().c_str());
+						LOG_ERROR("File is empty : {0}", file->GetPath().c_str());
 						file->Close();
 						static_cast<BaseLoader*>(task.owner)->OnFileBufferReady(EmptyFile, nullptr, task);
 						continue;
@@ -80,6 +80,14 @@ namespace Lightning
 					file->SetFilePointer(Foundation::FilePointerType::Read, Foundation::FileAnchor::Begin, 0);
 					char* buffer = new char[std::size_t(size)];
 					auto readSize = file->Read(buffer, size);
+					if (readSize < size)
+					{
+						LOG_ERROR("Unable to read whole file : {0}", file->GetPath());
+						file->Close();
+						delete[] buffer;
+						static_cast<BaseLoader*>(task.owner)->OnFileBufferReady(EmptyFile, nullptr, task);
+						continue;
+					}
 					LOG_INFO("Loader finished reading file : {0}, buffer size : {1}", task.path, size);
 					auto constructTask = new (tbb::task::allocate_root()) ConstructObjectTask(task, file, buffer);
 					tbb::task::enqueue(*constructTask);
