@@ -144,15 +144,6 @@ namespace Lightning
 			return std::make_shared<D3D12Shader>(mDevice.Get(), type, shaderName, DEFAULT_SHADER_ENTRY, shaderSource);
 		}
 
-		void D3D12Device::EndFrame(const std::size_t frameResourceIndex)
-		{
-		}
-
-		void D3D12Device::BeginFrame(const std::size_t frameResourceIndex)
-		{
-			Device::BeginFrame(frameResourceIndex);
-		}
-
 		ID3D12GraphicsCommandList* D3D12Device::GetGraphicsCommandList()
 		{
 			return static_cast<D3D12Renderer*>(Renderer::Instance())->GetGraphicsCommandList();

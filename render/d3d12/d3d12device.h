@@ -32,8 +32,6 @@ namespace Lightning
 			SharedIndexBufferPtr CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;
 			ID3D12GraphicsCommandList* GetGraphicsCommandList();
 			SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)override;
-			void BeginFrame(const std::size_t frameResourceIndex)override;
-			void EndFrame(const std::size_t frameResourceIndex)override;
 			//native device method wrapper start
 			D3D12StatefulResourcePtr CreateCommittedResource(
 				const D3D12_HEAP_PROPERTIES *pHeapProperties,

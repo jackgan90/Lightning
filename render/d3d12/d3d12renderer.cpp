@@ -696,9 +696,8 @@ namespace Lightning
 		}
 #endif
 
-		void D3D12Renderer::BeginFrame()
+		void D3D12Renderer::OnFrameBegin()
 		{
-			Renderer::BeginFrame();
 			mCmdEncoders[mFrameResourceIndex].for_each([](D3D12CommandEncoder& encoder) {
 				encoder.Reset();
 			});
@@ -710,12 +709,12 @@ namespace Lightning
 			d3d12DSBuffer->TransitToState(commandList, D3D12_RESOURCE_STATE_COMMON);
 		}
 
-		void D3D12Renderer::DoFrame()
+		void D3D12Renderer::OnFrameUpdate()
 		{
-			Renderer::DoFrame();
+
 		}
 
-		void D3D12Renderer::EndFrame()
+		void D3D12Renderer::OnFrameEnd()
 		{
 			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
 			auto renderTarget = static_cast<D3D12RenderTarget*>(defaultRenderTarget.get());
@@ -736,7 +735,6 @@ namespace Lightning
 			}
 			auto commandQueue = GetCommandQueue();
 			commandQueue->ExecuteCommandLists(commandLists.size(), &commandLists[0]);
-			Renderer::EndFrame();
 		}
 
 

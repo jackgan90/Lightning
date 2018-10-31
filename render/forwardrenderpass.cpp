@@ -33,8 +33,13 @@ namespace Lightning
 
 		}
 
-		void ForwardRenderPass::OnBeginFrame()
+		void ForwardRenderPass::OnFrameBegin()
 		{
+		}
+
+		void ForwardRenderPass::OnFrameUpdate()
+		{
+			Apply();
 		}
 
 		void ForwardRenderPass::CommitPipelineStates(const RenderNode& node)

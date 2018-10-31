@@ -22,7 +22,7 @@ namespace Lightning
 			SharedDepthStencilBufferPtr defaultDepthStencilBuffer;
 			RenderQueue renderQueue;
 
-			void BeginFrame()
+			void OnFrameBegin()
 			{
 				renderQueue.clear();
 			}
@@ -56,7 +56,7 @@ namespace Lightning
 			std::size_t GetFrameResourceIndex()const override;
 			void Start()override;
 			void ShutDown()override;
-			void RegisterCallback(IRendererCallback* callback)override;
+			void RegisterCallback(RendererEvent evt, RendererCallback cb)override;
 			static IRenderer* Instance() { return sInstance; }
 			IWindow* GetOutputWindow()override { return mOutputWindow.get(); }
 			const RenderQueue& GetRenderQueue()override;
@@ -64,10 +64,10 @@ namespace Lightning
 		protected:
 			Renderer(const SharedFileSystemPtr& fs, const SharedWindowPtr& pWindow);
 			void WaitForPreviousFrame(bool waitAll);
-			virtual void BeginFrame();
-			virtual void DoFrame();
-			virtual void EndFrame();
-			virtual void ApplyRenderPass();
+			void InvokeEventCallback(RendererEvent evt);
+			virtual void OnFrameBegin();
+			virtual void OnFrameUpdate();
+			virtual void OnFrameEnd();
 			//CreateRenderFence is called in Start after the creation of device and swap chain
 			virtual IRenderFence* CreateRenderFence() = 0;
 			//CreateDevice is called first in Start
@@ -84,7 +84,7 @@ namespace Lightning
 			container::vector<std::unique_ptr<RenderPass>> mRenderPasses;
 			std::size_t mFrameResourceIndex;
 			ColorF mClearColor;
-			container::vector<IRendererCallback*> mCallbacks;
+			container::unordered_map<RendererEvent, container::vector<RendererCallback>> mCallbacks;
 			FrameResource mFrameResources[RENDER_FRAME_COUNT];
 			SharedWindowPtr mOutputWindow;
 		};

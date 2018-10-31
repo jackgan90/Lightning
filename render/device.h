@@ -13,12 +13,10 @@ namespace Lightning
 			friend class Renderer;
 			Device();
 			SharedShaderPtr GetDefaultShader(ShaderType type)override;
-			void BeginFrame(const std::size_t frameResourceIndex)override;
 		protected:
 			using DefaultShaderMap = container::unordered_map<ShaderType, SharedShaderPtr>;
 			std::unique_ptr<IShaderManager> mShaderMgr;
 			DefaultShaderMap mDefaultShaders;
-			std::size_t mFrameResourceIndex;
 		};
 	}
 }

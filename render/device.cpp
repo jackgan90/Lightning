@@ -5,7 +5,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		Device::Device() :mFrameResourceIndex(0)
+		Device::Device()
 		{
 
 		}
@@ -17,11 +17,6 @@ namespace Lightning
 			if (it == mDefaultShaders.end())
 				return SharedShaderPtr();
 			return it->second;
-		}
-
-		void Device::BeginFrame(const std::size_t frameResourceIndex)
-		{
-			mFrameResourceIndex = frameResourceIndex;
 		}
 	}
 }

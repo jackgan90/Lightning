@@ -25,8 +25,6 @@ namespace Lightning
 			virtual SharedIndexBufferPtr CreateIndexBuffer(std::uint32_t bufferSize, IndexType type) = 0;
 			virtual SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap) = 0;
 			virtual SharedShaderPtr GetDefaultShader(ShaderType type) = 0;
-			virtual void BeginFrame(const std::size_t frameResourceIndex) = 0;
-			virtual void EndFrame(const std::size_t frameResourceIndex) = 0;
 		};
 		using SharedDevicePtr = std::shared_ptr<IDevice>;
 	}

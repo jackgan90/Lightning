@@ -39,7 +39,7 @@ namespace Lightning
 			});
 		}
 
-		void D3D12ForwardRenderPass::OnBeginFrame()
+		void D3D12ForwardRenderPass::OnFrameBegin()
 		{
 			mTotalConstantBufferSize = 0;
 			mTotalConstantBuffers = 0;

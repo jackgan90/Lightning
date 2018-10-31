@@ -15,7 +15,12 @@ namespace Lightning
 
 		}
 
-		void DeferedRenderPass::OnBeginFrame()
+		void DeferedRenderPass::OnFrameBegin()
+		{
+
+		}
+
+		void DeferedRenderPass::OnFrameUpdate()
 		{
 
 		}

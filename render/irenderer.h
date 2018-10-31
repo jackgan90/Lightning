@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <exception>
+#include <functional>
 #include "renderexception.h"
 #include "rendererexportdef.h"
 #include "idevice.h"
@@ -56,15 +57,15 @@ namespace Lightning
 			std::size_t baseInstance;
 		};
 
-		class LIGHTNING_RENDER_API IRendererCallback
+		enum class RendererEvent
 		{
-		public:
-			virtual ~IRendererCallback(){}
-			virtual void OnBeginFrame() = 0;
-			virtual void OnDoFrame() = 0;
-			virtual void OnEndFrame() = 0;
+			FRAME_BEGIN,
+			FRAME_UPDATE,
+			FRAME_POST_UPDATE,
+			FRAME_END
 		};
 
+		using RendererCallback = std::function<void()>;
 		class LIGHTNING_RENDER_API IRenderer
 		{
 		public:
@@ -92,7 +93,7 @@ namespace Lightning
 			//issue underlying draw call
 			virtual void Draw(const DrawParam& param) = 0;
 			//register renderer event callback.The callback will be called on certain moment of rendering
-			virtual void RegisterCallback(IRendererCallback* callback) = 0;
+			virtual void RegisterCallback(RendererEvent evt, RendererCallback cb) = 0;
 			//get near plane value corresponding to normalized device coordinate
 			//different render API may have different near plane definition
 			//for example OpenGL clips coordinates to [-1, 1] and DirectX clips coordinates to [0, 1]

@@ -5,12 +5,6 @@
 #include "deferedrenderpass.h"
 #include "framememoryallocator.h"
 
-#define INVOKE_CALLBACK(Callback)\
-for(auto& callback : mCallbacks)\
-{\
-	callback->Callback();\
-}
-
 namespace Lightning
 {
 	namespace Render
@@ -35,59 +29,46 @@ namespace Lightning
 
 		void Renderer::Render()
 		{
-			BeginFrame();
-			DoFrame();
-			ApplyRenderPass();
-			EndFrame();
-		}
-
-		void Renderer::BeginFrame()
-		{
 			WaitForPreviousFrame(false);
 			mFrameCount++;
 			mFrameResourceIndex = mSwapChain->GetCurrentBackBufferIndex();
-			mFrameResources[mFrameResourceIndex].BeginFrame();
-			mDevice->BeginFrame(mFrameResourceIndex);
-			for (auto& pass : mRenderPasses)
-			{
-				pass->OnBeginFrame();
-			}
-			INVOKE_CALLBACK(OnBeginFrame)
-		}
-
-		void Renderer::DoFrame()
-		{
+			mFrameResources[mFrameResourceIndex].OnFrameBegin();
+			OnFrameBegin();
+			InvokeEventCallback(RendererEvent::FRAME_BEGIN);
 			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
 			ClearRenderTarget(defaultRenderTarget, mClearColor);
 			auto depthStencilBuffer = GetDefaultDepthStencilBuffer();
 			ClearDepthStencilBuffer(depthStencilBuffer, DepthStencilClearFlags::CLEAR_DEPTH | DepthStencilClearFlags::CLEAR_STENCIL,
 				depthStencilBuffer->GetDepthClearValue(), depthStencilBuffer->GetStencilClearValue(), nullptr);
-			INVOKE_CALLBACK(OnDoFrame)
-		}
-
-		void Renderer::EndFrame()
-		{
-			INVOKE_CALLBACK(OnEndFrame)
+			OnFrameUpdate();
+			InvokeEventCallback(RendererEvent::FRAME_UPDATE);
+			InvokeEventCallback(RendererEvent::FRAME_POST_UPDATE);
+			OnFrameEnd();
+			InvokeEventCallback(RendererEvent::FRAME_END);
 			auto fence = mFrameResources[mFrameResourceIndex].fence;
 			mFrameResources[mFrameResourceIndex].frame = mFrameCount;
 			fence->SetTargetValue(mFrameCount);
-			mDevice->EndFrame(mFrameResourceIndex);
 			mSwapChain->Present();
 			g_RenderAllocator.FinishFrame(mFrameCount);
+		}
+
+		void Renderer::OnFrameBegin()
+		{
+		}
+
+		void Renderer::OnFrameUpdate()
+		{
+		}
+
+		void Renderer::OnFrameEnd()
+		{
+
 		}
 
 
 		void Renderer::SetClearColor(const ColorF& color)
 		{
 			mClearColor = color;
-		}
-
-		void Renderer::ApplyRenderPass()
-		{
-			for (auto& pass : mRenderPasses)
-			{
-				pass->Apply();
-			}
 		}
 
 		std::uint64_t Renderer::GetCurrentFrameCount()const
@@ -127,9 +108,9 @@ namespace Lightning
 			return mFrameResourceIndex;
 		}
 
-		void Renderer::RegisterCallback(IRendererCallback* callback)
+		void Renderer::RegisterCallback(RendererEvent evt, RendererCallback cb)
 		{
-			mCallbacks.push_back(callback);
+			mCallbacks[evt].push_back(cb);
 		}
 
 		RenderPass* Renderer::CreateRenderPass(RenderPassType type)
@@ -207,6 +188,14 @@ namespace Lightning
 			}
 		}
 
-
+		void Renderer::InvokeEventCallback(RendererEvent evt)
+		{
+			auto it = mCallbacks.find(evt);
+			if (it != mCallbacks.end())
+			{
+				for (auto& func : it->second)
+					func();
+			}
+		}
 	}
 }

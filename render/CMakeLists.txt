@@ -39,6 +39,7 @@ set(SOURCES renderer.cpp
 			gpubuffer.cpp
 			geometry.cpp
 			material.cpp
+			renderpass.cpp
 			forwardrenderpass.cpp
 			deferedrenderpass.cpp)
 
