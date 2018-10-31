@@ -8,7 +8,8 @@ namespace Lightning
 		class LIGHTNING_LOADER_API ShaderDeserializer : public IDeserializer
 		{
 		public:
-			void Deserialize(const Foundation::SharedFilePtr& file, char* buffer, void** resource)override;
+			void Deserialize(const Foundation::SharedFilePtr& file, char* buffer, 
+				void** resource, bool& auto_delete_resource)override;
 		};
 	}
 }

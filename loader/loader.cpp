@@ -17,11 +17,12 @@ namespace Lightning
 		tbb::task* DeserializeTask::execute()
 		{
 			void* resource{ nullptr };
-			mLoadTask.deserializer->Deserialize(mFile, mBuffer, &resource);
+			bool autoDeleteResource{ false };
+			mLoadTask.deserializer->Deserialize(mFile, mBuffer, &resource, autoDeleteResource);
 			mLoadTask.finishHandler(resource);
 			delete[] mBuffer;
 			mFile->Close();
-			if (resource)
+			if (resource && autoDeleteResource)
 				delete resource;
 			return nullptr;
 		}

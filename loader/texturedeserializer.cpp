@@ -4,7 +4,8 @@ namespace Lightning
 {
 	namespace Loading
 	{
-		void TextureDeserializer::Deserialize(const Foundation::SharedFilePtr& file, char* buffer, void** resource)
+		void TextureDeserializer::Deserialize(const Foundation::SharedFilePtr& file, char* buffer, 
+			void** resource, bool& auto_delete_resource)
 		{
 
 		}

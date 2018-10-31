@@ -18,7 +18,8 @@ namespace Lightning
 		{
 		public:
 			virtual ~IDeserializer(){}
-			virtual void Deserialize(const Foundation::SharedFilePtr& file, char* buffer, void** resource) = 0;
+			virtual void Deserialize(const Foundation::SharedFilePtr& file, char* buffer, 
+				void** resource, bool& auto_delete_resource) = 0;
 		};
 	}
 }
