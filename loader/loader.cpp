@@ -95,7 +95,8 @@ namespace Lightning
 						continue;
 					}
 					file->SetFilePointer(Foundation::FilePointerType::Read, Foundation::FileAnchor::Begin, 0);
-					char* buffer = new char[std::size_t(size)];
+					char* buffer = new char[std::size_t(size + 1)];
+					buffer[size] = 0;
 					auto readSize = file->Read(buffer, size);
 					if (readSize < size)
 					{
