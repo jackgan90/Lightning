@@ -4,6 +4,9 @@
 #include "forwardrenderpass.h"
 #include "deferedrenderpass.h"
 #include "framememoryallocator.h"
+#include "serializers/shaderserializer.h"
+#include "serializers/textureserializer.h"
+#include "loader.h"
 
 namespace Lightning
 {
@@ -17,6 +20,8 @@ namespace Lightning
 		{
 			assert(!sInstance);
 			sInstance = this;
+			Loading::Loader::Instance()->RegisterSerializer(Loading::LOAD_TYPE_SHADER, new ShaderSerializer);
+			Loading::Loader::Instance()->RegisterSerializer(Loading::LOAD_TYPE_TEXTURE, new TextureSerializer);
 		}
 
 		Renderer::~Renderer()

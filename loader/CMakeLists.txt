@@ -7,13 +7,9 @@ message(STATUS "Configuring project loader")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(HEADERS loaderexportdef.h
-			ideserializer.h
-			loader.h
-			shaderdeserializer.h
-			texturedeserializer.h)
-set(SOURCES loader.cpp
-			shaderdeserializer.cpp
-			texturedeserializer.cpp)
+			iserializer.h
+			loader.h)
+set(SOURCES loader.cpp)
 
 if (WIN32)
 	add_definitions(-DLIGHTNING_WIN32)

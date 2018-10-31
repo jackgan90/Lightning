@@ -14,12 +14,12 @@ namespace Lightning
 			LOAD_TYPE_NUM
 		};
 
-		class LIGHTNING_LOADER_API IDeserializer
+		class LIGHTNING_LOADER_API ISerializer
 		{
 		public:
-			virtual ~IDeserializer(){}
-			virtual void Deserialize(const Foundation::SharedFilePtr& file, char* buffer, 
-				void** resource, bool& auto_delete_resource) = 0;
+			virtual ~ISerializer(){}
+			virtual void Serialize(char** buffer) = 0;
+			virtual void Deserialize(const Foundation::SharedFilePtr& file, char* buffer) = 0;
 		};
 	}
 }

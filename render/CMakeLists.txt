@@ -51,17 +51,25 @@ set(SHADER_HEADERS	shader/ishader.h
 set(SHADER_SOURCES	shader/shaderdefine.cpp
 					shader/shader.cpp)
 
+set(SERIALIZERS_HEADERS	serializers/shaderserializer.h
+						serializers/textureserializer.h)
+
+set(SERIALIZERS_SOURCES	serializers/shaderserializer.cpp
+						serializers/textureserializer.cpp)
+
 set(UTILITY_HEADERS renderallocator.h)
 set(UTILITY_SOURCES renderallocator.cpp)
 
-list(APPEND HEADERS ${TYPES_HEADERS} ${SHADER_HEADERS} ${UTILITY_HEADERS})
-list(APPEND SOURCES ${SHADER_SOURCES} ${UTILITY_SOURCES})
+list(APPEND HEADERS ${TYPES_HEADERS} ${SHADER_HEADERS} ${UTILITY_HEADERS} ${SERIALIZERS_HEADERS})
+list(APPEND SOURCES ${SHADER_SOURCES} ${UTILITY_SOURCES} ${SERIALIZERS_SOURCES})
 
 source_group("types" FILES ${TYPES_HEADERS})
 source_group("shader" FILES 
 							${SHADER_HEADERS}
 							${SHADER_SOURCES})
 source_group("utility" FILES ${UTILITY_HEADERS} ${UTILITY_SOURCES})
+
+source_group("serializers" FILES ${SERIALIZERS_HEADERS} ${SERIALIZERS_SOURCES})
 
 if (WIN32)
 	add_definitions(-DLIGHTNING_WIN32)
@@ -125,6 +133,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/utilities
 					${CMAKE_SOURCE_DIR}/platform 
 					${CMAKE_SOURCE_DIR}/window
+					${CMAKE_SOURCE_DIR}/loader
 					${LIGHTNING_DEPENDENCIES_DIR}/boost
 					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
 					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include)
@@ -141,8 +150,8 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc /arch:SSE2")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
-add_dependencies(${PROJECT_NAME} foundation window utilities)
-target_link_libraries(${PROJECT_NAME} foundation window utilities)
+add_dependencies(${PROJECT_NAME} foundation window utilities loader)
+target_link_libraries(${PROJECT_NAME} foundation window utilities loader)
 if(LIGHTNING_USE_D3D12)
 	target_link_libraries(${PROJECT_NAME} dxgi.lib d3d12.lib d3dcompiler.lib)
 	target_link_libraries(${PROJECT_NAME} dxguid.lib)

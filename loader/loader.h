@@ -4,7 +4,7 @@
 #include <functional>
 #include "loaderexportdef.h"
 #include "singleton.h"
-#include "ideserializer.h"
+#include "iserializer.h"
 #include "container.h"
 #include "tbb/task.h"
 #include "filesystem.h"
@@ -17,8 +17,7 @@ namespace Lightning
 		using LoadFinishHandler = std::function<void(void*)>;
 		struct LoadTask
 		{
-			IDeserializer* deserializer;
-			LoadFinishHandler finishHandler;
+			ISerializer* serializer;
 			std::string path;
 		};
 
@@ -40,7 +39,8 @@ namespace Lightning
 			friend class BaseLoader;
 			void Finalize();
 			void SetFileSystem(const Foundation::SharedFileSystemPtr& fs);
-			void Load(LoadType type, const std::string& path, LoadFinishHandler handler);
+			void RegisterSerializer(LoadType type, ISerializer* ser);
+			void Load(LoadType type, const std::string& path);
 			~Loader();
 		private:
 			Loader();
@@ -50,7 +50,7 @@ namespace Lightning
 			std::mutex mTaskQueueMutex;
 			std::condition_variable mCondVar;
 			Foundation::SharedFileSystemPtr mFileSystem;
-			IDeserializer* mLoaders[LOAD_TYPE_NUM];
+			ISerializer* mLoaders[LOAD_TYPE_NUM];
 		};
 	}
 }

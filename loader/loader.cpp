@@ -1,6 +1,4 @@
 #include "loader.h"
-#include "texturedeserializer.h"
-#include "shaderdeserializer.h"
 #include "logger.h"
 #include "tbb/task.h"
 
@@ -16,22 +14,15 @@ namespace Lightning
 
 		tbb::task* DeserializeTask::execute()
 		{
-			void* resource{ nullptr };
-			bool autoDeleteResource{ false };
-			mLoadTask.deserializer->Deserialize(mFile, mBuffer, &resource, autoDeleteResource);
-			mLoadTask.finishHandler(resource);
+			mLoadTask.serializer->Deserialize(mFile, mBuffer);
 			delete[] mBuffer;
 			mFile->Close();
-			if (resource && autoDeleteResource)
-				delete resource;
 			return nullptr;
 		}
 
 		Loader::Loader() : mRunning(true)
 		{
 			std::memset(mLoaders, 0, sizeof(mLoaders));
-			mLoaders[LOAD_TYPE_TEXTURE] = new TextureDeserializer;
-			mLoaders[LOAD_TYPE_SHADER] = new ShaderDeserializer;
 			std::thread t(IOThread);
 			t.detach();
 		}
@@ -40,7 +31,8 @@ namespace Lightning
 		{
 			for (std::size_t i = 0;i < LOAD_TYPE_NUM;++i)
 			{
-				delete mLoaders[i];
+				if(mLoaders[i])
+					delete mLoaders[i];
 			}
 		}
 
@@ -55,11 +47,17 @@ namespace Lightning
 			mFileSystem = fs;
 		}
 
-		void Loader::Load(LoadType type, const std::string& path, LoadFinishHandler handler)
+		void Loader::RegisterSerializer(LoadType type, ISerializer* ser)
 		{
+			assert(mLoaders[type] == nullptr && "The specified load type is already registered!");
+			mLoaders[type] = ser;
+		}
+
+		void Loader::Load(LoadType type, const std::string& path)
+		{
+			assert(mLoaders[type] && "loader type not found!Please use RegisterSerializer to register serializer for this type");
 			LoadTask task;
-			task.deserializer = mLoaders[type];
-			task.finishHandler = handler;
+			task.serializer = mLoaders[type];
 			task.path = path;
 			mTasks.push(task);
 			mCondVar.notify_one();
@@ -83,7 +81,6 @@ namespace Lightning
 					if (!file)
 					{
 						LOG_ERROR("Can't find file : {0}", task.path.c_str());
-						task.finishHandler(nullptr);
 						continue;
 					}
 					auto size = file->GetSize();
@@ -91,7 +88,6 @@ namespace Lightning
 					{
 						LOG_ERROR("File is empty : {0}", file->GetPath().c_str());
 						file->Close();
-						task.finishHandler(nullptr);
 						continue;
 					}
 					file->SetFilePointer(Foundation::FilePointerType::Read, Foundation::FileAnchor::Begin, 0);
@@ -103,7 +99,6 @@ namespace Lightning
 						LOG_ERROR("Unable to read whole file : {0}", file->GetPath());
 						file->Close();
 						delete[] buffer;
-						task.finishHandler(nullptr);
 						continue;
 					}
 					LOG_INFO("Loader finished reading file : {0}, buffer size : {1}", task.path, size);
