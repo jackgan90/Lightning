@@ -3,7 +3,7 @@
 
 namespace Lightning
 {
-	namespace Loader
+	namespace Loading
 	{
 		class LIGHTNING_LOADER_API TextureDeserializer : public IDeserializer
 		{

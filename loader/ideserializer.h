@@ -5,7 +5,7 @@
 
 namespace Lightning
 {
-	namespace Loader
+	namespace Loading
 	{
 		enum LoadType
 		{

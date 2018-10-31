@@ -2,7 +2,7 @@
 
 namespace Lightning
 {
-	namespace Loader
+	namespace Loading
 	{
 		void ShaderDeserializer::Deserialize(const Foundation::SharedFilePtr& file, char* buffer, void** resource)
 		{

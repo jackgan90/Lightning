@@ -35,7 +35,7 @@ namespace Lightning
 			SceneManager::Instance()->DestroyAll();
 			if (mRenderer)
 				mRenderer->ShutDown();
-			Loader::Loader::Instance()->Finalize();
+			Loading::Loader::Instance()->Finalize();
 			mRenderer.reset();
 			mWindowMgr.reset();
 			LOG_INFO("Application quit.");
@@ -53,7 +53,7 @@ namespace Lightning
 			{
 				init.initialize(threadCount);
 			}
-			Loader::Loader::Instance()->SetFileSystem(mFileSystem);
+			Loading::Loader::Instance()->SetFileSystem(mFileSystem);
 			mWindow = CreateMainWindow();
 			mRenderer = CreateRenderer();
 			mRenderer->Start();

@@ -11,7 +11,7 @@
 
 namespace Lightning
 {
-	namespace Loader
+	namespace Loading
 	{
 		using Foundation::container;
 		using LoadFinishHandler = std::function<void(void*)>;

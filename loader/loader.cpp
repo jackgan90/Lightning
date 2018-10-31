@@ -6,7 +6,7 @@
 
 namespace Lightning
 {
-	namespace Loader
+	namespace Loading
 	{
 		DeserializeTask::DeserializeTask(const LoadTask& loadTask, const Foundation::SharedFilePtr& file, char* buffer)
 			:mLoadTask(loadTask), mFile(file), mBuffer(buffer)
