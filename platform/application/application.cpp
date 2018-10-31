@@ -8,7 +8,7 @@
 #include "primitive.h"
 #include "transform.h"
 #include "configmanager.h"
-#include "loadermgr.h"
+#include "loader.h"
 #include "tbb/task_scheduler_init.h"
 
 namespace Lightning
@@ -35,7 +35,7 @@ namespace Lightning
 			SceneManager::Instance()->DestroyAll();
 			if (mRenderer)
 				mRenderer->ShutDown();
-			Loader::LoaderMgr::Instance()->Finalize();
+			Loader::Loader::Instance()->Finalize();
 			mRenderer.reset();
 			mWindowMgr.reset();
 			LOG_INFO("Application quit.");
@@ -53,7 +53,7 @@ namespace Lightning
 			{
 				init.initialize(threadCount);
 			}
-			Loader::LoaderMgr::Instance()->SetFileSystem(mFileSystem);
+			Loader::Loader::Instance()->SetFileSystem(mFileSystem);
 			mWindow = CreateMainWindow();
 			mRenderer = CreateRenderer();
 			mRenderer->Start();
