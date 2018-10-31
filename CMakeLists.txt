@@ -20,7 +20,7 @@ add_subdirectory(platform)
 add_subdirectory(window)
 add_subdirectory(render)
 add_subdirectory(unittest)
-add_subdirectory(serialization)
+add_subdirectory(loader)
 add_subdirectory(scene)
 add_subdirectory(jobsystem)
 

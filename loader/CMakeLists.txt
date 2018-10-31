@@ -1,23 +1,33 @@
 include(helpers)
 
-project(serialization)
-message(STATUS "Configuring project serialization")
+project(loader)
+message(STATUS "Configuring project loader")
 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(HEADERS serializationexportdef.h
-			asyncloader.h
-			iresourceserializer.h
-			shaderserializer.h)
-set(SOURCES asyncloader.cpp
-			shaderserializer.cpp)
+set(HEADERS loaderexportdef.h
+			iloader.h
+			loadermgr.h
+			baseloader.h
+			shaderloader.h
+			textureloader.h)
+set(SOURCES loadermgr.cpp
+			baseloader.cpp
+			shaderloader.cpp
+			textureloader.cpp)
 
 if (WIN32)
 	add_definitions(-DLIGHTNING_WIN32)
 endif()
 
-include_directories(${CMAKE_SOURCE_DIR}/foundation )
+define_dll_export_macro(LOADER)
+
+
+include_directories(${CMAKE_SOURCE_DIR}/foundation 
+					${LIGHTNING_DEPENDENCIES_DIR}/boost
+					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
+					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include)
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 add_dependencies(${PROJECT_NAME} foundation)
 target_link_libraries(${PROJECT_NAME} foundation)
