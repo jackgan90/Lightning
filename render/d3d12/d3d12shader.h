@@ -4,7 +4,6 @@
 #include <d3dcompiler.h>
 #include "threadlocalsingleton.h"
 #include "container.h"
-#include "d3d12shadermanager.h"
 #include "d3d12constantbuffermanager.h"
 #include "d3d12descriptorheapmanager.h"
 #include "ishader.h"

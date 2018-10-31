@@ -47,12 +47,8 @@ set(TYPES_HEADERS	types/color.h
 					types/rect.h)
 
 set(SHADER_HEADERS	shader/ishader.h
-					shader/shaderdefine.h
-					shader/ishadermanager.h
-					shader/shadermanager.h)
+					shader/shaderdefine.h)
 set(SHADER_SOURCES	shader/shaderdefine.cpp
-					shader/shadermanager.cpp
-					shader/shadermanager.cpp
 					shader/shader.cpp)
 
 set(UTILITY_HEADERS renderallocator.h)
@@ -86,7 +82,6 @@ if(LIGHTNING_USE_D3D12)
 						d3d12/d3d12descriptorheapmanager.h
 						d3d12/d3d12typemapper.h
 						d3d12/d3d12shader.h
-						d3d12/d3d12shadermanager.h
 						d3d12/d3d12bufferresource.h
 						d3d12/d3d12vertexbuffer.h
 						d3d12/d3d12indexbuffer.h
@@ -104,7 +99,6 @@ if(LIGHTNING_USE_D3D12)
 						d3d12/d3d12renderfence.cpp
 						d3d12/d3d12descriptorheapmanager.cpp
 						d3d12/d3d12shader.cpp
-						d3d12/d3d12shadermanager.cpp
 						d3d12/d3d12bufferresource.cpp
 						d3d12/d3d12vertexbuffer.cpp
 						d3d12/d3d12indexbuffer.cpp

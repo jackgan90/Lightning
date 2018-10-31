@@ -9,7 +9,6 @@
 #include "stackallocator.h"
 #include "filesystem.h"
 #include "d3d12shader.h"
-#include "d3d12shadermanager.h"
 #include "d3d12commandencoder.h"
 #include "d3d12statefulresource.h"
 

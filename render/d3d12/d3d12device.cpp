@@ -11,7 +11,6 @@
 #include "d3d12indexbuffer.h"
 #include "renderconstants.h"
 #include "semantics.h"
-#include "shadermanager.h"
 #include "logger.h"
 #include "configmanager.h"
 #include "framememoryallocator.h"
@@ -77,15 +76,13 @@ namespace Lightning
 		{
 			CreateNativeDevice(factory);
 			D3D12_COMMAND_QUEUE_DESC desc = {};
-			mShaderMgr = std::make_unique<D3D12ShaderManager>(this, fs);
 			//should create first default pipeline state
-			mDefaultShaders[ShaderType::VERTEX] = mShaderMgr->CreateShaderFromSource(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
-			mDefaultShaders[ShaderType::FRAGMENT] = mShaderMgr->CreateShaderFromSource(ShaderType::FRAGMENT, "[Built-in]default.ps", DEFAULT_PS_SOURCE, ShaderDefine()); 
+			mDefaultShaders[ShaderType::VERTEX] = CreateShader(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
+			mDefaultShaders[ShaderType::FRAGMENT] = CreateShader(ShaderType::FRAGMENT, "[Built-in]default.ps", DEFAULT_PS_SOURCE, ShaderDefine());
 		}
 
 		D3D12Device::~D3D12Device()
 		{
-			mShaderMgr.reset();
 		}
 
 		void D3D12Device::CreateNativeDevice(IDXGIFactory4* factory)

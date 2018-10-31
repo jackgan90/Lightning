@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include "idevice.h"
-#include "ishadermanager.h"
 
 namespace Lightning
 {
@@ -15,7 +14,6 @@ namespace Lightning
 			SharedShaderPtr GetDefaultShader(ShaderType type)override;
 		protected:
 			using DefaultShaderMap = container::unordered_map<ShaderType, SharedShaderPtr>;
-			std::unique_ptr<IShaderManager> mShaderMgr;
 			DefaultShaderMap mDefaultShaders;
 		};
 	}

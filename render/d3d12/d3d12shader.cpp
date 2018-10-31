@@ -3,7 +3,6 @@
 #include <cassert>
 #include "d3d12device.h"
 #include "renderer.h"
-#include "shadermanager.h"
 #include "d3d12shader.h"
 #include "rendererhelper.h"
 #include "framememoryallocator.h"
