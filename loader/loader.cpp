@@ -59,6 +59,7 @@ namespace Lightning
 		{
 			mDisposedPathes.push(path);
 			file->Close();
+			mCondVar.notify_one();
 		}
 
 		//This thread only deals with IO related stuff.After finishing reading a file
