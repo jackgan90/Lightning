@@ -10,6 +10,7 @@
 #include "ivertexbuffer.h"
 #include "iindexbuffer.h"
 #include "ishader.h"
+#include "texture/itexture.h"
 #include "rect.h"
 #include "color.h"
 
@@ -28,6 +29,7 @@ namespace Lightning
 			virtual SharedShaderPtr CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap) = 0;
 			virtual void CreateShaderFromFile(ShaderType type, const std::string& path,
 				const ShaderDefine& defineMap, ShaderLoadFinishHandler handler) = 0;
+			virtual SharedTexturePtr CreateTexture(const TextureDescriptor& descriptor, char* buffer) = 0;
 			virtual SharedShaderPtr GetDefaultShader(ShaderType type) = 0;
 		};
 		using SharedDevicePtr = std::shared_ptr<IDevice>;

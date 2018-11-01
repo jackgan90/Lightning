@@ -51,6 +51,8 @@ set(SHADER_HEADERS	shader/ishader.h
 set(SHADER_SOURCES	shader/shaderdefine.cpp
 					shader/shader.cpp)
 
+set(TEXTURE_HEADERS	texture/itexture.h)
+
 set(SERIALIZERS_HEADERS	serializers/shaderserializer.h
 						serializers/textureserializer.h)
 
@@ -60,13 +62,15 @@ set(SERIALIZERS_SOURCES	serializers/shaderserializer.cpp
 set(UTILITY_HEADERS renderallocator.h)
 set(UTILITY_SOURCES renderallocator.cpp)
 
-list(APPEND HEADERS ${TYPES_HEADERS} ${SHADER_HEADERS} ${UTILITY_HEADERS} ${SERIALIZERS_HEADERS})
+list(APPEND HEADERS ${TYPES_HEADERS} ${SHADER_HEADERS} ${UTILITY_HEADERS} ${SERIALIZERS_HEADERS} ${TEXTURE_HEADERS})
 list(APPEND SOURCES ${SHADER_SOURCES} ${UTILITY_SOURCES} ${SERIALIZERS_SOURCES})
 
 source_group("types" FILES ${TYPES_HEADERS})
-source_group("shader" FILES 
-							${SHADER_HEADERS}
+source_group("shader" FILES ${SHADER_HEADERS}
 							${SHADER_SOURCES})
+
+source_group("texture" FILES ${TEXTURE_HEADERS})
+
 source_group("utility" FILES ${UTILITY_HEADERS} ${UTILITY_SOURCES})
 
 source_group("serializers" FILES ${SERIALIZERS_HEADERS} ${SERIALIZERS_SOURCES})
@@ -97,7 +101,8 @@ if(LIGHTNING_USE_D3D12)
 						d3d12/d3d12commandencoder.h
 						d3d12/d3d12statefulresource.h
 						d3d12/d3d12statefulresourcemgr.h
-						d3d12/d3d12forwardrenderpass.h)
+						d3d12/d3d12forwardrenderpass.h
+						d3d12/d3d12texture.h)
 	set(D3D12_SOURCES	d3d12/d3d12device.cpp
 						d3d12/d3d12swapchain.cpp
 						d3d12/d3d12rendertarget.cpp
@@ -114,7 +119,8 @@ if(LIGHTNING_USE_D3D12)
 						d3d12/d3d12commandencoder.cpp
 						d3d12/d3d12statefulresource.cpp
 						d3d12/d3d12statefulresourcemgr.cpp
-						d3d12/d3d12forwardrenderpass.cpp)
+						d3d12/d3d12forwardrenderpass.cpp
+						d3d12/d3d12texture.cpp)
 	list(APPEND HEADERS ${D3D12_HEADERS})
 	list(APPEND SOURCES ${D3D12_SOURCES})
 	source_group("d3d12" FILES ${D3D12_HEADERS} ${D3D12_SOURCES})
@@ -127,6 +133,7 @@ define_dll_export_macro(RENDERER)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_CURRENT_SOURCE_DIR}/types
 					${CMAKE_CURRENT_SOURCE_DIR}/shader
+					${CMAKE_CURRENT_SOURCE_DIR}/texture
 					${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/foundation/memory
 					${CMAKE_SOURCE_DIR}/foundation/math
