@@ -13,5 +13,10 @@ namespace Lightning
 		{
 
 		}
+
+		void TextureSerializer::Dispose()
+		{
+		
+		}
 	}
 }

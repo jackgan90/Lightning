@@ -36,11 +36,9 @@ namespace Lightning
 		{
 		public:
 			friend class Foundation::Singleton<Loader>;
-			friend class BaseLoader;
 			void Finalize();
 			void SetFileSystem(const Foundation::SharedFileSystemPtr& fs);
-			void RegisterSerializer(LoadType type, ISerializer* ser);
-			void Load(LoadType type, const std::string& path);
+			void Load(const std::string& path, ISerializer* ser);
 			~Loader();
 		private:
 			Loader();
@@ -50,7 +48,6 @@ namespace Lightning
 			std::mutex mTaskQueueMutex;
 			std::condition_variable mCondVar;
 			Foundation::SharedFileSystemPtr mFileSystem;
-			ISerializer* mLoaders[LOAD_TYPE_NUM];
 		};
 	}
 }

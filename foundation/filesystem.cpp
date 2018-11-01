@@ -3,6 +3,7 @@
 #include "filesystem.h"
 #include "common.h"
 #include "configmanager.h"
+#include "environment.h"
 
 namespace Lightning
 {
@@ -53,6 +54,7 @@ namespace Lightning
 			if (mFile)
 			{
 				mFile->close();
+				mFile.reset();
 			}
 		}
 
@@ -114,6 +116,7 @@ namespace Lightning
 
 		void GeneralFile::OpenFile()
 		{
+			assert(Environment::IsInLoaderIOThread() && "OpenFile must be called from LoaderIO Thread!");
 			if (!mFile)
 			{
 				int mode = 0;
@@ -128,6 +131,7 @@ namespace Lightning
 
 		FileSize GeneralFile::Read(char* buf, FileSize length)
 		{
+			assert(Environment::IsInLoaderIOThread() && "Read must be called from LoaderIO Thread!");
 			FileSize size = GetSize();
 			FileSize readSize = std::min(size, length);
 			mFile->read(buf, readSize);
@@ -158,7 +162,7 @@ namespace Lightning
 
 		SharedFilePtr GeneralFileSystem::FindFile(const std::string& filename, FileAccess bitmask)
 		{
-			//TODO : multithreaded access must be resolved
+			assert(Environment::IsInLoaderIOThread() && "FindFile must be called from LoaderIO Thread!");
 			auto cachedFile = mCachedFiles.find(filename);
 			if (cachedFile != mCachedFiles.end())
 				return cachedFile->second;

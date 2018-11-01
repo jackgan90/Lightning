@@ -1,6 +1,7 @@
 #include "loader.h"
 #include "logger.h"
 #include "tbb/task.h"
+#include "environment.h"
 
 namespace Lightning
 {
@@ -15,6 +16,7 @@ namespace Lightning
 		tbb::task* DeserializeTask::execute()
 		{
 			mLoadTask.serializer->Deserialize(mFile, mBuffer);
+			mLoadTask.serializer->Dispose();
 			delete[] mBuffer;
 			mFile->Close();
 			return nullptr;
@@ -22,18 +24,12 @@ namespace Lightning
 
 		Loader::Loader() : mRunning(true)
 		{
-			std::memset(mLoaders, 0, sizeof(mLoaders));
 			std::thread t(IOThread);
 			t.detach();
 		}
 
 		Loader::~Loader()
 		{
-			for (std::size_t i = 0;i < LOAD_TYPE_NUM;++i)
-			{
-				if(mLoaders[i])
-					delete mLoaders[i];
-			}
 		}
 
 		void Loader::Finalize()
@@ -47,17 +43,10 @@ namespace Lightning
 			mFileSystem = fs;
 		}
 
-		void Loader::RegisterSerializer(LoadType type, ISerializer* ser)
+		void Loader::Load(const std::string& path, ISerializer* ser)
 		{
-			assert(mLoaders[type] == nullptr && "The specified load type is already registered!");
-			mLoaders[type] = ser;
-		}
-
-		void Loader::Load(LoadType type, const std::string& path)
-		{
-			assert(mLoaders[type] && "loader type not found!Please use RegisterSerializer to register serializer for this type");
 			LoadTask task;
-			task.serializer = mLoaders[type];
+			task.serializer = ser;
 			task.path = path;
 			mTasks.push(task);
 			mCondVar.notify_one();
@@ -68,6 +57,7 @@ namespace Lightning
 		//happens in tbb threads.
 		void Loader::IOThread()
 		{
+			Foundation::Environment::LoaderIOThreadID = std::this_thread::get_id();
 			auto mgr = Loader::Instance();
 			LOG_INFO("LoaderMgr IO Thread start!");
 			while (mgr->mRunning)

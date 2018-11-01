@@ -50,6 +50,7 @@ namespace Lightning
 		{
 		public:
 			virtual ~IFileSystem() = default;
+			//Thread unsafe.Application must call this method from loader IO thread
 			virtual SharedFilePtr FindFile(const std::string& filename, FileAccess bitmask) = 0;
 			virtual bool SetRoot(std::string root_path) = 0;
 			virtual const std::string GetRoot() const = 0;

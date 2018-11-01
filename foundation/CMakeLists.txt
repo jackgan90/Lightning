@@ -33,6 +33,7 @@ set(HEADERS	common.h
 			container.h
 			enumoperation.h
 			threadlocalsingleton.h
+			environment.h
 			)
 set(SOURCES common.cpp
 			filesystem.cpp
@@ -41,7 +42,8 @@ set(SOURCES common.cpp
 			murmurhash3.cpp
 			timer.cpp
 			timermanager.cpp
-			timesystem.cpp)
+			timesystem.cpp
+			environment.cpp)
 
 list(APPEND HEADERS ${MEMORY_HEADERS} ${MATH_HEADERS})
 list(APPEND SOURCES ${MEMORY_SOURCES} ${MATH_SOURCES})

@@ -20,8 +20,6 @@ namespace Lightning
 		{
 			assert(!sInstance);
 			sInstance = this;
-			Loading::Loader::Instance()->RegisterSerializer(Loading::LOAD_TYPE_SHADER, new ShaderSerializer);
-			Loading::Loader::Instance()->RegisterSerializer(Loading::LOAD_TYPE_TEXTURE, new TextureSerializer);
 		}
 
 		Renderer::~Renderer()

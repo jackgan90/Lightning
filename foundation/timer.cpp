@@ -67,6 +67,8 @@ namespace Lightning
 		std::size_t WheelTimer::AddTask(TimerTaskType type, std::size_t delay,
 			std::size_t repeatInterval, std::function<void()> func)
 		{
+			delay = std::max(mResolution, delay);
+			repeatInterval = std::max(mResolution, repeatInterval);
 			auto taskID = AddTaskInternal(type, delay, repeatInterval, func, mNextTaskID);
 			++mNextTaskID;
 			return taskID;

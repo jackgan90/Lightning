@@ -10,6 +10,7 @@ namespace Lightning
 		public:
 			void Serialize(char** buffer)override;
 			void Deserialize(const Foundation::SharedFilePtr& file, char* buffer)override;
+			void Dispose()override;
 		};
 	}
 }

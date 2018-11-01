@@ -12,6 +12,8 @@ namespace Lightning
 			friend class Renderer;
 			Device();
 			SharedShaderPtr GetDefaultShader(ShaderType type)override;
+			void CreateShaderFromFile(ShaderType type, const std::string& path,
+				const ShaderDefine& defineMap, ShaderLoadFinishHandler handler)override;
 		protected:
 			using DefaultShaderMap = container::unordered_map<ShaderType, SharedShaderPtr>;
 			DefaultShaderMap mDefaultShaders;
