@@ -73,6 +73,12 @@ namespace Lightning
 						LOG_ERROR("Can't find file : {0}", task.path.c_str());
 						continue;
 					}
+					if (file->IsOpen())
+					{
+						mgr->mTasks.push(task);
+						LOG_INFO("The same file is used by other tasks.Reschedule this task.path : {0}", task.path);
+						continue;
+					}
 					auto size = file->GetSize();
 					if (size <= 0)
 					{

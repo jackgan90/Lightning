@@ -58,6 +58,11 @@ namespace Lightning
 			}
 		}
 
+		bool GeneralFile::IsOpen()const
+		{
+			return mFile.get() != nullptr;
+		}
+
 		FileSize GeneralFile::GetSize()
 		{
 			if (mSizeDirty)

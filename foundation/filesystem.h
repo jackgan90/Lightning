@@ -41,6 +41,7 @@ namespace Lightning
 			virtual FileSize Read(char* buf, FileSize length) = 0;
 			virtual void SetFilePointer(FilePointerType type, FileAnchor anchor, FileSize offset) = 0;
 			virtual void Close() = 0;
+			virtual bool IsOpen()const = 0;
 			virtual const std::string GetPath()const = 0;
 			virtual const std::string GetName()const = 0;
 		};
@@ -86,6 +87,7 @@ namespace Lightning
 			void SetFilePointer(FilePointerType type, FileAnchor anchor, FileSize offset)override;
 			FileSize Read(char* buf, FileSize length)override;
 			void Close()override;
+			bool IsOpen()const override;
 			const std::string GetPath()const override;
 			const std::string GetName()const override;
 		protected:
