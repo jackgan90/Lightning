@@ -7,18 +7,21 @@ namespace Lightning
 {
 	namespace Loading
 	{
-		DeserializeTask::DeserializeTask(const LoadTask& loadTask, const Foundation::SharedFilePtr& file, char* buffer)
-			:mLoadTask(loadTask), mFile(file), mBuffer(buffer)
+		DeserializeTask::DeserializeTask(const LoadTask& loadTask, const Foundation::SharedFilePtr& file, 
+			const std::shared_ptr<char>& buffer, bool ownBuffer)
+			:mLoadTask(loadTask), mFile(file), mBuffer(buffer), mOwnBuffer(ownBuffer)
 		{
 
 		}
 
 		tbb::task* DeserializeTask::execute()
 		{
-			mLoadTask.serializer->Deserialize(mFile, mBuffer);
+			mLoadTask.serializer->Deserialize(mFile, mBuffer.get());
 			mLoadTask.serializer->Dispose();
-			delete[] mBuffer;
-			mFile->Close();
+			if (mOwnBuffer)
+			{
+				Loader::Instance()->DisposeFileAndBuffer(mLoadTask.path, mFile);
+			}
 			return nullptr;
 		}
 
@@ -52,6 +55,12 @@ namespace Lightning
 			mCondVar.notify_one();
 		}
 
+		void Loader::DisposeFileAndBuffer(const std::string& path, const Foundation::SharedFilePtr& file)
+		{
+			mDisposedPathes.push(path);
+			file->Close();
+		}
+
 		//This thread only deals with IO related stuff.After finishing reading a file
 		//it will hand over the buffer and file to a tbb task so that deserialization 
 		//happens in tbb threads.
@@ -62,6 +71,11 @@ namespace Lightning
 			LOG_INFO("LoaderMgr IO Thread start!");
 			while (mgr->mRunning)
 			{
+				std::string path;
+				while (mgr->mDisposedPathes.try_pop(path))
+				{
+					mgr->mBuffers.erase(path);
+				}
 				LoadTask task;
 				if (mgr->mTasks.try_pop(task))
 				{
@@ -75,8 +89,8 @@ namespace Lightning
 					}
 					if (file->IsOpen())
 					{
-						mgr->mTasks.push(task);
-						LOG_INFO("The same file is used by other tasks.Reschedule this task.path : {0}", task.path);
+						auto deserializeTask = new (tbb::task::allocate_root()) DeserializeTask(task, file, mgr->mBuffers[task.path], false);
+						tbb::task::enqueue(*deserializeTask);
 						continue;
 					}
 					auto size = file->GetSize();
@@ -87,18 +101,20 @@ namespace Lightning
 						continue;
 					}
 					file->SetFilePointer(Foundation::FilePointerType::Read, Foundation::FileAnchor::Begin, 0);
-					char* buffer = new char[std::size_t(size + 1)];
+					auto sharedBuffer = std::shared_ptr<char>(new char[std::size_t(size + 1)], std::default_delete<char[]>());
+					char* buffer = sharedBuffer.get();
 					buffer[size] = 0;
 					auto readSize = file->Read(buffer, size);
 					if (readSize < size)
 					{
 						LOG_ERROR("Unable to read whole file : {0}", file->GetPath());
 						file->Close();
-						delete[] buffer;
+						sharedBuffer.reset();
 						continue;
 					}
+					mgr->mBuffers[task.path] = sharedBuffer;
 					LOG_INFO("Loader finished reading file : {0}, buffer size : {1}", task.path, size);
-					auto deserializeTask = new (tbb::task::allocate_root()) DeserializeTask(task, file, buffer);
+					auto deserializeTask = new (tbb::task::allocate_root()) DeserializeTask(task, file, sharedBuffer, true);
 					tbb::task::enqueue(*deserializeTask);
 				}
 				else
