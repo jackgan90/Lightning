@@ -23,7 +23,7 @@ namespace Lightning
 			FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
 			BYTE* data = reinterpret_cast<BYTE*>(buffer);
 			auto bufferSize = file->GetSize();
-			auto stream = FreeImage_OpenMemory(data, bufferSize);
+			auto stream = FreeImage_OpenMemory(data, (DWORD)bufferSize);
 			fif = FreeImage_GetFileTypeFromMemory(stream, 0);
 			if (fif == FIF_UNKNOWN)
 				fif = FreeImage_GetFIFFromFilename(file->GetPath().c_str());
