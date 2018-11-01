@@ -141,6 +141,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/platform 
 					${CMAKE_SOURCE_DIR}/window
 					${CMAKE_SOURCE_DIR}/loader
+					${LIGHTNING_DEPENDENCIES_DIR}/FreeImage
 					${LIGHTNING_DEPENDENCIES_DIR}/boost
 					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
 					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include)
@@ -156,6 +157,10 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc /arch:SSE2")
 	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc /arch:SSE2")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
+endif()
+if(WIN32)
+	target_link_libraries(${PROJECT_NAME} debug ${LIGHTNING_DEPENDENCIES_DIR}/FreeImage/x32/FreeImaged.lib)
+	target_link_libraries(${PROJECT_NAME} optimized ${LIGHTNING_DEPENDENCIES_DIR}/FreeImage/x32/FreeImage.lib)
 endif()
 add_dependencies(${PROJECT_NAME} foundation window utilities loader)
 target_link_libraries(${PROJECT_NAME} foundation window utilities loader)

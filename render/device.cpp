@@ -2,6 +2,7 @@
 #include "device.h"
 #include "loader.h"
 #include "serializers/shaderserializer.h"
+#include "serializers/textureserializer.h"
 
 namespace Lightning
 {
@@ -17,6 +18,13 @@ namespace Lightning
 			const ShaderDefine& defineMap, ShaderLoadFinishHandler handler)
 		{
 			auto ser = new ShaderSerializer(type, path, defineMap, handler);
+			Loader::Instance()->Load(path, ser);
+		}
+
+		void Device::CreateTextureFromFile(const TextureDescriptor& descriptor, const std::string& path,
+			TextureLoadFinishHandler handler)
+		{
+			auto ser = new TextureSerializer(descriptor, path, handler);
 			Loader::Instance()->Load(path, ser);
 		}
 

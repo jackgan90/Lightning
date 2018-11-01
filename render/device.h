@@ -14,6 +14,8 @@ namespace Lightning
 			SharedShaderPtr GetDefaultShader(ShaderType type)override;
 			void CreateShaderFromFile(ShaderType type, const std::string& path,
 				const ShaderDefine& defineMap, ShaderLoadFinishHandler handler)override;
+			void CreateTextureFromFile(const TextureDescriptor& descriptor, const std::string& path,
+				TextureLoadFinishHandler handler)override;
 		protected:
 			using DefaultShaderMap = container::unordered_map<ShaderType, SharedShaderPtr>;
 			DefaultShaderMap mDefaultShaders;
