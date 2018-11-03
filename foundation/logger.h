@@ -39,7 +39,7 @@ namespace Lightning
 			{
 			}
 			template<typename... Args>
-			void Log(LogLevel level, const char* text, Args... args)
+			void Log(LogLevel level, const char* text, Args&&... args)
 			{
 				switch (level)
 				{
