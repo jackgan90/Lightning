@@ -1,5 +1,6 @@
 #pragma once
 #include "foundationexportdef.h"
+#include "event.h"
 #include "entity.h"
 #include "container.h"
 #include "singleton.h"
@@ -25,7 +26,9 @@ namespace Lightning
 				{
 					mEntities[entity->mID] = entity;
 				}
-				return std::static_pointer_cast<E, Entity>(entity);
+				EntityCreated<E> evt(std::static_pointer_cast<E, Entity>(entity));
+				EventManager::Instance()->RaiseEvent<EntityCreated<E>>(evt);
+				return evt.entity;
 			}
 
 			template<typename E>
@@ -43,7 +46,30 @@ namespace Lightning
 				return sNullPtr;
 
 			}
-			void RemoveEntity(const EntityID& id);
+
+			template<typename E>
+			void RemoveEntity(const EntityID& id)
+			{
+				auto it = mEntities.find(id);
+				if (it != mEntities.end())
+				{
+					if (it->second->mRemoved)
+					{
+						return;
+					}
+					it->second->mRemoved = true;
+					EntityRemoved<E> evt(std::static_pointer_cast<E, Entity>(it->second));
+					if (mUpdating)
+					{
+						mRemovingEntities.push_back(id);
+					}
+					else
+					{
+						mEntities.erase(it);
+					}
+					EventManager::Instance()->RaiseEvent<EntityRemoved<E>>(evt);
+				}
+			}
 			void Update();
 		private:
 			friend class Singleton<EntityManager>;

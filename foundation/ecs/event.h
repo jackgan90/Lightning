@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <functional>
 #include "foundationexportdef.h"
+#include "entity.h"
 #include "singleton.h"
 #include "container.h"
 
@@ -11,6 +12,7 @@ namespace Lightning
 	{
 		using EventTypeID = std::uint64_t;
 		using EventSubscriberID = std::uint64_t;
+
 		class LIGHTNING_FOUNDATION_API IEvent
 		{
 		public:
@@ -52,6 +54,39 @@ namespace Lightning
 			}
 			static EventSubscribers sSubscribers;
 			static EventSubscriberID sCurrentID;
+		};
+
+		//Built-in events
+		template<typename E>
+		struct EntityCreated : Event<EntityCreated<E>>
+		{
+			EntityCreated(const EntityPtr<E>& e) : entity(e){}
+			const EntityPtr<E>& entity;
+		};
+
+		template<typename E>
+		struct EntityRemoved : Event<EntityRemoved<E>>
+		{
+			EntityRemoved(const EntityPtr<E>& e) : entity(e){}
+			const EntityPtr<E>& entity;
+		};
+
+		template<typename C>
+		struct ComponentAdded : Event<ComponentAdded<C>>
+		{
+			ComponentAdded(const EntityPtr<Entity>& _entity, const ComponentPtr<C>& _component) 
+				: component(_component), entity(_entity){}
+			const EntityPtr<Entity>& entity;
+			const ComponentPtr<C>& component;
+		};
+
+		template<typename C>
+		struct ComponentRemoved : Event<ComponentRemoved<C>>
+		{
+			ComponentRemoved(const EntityPtr<Entity>& _entity, const ComponentPtr<C>& _component) 
+				: component(_component), entity(_entity){}
+			const EntityPtr<Entity>& entity;
+			const ComponentPtr<C>& component;
 		};
 
 		template<typename Derived>

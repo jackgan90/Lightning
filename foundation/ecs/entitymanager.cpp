@@ -11,27 +11,6 @@ namespace Lightning
 
 		}
 
-		void EntityManager::RemoveEntity(const EntityID& id)
-		{
-			auto it = mEntities.find(id);
-			if (it != mEntities.end())
-			{
-				if (it->second->mRemoved)
-				{
-					return;
-				}
-				it->second->mRemoved = true;
-				if (mUpdating)
-				{
-					mRemovingEntities.push_back(id);
-				}
-				else
-				{
-					mEntities.erase(it);
-				}
-			}
-		}
-
 		void EntityManager::Update()
 		{
 			mUpdating = true;
