@@ -5,7 +5,8 @@ set(HEADERS catch.hpp)
 set(SOURCES main.cpp
 			memorytest.cpp
 			mathtest.cpp
-			helperstubtest.cpp)
+			helperstubtest.cpp
+			ecstest.cpp)
 
 if (WIN32)
 	add_definitions(-DLIGHTNING_WIN32)

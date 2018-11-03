@@ -17,6 +17,18 @@ set(MATH_HEADERS	math/common.h
 
 set(MATH_SOURCES	math/transform.cpp)
 
+set(ECS_HEADERS		ecs/entity.h
+					ecs/component.h
+					ecs/system.h
+					ecs/event.h
+					ecs/entitymanager.h
+					ecs/systemmanager.h)
+
+set(ECS_SOURCES		ecs/systemmanager.cpp
+					ecs/entitymanager.cpp
+					ecs/component.cpp
+					ecs/event.cpp)
+
 set(HEADERS	common.h
 			timesystem.h
 			filesystem.h
@@ -45,11 +57,12 @@ set(SOURCES common.cpp
 			timesystem.cpp
 			environment.cpp)
 
-list(APPEND HEADERS ${MEMORY_HEADERS} ${MATH_HEADERS})
-list(APPEND SOURCES ${MEMORY_SOURCES} ${MATH_SOURCES})
+list(APPEND HEADERS ${MEMORY_HEADERS} ${MATH_HEADERS} ${ECS_HEADERS})
+list(APPEND SOURCES ${MEMORY_SOURCES} ${MATH_SOURCES} ${ECS_SOURCES})
 
 source_group("memory" FILES	${MEMORY_HEADERS} ${MEMORY_SOURCES})
 source_group("math" FILES ${MATH_HEADERS} ${MATH_SOURCES})
+source_group("ecs" FILES ${ECS_HEADERS} ${ECS_SOURCES})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

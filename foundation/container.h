@@ -54,6 +54,11 @@ namespace Lightning
 			template<typename T>
 			using queue = std::queue<T>;
 
+			template<typename T,
+				typename Container = vector<T>,
+				typename Compare = std::less<typename Container::value_type>>
+			using priority_queue = std::priority_queue<T, Container, Compare>;
+
 			template<typename T>
 			using concurrent_queue = tbb::concurrent_queue<T>;
 
