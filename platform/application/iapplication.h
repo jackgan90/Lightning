@@ -34,7 +34,7 @@ namespace Lightning
 			~Application()override;
 			void Start()override;
 		protected:
-			virtual void OnWindowIdle(const WindowSystem::WindowIdleParam& param);
+			virtual void OnWindowIdle(const WindowSystem::WindowIdleEvent& event);
 			virtual SharedWindowPtr CreateMainWindow() = 0;
 			virtual UniqueRendererPtr CreateRenderer() = 0;
 			virtual void RegisterWindowHandlers();

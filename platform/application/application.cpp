@@ -122,11 +122,11 @@ namespace Lightning
 			auto window = GetMainWindow();
 			if (window)
 			{
-				WINDOW_MSG_CLASS_HANDLER(window, WindowMessage::IDLE, WindowIdleParam, OnWindowIdle);
+				WINDOW_MSG_CLASS_HANDLER(WindowIdleEvent, OnWindowIdle);
 			}
 		}
 
-		void Application::OnWindowIdle(const WindowIdleParam& param)
+		void Application::OnWindowIdle(const WindowIdleEvent& event)
 		{
 			if (mTimer)
 				mTimer->Tick();

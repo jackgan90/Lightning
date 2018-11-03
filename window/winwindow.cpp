@@ -2,13 +2,14 @@
 #include "winwindow.h"
 #include "logger.h"
 #include "container.h"
+#include "ecs/event.h"
 
 namespace Lightning
 {
 	namespace WindowSystem
 	{
 		char* WinWindow::sWindowClassName = "DefaultWin32Window";
-		
+		using Foundation::EventManager;
 		LRESULT CALLBACK WinWindow::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			if (uMsg == WM_NCCREATE)
@@ -29,24 +30,24 @@ namespace Lightning
 				::GetClientRect(hwnd, &rect);
 				pWindow->mWidth = rect.right - rect.left;
 				pWindow->mHeight = rect.bottom - rect.top;
-				WindowResizeParam param(pWindow);
-				param.width = pWindow->mWidth;
-				param.height = pWindow->mHeight;
-				pWindow->PostWindowMessage(WindowMessage::RESIZE, param);
+				WindowResizeEvent event(pWindow);
+				event.width = pWindow->mWidth;
+				event.height = pWindow->mHeight;
+				EventManager::Instance()->RaiseEvent<WindowResizeEvent>(event);
 				//logger.Log(LogLevel::Debug, "window resize.width:%d, height : %d", pWindow->mWidth, pWindow->mHeight);
 				break;
 			}
 			case WM_MOUSEWHEEL:
 			{
-				MouseWheelParam param(pWindow);
-				param.is_vertical = true;
-				param.wheel_delta = GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA;
-				pWindow->PostWindowMessage(WindowMessage::MOUSE_WHEEL, param);
+				MouseWheelEvent event(pWindow);
+				event.is_vertical = true;
+				event.wheel_delta = GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA;
+				EventManager::Instance()->RaiseEvent<MouseWheelEvent>(event);
 				break;
 			}
 			case WM_KEYDOWN:
 			{
-				KeyParam param(pWindow);
+				KeyEvent event(pWindow);
 				std::size_t code{ 0 };
 				if (wParam >= 'a' && wParam <= 'z')
 					code = wParam - 'a' + VK_A;
@@ -78,15 +79,15 @@ namespace Lightning
 				{
 					code |= VK_SHIFTBUTTON;
 				}
-				param.code = static_cast<VirtualKeyCode>(code);
-				pWindow->PostWindowMessage(WindowMessage::KEY_DOWN, param);
+				event.code = static_cast<VirtualKeyCode>(code);
+				EventManager::Instance()->RaiseEvent<KeyEvent>(event);
 				break;
 			}
 			case WM_RBUTTONDOWN:
 			{
-				MouseDownParam param(pWindow);
-				param.x = LOWORD(lParam);
-				param.y = HIWORD(lParam);
+				MouseDownEvent event(pWindow);
+				event.x = LOWORD(lParam);
+				event.y = HIWORD(lParam);
 				std::size_t pressedKey = VK_MOUSERBUTTON;
 				if (wParam & MK_CONTROL)
 					pressedKey |= VK_CTRL;
@@ -96,15 +97,15 @@ namespace Lightning
 					pressedKey |= VK_MOUSEMBUTTON;
 				if (wParam & MK_SHIFT)
 					pressedKey |= VK_SHIFTBUTTON;
-				param.pressedKey = static_cast<VirtualKeyCode>(pressedKey);
-				pWindow->PostWindowMessage(WindowMessage::MOUSE_DOWN, param);
+				event.pressedKey = static_cast<VirtualKeyCode>(pressedKey);
+				EventManager::Instance()->RaiseEvent<MouseDownEvent>(event);
 				break;
 			}
 			case WM_MOUSEMOVE:
 			{
-				MouseMoveParam param(pWindow);
-				param.x = LOWORD(lParam);
-				param.y = HIWORD(lParam);
+				MouseMoveEvent event(pWindow);
+				event.x = LOWORD(lParam);
+				event.y = HIWORD(lParam);
 				std::size_t pressedKey{ 0 };
 				if (wParam & MK_CONTROL)
 					pressedKey |= VK_CTRL;
@@ -116,8 +117,8 @@ namespace Lightning
 					pressedKey |= VK_MOUSERBUTTON;
 				if (wParam & MK_SHIFT)
 					pressedKey |= VK_SHIFTBUTTON;
-				param.pressedKey = static_cast<VirtualKeyCode>(pressedKey);
-				pWindow->PostWindowMessage(WindowMessage::MOUSE_MOVE, param);
+				event.pressedKey = static_cast<VirtualKeyCode>(pressedKey);
+				EventManager::Instance()->RaiseEvent<MouseMoveEvent>(event);
 				break;
 			}
 			case WM_CREATE:

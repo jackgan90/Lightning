@@ -1,7 +1,9 @@
 #pragma once
 #include <cstdint>
 #include <functional>
+#include <typeinfo>
 #include "foundationexportdef.h"
+#include "common.h"
 #include "entity.h"
 #include "singleton.h"
 #include "container.h"
@@ -10,15 +12,13 @@ namespace Lightning
 {
 	namespace Foundation
 	{
-		using EventTypeID = std::uint64_t;
+		using EventTypeID = std::uint32_t;
 		using EventSubscriberID = std::uint64_t;
 
-		class LIGHTNING_FOUNDATION_API IEvent
+		class IEvent
 		{
 		public:
-			virtual ~IEvent() {}
-		protected:
-			static EventTypeID sEventTypeID;
+			virtual ~IEvent(){}
 		};
 
 		template<typename Derived>
@@ -27,33 +27,13 @@ namespace Lightning
 		public:
 			static EventTypeID GetTypeID()
 			{
-				static const EventTypeID typeID = ++sEventTypeID;
+				static auto typeName = typeid(Derived).name();
+				static EventTypeID typeID = Hash(typeName, std::strlen(typeName), 0x84573821);
 				return typeID;
 			}
 		private:
 			friend class EventManager;
 			using EventSubscriber = std::function<void(const Derived&)>;
-			using EventSubscribers = container::unordered_map<EventSubscriberID, EventSubscriber>;
-			static EventSubscriberID Subscribe(EventSubscriber handler)
-			{
-				auto id = ++sCurrentID;
-				sSubscribers[id] = handler;
-				return id;
-			}
-			static void Unsubscribe(EventSubscriberID subscriberID)
-			{
-				sSubscribers.erase(subscriberID);
-			}
-
-			static void Raise(const Derived& evt)
-			{
-				for (auto& it : sSubscribers)
-				{
-					it.second(evt);
-				}
-			}
-			static EventSubscribers sSubscribers;
-			static EventSubscriberID sCurrentID;
 		};
 
 		//Built-in events
@@ -89,32 +69,41 @@ namespace Lightning
 			const ComponentPtr<C>& component;
 		};
 
-		template<typename Derived>
-		typename Event<Derived>::EventSubscribers Event<Derived>::sSubscribers;
-
-		template<typename Derived>
-		EventSubscriberID Event<Derived>::sCurrentID = EventSubscriberID(0);
-
-		class EventManager : public Singleton<EventManager>
+		class LIGHTNING_FOUNDATION_API EventManager : public Singleton<EventManager>
 		{
 		public:
 			template<typename EventType>
 			EventSubscriberID Subscribe(typename EventType::EventSubscriber handler)
 			{
-				return EventType::Subscribe(handler);
+				auto id = ++sCurrentID;
+				auto& subscribers = sSubscribers[EventType::GetTypeID()];
+				subscribers[id] = [=](const IEvent& event) {
+					handler(static_cast<const EventType&>(event));
+				};
+				return id;
 			}
 			
 			template<typename EventType>
 			void Unsubscribe(EventSubscriberID subscriberID)
 			{
-				EventType::Unsubscribe(subscriberID);
+				auto& subscribers = sSubscribers[EventType::GetTypeID()];
+				subscribers.erase(subscriberID);
 			}
 
 			template<typename EventType>
 			void RaiseEvent(const EventType& evt)
 			{
-				EventType::Raise(evt);
+				auto& subscribers = sSubscribers[EventType::GetTypeID()];
+				for (auto& it : subscribers)
+				{
+					it.second(evt);
+				}
 			}
+		private:
+			using EventSubscribers = container::unordered_map<EventSubscriberID, std::function<void(const IEvent&)>>;
+			static EventSubscriberID sCurrentID;
+			static container::unordered_map<EventTypeID, EventSubscribers> sSubscribers;
 		};
+
 	}
 }

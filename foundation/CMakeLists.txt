@@ -26,7 +26,6 @@ set(ECS_HEADERS		ecs/entity.h
 
 set(ECS_SOURCES		ecs/systemmanager.cpp
 					ecs/entitymanager.cpp
-					ecs/component.cpp
 					ecs/event.cpp)
 
 set(HEADERS	common.h

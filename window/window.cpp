@@ -1,20 +1,15 @@
 #include "window.h"
+#include "ecs/event.h"
 
 namespace Lightning
 {
 	namespace WindowSystem
 	{
-		void Window::RegisterWindowMessageHandler(WindowMessage msg, WindowMessageHandler handler)
-		{
-			if (mMsgHandlers.find(msg) == mMsgHandlers.end())
-			{
-				mMsgHandlers[msg] = handler;
-			}
-		}
-
+		using Foundation::EventManager;
 		void Window::OnIdle()
 		{
-			PostWindowMessage(WindowMessage::IDLE, WindowIdleParam(this));
+			WindowIdleEvent event(this);
+			EventManager::Instance()->RaiseEvent<WindowIdleEvent>(event);
 		}
 	}
 }

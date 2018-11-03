@@ -1,6 +1,7 @@
 #pragma once
 #include <functional>
 #include "iwindow.h"
+#include "ecs/event.h"
 
 namespace Lightning
 {
@@ -34,62 +35,62 @@ namespace Lightning
 			VK_SHIFTBUTTON = 0x1000,
 		};
 
-		struct WindowMessageParam
+		template<typename Derived>
+		struct WindowEvent : Foundation::Event<Derived>
 		{
-			WindowMessageParam(const IWindow* ptr):pWindow(ptr){}
+			WindowEvent(const IWindow* ptr) : pWindow(ptr){}
 			const IWindow* pWindow;
 		};
 
-		struct WindowCreatedParam : WindowMessageParam
+		struct WindowCreatedEvent : WindowEvent<WindowCreatedEvent>
 		{
+			WindowCreatedEvent(const IWindow* ptr) : WindowEvent<WindowCreatedEvent>(ptr){}
 		};
 
-		struct WindowDestroyedParam : WindowMessageParam
+		struct WindowDestroyedEvent : WindowEvent<WindowDestroyedEvent>
 		{
+			WindowDestroyedEvent(const IWindow* ptr) : WindowEvent<WindowDestroyedEvent>(ptr){}
 		};
 
-		struct WindowIdleParam : WindowMessageParam
+		struct WindowIdleEvent : WindowEvent<WindowIdleEvent>
 		{
-			WindowIdleParam(const IWindow* ptr) : WindowMessageParam(ptr){}
+			WindowIdleEvent(const IWindow* ptr) : WindowEvent<WindowIdleEvent>(ptr){}
 		};
 
-		struct WindowResizeParam : WindowMessageParam
+		struct WindowResizeEvent : WindowEvent<WindowResizeEvent>
 		{
-			WindowResizeParam(const IWindow* ptr) : WindowMessageParam(ptr){}
+			WindowResizeEvent(const IWindow* ptr) : WindowEvent<WindowResizeEvent>(ptr){}
 			unsigned int width;
 			unsigned int height;
 		};
 
-		struct MouseWheelParam : WindowMessageParam
+		struct MouseWheelEvent : WindowEvent<MouseWheelEvent>
 		{
-			MouseWheelParam(const IWindow* ptr) : WindowMessageParam(ptr){}
+			MouseWheelEvent(const IWindow* ptr) : WindowEvent<MouseWheelEvent>(ptr){}
 			int wheel_delta;
 			bool is_vertical;
 		};
 
-		struct KeyParam : WindowMessageParam
+		struct KeyEvent : WindowEvent<KeyEvent>
 		{
-			KeyParam(const IWindow* ptr) : WindowMessageParam(ptr){}
+			KeyEvent(const IWindow* ptr) : WindowEvent<KeyEvent>(ptr){}
 			VirtualKeyCode code;
 		};
 
-		struct MouseDownParam : WindowMessageParam
+		struct MouseDownEvent : WindowEvent<MouseDownEvent>
 		{
-			MouseDownParam(const IWindow* ptr) : WindowMessageParam(ptr){}
+			MouseDownEvent(const IWindow* ptr) : WindowEvent<MouseDownEvent>(ptr){}
 			std::size_t x;
 			std::size_t y;
 			VirtualKeyCode pressedKey;
 		};
 
-		struct MouseMoveParam : WindowMessageParam
+		struct MouseMoveEvent : WindowEvent<MouseMoveEvent>
 		{
-			MouseMoveParam(const IWindow* ptr) : WindowMessageParam(ptr){}
+			MouseMoveEvent(const IWindow* ptr) : WindowEvent<MouseMoveEvent>(ptr){}
 			std::size_t x;
 			std::size_t y;
 			VirtualKeyCode pressedKey;
 		};
-
-		using WindowMessageHandler = std::function<void(WindowMessage, const WindowMessageParam&)>;
-
 	}
 }

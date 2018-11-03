@@ -2,18 +2,17 @@
 #include <cstdint>
 #include <memory>
 #include "foundationexportdef.h"
+#include "common.h"
 
 namespace Lightning
 {
 	namespace Foundation
 	{
-		using ComponentTypeID = std::uint64_t;
-		class LIGHTNING_FOUNDATION_API IComponent
+		using ComponentTypeID = std::uint32_t;
+		class IComponent
 		{
 		public:
 			virtual ~IComponent() {}
-		protected:
-			static ComponentTypeID sTypeID;
 		};
 
 		template<typename T>
@@ -22,7 +21,8 @@ namespace Lightning
 		public:
 			static const ComponentTypeID GetTypeID()
 			{
-				static const ComponentTypeID typeID = ++sTypeID;
+				static auto typeName = typeid(T).name();
+				static EventTypeID typeID = Hash(typeName, std::strlen(typeName), 0x30954821);
 				return typeID;
 			}
 		};

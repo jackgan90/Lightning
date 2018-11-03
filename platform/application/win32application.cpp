@@ -46,14 +46,14 @@ namespace Lightning
 			auto window = GetMainWindow();
 			if (window)
 			{
-				WINDOW_MSG_CLASS_HANDLER(window, WindowMessage::MOUSE_WHEEL, MouseWheelParam, OnMouseWheel);
-				WINDOW_MSG_CLASS_HANDLER(window, WindowMessage::KEY_DOWN, KeyParam, OnKeyDown);
-				WINDOW_MSG_CLASS_HANDLER(window, WindowMessage::MOUSE_DOWN, MouseDownParam, OnMouseDown);
-				WINDOW_MSG_CLASS_HANDLER(window, WindowMessage::MOUSE_MOVE, MouseMoveParam, OnMouseMove);
+				WINDOW_MSG_CLASS_HANDLER(MouseWheelEvent, OnMouseWheel);
+				WINDOW_MSG_CLASS_HANDLER(KeyEvent, OnKeyDown);
+				WINDOW_MSG_CLASS_HANDLER(MouseDownEvent, OnMouseDown);
+				WINDOW_MSG_CLASS_HANDLER(MouseMoveEvent, OnMouseMove);
 			}
 		}
 
-		void Win32Application::OnKeyDown(const WindowSystem::KeyParam& param)
+		void Win32Application::OnKeyDown(const WindowSystem::KeyEvent& event)
 		{
 			auto scene = SceneManager::Instance()->GetForegroundScene();
 			if (scene)
@@ -63,7 +63,7 @@ namespace Lightning
 				{
 					Vector3f camOffset;
 					auto position = camera->GetWorldPosition();
-					switch (param.code & ~VK_CONTROL_MASK)
+					switch (event.code & ~VK_CONTROL_MASK)
 					{
 					case VK_A:
 						camOffset += Vector3f::left();
@@ -128,18 +128,18 @@ namespace Lightning
 
 		}
 
-		void Win32Application::OnMouseDown(const WindowSystem::MouseDownParam& param)
+		void Win32Application::OnMouseDown(const WindowSystem::MouseDownEvent& event)
 		{
-			if (param.pressedKey & VK_MOUSERBUTTON)
+			if (event.pressedKey & VK_MOUSERBUTTON)
 			{
-				mousePosition.x = param.x;
-				mousePosition.y = param.y;
+				mousePosition.x = event.x;
+				mousePosition.y = event.y;
 			}
 		}
 
-		void Win32Application::OnMouseMove(const WindowSystem::MouseMoveParam& param)
+		void Win32Application::OnMouseMove(const WindowSystem::MouseMoveEvent& event)
 		{
-			if (param.pressedKey & VK_MOUSERBUTTON)
+			if (event.pressedKey & VK_MOUSERBUTTON)
 			{
 				auto scene = SceneManager::Instance()->GetForegroundScene();
 				if (scene)
@@ -147,8 +147,8 @@ namespace Lightning
 					auto camera = scene->GetActiveCamera();
 					if (camera)
 					{
-						float delta_x = float(param.x) - mousePosition.x;
-						float delta_y = float(param.y) - mousePosition.y;
+						float delta_x = float(event.x) - mousePosition.x;
+						float delta_y = float(event.y) - mousePosition.y;
 						Vector3f direction(delta_x, -delta_y, 0);
 						direction = camera->CameraDirectionToWorld(direction);
 						auto forward = camera->GetForward();
@@ -156,13 +156,13 @@ namespace Lightning
 						camera->RotateTowards(dest_dir);
 					}
 				}
-				mousePosition.x = param.x;
-				mousePosition.y = param.y;
+				mousePosition.x = event.x;
+				mousePosition.y = event.y;
 			}
 		}
 
 
-		void Win32Application::OnMouseWheel(const MouseWheelParam& param)
+		void Win32Application::OnMouseWheel(const MouseWheelEvent& event)
 		{
 			auto scene = SceneManager::Instance()->GetForegroundScene();
 			if (scene)
@@ -171,7 +171,7 @@ namespace Lightning
 				if (camera)
 				{
 					auto fov = camera->GetFOV();
-					fov -= param.wheel_delta;
+					fov -= event.wheel_delta;
 					if (fov <= 0)
 						fov = 1.0f;
 					if (fov >= 180)

@@ -5,6 +5,7 @@ namespace Lightning
 {
 	namespace Foundation
 	{
-		EventTypeID IEvent::sEventTypeID = EventTypeID(0);
+		EventSubscriberID EventManager::sCurrentID = EventSubscriberID(0);
+		container::unordered_map<EventTypeID, EventManager::EventSubscribers> EventManager::sSubscribers;
 	}
 }
