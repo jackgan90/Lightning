@@ -17,7 +17,7 @@ namespace Lightning
 	{
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
-		using Window1::WinWindowSystem;
+		using Window::WinWindowSystem;
 		D3D12SwapChain::D3D12SwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, WindowSystem* pWindow)
 		{
 			CreateNativeSwapChain(factory, pCommandQueue, pWindow);

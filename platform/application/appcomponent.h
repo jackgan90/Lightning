@@ -11,7 +11,7 @@ namespace Lightning
 		using Foundation::Component;
 		using Foundation::SharedFileSystemPtr;
 		using UniqueRendererPtr = std::unique_ptr<Render::IRenderer>;
-		using Window1::SharedWindowPtr;
+		using Window::SharedWindowPtr;
 		using Foundation::ITimer;
 
 		struct AppComponent : Component<AppComponent>

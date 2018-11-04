@@ -6,7 +6,7 @@
 
 namespace Lightning
 {
-	namespace Window1
+	namespace Window
 	{
 		using Foundation::EntityPtr;
 		using Foundation::Entity;

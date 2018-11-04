@@ -5,7 +5,7 @@
 
 namespace Lightning
 {
-	namespace Window1
+	namespace Window
 	{
 		class WindowSystem;
 		enum VirtualKeyCode

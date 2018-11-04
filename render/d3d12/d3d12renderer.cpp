@@ -30,7 +30,7 @@ namespace Lightning
 	{
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
-		using Window1::WinWindowSystem;
+		using Window::WinWindowSystem;
 		extern Foundation::FrameMemoryAllocator g_RenderAllocator;
 
 

@@ -14,7 +14,7 @@ namespace Lightning
 	namespace App
 	{
 		using Render::RendererFactory;
-		using namespace Window1;
+		using namespace Window;
 		using Scene::SceneManager;
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Vector2i;
@@ -43,7 +43,7 @@ namespace Lightning
 			WINDOW_MSG_CLASS_HANDLER(MouseMoveEvent, OnMouseMove);
 		}
 
-		void Win32AppSystem::OnKeyDown(const Window1::KeyEvent& event)
+		void Win32AppSystem::OnKeyDown(const Window::KeyEvent& event)
 		{
 			auto scene = SceneManager::Instance()->GetForegroundScene();
 			if (scene)
@@ -118,7 +118,7 @@ namespace Lightning
 
 		}
 
-		void Win32AppSystem::OnMouseDown(const Window1::MouseDownEvent& event)
+		void Win32AppSystem::OnMouseDown(const Window::MouseDownEvent& event)
 		{
 			if (event.pressedKey & VK_MOUSERBUTTON)
 			{
@@ -127,7 +127,7 @@ namespace Lightning
 			}
 		}
 
-		void Win32AppSystem::OnMouseMove(const Window1::MouseMoveEvent& event)
+		void Win32AppSystem::OnMouseMove(const Window::MouseMoveEvent& event)
 		{
 			if (event.pressedKey & VK_MOUSERBUTTON)
 			{

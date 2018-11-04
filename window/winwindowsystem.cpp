@@ -7,7 +7,7 @@
 
 namespace Lightning
 {
-	namespace Window1
+	namespace Window
 	{
 		using Foundation::EventManager;
 		LRESULT CALLBACK WinWindowSystem::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)

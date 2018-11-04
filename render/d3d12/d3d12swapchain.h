@@ -14,7 +14,7 @@ namespace Lightning
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
-		using Window1::WindowSystem;
+		using Window::WindowSystem;
 		class D3D12Renderer;
 		class LIGHTNING_RENDER_API D3D12SwapChain : public ISwapChain
 		{

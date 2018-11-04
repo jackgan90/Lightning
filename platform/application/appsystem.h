@@ -22,7 +22,7 @@ namespace Lightning
 		using Foundation::EntityPtr;
 		using Foundation::ComponentPtr;
 		using Foundation::ComponentRemoved;
-		using Window1::SharedWindowPtr;
+		using Window::SharedWindowPtr;
 		
 		class LIGHTNING_PLATFORM_API AppEntity : public Foundation::Entity
 		{
@@ -37,7 +37,7 @@ namespace Lightning
 			void Update(const EntityPtr<Entity>& entity)override;
 		protected:
 			virtual void Start();
-			virtual void OnWindowIdle(const Window1::WindowIdleEvent& event);
+			virtual void OnWindowIdle(const Window::WindowIdleEvent& event);
 			virtual SharedWindowPtr CreateMainWindow() = 0;
 			virtual UniqueRendererPtr CreateRenderer() = 0;
 			virtual void RegisterWindowHandlers();

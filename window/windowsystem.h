@@ -12,13 +12,13 @@
 #include "windowcomponent.h"
 
 #define WINDOW_MSG_CLASS_HANDLER(EventType, Handler)\
-Foundation::EventManager::Instance()->Subscribe<Window1::##EventType##>([&](const EventType& event){\
+Foundation::EventManager::Instance()->Subscribe<Window::##EventType##>([&](const EventType& event){\
 	this->Handler(event);\
 })
 
 namespace Lightning
 {
-	namespace Window1
+	namespace Window
 	{
 		using Foundation::System;
 		using Foundation::WindowSystemPriority;

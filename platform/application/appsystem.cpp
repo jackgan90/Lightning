@@ -19,7 +19,7 @@ namespace Lightning
 	{
 		using Foundation::FileSystemFactory;
 		using Scene::SceneManager;
-		using namespace Window1;
+		using namespace Window;
 		using Foundation::Math::EulerAnglef;
 		using Foundation::Math::Quaternionf;
 		using Foundation::Math::Vector3f;

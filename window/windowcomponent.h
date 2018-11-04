@@ -4,7 +4,7 @@
 
 namespace Lightning
 {
-	namespace Window1
+	namespace Window
 	{
 		using Foundation::Component;
 		struct WindowComponent : Component<WindowComponent>

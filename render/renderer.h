@@ -13,7 +13,7 @@ namespace Lightning
 	{
 		using Foundation::SharedFileSystemPtr;
 		using Foundation::container;
-		using Window1::SharedWindowPtr;
+		using Window::SharedWindowPtr;
 
 		struct FrameResource
 		{

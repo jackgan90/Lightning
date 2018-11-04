@@ -18,7 +18,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Window1::WindowSystem;
+		using Window::WindowSystem;
 		class LIGHTNING_RENDER_API DeviceInitException : public RendererException
 		{
 		public:

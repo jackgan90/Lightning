@@ -8,7 +8,7 @@ namespace Lightning
 {
 	namespace App
 	{
-		using Window1::SharedWindowPtr;
+		using Window::SharedWindowPtr;
 		class LIGHTNING_PLATFORM_API Win32AppSystem : public AppSystem
 		{
 		public:
@@ -16,10 +16,10 @@ namespace Lightning
 			~Win32AppSystem()override;
 			void Update(const EntityPtr<Entity>& entity)override;
 		protected:
-			void OnMouseWheel(const Window1::MouseWheelEvent& event);
-			void OnKeyDown(const Window1::KeyEvent& event);
-			void OnMouseDown(const Window1::MouseDownEvent& event);
-			void OnMouseMove(const Window1::MouseMoveEvent& event);
+			void OnMouseWheel(const Window::MouseWheelEvent& event);
+			void OnKeyDown(const Window::KeyEvent& event);
+			void OnMouseDown(const Window::MouseDownEvent& event);
+			void OnMouseMove(const Window::MouseMoveEvent& event);
 			void RegisterWindowHandlers()override;
 			SharedWindowPtr CreateMainWindow()override;
 			UniqueRendererPtr CreateRenderer()override;
