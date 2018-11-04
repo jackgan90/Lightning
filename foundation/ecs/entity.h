@@ -23,6 +23,7 @@ namespace Lightning
 				auto typeID = C::GetTypeID();
 				assert(mComponents.find(typeID) == mComponents.end() && "Duplicate components are not supported!");
 				auto component = std::make_shared<C>(std::forward<Args>(args)...);
+				component->mOwner = shared_from_this();
 				mComponents.emplace(typeID, component);
 
 				ComponentAdded<C> evt(shared_from_this(), std::static_pointer_cast<C, IComponent>(component));

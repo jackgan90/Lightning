@@ -3,6 +3,7 @@
 #include <memory>
 #include "foundationexportdef.h"
 #include "common.h"
+#include "entity.h"
 
 namespace Lightning
 {
@@ -25,6 +26,17 @@ namespace Lightning
 				static EventTypeID typeID = Hash(typeName, std::strlen(typeName), 0x30954821);
 				return typeID;
 			}
+
+			void Remove()
+			{
+				if (auto owner = mOwner.lock())
+				{
+					owner->RemoveComponent<T>();
+				}
+			}
+		protected:
+			friend class Entity;
+			std::weak_ptr<Entity> mOwner;
 		};
 
 		template<typename C>

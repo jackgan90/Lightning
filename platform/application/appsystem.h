@@ -46,7 +46,6 @@ namespace Lightning
 			void GenerateSceneObjects();
 
 			ComponentPtr<AppComponent> mAppComponent;
-			EntityPtr<Entity> mEntity;
 		};
 
 	}

@@ -47,7 +47,6 @@ namespace Lightning
 				if (!mAppComponent)
 				{
 					mAppComponent = appComponent;
-					mEntity = entity;
 					started = false;
 				}
 				if (!appComponent->fileSystem)
@@ -83,7 +82,7 @@ namespace Lightning
 			mAppComponent->timer = TimerManager::Instance()->CreateTimer(10);
 			mAppComponent->timer->Start();
 			EventManager::Instance()->Subscribe<WindowDestroyedEvent>([this](const WindowDestroyedEvent& event) {
-				mEntity->RemoveComponent<AppComponent>();
+				mAppComponent->Remove();
 			});
 			//Create a simple scene here just for test
 			auto scene = SceneManager::Instance()->CreateScene();
