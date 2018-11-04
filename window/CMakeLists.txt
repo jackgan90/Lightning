@@ -5,18 +5,14 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 set(HEADERS	windowexportdef.h
-			iwindow.h
-			window.h
-			windowmanager.h
-			windowmessage.h)
+			windowcomponent.h
+			windowsystem.h
+			windowevents.h)
 
-set(SOURCES	window.cpp
-			winwindow.cpp
-			windowmanager.cpp)
+set(SOURCES	windowsystem.cpp
+			winwindowsystem.cpp)
 
 if(WIN32)
-	list(APPEND HEADERS	winwindow.h)
-	list(APPEND SOURCES winwindow.cpp)
 	add_definitions(-DLIGHTNING_WIN32)
 endif()
 if(LIGHTNING_USE_D3D12)

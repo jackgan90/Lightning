@@ -16,15 +16,16 @@ namespace Lightning
 			{
 				static_assert(std::is_base_of<ISystem, S>::value, "S must be a subclass of ISystem!");
 				auto system = std::make_shared<S>(std::forward<Args>(args)...);
+				auto isystem = std::static_pointer_cast<ISystem, S>(system);
 				if (mUpdating)
 				{
-					mAddingSystems.push_back(system);
+					mAddingSystems.push_back(isystem);
 				}
 				else
 				{
-					SortSystems(system);
+					SortSystems(isystem);
 				}
-				return std::static_pointer_cast<S, ISystem>(system);
+				return system;
 			}
 
 			void SortSystems(const SystemPtr<ISystem>& system)
@@ -49,7 +50,7 @@ namespace Lightning
 			friend class Singleton<SystemManager>;
 			SystemManager();
 			container::vector<SystemPtr<ISystem>> mSystems;
-			container::vector<SystemPtr<System>> mAddingSystems;
+			container::vector<SystemPtr<ISystem>> mAddingSystems;
 			bool mUpdating;
 		};
 	}

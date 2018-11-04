@@ -1,25 +1,13 @@
 #pragma once
 #include <functional>
-#include "iwindow.h"
+#include "windowsystem.h"
 #include "ecs/event.h"
 
 namespace Lightning
 {
-	namespace WindowSystem
+	namespace Window1
 	{
-		class IWindow;
-		enum class WindowMessage
-		{
-			CREATED,
-			DESTROYED,
-			IDLE,
-			RESIZE,
-			MOUSE_WHEEL,
-			KEY_DOWN,
-			MOUSE_DOWN,
-			MOUSE_MOVE,
-		};
-
+		class WindowSystem;
 		enum VirtualKeyCode
 		{
 			//alphabet
@@ -38,48 +26,48 @@ namespace Lightning
 		template<typename Derived>
 		struct WindowEvent : Foundation::Event<Derived>
 		{
-			WindowEvent(const IWindow* ptr) : pWindow(ptr){}
-			const IWindow* pWindow;
+			WindowEvent(const WindowSystem* ptr) : pWindow(ptr){}
+			const WindowSystem* pWindow;
 		};
 
 		struct WindowCreatedEvent : WindowEvent<WindowCreatedEvent>
 		{
-			WindowCreatedEvent(const IWindow* ptr) : WindowEvent<WindowCreatedEvent>(ptr){}
+			WindowCreatedEvent(const WindowSystem* ptr) : WindowEvent<WindowCreatedEvent>(ptr){}
 		};
 
 		struct WindowDestroyedEvent : WindowEvent<WindowDestroyedEvent>
 		{
-			WindowDestroyedEvent(const IWindow* ptr) : WindowEvent<WindowDestroyedEvent>(ptr){}
+			WindowDestroyedEvent(const WindowSystem* ptr) : WindowEvent<WindowDestroyedEvent>(ptr){}
 		};
 
 		struct WindowIdleEvent : WindowEvent<WindowIdleEvent>
 		{
-			WindowIdleEvent(const IWindow* ptr) : WindowEvent<WindowIdleEvent>(ptr){}
+			WindowIdleEvent(const WindowSystem* ptr) : WindowEvent<WindowIdleEvent>(ptr){}
 		};
 
 		struct WindowResizeEvent : WindowEvent<WindowResizeEvent>
 		{
-			WindowResizeEvent(const IWindow* ptr) : WindowEvent<WindowResizeEvent>(ptr){}
+			WindowResizeEvent(const WindowSystem* ptr) : WindowEvent<WindowResizeEvent>(ptr){}
 			unsigned int width;
 			unsigned int height;
 		};
 
 		struct MouseWheelEvent : WindowEvent<MouseWheelEvent>
 		{
-			MouseWheelEvent(const IWindow* ptr) : WindowEvent<MouseWheelEvent>(ptr){}
+			MouseWheelEvent(const WindowSystem* ptr) : WindowEvent<MouseWheelEvent>(ptr){}
 			int wheel_delta;
 			bool is_vertical;
 		};
 
 		struct KeyEvent : WindowEvent<KeyEvent>
 		{
-			KeyEvent(const IWindow* ptr) : WindowEvent<KeyEvent>(ptr){}
+			KeyEvent(const WindowSystem* ptr) : WindowEvent<KeyEvent>(ptr){}
 			VirtualKeyCode code;
 		};
 
 		struct MouseDownEvent : WindowEvent<MouseDownEvent>
 		{
-			MouseDownEvent(const IWindow* ptr) : WindowEvent<MouseDownEvent>(ptr){}
+			MouseDownEvent(const WindowSystem* ptr) : WindowEvent<MouseDownEvent>(ptr){}
 			std::size_t x;
 			std::size_t y;
 			VirtualKeyCode pressedKey;
@@ -87,7 +75,7 @@ namespace Lightning
 
 		struct MouseMoveEvent : WindowEvent<MouseMoveEvent>
 		{
-			MouseMoveEvent(const IWindow* ptr) : WindowEvent<MouseMoveEvent>(ptr){}
+			MouseMoveEvent(const WindowSystem* ptr) : WindowEvent<MouseMoveEvent>(ptr){}
 			std::size_t x;
 			std::size_t y;
 			VirtualKeyCode pressedKey;

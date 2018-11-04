@@ -5,7 +5,7 @@
 #include "irenderfence.h"
 #include "filesystem.h"
 #include "renderpass.h"
-#include "iwindow.h"
+#include "windowsystem.h"
 
 namespace Lightning
 {
@@ -13,7 +13,7 @@ namespace Lightning
 	{
 		using Foundation::SharedFileSystemPtr;
 		using Foundation::container;
-		using WindowSystem::SharedWindowPtr;
+		using Window1::SharedWindowPtr;
 
 		struct FrameResource
 		{
@@ -58,7 +58,7 @@ namespace Lightning
 			void ShutDown()override;
 			void RegisterCallback(RendererEvent evt, RendererCallback cb)override;
 			static IRenderer* Instance() { return sInstance; }
-			IWindow* GetOutputWindow()override { return mOutputWindow.get(); }
+			WindowSystem* GetOutputWindow()override { return mOutputWindow.get(); }
 			const RenderQueue& GetRenderQueue()override;
 			SharedDepthStencilBufferPtr GetDefaultDepthStencilBuffer()override;
 		protected:

@@ -32,11 +32,11 @@ namespace Lightning
 		};
 		ENABLE_ENUM_BITMASK_OPERATORS(DepthStencilClearFlags)
 
-		constexpr const int DEFAULT_SHADER_MODEL_MAJOR_VERSION = 5;
-		constexpr const int DEFAULT_SHADER_MODEL_MINOR_VERSION = 0;
-		constexpr const int MAX_GEOMETRY_BUFFER_COUNT = 8;
-		constexpr const int RENDER_FRAME_COUNT = 3;
-		constexpr const int MAX_RENDER_TARGET_COUNT = 8;
-		const char* const DEFAULT_SHADER_ENTRY = "main";
+		constexpr int DEFAULT_SHADER_MODEL_MAJOR_VERSION = 5;
+		constexpr int DEFAULT_SHADER_MODEL_MINOR_VERSION = 0;
+		constexpr int MAX_GEOMETRY_BUFFER_COUNT = 8;
+		constexpr int RENDER_FRAME_COUNT = 3;
+		constexpr int MAX_RENDER_TARGET_COUNT = 8;
+		constexpr char* const DEFAULT_SHADER_ENTRY = "main";
 	}
 }

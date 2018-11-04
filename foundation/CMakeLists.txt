@@ -45,6 +45,7 @@ set(HEADERS	common.h
 			enumoperation.h
 			threadlocalsingleton.h
 			environment.h
+			systempriority.h
 			)
 set(SOURCES common.cpp
 			filesystem.cpp

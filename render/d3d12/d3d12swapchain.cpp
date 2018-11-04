@@ -2,7 +2,7 @@
 #include <dxgi.h>
 #include "common.h"
 #include "logger.h"
-#include "winwindow.h"
+#include "winwindowsystem.h"
 #include "renderer.h"
 #include "d3d12renderer.h"
 #include "d3d12swapchain.h"
@@ -17,15 +17,15 @@ namespace Lightning
 	{
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
-		using WindowSystem::WinWindow;
-		D3D12SwapChain::D3D12SwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow)
+		using Window1::WinWindowSystem;
+		D3D12SwapChain::D3D12SwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, WindowSystem* pWindow)
 		{
 			CreateNativeSwapChain(factory, pCommandQueue, pWindow);
 			mSwapChain->GetDesc(&mDesc);
 			BindRenderTargets();
 		}
 
-		void D3D12SwapChain::CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, IWindow* pWindow)
+		void D3D12SwapChain::CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, WindowSystem* pWindow)
 		{
 			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
 			UINT sampleCount = 1;
@@ -59,7 +59,7 @@ namespace Lightning
 			swapChainDesc.BufferDesc = bufferDesc;
 			swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 			swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-			auto hwnd = static_cast<WinWindow*>(pWindow)->GetWindowHandle();
+			auto hwnd = static_cast<WinWindowSystem*>(pWindow)->GetWindowHandle();
 			swapChainDesc.OutputWindow = hwnd;
 			swapChainDesc.SampleDesc = sampleDesc;
 			swapChainDesc.Windowed = TRUE;

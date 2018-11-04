@@ -5,7 +5,7 @@
 #ifndef NDEBUG
 #include <dxgidebug.h>
 #endif
-#include "iwindow.h"
+#include "windowsystem.h"
 #include "irenderfence.h"
 #include "renderer.h"
 #include "filesystem.h"
@@ -25,7 +25,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using WindowSystem::SharedWindowPtr;
+		using Window1::SharedWindowPtr;
 		using Microsoft::WRL::ComPtr;
 		//Thread safe
 		class LIGHTNING_RENDER_API D3D12Renderer : public Renderer

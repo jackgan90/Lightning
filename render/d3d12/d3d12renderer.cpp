@@ -5,7 +5,7 @@
 #include "d3d12rendertarget.h"
 #include "d3d12renderfence.h"
 #include "d3d12constantbuffermanager.h"
-#include "winwindow.h"
+#include "winwindowsystem.h"
 #include "configmanager.h"
 #include "logger.h"
 #include "common.h"
@@ -30,7 +30,7 @@ namespace Lightning
 	{
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
-		using WindowSystem::WinWindow;
+		using Window1::WinWindowSystem;
 		extern Foundation::FrameMemoryAllocator g_RenderAllocator;
 
 

@@ -55,7 +55,7 @@ namespace Lightning
 				return sNullPtr;
 			}
 
-			EntityID GetID()
+			const EntityID GetID()const
 			{
 				return mID;
 			}
