@@ -11,6 +11,7 @@
 using Lightning::Foundation::EntityManager;
 using Lightning::Foundation::EventManager;
 using Lightning::Foundation::SystemManager;
+using Lightning::Foundation::ComponentPtr;
 using Lightning::App::AppEntity;
 using Lightning::App::AppComponent;
 namespace
@@ -26,9 +27,12 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 #endif
 {
 	LOG_INFO("This is Lighting entry.");
-#ifdef LIGHTNING_WIN32
 	auto appEntity = EntityManager::Instance()->CreateEntity<AppEntity>();
 	auto appComponent = appEntity->AddComponent<AppComponent>();
+	appEntity->RegisterComponentRemovedCallback([&](const ComponentPtr& comp) {
+		running = false;
+	});
+#ifdef LIGHTNING_WIN32
 	auto app = SystemManager::Instance()->CreateSystem<Win32AppSystem>();
 #endif
 	while (running)

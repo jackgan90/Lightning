@@ -61,6 +61,7 @@ namespace Lightning
 					}
 					else
 					{
+						it->second->RemoveAllComponents();
 						mEntities.erase(it);
 					}
 				}

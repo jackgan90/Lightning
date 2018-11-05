@@ -14,6 +14,7 @@ namespace Lightning
 		{
 			friend class Entity;
 			void Remove();
+			std::shared_ptr<Entity> GetOwner()const;
 		protected:
 			std::weak_ptr<Entity> mOwner;
 			RTTR_ENABLE()

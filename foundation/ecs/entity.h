@@ -13,11 +13,13 @@ namespace Lightning
 {
 	namespace Foundation {
 		using EntityID = std::uint64_t;
-
+		using EntityCallbackID = std::uint64_t;
 		class Entity : public std::enable_shared_from_this<Entity>
 		{
 		public:
-			Entity::Entity():mRemoved(false){}
+			using ComponentAddedCallback = std::function<void(const ComponentPtr&)>;
+			using ComponentRemovedCallback = std::function<void(const ComponentPtr&)>;
+			Entity::Entity():mRemoved(false), mCallbackID(0) {}
 			template<typename C, typename... Args>
 			std::shared_ptr<C> AddComponent(Args&&... args)
 			{
@@ -27,7 +29,7 @@ namespace Lightning
 				auto component = std::make_shared<C>(std::forward<Args>(args)...);
 				component->mOwner = shared_from_this();
 				mComponents.emplace(cType, component);
-
+				InvokeComponentAddedCallbacks(component);
 				return component;
 			}
 
@@ -36,10 +38,17 @@ namespace Lightning
 			{
 				static_assert(std::is_base_of<Component, C>::value, "C must be a subclass of Component!");
 				const auto cType = rttr::type::get<C>();
+				RemoveComponent(cType);
+			}
+
+			void RemoveComponent(const rttr::type& cType)
+			{
 				auto it = mComponents.find(cType);
 				if (it != mComponents.end())
 				{
+					auto component = it->second;
 					mComponents.erase(it);
+					InvokeComponentRemovedCallbacks(component);
 					return;
 				}
 				//should check subclasses as well for polymorphic case
@@ -49,7 +58,9 @@ namespace Lightning
 					it = mComponents.find(Class);
 					if (it != mComponents.end())
 					{
+						auto component = it->second;
 						mComponents.erase(it);
+						InvokeComponentRemovedCallbacks(component);
 						break;
 					}
 				}
@@ -58,7 +69,8 @@ namespace Lightning
 			template<typename C>
 			void RemoveComponent(const std::shared_ptr<C>& component)
 			{
-				RemoveComponent<C>();
+				auto pComponent = component.get();
+				RemoveComponent(rttr::type::get(*pComponent));
 			}
 
 			template<typename C>
@@ -83,15 +95,72 @@ namespace Lightning
 				return sNullPtr;
 			}
 
+			inline EntityCallbackID RegisterComponentRemovedCallback(ComponentRemovedCallback callback)
+			{
+				auto id = ++mCallbackID;
+				mCompRemovedCallbacks.emplace(id, callback);
+				return id;
+			}
+
+			inline void UnregisterComponentRemovedCallback(const EntityCallbackID id)
+			{
+				mCompRemovedCallbacks.erase(id);
+			}
+
+			inline EntityCallbackID RegisterComponentAddedCallback(ComponentAddedCallback callback)
+			{
+				auto id = ++mCallbackID;
+				mCompAddedCallbacks.emplace(id, callback);
+				return id;
+			}
+
+			inline void UnregisterComponentAddedCallback(const EntityCallbackID id)
+			{
+				mCompAddedCallbacks.erase(id);
+			}
+
 			const EntityID GetID()const
 			{
 				return mID;
 			}
+
+			void RemoveAllComponents()
+			{
+				for (auto it = mComponents.begin();it != mComponents.end();)
+				{
+					RemoveComponent(it->second);
+				}
+			}
 		protected:
 			friend class EntityManager;
+			template<typename C>
+			void InvokeComponentAddedCallbacks(const std::shared_ptr<C>& component )
+			{
+				if (mCompAddedCallbacks.empty())
+					return;
+				for (auto& callback : mCompAddedCallbacks)
+				{
+					callback.second(component);
+				}
+			}
+
+			template<typename C>
+			void InvokeComponentRemovedCallbacks(const std::shared_ptr<C>& component)
+			{
+				if (mCompRemovedCallbacks.empty())
+					return;
+				for (auto& callback : mCompRemovedCallbacks)
+				{
+					callback.second(component);
+				}
+			}
+
 			container::unordered_map<rttr::type, ComponentPtr> mComponents;
+			container::unordered_map<EntityCallbackID, ComponentRemovedCallback> mCompRemovedCallbacks;
+			container::unordered_map<EntityCallbackID, ComponentAddedCallback> mCompAddedCallbacks;
 			bool mRemoved;
 			EntityID mID;
+			EntityCallbackID mCallbackID;
 			RTTR_ENABLE()
 		};
 

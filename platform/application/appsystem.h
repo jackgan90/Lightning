@@ -40,7 +40,7 @@ namespace Lightning
 			virtual SharedWindowPtr CreateMainWindow() = 0;
 			virtual UniqueRendererPtr CreateRenderer() = 0;
 			virtual void RegisterWindowHandlers();
-			//virtual void OnAppComponentRemoved(const ComponentRemoved<AppComponent>& event);
+			virtual void OnAppComponentRemoved(const ComponentPtr& component);
 			//For test
 			void GenerateSceneObjects();
 

@@ -24,7 +24,12 @@ namespace Lightning
 			//C++17 has unordered_map::merge,but c++11/14 doesn't 
 			for (const auto& id : mRemovingEntities)
 			{
-				mEntities.erase(id);
+				auto it = mEntities.find(id);
+				if (it != mEntities.end())
+				{
+					it->second->RemoveAllComponents();
+					mEntities.erase(it);
+				}
 			}
 			mRemovingEntities.clear();
 			for (const auto& entity : mAddingEntities)

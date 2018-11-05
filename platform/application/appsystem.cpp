@@ -44,6 +44,9 @@ namespace Lightning
 				if (!mAppComponent)
 				{
 					mAppComponent = appComponent;
+					entity->RegisterComponentRemovedCallback([this](const ComponentPtr& component) {
+						this->OnAppComponentRemoved(component);
+					});
 					started = false;
 				}
 				if (!appComponent->fileSystem)
@@ -145,19 +148,19 @@ namespace Lightning
 		{
 			WINDOW_MSG_CLASS_HANDLER(WindowIdleEvent, OnWindowIdle);
 		}
-		/*
-		void AppSystem::OnAppComponentRemoved(const ComponentRemoved<AppComponent>& event)
+		
+		void AppSystem::OnAppComponentRemoved(const ComponentPtr& component)
 		{
 			SceneManager::Instance()->DestroyAll();
-			auto component = event.component;
-			if (component->renderer)
+			auto appComponent = std::static_pointer_cast<AppComponent, Component>(component);
+			if (appComponent->renderer)
 			{
-				component->renderer->ShutDown();
-				component->renderer.reset();
+				appComponent->renderer->ShutDown();
+				appComponent->renderer.reset();
 			}
 			Loading::Loader::Instance()->Finalize();
 			LOG_INFO("Application quit.");
-		}*/
+		}
 
 		void AppSystem::OnWindowIdle(const WindowIdleEvent& event)
 		{
