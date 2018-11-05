@@ -9,7 +9,7 @@ namespace Lightning
 
 		}
 
-		void SystemManager::Update(const EntityPtr<Entity>& entity)
+		void SystemManager::Update(const EntityPtr& entity)
 		{
 			mUpdating = true;
 			for (auto& system : mSystems)

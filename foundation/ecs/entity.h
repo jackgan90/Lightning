@@ -1,9 +1,11 @@
 #pragma once
+#undef min
+#undef max
 #include <cstdint>
 #include <type_traits>
 #include <cassert>
 #include <memory>
-#include "foundationexportdef.h"
+#include "rttr/type"
 #include "container.h"
 #include "component.h"
 
@@ -17,42 +19,67 @@ namespace Lightning
 		public:
 			Entity::Entity():mRemoved(false){}
 			template<typename C, typename... Args>
-			ComponentPtr<C> AddComponent(Args&&... args)
+			std::shared_ptr<C> AddComponent(Args&&... args)
 			{
-				static_assert(std::is_base_of<IComponent, C>::value, "C must be a subclass of IComponent!");
-				auto typeID = C::GetTypeID();
-				assert(mComponents.find(typeID) == mComponents.end() && "Duplicate components are not supported!");
+				static_assert(std::is_base_of<Component, C>::value, "C must be a subclass of Component!");
+				const auto cType = rttr::type::get<C>();
+				assert(mComponents.find(cType) == mComponents.end() && "Duplicate components are not supported!");
 				auto component = std::make_shared<C>(std::forward<Args>(args)...);
 				component->mOwner = shared_from_this();
-				mComponents.emplace(typeID, component);
+				mComponents.emplace(cType, component);
 
-				ComponentAdded<C> evt(shared_from_this(), std::static_pointer_cast<C, IComponent>(component));
-				EventManager::Instance()->RaiseEvent<ComponentAdded<C>>(evt);
-				return evt.component;
+				return component;
 			}
 
 			template<typename C>
 			void RemoveComponent()
 			{
-				static_assert(std::is_base_of<IComponent, C>::value, "C must be a subclass of IComponent!");
-				auto typeID = C::GetTypeID();
-				auto it = mComponents.find(typeID);
+				static_assert(std::is_base_of<Component, C>::value, "C must be a subclass of Component!");
+				const auto cType = rttr::type::get<C>();
+				auto it = mComponents.find(cType);
 				if (it != mComponents.end())
 				{
-					ComponentRemoved<C> evt(shared_from_this(), std::static_pointer_cast<C, IComponent>(it->second));
-					EventManager::Instance()->RaiseEvent<ComponentRemoved<C>>(evt);
 					mComponents.erase(it);
+					return;
+				}
+				//should check subclasses as well for polymorphic case
+				const auto derived_classes = cType.get_derived_classes();
+				for (const auto& Class : derived_classes)
+				{
+					it = mComponents.find(Class);
+					if (it != mComponents.end())
+					{
+						mComponents.erase(it);
+						break;
+					}
 				}
 			}
 
 			template<typename C>
-			ComponentPtr<C> GetComponent()
+			void RemoveComponent(const std::shared_ptr<C>& component)
 			{
-				static_assert(std::is_base_of<IComponent, C>::value, "C must be a subclass of IComponent!");
-				static ComponentPtr<C> sNullPtr;
-				auto it = mComponents.find(C::GetTypeID());
+				RemoveComponent<C>();
+			}
+
+			template<typename C>
+			std::shared_ptr<C> GetComponent()
+			{
+				static_assert(std::is_base_of<Component, C>::value, "C must be a subclass of Component!");
+				static const std::shared_ptr<C> sNullPtr;
+				const auto cType = rttr::type::get<C>();
+				auto it = mComponents.find(cType);
 				if (it != mComponents.end())
-					return std::static_pointer_cast<C, IComponent>(it->second);
+					return std::static_pointer_cast<C, Component>(it->second);
+				const auto derived_classes = cType.get_derived_classes();
+				for (const auto& Class : derived_classes)
+				{
+					it = mComponents.find(Class);
+					if (it != mComponents.end())
+					{
+						return std::static_pointer_cast<C, Component>(it->second);
+					}
+				}
+
 				return sNullPtr;
 			}
 
@@ -62,12 +89,12 @@ namespace Lightning
 			}
 		protected:
 			friend class EntityManager;
-			container::unordered_map<ComponentTypeID, ComponentPtr<IComponent>> mComponents;
+			container::unordered_map<rttr::type, ComponentPtr> mComponents;
 			bool mRemoved;
 			EntityID mID;
+			RTTR_ENABLE()
 		};
 
-		template<typename E>
-		using EntityPtr = std::shared_ptr<E>;
+		using EntityPtr = std::shared_ptr<Entity>;
 	}
 }

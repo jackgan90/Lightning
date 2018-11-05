@@ -1,5 +1,6 @@
 #include "ecs/entitymanager.h"
 #include "ecs/systemmanager.h"
+#include "ecs/eventmanager.h"
 #include "appcomponent.h"
 #ifdef LIGHTNING_WIN32
 #include <Windows.h>	//for WinMain
@@ -10,7 +11,6 @@
 using Lightning::Foundation::EntityManager;
 using Lightning::Foundation::EventManager;
 using Lightning::Foundation::SystemManager;
-using Lightning::Foundation::ComponentRemoved;
 using Lightning::App::AppEntity;
 using Lightning::App::AppComponent;
 namespace
@@ -30,10 +30,6 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	auto appEntity = EntityManager::Instance()->CreateEntity<AppEntity>();
 	auto appComponent = appEntity->AddComponent<AppComponent>();
 	auto app = SystemManager::Instance()->CreateSystem<Win32AppSystem>();
-	EventManager::Instance()->Subscribe<ComponentRemoved<AppComponent>>(
-		[&](const ComponentRemoved<AppComponent>& event) {
-		running = false;
-	});
 #endif
 	while (running)
 	{

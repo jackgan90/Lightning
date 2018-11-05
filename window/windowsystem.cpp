@@ -1,6 +1,6 @@
 #include "windowsystem.h"
 #include "ecs/entitymanager.h"
-#include "ecs/event.h"
+#include "ecs/eventmanager.h"
 
 namespace Lightning
 {

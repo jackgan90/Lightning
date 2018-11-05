@@ -14,13 +14,14 @@ namespace Lightning
 		using Window::SharedWindowPtr;
 		using Foundation::ITimer;
 
-		struct AppComponent : Component<AppComponent>
+		struct AppComponent : Component
 		{
 			AppComponent():timer(nullptr){}
 			SharedFileSystemPtr fileSystem;
 			UniqueRendererPtr renderer;
 			SharedWindowPtr window;
 			ITimer *timer;
+			RTTR_ENABLE(Component)
 		};
 	}
 }

@@ -51,7 +51,8 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/utilities
 					${LIGHTNING_DEPENDENCIES_DIR}/boost
 					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
-					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include)
+					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include
+					${LIGHTNING_DEPENDENCIES_DIR}/rttr/src)
 add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} foundation platform render)
 target_link_libraries(${PROJECT_NAME} platform render)

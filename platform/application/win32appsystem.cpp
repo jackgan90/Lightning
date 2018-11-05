@@ -4,6 +4,7 @@
 #include "logger.h"
 #include "scenemanager.h"
 #include "ecs/systemmanager.h"
+#include "ecs/eventmanager.h"
 #include "winwindowsystem.h"
 #include "timesystem.h"
 #undef min
@@ -29,7 +30,7 @@ namespace Lightning
 		{
 		}
 
-		void Win32AppSystem::Update(const EntityPtr<Entity>& entity)
+		void Win32AppSystem::Update(const EntityPtr& entity)
 		{
 			AppSystem::Update(entity);
 		}

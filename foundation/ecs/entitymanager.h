@@ -13,7 +13,7 @@ namespace Lightning
 		{
 		public:
 			template<typename E>
-			EntityPtr<E> CreateEntity()
+			std::shared_ptr<E> CreateEntity()
 			{
 				static_assert(std::is_base_of<Entity, E>::value, "E must be a subclass of Entity!");
 				auto entity = std::make_shared<E>();
@@ -26,15 +26,14 @@ namespace Lightning
 				{
 					mEntities[entity->mID] = entity;
 				}
-				EntityCreated<E> evt(std::static_pointer_cast<E, Entity>(entity));
-				EventManager::Instance()->RaiseEvent<EntityCreated<E>>(evt);
-				return evt.entity;
+
+				return entity;
 			}
 
 			template<typename E>
-			EntityPtr<E> GetEntity(const EntityID& id)
+			std::shared_ptr<E> GetEntity(const EntityID& id)
 			{
-				static const EntityPtr<E> sNullPtr;
+				static const std::shared_ptr<E> sNullPtr;
 				auto it = mEntities.find(id);
 				if (it != mEntities.end() && !it->second->mRemoved)
 					return std::static_pointer_cast<E, Entity>(it->second);
@@ -44,10 +43,8 @@ namespace Lightning
 					return std::static_pointer_cast<E, Entity>(it->second);
 
 				return sNullPtr;
-
 			}
 
-			template<typename E>
 			void RemoveEntity(const EntityID& id)
 			{
 				auto it = mEntities.find(id);
@@ -58,7 +55,6 @@ namespace Lightning
 						return;
 					}
 					it->second->mRemoved = true;
-					EntityRemoved<E> evt(std::static_pointer_cast<E, Entity>(it->second));
 					if (mUpdating)
 					{
 						mRemovingEntities.push_back(id);
@@ -67,7 +63,6 @@ namespace Lightning
 					{
 						mEntities.erase(it);
 					}
-					EventManager::Instance()->RaiseEvent<EntityRemoved<E>>(evt);
 				}
 			}
 			void Update();
@@ -76,9 +71,9 @@ namespace Lightning
 			EntityManager();
 			bool mUpdating;
 			EntityID mCurrentEntityID;
-			container::unordered_map<EntityID, EntityPtr<Entity>> mEntities;
+			container::unordered_map<EntityID, EntityPtr> mEntities;
 			container::vector<EntityID> mRemovingEntities;
-			container::unordered_map<EntityID, EntityPtr<Entity>> mAddingEntities;
+			container::unordered_map<EntityID, EntityPtr> mAddingEntities;
 		};
 	}
 }

@@ -45,7 +45,7 @@ namespace Lightning
 					mSystems.push_back(system);
 			}
 
-			void Update(const EntityPtr<Entity>& entity);
+			void Update(const EntityPtr& entity);
 		private:
 			friend class Singleton<SystemManager>;
 			SystemManager();

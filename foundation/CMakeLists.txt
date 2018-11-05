@@ -21,12 +21,14 @@ set(ECS_HEADERS		ecs/entity.h
 					ecs/component.h
 					ecs/system.h
 					ecs/event.h
+					ecs/eventmanager.h
 					ecs/entitymanager.h
 					ecs/systemmanager.h)
 
-set(ECS_SOURCES		ecs/systemmanager.cpp
+set(ECS_SOURCES		ecs/component.cpp
+					ecs/systemmanager.cpp
 					ecs/entitymanager.cpp
-					ecs/event.cpp)
+					ecs/eventmanager.cpp)
 
 set(HEADERS	common.h
 			timesystem.h

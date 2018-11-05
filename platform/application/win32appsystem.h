@@ -14,7 +14,7 @@ namespace Lightning
 		public:
 			Win32AppSystem();
 			~Win32AppSystem()override;
-			void Update(const EntityPtr<Entity>& entity)override;
+			void Update(const EntityPtr& entity)override;
 		protected:
 			void OnMouseWheel(const Window::MouseWheelEvent& event);
 			void OnKeyDown(const Window::KeyEvent& event);

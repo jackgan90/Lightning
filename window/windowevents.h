@@ -1,4 +1,6 @@
 #pragma once
+#undef min
+#undef max
 #include <functional>
 #include "windowsystem.h"
 #include "ecs/event.h"
@@ -8,6 +10,7 @@ namespace Lightning
 	namespace Window
 	{
 		class WindowSystem;
+		using Foundation::Event;
 		enum VirtualKeyCode
 		{
 			//alphabet
@@ -23,62 +26,70 @@ namespace Lightning
 			VK_SHIFTBUTTON = 0x1000,
 		};
 
-		template<typename Derived>
-		struct WindowEvent : Foundation::Event<Derived>
+		struct WindowEvent : Event
 		{
 			WindowEvent(const WindowSystem* ptr) : pWindow(ptr){}
 			const WindowSystem* pWindow;
+			RTTR_ENABLE(Event)
 		};
 
-		struct WindowCreatedEvent : WindowEvent<WindowCreatedEvent>
+		struct WindowCreatedEvent : WindowEvent
 		{
-			WindowCreatedEvent(const WindowSystem* ptr) : WindowEvent<WindowCreatedEvent>(ptr){}
+			WindowCreatedEvent(const WindowSystem* ptr) : WindowEvent(ptr){}
+			RTTR_ENABLE(WindowEvent)
 		};
 
-		struct WindowDestroyedEvent : WindowEvent<WindowDestroyedEvent>
+		struct WindowDestroyedEvent : WindowEvent
 		{
-			WindowDestroyedEvent(const WindowSystem* ptr) : WindowEvent<WindowDestroyedEvent>(ptr){}
+			WindowDestroyedEvent(const WindowSystem* ptr) : WindowEvent(ptr){}
+			RTTR_ENABLE(WindowEvent)
 		};
 
-		struct WindowIdleEvent : WindowEvent<WindowIdleEvent>
+		struct WindowIdleEvent : WindowEvent
 		{
-			WindowIdleEvent(const WindowSystem* ptr) : WindowEvent<WindowIdleEvent>(ptr){}
+			WindowIdleEvent(const WindowSystem* ptr) : WindowEvent(ptr){}
+			RTTR_ENABLE(WindowEvent)
 		};
 
-		struct WindowResizeEvent : WindowEvent<WindowResizeEvent>
+		struct WindowResizeEvent : WindowEvent
 		{
-			WindowResizeEvent(const WindowSystem* ptr) : WindowEvent<WindowResizeEvent>(ptr){}
+			WindowResizeEvent(const WindowSystem* ptr) : WindowEvent(ptr){}
 			unsigned int width;
 			unsigned int height;
+			RTTR_ENABLE(WindowEvent)
 		};
 
-		struct MouseWheelEvent : WindowEvent<MouseWheelEvent>
+		struct MouseWheelEvent : WindowEvent
 		{
-			MouseWheelEvent(const WindowSystem* ptr) : WindowEvent<MouseWheelEvent>(ptr){}
+			MouseWheelEvent(const WindowSystem* ptr) : WindowEvent(ptr){}
 			int wheel_delta;
 			bool is_vertical;
+			RTTR_ENABLE(WindowEvent)
 		};
 
-		struct KeyEvent : WindowEvent<KeyEvent>
+		struct KeyEvent : WindowEvent
 		{
-			KeyEvent(const WindowSystem* ptr) : WindowEvent<KeyEvent>(ptr){}
+			KeyEvent(const WindowSystem* ptr) : WindowEvent(ptr){}
 			VirtualKeyCode code;
+			RTTR_ENABLE(WindowEvent)
 		};
 
-		struct MouseDownEvent : WindowEvent<MouseDownEvent>
+		struct MouseDownEvent : WindowEvent
 		{
-			MouseDownEvent(const WindowSystem* ptr) : WindowEvent<MouseDownEvent>(ptr){}
+			MouseDownEvent(const WindowSystem* ptr) : WindowEvent(ptr){}
 			std::size_t x;
 			std::size_t y;
 			VirtualKeyCode pressedKey;
+			RTTR_ENABLE(WindowEvent)
 		};
 
-		struct MouseMoveEvent : WindowEvent<MouseMoveEvent>
+		struct MouseMoveEvent : WindowEvent
 		{
-			MouseMoveEvent(const WindowSystem* ptr) : WindowEvent<MouseMoveEvent>(ptr){}
+			MouseMoveEvent(const WindowSystem* ptr) : WindowEvent(ptr){}
 			std::size_t x;
 			std::size_t y;
 			VirtualKeyCode pressedKey;
+			RTTR_ENABLE(WindowEvent)
 		};
 	}
 }

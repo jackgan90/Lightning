@@ -2,8 +2,7 @@
 #include "winwindowsystem.h"
 #include "logger.h"
 #include "container.h"
-#include "ecs/event.h"
-#include "winwindowcomponent.h"
+#include "ecs/eventmanager.h"
 
 namespace Lightning
 {
@@ -199,7 +198,7 @@ namespace Lightning
 			LOG_INFO("Win32 window destructed!");
 		}
 
-		void WinWindowSystem::Update(const EntityPtr<Entity>& entity)
+		void WinWindowSystem::Update(const EntityPtr& entity)
 		{
 			MSG msg{};
 			if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))

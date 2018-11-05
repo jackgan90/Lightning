@@ -13,7 +13,7 @@ namespace Lightning
 		{
 		public:
 			virtual ~ISystem() {}
-			virtual void Update(const EntityPtr<Entity>& entity) = 0;
+			virtual void Update(const EntityPtr& entity) = 0;
 			virtual SystemPriority GetPriority()const = 0;
 			static constexpr SystemPriority DefaultPriority = 0xffffffffU;
 		};

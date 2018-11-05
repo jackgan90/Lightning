@@ -11,6 +11,7 @@
 #include "loader.h"
 #include "systempriority.h"
 #include "appcomponent.h"
+#include "ecs/eventmanager.h"
 #include "tbb/task_scheduler_init.h"
 
 namespace Lightning
@@ -28,17 +29,13 @@ namespace Lightning
 		using Foundation::TimerManager;
 		AppSystem::AppSystem() : System(Foundation::AppSystemPriority)
 		{
-			EventManager::Instance()->Subscribe<ComponentRemoved<AppComponent>>(
-				[this](const ComponentRemoved<AppComponent>& component) {
-				OnAppComponentRemoved(component);
-			});
 		}
 
 		AppSystem::~AppSystem()
 		{
 		}
 
-		void AppSystem::Update(const EntityPtr<Entity>& entity)
+		void AppSystem::Update(const EntityPtr& entity)
 		{
 			auto appComponent = entity->GetComponent<AppComponent>();
 			if (appComponent)
@@ -148,7 +145,7 @@ namespace Lightning
 		{
 			WINDOW_MSG_CLASS_HANDLER(WindowIdleEvent, OnWindowIdle);
 		}
-
+		/*
 		void AppSystem::OnAppComponentRemoved(const ComponentRemoved<AppComponent>& event)
 		{
 			SceneManager::Instance()->DestroyAll();
@@ -160,7 +157,7 @@ namespace Lightning
 			}
 			Loading::Loader::Instance()->Finalize();
 			LOG_INFO("Application quit.");
-		}
+		}*/
 
 		void AppSystem::OnWindowIdle(const WindowIdleEvent& event)
 		{

@@ -21,7 +21,6 @@ namespace Lightning
 		using Foundation::Entity;
 		using Foundation::EntityPtr;
 		using Foundation::ComponentPtr;
-		using Foundation::ComponentRemoved;
 		using Window::SharedWindowPtr;
 		
 		class LIGHTNING_PLATFORM_API AppEntity : public Foundation::Entity
@@ -34,18 +33,18 @@ namespace Lightning
 		public:
 			AppSystem();
 			virtual ~AppSystem();
-			void Update(const EntityPtr<Entity>& entity)override;
+			void Update(const EntityPtr& entity)override;
 		protected:
 			virtual void Start();
 			virtual void OnWindowIdle(const Window::WindowIdleEvent& event);
 			virtual SharedWindowPtr CreateMainWindow() = 0;
 			virtual UniqueRendererPtr CreateRenderer() = 0;
 			virtual void RegisterWindowHandlers();
-			virtual void OnAppComponentRemoved(const ComponentRemoved<AppComponent>& event);
+			//virtual void OnAppComponentRemoved(const ComponentRemoved<AppComponent>& event);
 			//For test
 			void GenerateSceneObjects();
 
-			ComponentPtr<AppComponent> mAppComponent;
+			std::shared_ptr<AppComponent> mAppComponent;
 		};
 
 	}

@@ -52,8 +52,8 @@ namespace Lightning
 		protected:
 			WindowSystem();
 			virtual void OnIdle();
-			EntityPtr<WindowEntity> mEntity;
-			ComponentPtr<WindowComponent> mComponent;
+			std::shared_ptr<WindowEntity> mEntity;
+			std::shared_ptr<WindowComponent> mComponent;
 		};
 		using SharedWindowPtr = std::shared_ptr<WindowSystem>;
 	}

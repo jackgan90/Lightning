@@ -33,7 +33,8 @@ include_directories(${CMAKE_SOURCE_DIR}/render
 					${CMAKE_SOURCE_DIR}/utilities
 					${LIGHTNING_DEPENDENCIES_DIR}/boost
 					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
-					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include)
+					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include
+					${LIGHTNING_DEPENDENCIES_DIR}/rttr/src)
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 if(MSVC)

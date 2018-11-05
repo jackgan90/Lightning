@@ -16,7 +16,7 @@ namespace Lightning
 			WinWindowSystem();
 			~WinWindowSystem()override;
 			bool Show(bool show)override;
-			void Update(const EntityPtr<Entity>& entity)override;
+			void Update(const EntityPtr& entity)override;
 			HWND GetWindowHandle()const { return mHwnd; }
 		private:
 			static LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

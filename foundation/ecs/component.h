@@ -1,45 +1,24 @@
 #pragma once
+#undef min
+#undef max
 #include <cstdint>
 #include <memory>
 #include "foundationexportdef.h"
-#include "common.h"
-#include "entity.h"
+#include "rttr/type"
 
 namespace Lightning
 {
 	namespace Foundation
 	{
-		using ComponentTypeID = std::uint32_t;
-		class IComponent
+		struct LIGHTNING_FOUNDATION_API Component : std::enable_shared_from_this<Component>
 		{
-		public:
-			virtual ~IComponent() {}
-		};
-
-		template<typename T>
-		class Component : public IComponent
-		{
-		public:
-			static const ComponentTypeID GetTypeID()
-			{
-				static auto typeName = typeid(T).name();
-				static EventTypeID typeID = Hash(typeName, std::strlen(typeName), 0x30954821);
-				return typeID;
-			}
-
-			void Remove()
-			{
-				if (auto owner = mOwner.lock())
-				{
-					owner->RemoveComponent<T>();
-				}
-			}
-		protected:
 			friend class Entity;
+			void Remove();
+		protected:
 			std::weak_ptr<Entity> mOwner;
+			RTTR_ENABLE()
 		};
 
-		template<typename C>
-		using ComponentPtr = std::shared_ptr<C>;
+		using ComponentPtr = std::shared_ptr<Component>;
 	}
 }

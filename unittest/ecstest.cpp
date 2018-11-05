@@ -16,7 +16,7 @@ namespace
 
 		};
 
-		class Comp1 : public Component<Comp1>
+		class Comp1 : public Component
 		{
 		public:
 			Comp1(int a, char b) : _a(a), _b(b)
@@ -27,7 +27,7 @@ namespace
 			char _b;
 		};
 
-		class Comp2 : public Component<Comp2>
+		class Comp2 : public Component
 		{
 		public:
 			Comp2()
@@ -42,7 +42,7 @@ namespace
 			System1(bool *pRunning) :System(2), mRunning(pRunning){}
 			int updateCount{ 0 };
 			bool* mRunning;
-			void Update(const EntityPtr<Entity>& entity)override
+			void Update(const EntityPtr& entity)override
 			{
 				std::cout << "System1 Update" << std::endl;
 				updateCount++;
@@ -58,7 +58,7 @@ namespace
 			System2(bool* pRunning) :System(0), mRunning(pRunning){
 				SystemManager::Instance()->CreateSystem<System1>(mRunning);
 			}
-			void Update(const EntityPtr<Entity>& entity)override
+			void Update(const EntityPtr& entity)override
 			{
 				std::cout << "System2 Update" << std::endl;
 			}
@@ -71,7 +71,7 @@ namespace
 			System3(bool* pRunning) :System(5), mRunning(pRunning){}
 			bool system2Created{ false };
 			container::vector<EntityID> mEntities;
-			void Update(const EntityPtr<Entity>& entity)override
+			void Update(const EntityPtr& entity)override
 			{
 				std::cout << "System3 Update" << std::endl;
 				static std::size_t counter{ 0 };
