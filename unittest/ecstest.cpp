@@ -114,6 +114,6 @@ namespace
 			EntityManager::Instance()->Update();
 		}
 		int a = 10;
-		EntityManager::Instance()->RemoveEntity<TestEntity>(entity->GetID());
+		EntityManager::Instance()->RemoveEntity(entity->GetID());
 	}
 }
