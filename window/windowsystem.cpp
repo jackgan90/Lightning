@@ -1,6 +1,7 @@
 #include "windowsystem.h"
 #include "ecs/entitymanager.h"
 #include "ecs/eventmanager.h"
+#include "rttr/detail/registration/registration_manager.h"
 
 namespace Lightning
 {
@@ -8,6 +9,11 @@ namespace Lightning
 	{
 		using Foundation::EventManager;
 		using Foundation::EntityManager;
+
+		WindowSystem::~WindowSystem()
+		{
+			rttr::detail::get_registration_manager().unregister();
+		}
 
 		WindowSystem::WindowSystem() : System(WindowSystemPriority)
 		{

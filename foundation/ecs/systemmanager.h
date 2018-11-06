@@ -46,6 +46,7 @@ namespace Lightning
 			}
 
 			void Update(const EntityPtr& entity);
+			void Reset();
 		private:
 			friend class Singleton<SystemManager>;
 			SystemManager();

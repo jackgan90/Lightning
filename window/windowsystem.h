@@ -45,7 +45,7 @@ namespace Lightning
 		{
 		public:
 			virtual bool Show(bool show) = 0;
-			virtual ~WindowSystem() = default;
+			virtual ~WindowSystem();
 			//Only left for backwards compatibility,will remove later once refactoring is over
 			std::uint32_t GetWidth()const { return mComponent->width; }
 			std::uint32_t GetHeight()const { return mComponent->height; }

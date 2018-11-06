@@ -21,5 +21,12 @@ namespace Lightning
 			}
 			mAddingSystems.clear();
 		}
+
+		void SystemManager::Reset()
+		{
+			mSystems.clear();
+			mAddingSystems.clear();
+			mUpdating = false;
+		}
 	}
 }
