@@ -42,6 +42,7 @@ namespace Lightning
 		struct WindowDestroyedEvent : WindowEvent
 		{
 			WindowDestroyedEvent(const WindowSystem* ptr) : WindowEvent(ptr){}
+			int exitCode;
 			RTTR_ENABLE(WindowEvent)
 		};
 

@@ -124,8 +124,6 @@ namespace Lightning
 			{
 				LOG_INFO("WM_DESTROY received!");
 				PostQuitMessage(0);
-				WindowDestroyedEvent event(pWindow);
-				EventManager::Instance()->RaiseEvent<WindowDestroyedEvent>(event);
 				break;
 			}
 			default:
@@ -207,6 +205,12 @@ namespace Lightning
 				{
 					::TranslateMessage(&msg);
 					::DispatchMessage(&msg);
+				}
+				else
+				{
+					WindowDestroyedEvent event(this);
+					event.exitCode = msg.wParam;
+					EventManager::Instance()->RaiseEvent<WindowDestroyedEvent>(event);
 				}
 			}
 			else
