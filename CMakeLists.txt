@@ -34,9 +34,22 @@ if(LIGHTNING_USE_D3D12)
 	add_definitions(-DLIGHTNING_USE_D3D12)
 endif()
 
-set(SOURCE_FILES entry.cpp)
+set(LIBRARY_HEADERS	libloader/libexportdef.h
+					libloader/library.h
+					libloader/librarymgr.h)
+
+set(LIBRARY_SOURCES	libloader/library.cpp
+					libloader/librarymgr.cpp)
+
+set(SOURCE_FILES	entry.cpp)
+
+list(APPEND HEADER_FILES ${LIBRARY_HEADERS})
+list(APPEND SOURCE_FILES ${LIBRARY_SOURCES})
+
+source_group("libloader" FILES ${LIBRARY_HEADERS} ${LIBRARY_SOURCES})
 
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${LIGHTNING_LINKER_FLAGS})
+define_dll_export_macro(LIB)
 
 include_directories(${CMAKE_SOURCE_DIR}/foundation 
 					${CMAKE_SOURCE_DIR}/foundation/memory
@@ -53,7 +66,8 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
 					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include
 					${LIGHTNING_DEPENDENCIES_DIR}/rttr/src)
-add_executable(${PROJECT_NAME} WIN32 ${SOURCE_FILES})
+
+add_executable(${PROJECT_NAME} WIN32 ${HEADER_FILES} ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} foundation platform render)
 target_link_libraries(${PROJECT_NAME} platform render)
 if(MSVC)

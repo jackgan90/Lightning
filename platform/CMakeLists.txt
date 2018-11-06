@@ -3,11 +3,12 @@ message(STATUS "Configuring project platform")
 
 set(APPLICATION_SUBSYSTEM_DIR "application")
 
-
+set(HEADERS	platformexportdef.h)
 
 set(APPLICATION_HEADERS		${APPLICATION_SUBSYSTEM_DIR}/appsystem.h
 							${APPLICATION_SUBSYSTEM_DIR}/appcomponent.h)
 set(APPLICATION_SOURCES		${APPLICATION_SUBSYSTEM_DIR}/appsystem.cpp)
+
 
 if(WIN32)
 	list(APPEND APPLICATION_HEADERS ${APPLICATION_SUBSYSTEM_DIR}/win32appsystem.h)
@@ -29,9 +30,8 @@ source_group("application" FILES
 			${APPLICATION_HEADERS}
 			${APPLICATION_SOURCES})
 
-set(HEADERS platformexportdef.h)
 list(APPEND HEADERS ${APPLICATION_HEADERS})
-set(SOURCES ${APPLICATION_SOURCES})
+list(APPEND SOURCES ${APPLICATION_SOURCES})
 
 define_dll_export_macro(PLATFORM)
 
