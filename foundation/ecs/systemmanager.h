@@ -17,18 +17,13 @@ namespace Lightning
 				static_assert(std::is_base_of<ISystem, S>::value, "S must be a subclass of ISystem!");
 				auto system = std::make_shared<S>(std::forward<Args>(args)...);
 				auto isystem = std::static_pointer_cast<ISystem, S>(system);
-				if (mUpdating)
-				{
-					mAddingSystems.push_back(isystem);
-				}
-				else
-				{
-					SortSystems(isystem);
-				}
+				AddAndSortSystems(isystem);
 				return system;
 			}
 
-			void SortSystems(const SystemPtr<ISystem>& system)
+			void Update(const EntityPtr& entity);
+		private:
+			void AddAndSortSystems(const SystemPtr<ISystem>& system)
 			{
 				auto newSystemPriority = system->GetPriority();
 				bool inserted{ false };
@@ -36,23 +31,20 @@ namespace Lightning
 				{
 					if (mSystems[i]->GetPriority() > newSystemPriority)
 					{
-						mSystems.insert(mSystems.begin() + i, system);
+						mIterator = mSystems.insert(mSystems.begin() + i, system);
 						inserted = true;
 						break;
 					}
 				}
 				if (!inserted)
-					mSystems.push_back(system);
+					mIterator = mSystems.insert(mSystems.end(), system);
+				++mIterator;
 			}
-
-			void Update(const EntityPtr& entity);
-			void Reset();
-		private:
 			friend class Singleton<SystemManager>;
+			using SystemList = container::vector<SystemPtr<ISystem>>;
 			SystemManager();
-			container::vector<SystemPtr<ISystem>> mSystems;
-			container::vector<SystemPtr<ISystem>> mAddingSystems;
-			bool mUpdating;
+			SystemList mSystems;
+			SystemList::iterator mIterator;
 		};
 	}
 }

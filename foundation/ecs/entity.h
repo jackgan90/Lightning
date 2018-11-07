@@ -19,7 +19,7 @@ namespace Lightning
 		public:
 			using ComponentAddedCallback = std::function<void(const ComponentPtr&)>;
 			using ComponentRemovedCallback = std::function<void(const ComponentPtr&)>;
-			Entity::Entity():mRemoved(false), mCallbackID(0) {}
+			Entity::Entity():mCallbackID(0) {}
 			template<typename C, typename... Args>
 			std::shared_ptr<C> AddComponent(Args&&... args)
 			{
@@ -158,7 +158,6 @@ namespace Lightning
 			container::unordered_map<rttr::type, ComponentPtr> mComponents;
 			container::unordered_map<EntityCallbackID, ComponentRemovedCallback> mCompRemovedCallbacks;
 			container::unordered_map<EntityCallbackID, ComponentAddedCallback> mCompAddedCallbacks;
-			bool mRemoved;
 			EntityID mID;
 			EntityCallbackID mCallbackID;
 			RTTR_ENABLE()

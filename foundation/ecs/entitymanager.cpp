@@ -6,37 +6,20 @@ namespace Lightning
 	namespace Foundation
 	{
 		EntityManager::EntityManager() 
-			: mCurrentEntityID(0), mUpdating(false)
+			: mCurrentEntityID(0) 
 		{
-
+			mIterator = mEntities.end();
 		}
 
 		void EntityManager::Update()
 		{
-			mUpdating = true;
-			for (auto it = mEntities.begin(); it != mEntities.end();++it)
+			for (mIterator = mEntities.begin(); mIterator != mEntities.end();)
 			{
-				if (it->second->mRemoved)
-					continue;
-				SystemManager::Instance()->Update(it->second);
+				auto it = mIterator;
+				SystemManager::Instance()->Update(mIterator->second);
+				if (it == mIterator)
+					++mIterator;
 			}
-			mUpdating = false;
-			//C++17 has unordered_map::merge,but c++11/14 doesn't 
-			for (const auto& id : mRemovingEntities)
-			{
-				auto it = mEntities.find(id);
-				if (it != mEntities.end())
-				{
-					it->second->RemoveAllComponents();
-					mEntities.erase(it);
-				}
-			}
-			mRemovingEntities.clear();
-			for (const auto& entity : mAddingEntities)
-			{
-				mEntities.insert(entity);
-			}
-			mAddingEntities.clear();
 		}
 	}
 }

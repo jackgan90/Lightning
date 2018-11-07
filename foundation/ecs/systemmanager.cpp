@@ -4,29 +4,19 @@ namespace Lightning
 {
 	namespace Foundation
 	{
-		SystemManager::SystemManager():mUpdating(false)
+		SystemManager::SystemManager()
 		{
 
 		}
 
 		void SystemManager::Update(const EntityPtr& entity)
 		{
-			mUpdating = true;
-			for (auto& system : mSystems)
-				system->Update(entity);
-			mUpdating = false;
-			for (const auto& system : mAddingSystems)
+			for (mIterator = mSystems.begin(); mIterator != mSystems.end();)
 			{
-				SortSystems(system);
+				(*mIterator)->Update(entity);
+				if (mIterator != mSystems.end())
+					++mIterator;
 			}
-			mAddingSystems.clear();
-		}
-
-		void SystemManager::Reset()
-		{
-			mSystems.clear();
-			mAddingSystems.clear();
-			mUpdating = false;
 		}
 	}
 }
