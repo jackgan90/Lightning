@@ -42,6 +42,5 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	{
 		EntityManager::Instance()->Update();
 	}
-	SystemManager::Instance()->Reset();
 	return exitCode;
 }
