@@ -27,24 +27,22 @@ namespace Lightning
 			{
 				auto newSystemPriority = system->GetPriority();
 				bool inserted{ false };
-				for (std::size_t i = 0;i < mSystems.size();++i)
+				for (auto it = mSystems.begin();it != mSystems.end();++it)
 				{
-					if (mSystems[i]->GetPriority() > newSystemPriority)
+					if ((*it)->GetPriority() > newSystemPriority)
 					{
-						mIterator = mSystems.insert(mSystems.begin() + i, system);
+						mSystems.insert(it, system);
 						inserted = true;
 						break;
 					}
 				}
 				if (!inserted)
-					mIterator = mSystems.insert(mSystems.end(), system);
-				++mIterator;
+					mSystems.insert(mSystems.end(), system);
 			}
 			friend class Singleton<SystemManager>;
-			using SystemList = container::vector<SystemPtr<ISystem>>;
+			using SystemList = container::list<SystemPtr<ISystem>>;
 			SystemManager();
 			SystemList mSystems;
-			SystemList::iterator mIterator;
 		};
 	}
 }

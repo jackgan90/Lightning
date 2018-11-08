@@ -11,11 +11,9 @@ namespace Lightning
 
 		void SystemManager::Update(const EntityPtr& entity)
 		{
-			for (mIterator = mSystems.begin(); mIterator != mSystems.end();)
+			for (auto it = mSystems.begin(); it != mSystems.end(); ++it)
 			{
-				(*mIterator)->Update(entity);
-				if (mIterator != mSystems.end())
-					++mIterator;
+				(*it)->Update(entity);
 			}
 		}
 	}
