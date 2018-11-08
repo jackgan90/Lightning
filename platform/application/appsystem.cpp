@@ -44,7 +44,7 @@ namespace Lightning
 				if (!mAppComponent)
 				{
 					mAppComponent = appComponent;
-					entity->RegisterComponentRemovedCallback([this](const ComponentPtr& component) {
+					entity->RegisterCompRemovedFunc<AppComponent>([this](const std::shared_ptr<AppComponent>& component) {
 						this->OnAppComponentRemoved(component);
 					});
 					started = false;

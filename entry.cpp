@@ -31,8 +31,8 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	auto appEntity = EntityManager::Instance()->CreateEntity<AppEntity>();
 	auto appComponent = appEntity->AddComponent<AppComponent>();
 	int exitCode{ 0 };
-	appEntity->RegisterComponentRemovedCallback([&](const ComponentPtr& comp) {
-		exitCode = std::static_pointer_cast<AppComponent, Component>(comp)->exitCode;
+	appEntity->RegisterCompRemovedFunc<AppComponent>([&](const std::shared_ptr<AppComponent>& comp) {
+		exitCode = comp->exitCode;
 		running = false;
 	});
 #ifdef LIGHTNING_WIN32
