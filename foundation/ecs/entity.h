@@ -27,11 +27,7 @@ namespace Lightning
 				assert(mComponents.find(cType) == mComponents.end() && "Duplicate components are not supported!");
 				auto component = std::make_shared<C>(std::forward<Args>(args)...);
 				component->mOwner = shared_from_this();
-				auto insert_res = mComponents.insert(std::make_pair(cType, component));
-				if (insert_res.second)
-				{
-					mItComponents = insert_res.first;
-				}
+				mComponents.insert(std::make_pair(cType, component));
 				CallCompAddedFunc(component);
 				return component;
 			}
@@ -51,6 +47,7 @@ namespace Lightning
 				{
 					auto component = it->second;
 					mItComponents = mComponents.erase(it);
+					mItComponentsValid = false;
 					CallCompRemovedFunc(component);
 					return;
 				}
@@ -63,6 +60,7 @@ namespace Lightning
 					{
 						auto component = it->second;
 						mItComponents = mComponents.erase(it);
+						mItComponentsValid = false;
 						CallCompRemovedFunc(component);
 						break;
 					}
@@ -161,9 +159,9 @@ namespace Lightning
 			{
 				for (mItComponents = mComponents.begin();mItComponents != mComponents.end();)
 				{
-					auto it = mItComponents;
+					mItComponentsValid = true;
 					RemoveComponent(mItComponents->second);
-					if (mItComponents != mComponents.end() && it == mItComponents)
+					if (mItComponentsValid)
 						++mItComponents;
 				}
 			}
@@ -241,6 +239,7 @@ namespace Lightning
 			using CompAddedFuncList = container::list<CompAddedFuncPtr>;
 			ComponentMap mComponents;
 			ComponentMap::iterator mItComponents;
+			bool mItComponentsValid;
 			container::unordered_map<EntityFuncID, TypedCompRemovedFunc> mCompRemovedFuncs;
 			container::unordered_map<rttr::type, CompRemovedFuncList> mCompRemovedFuncLists;
 			CompRemovedFuncList::iterator mItRemovedFunc;
