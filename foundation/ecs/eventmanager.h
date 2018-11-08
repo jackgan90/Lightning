@@ -35,7 +35,7 @@ namespace Lightning
 					if (its != it->second.end())
 					{
 						mItSubscriber = it->second.erase(its);
-						mItSubscribersValid = false;
+						mItSubscriberValid = false;
 					}
 				}
 			}
@@ -51,9 +51,9 @@ namespace Lightning
 					auto& subscribers = it->second;
 					for (mItSubscriber = subscribers.begin(); mItSubscriber != subscribers.end();)
 					{
-						mItSubscribersValid = true;
+						mItSubscriberValid = true;
 						mItSubscriber->second(evt);
-						if (mItSubscribersValid)
+						if (mItSubscriberValid)
 							++mItSubscriber;
 					}
 				}
@@ -67,9 +67,9 @@ namespace Lightning
 						auto& subscribers = it->second;
 						for (mItSubscriber = subscribers.begin(); mItSubscriber != subscribers.end();)
 						{
-							mItSubscribersValid = true;
+							mItSubscriberValid = true;
 							mItSubscriber->second(evt);
-							if (mItSubscribersValid)
+							if (mItSubscriberValid)
 								++mItSubscriber;
 						}
 					}
@@ -82,7 +82,7 @@ namespace Lightning
 			EventSubscriberID mCurrentID;
 			container::unordered_map<rttr::type, EventSubscribers> mSubscribers;
 			EventSubscribers::iterator mItSubscriber;
-			bool mItSubscribersValid;
+			bool mItSubscriberValid;
 		};
 	}
 }
