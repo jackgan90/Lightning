@@ -46,8 +46,8 @@ namespace Lightning
 				if (it != mComponents.end())
 				{
 					auto component = it->second;
-					mItComponents = mComponents.erase(it);
-					mItComponentsValid = false;
+					mItComponent = mComponents.erase(it);
+					mItComponentValid = false;
 					CallCompRemovedFunc(component);
 					return;
 				}
@@ -59,8 +59,8 @@ namespace Lightning
 					if (it != mComponents.end())
 					{
 						auto component = it->second;
-						mItComponents = mComponents.erase(it);
-						mItComponentsValid = false;
+						mItComponent = mComponents.erase(it);
+						mItComponentValid = false;
 						CallCompRemovedFunc(component);
 						break;
 					}
@@ -157,12 +157,12 @@ namespace Lightning
 
 			void RemoveAllComponents()
 			{
-				for (mItComponents = mComponents.begin();mItComponents != mComponents.end();)
+				for (mItComponent = mComponents.begin();mItComponent != mComponents.end();)
 				{
-					mItComponentsValid = true;
-					RemoveComponent(mItComponents->second);
-					if (mItComponentsValid)
-						++mItComponents;
+					mItComponentValid = true;
+					RemoveComponent(mItComponent->second);
+					if (mItComponentValid)
+						++mItComponent;
 				}
 			}
 		protected:
@@ -197,7 +197,7 @@ namespace Lightning
 			{
 				auto& obj = *component.get();
 				auto cType = rttr::type::get(obj);
-				for (auto mItRemovedFunc = mCompRemovedFuncLists[cType].begin();
+				for (mItRemovedFunc = mCompRemovedFuncLists[cType].begin();
 					mItRemovedFunc != mCompRemovedFuncLists[cType].end();)
 				{
 					mItRemovedFuncValid = true;
@@ -208,7 +208,7 @@ namespace Lightning
 				const auto base_classes = cType.get_base_classes();
 				for (auto& base_class : base_classes)
 				{
-					for (auto mItRemovedFunc = mCompRemovedFuncLists[base_class].begin();
+					for (mItRemovedFunc = mCompRemovedFuncLists[base_class].begin();
 						mItRemovedFunc != mCompRemovedFuncLists[base_class].end();)
 					{
 						mItRemovedFuncValid = true;
@@ -238,8 +238,8 @@ namespace Lightning
 			using CompRemovedFuncList = container::list<CompRemovedFuncPtr>;
 			using CompAddedFuncList = container::list<CompAddedFuncPtr>;
 			ComponentMap mComponents;
-			ComponentMap::iterator mItComponents;
-			bool mItComponentsValid;
+			ComponentMap::iterator mItComponent;
+			bool mItComponentValid;
 			container::unordered_map<EntityFuncID, TypedCompRemovedFunc> mCompRemovedFuncs;
 			container::unordered_map<rttr::type, CompRemovedFuncList> mCompRemovedFuncLists;
 			CompRemovedFuncList::iterator mItRemovedFunc;
