@@ -108,7 +108,7 @@ namespace Lightning
 				});
 				TypedCompRemovedFunc typedFunc{ cType, func };
 				mCompRemovedFuncs.insert(std::make_pair(id, typedFunc));
-				mCompRemovedFuncList[cType].push_back(func);
+				mCompRemovedFuncLists[cType].push_back(func);
 				return id;
 			}
 
@@ -117,9 +117,10 @@ namespace Lightning
 				auto it = mCompRemovedFuncs.find(id);
 				if (it != mCompRemovedFuncs.end())
 				{
-					auto& funcList = mCompRemovedFuncList[it->second.componentType];
-					funcList.erase(std::remove_if(funcList.begin(), funcList.end(), 
+					auto& funcList = mCompRemovedFuncLists[it->second.componentType];
+					mItRemovedFunc = funcList.erase(std::remove_if(funcList.begin(), funcList.end(), 
 						[&](const CompRemovedFuncPtr& ptr) {return ptr.get() == it->second.func.get();}));
+					mItRemovedFuncValid = false;
 					mCompRemovedFuncs.erase(it);
 				}
 			}
@@ -134,7 +135,7 @@ namespace Lightning
 				});
 				TypedCompAddedFunc typedFunc{ cType, func };
 				mCompAddedFuncs.insert(std::make_pair(id, typedFunc));
-				mCompAddedFuncList[cType].push_back(func);
+				mCompAddedFuncLists[cType].push_back(func);
 				return id;
 			}
 
@@ -143,9 +144,10 @@ namespace Lightning
 				auto it = mCompAddedFuncs.find(id);
 				if (it != mCompAddedFuncs.end())
 				{
-					auto& funcList = mCompAddedFuncList[it->second.componentType];
-					funcList.erase(std::remove_if(funcList.begin(), funcList.end(), 
+					auto& funcList = mCompAddedFuncLists[it->second.componentType];
+					mItAddedFunc = funcList.erase(std::remove_if(funcList.begin(), funcList.end(), 
 						[&](const CompAddedFuncPtr& ptr) {return ptr.get() == it->second.func.get();}));
+					mItAddedFuncValid = false;
 					mCompAddedFuncs.erase(it);
 				}
 			}
@@ -171,16 +173,24 @@ namespace Lightning
 			{
 				auto& obj = *component.get();
 				auto cType = rttr::type::get(obj);
-				for (auto& pFunc : mCompAddedFuncList[cType])
+				for (mItAddedFunc = mCompAddedFuncLists[cType].begin();
+						mItAddedFunc != mCompAddedFuncLists[cType].end();)
 				{
-					(*pFunc)(component);
+					mItAddedFuncValid = true;
+					(*(*mItAddedFunc))(component);
+					if (mItAddedFuncValid)
+						++mItAddedFunc;
 				}
 				const auto base_classes = cType.get_base_classes();
 				for (auto& base_class : base_classes)
 				{
-					for (auto& pFunc : mCompAddedFuncList[base_class])
+					for (mItAddedFunc = mCompAddedFuncLists[base_class].begin();
+							mItAddedFunc != mCompAddedFuncLists[base_class].end();)
 					{
-						(*pFunc)(component);
+						mItAddedFuncValid = true;
+						(*(*mItAddedFunc))(component);
+						if (mItAddedFuncValid)
+							++mItAddedFunc;
 					}
 				}
 			}
@@ -189,16 +199,24 @@ namespace Lightning
 			{
 				auto& obj = *component.get();
 				auto cType = rttr::type::get(obj);
-				for (auto& pFunc : mCompRemovedFuncList[cType])
+				for (auto mItRemovedFunc = mCompRemovedFuncLists[cType].begin();
+					mItRemovedFunc != mCompRemovedFuncLists[cType].end();)
 				{
-					(*pFunc)(component);
+					mItRemovedFuncValid = true;
+					(*(*mItRemovedFunc))(component);
+					if (mItRemovedFuncValid)
+						++mItRemovedFunc;
 				}
 				const auto base_classes = cType.get_base_classes();
 				for (auto& base_class : base_classes)
 				{
-					for (auto& pFunc : mCompRemovedFuncList[base_class])
+					for (auto mItRemovedFunc = mCompRemovedFuncLists[base_class].begin();
+						mItRemovedFunc != mCompRemovedFuncLists[base_class].end();)
 					{
-						(*pFunc)(component);
+						mItRemovedFuncValid = true;
+						(*(*mItRemovedFunc))(component);
+						if (mItRemovedFuncValid)
+							++mItRemovedFunc;
 					}
 				}
 			}
@@ -219,13 +237,18 @@ namespace Lightning
 				rttr::type componentType;
 				CompRemovedFuncPtr func;
 			};
-
+			using CompRemovedFuncList = container::list<CompRemovedFuncPtr>;
+			using CompAddedFuncList = container::list<CompAddedFuncPtr>;
 			ComponentMap mComponents;
 			ComponentMap::iterator mItComponents;
 			container::unordered_map<EntityFuncID, TypedCompRemovedFunc> mCompRemovedFuncs;
-			container::unordered_map<rttr::type, container::list<CompRemovedFuncPtr>> mCompRemovedFuncList;
+			container::unordered_map<rttr::type, CompRemovedFuncList> mCompRemovedFuncLists;
+			CompRemovedFuncList::iterator mItRemovedFunc;
+			bool mItRemovedFuncValid;
 			container::unordered_map<EntityFuncID, TypedCompAddedFunc> mCompAddedFuncs;
-			container::unordered_map<rttr::type, container::list<CompAddedFuncPtr>> mCompAddedFuncList;
+			container::unordered_map<rttr::type, CompAddedFuncList> mCompAddedFuncLists;
+			CompAddedFuncList::iterator mItAddedFunc;
+			bool mItAddedFuncValid;
 			EntityID mID;
 			EntityFuncID mFuncID;
 			RTTR_ENABLE()

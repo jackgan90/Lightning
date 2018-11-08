@@ -31,9 +31,11 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	auto appEntity = EntityManager::Instance()->CreateEntity<AppEntity>();
 	auto appComponent = appEntity->AddComponent<AppComponent>();
 	int exitCode{ 0 };
+	Lightning::Foundation::EntityFuncID id = 
 	appEntity->RegisterCompRemovedFunc<AppComponent>([&](const std::shared_ptr<AppComponent>& comp) {
 		exitCode = comp->exitCode;
 		running = false;
+		appEntity->UnregisterCompRemovedFunc(id);
 	});
 #ifdef LIGHTNING_WIN32
 	auto app = SystemManager::Instance()->CreateSystem<Win32AppSystem>();
