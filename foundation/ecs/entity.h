@@ -116,9 +116,16 @@ namespace Lightning
 				if (it != mCompRemovedFuncs.end())
 				{
 					auto& funcList = mCompRemovedFuncLists[it->second.componentType];
-					mItRemovedFunc = funcList.erase(std::remove_if(funcList.begin(), funcList.end(), 
-						[&](const CompRemovedFuncPtr& ptr) {return ptr.get() == it->second.func.get();}));
-					mItRemovedFuncValid = false;
+					for (auto fit = funcList.begin(); fit != funcList.end(); ++fit)
+					{
+						if ((*fit).get() == it->second.func.get())
+						{
+							mItRemovedFunc = funcList.erase(fit);
+							mItRemovedFuncValid = false;
+							break;
+						}
+
+					}
 					mCompRemovedFuncs.erase(it);
 				}
 			}
