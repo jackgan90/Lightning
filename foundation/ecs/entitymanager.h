@@ -18,12 +18,7 @@ namespace Lightning
 				static_assert(std::is_base_of<Entity, E>::value, "E must be a subclass of Entity!");
 				auto entity = std::make_shared<E>();
 				entity->mID = ++mCurrentEntityID;
-				auto it = mEntities.insert(std::make_pair(entity->mID, entity));
-				if (it.second)
-				{
-					mIterator = it.first;
-					mIteratorValid = false;
-				}
+				mEntities.insert(std::make_pair(entity->mID, entity));
 				return entity;
 			}
 
