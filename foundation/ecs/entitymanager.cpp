@@ -6,7 +6,7 @@ namespace Lightning
 	namespace Foundation
 	{
 		EntityManager::EntityManager() 
-			: mCurrentEntityID(0) 
+			: mCurrentEntityID(0), mIteratorValid(true)
 		{
 			mIterator = mEntities.end();
 		}
@@ -15,9 +15,9 @@ namespace Lightning
 		{
 			for (mIterator = mEntities.begin(); mIterator != mEntities.end();)
 			{
-				auto it = mIterator;
+				mIteratorValid = true;
 				SystemManager::Instance()->Update(mIterator->second);
-				if (it == mIterator)
+				if (mIteratorValid)
 					++mIterator;
 			}
 		}

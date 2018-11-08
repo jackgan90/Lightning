@@ -22,6 +22,7 @@ namespace Lightning
 				if (it.second)
 				{
 					mIterator = it.first;
+					mIteratorValid = false;
 				}
 				return entity;
 			}
@@ -44,6 +45,7 @@ namespace Lightning
 				{
 					it->second->RemoveAllComponents();
 					mIterator = mEntities.erase(it);
+					mIteratorValid = false;
 				}
 			}
 			void Update();
@@ -54,6 +56,7 @@ namespace Lightning
 			EntityID mCurrentEntityID;
 			EntityMap mEntities;
 			EntityMap::iterator mIterator;
+			bool mIteratorValid;
 		};
 	}
 }

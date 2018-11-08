@@ -28,7 +28,11 @@ namespace Lightning
 				assert(mComponents.find(cType) == mComponents.end() && "Duplicate components are not supported!");
 				auto component = std::make_shared<C>(std::forward<Args>(args)...);
 				component->mOwner = shared_from_this();
-				mComponents.emplace(cType, component);
+				auto insert_res = mComponents.insert(std::make_pair(cType, component));
+				if (insert_res.second)
+				{
+					mItComponents = insert_res.first;
+				}
 				InvokeComponentAddedCallbacks(component);
 				return component;
 			}
@@ -47,7 +51,7 @@ namespace Lightning
 				if (it != mComponents.end())
 				{
 					auto component = it->second;
-					mComponents.erase(it);
+					mItComponents = mComponents.erase(it);
 					InvokeComponentRemovedCallbacks(component);
 					return;
 				}
@@ -59,7 +63,7 @@ namespace Lightning
 					if (it != mComponents.end())
 					{
 						auto component = it->second;
-						mComponents.erase(it);
+						mItComponents = mComponents.erase(it);
 						InvokeComponentRemovedCallbacks(component);
 						break;
 					}
@@ -126,9 +130,12 @@ namespace Lightning
 
 			void RemoveAllComponents()
 			{
-				for (auto it = mComponents.begin();it != mComponents.end();)
+				for (mItComponents = mComponents.begin();mItComponents != mComponents.end();)
 				{
-					RemoveComponent(it->second);
+					auto it = mItComponents;
+					RemoveComponent(mItComponents->second);
+					if (mItComponents != mComponents.end() && it == mItComponents)
+						++mItComponents;
 				}
 			}
 		protected:
@@ -155,7 +162,9 @@ namespace Lightning
 				}
 			}
 
-			container::unordered_map<rttr::type, ComponentPtr> mComponents;
+			using ComponentMap = container::unordered_map<rttr::type, ComponentPtr>;
+			ComponentMap mComponents;
+			ComponentMap::iterator mItComponents;
 			container::unordered_map<EntityCallbackID, ComponentRemovedCallback> mCompRemovedCallbacks;
 			container::unordered_map<EntityCallbackID, ComponentAddedCallback> mCompAddedCallbacks;
 			EntityID mID;
