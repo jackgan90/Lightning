@@ -23,11 +23,6 @@ namespace Lightning
 		using Foundation::ComponentPtr;
 		using Window::SharedWindowPtr;
 		
-		class LIGHTNING_PLATFORM_API AppEntity : public Foundation::Entity
-		{
-
-		};
-
 		class LIGHTNING_PLATFORM_API AppSystem : public Foundation::System
 		{
 		public:

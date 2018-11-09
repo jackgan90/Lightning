@@ -12,8 +12,8 @@ using Lightning::Foundation::EntityManager;
 using Lightning::Foundation::EventManager;
 using Lightning::Foundation::SystemManager;
 using Lightning::Foundation::ComponentPtr;
+using Lightning::Foundation::Entity;
 using Lightning::Foundation::Component;
-using Lightning::App::AppEntity;
 using Lightning::App::AppComponent;
 namespace
 {
@@ -28,7 +28,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 #endif
 {
 	LOG_INFO("This is Lighting entry.");
-	auto appEntity = EntityManager::Instance()->CreateEntity<AppEntity>();
+	auto appEntity = EntityManager::Instance()->CreateEntity<Entity>();
 	auto appComponent = appEntity->AddComponent<AppComponent>();
 	int exitCode{ 0 };
 	Lightning::Foundation::EntityFuncID id = 
