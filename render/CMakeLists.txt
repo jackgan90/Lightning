@@ -146,7 +146,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${Boost_INCLUDE_DIR}
 					${RTTR_INCLUDE_DIR}
 					${TBB_INCLUDE_DIR}
-					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include)
+					${SPDLOG_INCLUDE_DIR})
 
 if(LIGHTNING_USE_D3D12)
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/d3d12

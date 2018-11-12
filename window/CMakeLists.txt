@@ -23,13 +23,13 @@ define_dll_export_macro(WINDOW)
 
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 
-include_directories(${Boost_INCLUDE_DIR}
+include_directories(${CMAKE_SOURCE_DIR}/foundation
+					${CMAKE_SOURCE_DIR}/utilities
+					${CMAKE_SOURCE_DIR}/foundation/memory
+					${Boost_INCLUDE_DIR}
 					${TBB_INCLUDE_DIR}
 					${RTTR_INCLUDE_DIR}
-					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
-					${CMAKE_SOURCE_DIR}/foundation
-					${CMAKE_SOURCE_DIR}/utilities
-					${CMAKE_SOURCE_DIR}/foundation/memory)
+					${SPDLOG_INCLUDE_DIR})
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 add_dependencies(${PROJECT_NAME} foundation)

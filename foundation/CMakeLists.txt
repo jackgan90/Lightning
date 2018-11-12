@@ -79,11 +79,12 @@ add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
 
 define_dll_export_macro(FOUNDATION)
 
-include_directories(${Boost_INCLUDE_DIR}
+include_directories(${CMAKE_SOURCE_DIR}/foundation
+					${Boost_INCLUDE_DIR}
 					${TBB_INCLUDE_DIR}
 					${RTTR_INCLUDE_DIR}
-					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
-					${CMAKE_SOURCE_DIR}/foundation)
+					${SPDLOG_INCLUDE_DIR})
+
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${TBB_LIBRARIES})

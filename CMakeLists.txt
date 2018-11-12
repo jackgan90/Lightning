@@ -39,6 +39,9 @@ find_package(tbb REQUIRED)
 set(FREEIMAGE_ROOT ${LIGHTNING_DEPENDENCIES_DIR}/FreeImage)
 find_package(FreeImage REQUIRED)
 
+#spdlog
+set(SPDLOG_INCLUDE_DIR ${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include)
+
 add_subdirectory(foundation)
 add_subdirectory(utilities)
 add_subdirectory(platform)
@@ -90,7 +93,7 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${Boost_INCLUDE_DIR}
 					${TBB_INCLUDE_DIR}
 					${RTTR_INCLUDE_DIR}
-					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include)
+					${SPDLOG_INCLUDE_DIR})
 
 add_executable(${PROJECT_NAME} WIN32 ${HEADER_FILES} ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} foundation platform render)
