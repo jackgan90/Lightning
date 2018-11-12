@@ -31,7 +31,7 @@ namespace Lightning
 			static container::vector<TaskInfo> repeatedTasks;
 			auto now = high_resolution_clock::now();
 			auto elapsedTime = duration_cast<milliseconds>(now - mLastTickTime);
-			if (elapsedTime.count() < mResolution)
+			if (std::size_t(elapsedTime.count()) < mResolution)
 				return;
 
 			auto& taskList = mTasks[mBucketCursor];

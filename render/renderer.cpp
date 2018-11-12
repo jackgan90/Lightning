@@ -176,7 +176,7 @@ namespace Lightning
 			}
 			else
 			{
-				for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
+				for (std::uint32_t i = 0;i < RENDER_FRAME_COUNT;++i)
 				{
 					bufferIndice.push_back(i);
 					//explicit signal to prevent release assert

@@ -98,7 +98,7 @@ namespace Lightning
 			}
 		}
 
-		std::size_t D3D12SwapChain::GetCurrentBackBufferIndex()const
+		std::uint32_t D3D12SwapChain::GetCurrentBackBufferIndex()const
 		{
 			return mSwapChain->GetCurrentBackBufferIndex();
 		}

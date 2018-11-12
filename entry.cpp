@@ -33,7 +33,7 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 	int exitCode{ 0 };
 	Lightning::Foundation::EntityFuncID id = 
 	appEntity->RegisterCompRemovedFunc<AppComponent>([&](const std::shared_ptr<AppComponent>& comp) {
-		exitCode = comp->exitCode;
+		exitCode = static_cast<int>(comp->exitCode);
 		running = false;
 		appEntity->UnregisterCompRemovedFunc(id);
 	});

@@ -15,7 +15,7 @@ namespace Lightning
 		{
 		public:
 			//get pixel sample count
-			virtual std::size_t GetSampleCount() = 0;
+			virtual std::uint32_t GetSampleCount() = 0;
 			//get pixel sample quality
 			virtual int GetSampleQuality() = 0;
 			//get render format

@@ -16,7 +16,7 @@ namespace JobSystem
 	class JobQueue
 	{
 	public:
-		explicit JobQueue::JobQueue(std::size_t size)
+		explicit JobQueue::JobQueue(std::uint32_t size)
 #ifndef USE_CUSTOM_CONCURRENT_QUEUE
 			:mQueue(size) 
 #else

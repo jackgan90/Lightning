@@ -123,8 +123,8 @@ namespace Lightning
 		{
 			if (event.pressedKey & VK_MOUSERBUTTON)
 			{
-				mousePosition.x = event.x;
-				mousePosition.y = event.y;
+				mousePosition.x = static_cast<int>(event.x);
+				mousePosition.y = static_cast<int>(event.y);
 			}
 		}
 
@@ -147,8 +147,8 @@ namespace Lightning
 						camera->RotateTowards(dest_dir);
 					}
 				}
-				mousePosition.x = event.x;
-				mousePosition.y = event.y;
+				mousePosition.x = static_cast<int>(event.x);
+				mousePosition.y = static_cast<int>(event.y);
 			}
 		}
 

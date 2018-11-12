@@ -51,8 +51,8 @@ namespace Lightning
 			const container::vector<D3D12_ROOT_PARAMETER>& GetRootParameters()const;
 			std::size_t GetRootParameterCount()const;
 			const container::vector<D3D12RootBoundResource>& GetRootBoundResources();
-			std::size_t GetConstantBufferCount();
-			std::size_t GetConstantBufferSize();
+			UINT GetConstantBufferCount();
+			UINT GetConstantBufferSize();
 		private:
 			struct ArgumentInfo
 			{
@@ -86,7 +86,7 @@ namespace Lightning
 			//each offset corresponds to mIntermediateBuffer
 			container::unordered_map<std::size_t, ConstantBufferInfo> mConstantBufferInfo;
 			D3D12_DESCRIPTOR_RANGE *mDescriptorRanges;
-			std::size_t mTotalConstantBufferSize;
+			UINT mTotalConstantBufferSize;
 			//buffer used to cache constant buffer value
 			Foundation::ThreadLocalSingleton<ShaderResourceProxy> mResourceProxy;
 		};

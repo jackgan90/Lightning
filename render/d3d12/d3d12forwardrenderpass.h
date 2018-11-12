@@ -14,7 +14,7 @@ namespace Lightning
 			void OnFrameBegin()override;
 		private:
 			std::size_t mTotalConstantBufferSize;
-			std::size_t mTotalConstantBuffers;
+			std::uint32_t mTotalConstantBuffers;
 		};
 	}
 }

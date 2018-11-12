@@ -68,7 +68,7 @@ namespace Lightning
 						commandList = GetCommandList();
 					else
 						commandList = static_cast<ID3D12GraphicsCommandList*>(commandLists[i - 1]);
-					commandList->ResourceBarrier(barrierDescs.size(), pMem);
+					commandList->ResourceBarrier(UINT(barrierDescs.size()), pMem);
 					if (i == 0)
 					{
 						commandLists.insert(commandLists.begin(), commandList);

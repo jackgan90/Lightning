@@ -108,8 +108,8 @@ namespace Lightning
 			auto pDevice = renderer.GetDevice();
 			auto vbSize = GetVertexBufferSize();
 			auto ibSize = GetIndexBufferSize();
-			mRenderNode.geometry->vbs[0] = pDevice->CreateVertexBuffer(vbSize, descriptor);
-			mRenderNode.geometry->ib = pDevice->CreateIndexBuffer(ibSize, Render::IndexType::UINT16);
+			mRenderNode.geometry->vbs[0] = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(vbSize), descriptor);
+			mRenderNode.geometry->ib = pDevice->CreateIndexBuffer(static_cast<std::uint32_t>(ibSize), Render::IndexType::UINT16);
 			
 			
 			auto vertices = GetVertices();

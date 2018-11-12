@@ -40,7 +40,7 @@ namespace JobSystem
 		}
 
 		//Only main thread can call run on JobSystem
-		void Run(std::function<void()> initFunc, std::size_t jobQueueSize)
+		void Run(std::function<void()> initFunc, std::uint32_t jobQueueSize)
 		{
 			//The calling thread is considered to be main thread.
 			mGlobalJobQueues = mQueueAllocator.allocate(JOB_TYPE_COUNT);
@@ -202,7 +202,7 @@ namespace JobSystem
 		friend struct Worker;
 		struct Worker
 		{
-			Worker(bool bg, std::size_t localJobQueueSize) : background(bg)
+			Worker(bool bg, std::uint32_t localJobQueueSize) : background(bg)
 			{
 				allocators = jobAllocator.allocate(JOB_TYPE_COUNT);
 				jobAllocator.construct(&allocators[JOB_TYPE_FOREGROUND]);

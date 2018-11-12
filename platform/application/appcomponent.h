@@ -21,7 +21,7 @@ namespace Lightning
 			UniqueRendererPtr renderer;
 			SharedWindowPtr window;
 			ITimer *timer;
-			int exitCode;
+			long long exitCode;
 			RTTR_ENABLE(Component)
 		};
 	}

@@ -143,7 +143,7 @@ namespace Lightning
 		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocatePersistentHeap(container::vector<DescriptorHeapStore*>& heapList, UINT count)
 		{
 			//loop over existing heap list reversely and try to allocate from it
-			for (int i = heapList.size() - 1; i >= 0;i--)
+			for (long long i = heapList.size() - 1; i >= 0;i--)
 			{
 				auto res = TryAllocatePersistentHeap(heapList[i], count);
 				if (std::get<0>(res))

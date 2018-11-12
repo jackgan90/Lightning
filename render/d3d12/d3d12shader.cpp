@@ -28,7 +28,7 @@ namespace Lightning
 			D3DReflect(mByteCode->GetBufferPointer(), mByteCode->GetBufferSize(), IID_PPV_ARGS(&shaderReflection));
 			shaderReflection->GetDesc(&mDesc);
 			container::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC> inputBindDescs;
-			for (std::size_t i = 0;i < mDesc.BoundResources;++i)
+			for (UINT i = 0;i < mDesc.BoundResources;++i)
 			{
 				D3D12_SHADER_INPUT_BIND_DESC bindDesc;
 				shaderReflection->GetResourceBindingDesc(i, &bindDesc);
@@ -40,7 +40,7 @@ namespace Lightning
 			{
 				mDescriptorRanges = new D3D12_DESCRIPTOR_RANGE[mDesc.ConstantBuffers];
 				//initialize cbv descriptor ranges, number of descriptors is the number of constant buffers
-				for (size_t i = 0; i < mDesc.ConstantBuffers; i++)
+				for (UINT i = 0; i < mDesc.ConstantBuffers; i++)
 				{
 					auto constantBufferRefl = shaderReflection->GetConstantBufferByIndex(i);
 					D3D12_SHADER_BUFFER_DESC bufferDesc;
@@ -50,7 +50,7 @@ namespace Lightning
 					cbufferInfo.size = bufferDesc.Size;
 					mConstantBufferInfo[i] = cbufferInfo;
 					mTotalConstantBufferSize += bufferDesc.Size;
-					for (size_t j = 0; j < bufferDesc.Variables; j++)
+					for (UINT j = 0; j < bufferDesc.Variables; j++)
 					{
 						ID3D12ShaderReflectionVariable* variableRefl = constantBufferRefl->GetVariableByIndex(j);
 						D3D12_SHADER_VARIABLE_DESC shaderVarDesc;
@@ -69,7 +69,7 @@ namespace Lightning
 				}
 				if (mTotalConstantBufferSize > 0)
 				{
-					mTotalConstantBufferSize = D3D12ConstantBufferManager::AlignedSize(mTotalConstantBufferSize);
+					mTotalConstantBufferSize = UINT(D3D12ConstantBufferManager::AlignedSize(mTotalConstantBufferSize));
 				}
 				CD3DX12_ROOT_PARAMETER cbvParameter;
 				cbvParameter.InitAsDescriptorTable(mDesc.ConstantBuffers, mDescriptorRanges, GetParameterVisibility());
@@ -211,12 +211,12 @@ namespace Lightning
 			return mResourceProxy->GetRootBoundResources();
 		}
 
-		std::size_t D3D12Shader::GetConstantBufferCount()
+		UINT D3D12Shader::GetConstantBufferCount()
 		{
 			return mDesc.ConstantBuffers;
 		}
 
-		std::size_t D3D12Shader::GetConstantBufferSize()
+		UINT D3D12Shader::GetConstantBufferSize()
 		{
 			return mTotalConstantBufferSize;
 		}

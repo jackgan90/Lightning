@@ -38,7 +38,7 @@ namespace Lightning
 					{
 						for (int j = 0; j < Derived::Order; ++j)
 						{
-							unsigned idx = CELL_INDEX(i, j);
+							auto idx = CELL_INDEX(i, j);
 							mat.m[idx] = 0;
 							for (int k = 0; k < Derived::Order; ++k)
 								mat.m[idx] += pDerived->m[CELL_INDEX(i, k)] * other.m[CELL_INDEX(k, j)];
@@ -79,7 +79,7 @@ namespace Lightning
 					return res;
 				}
 				
-				static inline unsigned CELL_INDEX(unsigned row, unsigned col) { return col * Derived::Order + row; }
+				static inline std::size_t CELL_INDEX(std::size_t row, std::size_t col) { return col * Derived::Order + row; }
 			};
 
 			template<typename T>

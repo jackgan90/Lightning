@@ -24,10 +24,10 @@ namespace Lightning
 			D3D12SwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* commandQueue, WindowSystem* pWindow);
 			~D3D12SwapChain()override;
 			bool Present()override;
-			std::size_t GetSampleCount()const override { return mDesc.SampleDesc.Count; }
+			std::uint32_t GetSampleCount()const override { return mDesc.SampleDesc.Count; }
 			int GetSampleQuality()const override { return mDesc.SampleDesc.Quality; }
 			RenderFormat GetRenderFormat()const override{ return D3D12TypeMapper::MapRenderFormat(mDesc.BufferDesc.Format); }
-			std::size_t GetCurrentBackBufferIndex()const override;
+			std::uint32_t GetCurrentBackBufferIndex()const override;
 			SharedRenderTargetPtr GetDefaultRenderTarget()override;
 		private:
 			void BindRenderTargets();

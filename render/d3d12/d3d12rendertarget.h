@@ -21,7 +21,7 @@ namespace Lightning
 			RenderTargetID GetID() const override { return mID; }
 			const D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return mHeap->cpuHandle; }
 			const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle()const { return mHeap->gpuHandle; }
-			std::size_t GetSampleCount()override { return mSampleCount; }
+			std::uint32_t GetSampleCount()override { return mSampleCount; }
 			int GetSampleQuality()override { return mSampleQuality; }
 			RenderFormat GetRenderFormat()const override { return mFormat; }
 			void TransitToRTState(ID3D12GraphicsCommandList* commandList);
@@ -30,7 +30,7 @@ namespace Lightning
 			D3D12StatefulResourcePtr mResource;
 			RenderTargetID mID;
 			DescriptorHeap *mHeap;
-			std::size_t mSampleCount;
+			std::uint32_t mSampleCount;
 			int mSampleQuality;
 			RenderFormat mFormat;
 		};

@@ -19,11 +19,11 @@ namespace
 		class Comp1 : public Component
 		{
 		public:
-			Comp1(int a, char b) : _a(a), _b(b)
+			Comp1(std::size_t a, char b) : _a(a), _b(b)
 			{
 				std::cout << "Comp1 construct.a = " << a << ", b = " << b << std::endl;
 			}
-			int _a;
+			std::size_t _a;
 			char _b;
 		};
 

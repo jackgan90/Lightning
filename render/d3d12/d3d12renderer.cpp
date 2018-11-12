@@ -150,7 +150,7 @@ namespace Lightning
 					d3dRect[i].top = (*rects)[i].top;
 					d3dRect[i].bottom = (*rects)[i].bottom();
 				}
-				commandList->ClearRenderTargetView(rtvHandle, clearColor, rects->size(), d3dRect);
+				commandList->ClearRenderTargetView(rtvHandle, clearColor, UINT(rects->size()), d3dRect);
 			}
 			else
 			{
@@ -185,7 +185,7 @@ namespace Lightning
 					d3dRect[i].top = (*rects)[i].top;
 					d3dRect[i].bottom = (*rects)[i].bottom();
 				}
-				commandList->ClearDepthStencilView(dsvHandle, clearFlags, depth, stencil, rects->size(), d3dRect);
+				commandList->ClearDepthStencilView(dsvHandle, clearFlags, depth, stencil, UINT(rects->size()), d3dRect);
 			}
 			else
 			{
@@ -206,7 +206,7 @@ namespace Lightning
 				//TODO : Is it correct to use the first render target's sample description to set the pipeline desc?
 			}
 			auto dsHandle = static_cast<const D3D12DepthStencilBuffer*>(dsBuffer.get())->GetCPUHandle();
-			commandList->OMSetRenderTargets(renderTargetCount, rtvHandles, FALSE, &dsHandle);
+			commandList->OMSetRenderTargets(UINT(renderTargetCount), rtvHandles, FALSE, &dsHandle);
 		}
 
 		void D3D12Renderer::ApplyPipelineState(const PipelineState& state)
@@ -275,7 +275,7 @@ namespace Lightning
 			if (param.drawType == DrawType::Vertex)
 			{
 				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-				commandList->DrawInstanced(param.vertexCount, param.instanceCount, param.firstVertex, param.baseInstance);
+				commandList->DrawInstanced(UINT(param.vertexCount), UINT(param.instanceCount), UINT(param.firstVertex), UINT(param.baseInstance));
 			}
 			else
 			{
@@ -294,7 +294,8 @@ namespace Lightning
 				commandList->RSSetScissorRects(1, &scissorRect);
 				commandList->RSSetViewports(1, &vp);
 				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-				commandList->DrawIndexedInstanced(param.indexCount, param.instanceCount, param.firstIndex, param.baseIndex, param.baseInstance);
+				commandList->DrawIndexedInstanced(UINT(param.indexCount), UINT(param.instanceCount), 
+					UINT(param.firstIndex), UINT(param.baseIndex), UINT(param.baseInstance));
 			}
 		}
 
@@ -389,7 +390,7 @@ namespace Lightning
 				cbParameters.insert(cbParameters.end(), parameters.begin(), parameters.end());
 			}
 			D3D12_ROOT_PARAMETER* pParameters = cbParameters.empty() ? nullptr : &cbParameters[0];
-			rootSignatureDesc.Init(cbParameters.size(), pParameters, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+			rootSignatureDesc.Init(UINT(cbParameters.size()), pParameters, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
 
 			ComPtr<ID3DBlob> signature;
 			auto hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, nullptr);
@@ -450,7 +451,7 @@ namespace Lightning
 			if (constantBuffers > 0)
 			{
 				auto constantHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-					true, constantBuffers, true);
+					true, UINT(constantBuffers), true);
 				CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(constantHeap->cpuHandle);
 				CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(constantHeap->gpuHandle);
 				auto device = static_cast<D3D12Device*>(mDevice.get());
@@ -466,7 +467,7 @@ namespace Lightning
 							{
 								D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
 								cbvDesc.BufferLocation = cbuffer.virtualAdress;
-								cbvDesc.SizeInBytes = cbuffer.size;
+								cbvDesc.SizeInBytes = UINT(cbuffer.size);
 								device->CreateConstantBufferView(&cbvDesc, cpuHandle);
 								cpuHandle.Offset(constantHeap->incrementSize);
 								gpuHandle.Offset(constantHeap->incrementSize);
@@ -479,7 +480,7 @@ namespace Lightning
 			auto commandList = GetGraphicsCommandList();
 			if (!descriptorHeaps.empty())
 			{
-				commandList->SetDescriptorHeaps(descriptorHeaps.size(), &descriptorHeaps[0]);
+				commandList->SetDescriptorHeaps(UINT(descriptorHeaps.size()), &descriptorHeaps[0]);
 			}
 			UINT rootParameterIndex{ 0 };
 			for (const auto& pair : boundResources)
@@ -645,7 +646,7 @@ namespace Lightning
 				}
 			}
 
-			inputLayoutDesc.NumElements = inputElementCount;
+			inputLayoutDesc.NumElements = UINT(inputElementCount);
 			inputLayoutDesc.pInputElementDescs = pInputElementDesc;
 		}
 
@@ -658,7 +659,7 @@ namespace Lightning
 			return new D3D12SwapChain(mDXGIFactory.Get(), GetCommandQueue(), mOutputWindow.get());
 		}
 
-		IDepthStencilBuffer* D3D12Renderer::CreateDepthStencilBuffer(std::size_t width, std::size_t height)
+		IDepthStencilBuffer* D3D12Renderer::CreateDepthStencilBuffer(std::uint32_t width, std::uint32_t height)
 		{
 			return new D3D12DepthStencilBuffer(width, height);
 		}
@@ -734,7 +735,7 @@ namespace Lightning
 				static_cast<ID3D12GraphicsCommandList*>(cmdList)->Close();
 			}
 			auto commandQueue = GetCommandQueue();
-			commandQueue->ExecuteCommandLists(commandLists.size(), &commandLists[0]);
+			commandQueue->ExecuteCommandLists(UINT(commandLists.size()), &commandLists[0]);
 		}
 
 

@@ -201,12 +201,12 @@ namespace std{
 	{
 		std::size_t operator()(const Lightning::Render::PipelineState& state)const noexcept
 		{
-			std::uint8_t buffer[sizeof(state) + sizeof(std::uint32_t)];
+			std::uint8_t buffer[sizeof(state) + sizeof(std::size_t)];
 			std::memcpy(buffer, &state, sizeof(state));
 			auto inputLayoutOffset = reinterpret_cast<const std::uint8_t*>(&state.inputLayouts) - \
 				reinterpret_cast<const std::uint8_t*>(&state);
 			std::memset(&buffer[inputLayoutOffset], 0, sizeof(state.inputLayouts));
-			*reinterpret_cast<std::uint32_t*>(&buffer[sizeof(state)]) = \
+			*reinterpret_cast<std::size_t*>(&buffer[sizeof(state)]) = \
 				std::hash<Lightning::Render::VertexInputLayout>{}(*state.inputLayouts);
 			return Lightning::Foundation::Hash(buffer, sizeof(buffer), 0x12345678u);
 		}
