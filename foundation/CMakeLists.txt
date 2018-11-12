@@ -79,39 +79,32 @@ add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
 
 define_dll_export_macro(FOUNDATION)
 
-include_directories(${LIGHTNING_DEPENDENCIES_DIR}/boost
+include_directories(${Boost_INCLUDE_DIR}
+					${TBB_INCLUDE_DIR}
+					${RTTR_INCLUDE_DIR}
 					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
-					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include
-					${LIGHTNING_DEPENDENCIES_DIR}/rttr/src
 					${CMAKE_SOURCE_DIR}/foundation)
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${TBB_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${RTTR_LIBRARIES})
+
 if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /wd4251 /wd4275 /EHsc /MDd")
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_DEBUG} /wd4251 /wd4275 /EHsc /MD")
 	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc")
 	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc")
-endif()
-
-set(CMAKE_INCLUDE_PATH ${CMAKE_INCLUDE_PATH} ${LIGHTNING_DEPENDENCIES_DIR}/boost)
-set(CMAKE_LIBRARY_PATH ${CMAKE_LIBRARY_PATH} ${LIGHTNING_DEPENDENCIES_DIR}/boost/lib)
-set(BOOST_ROOT ${LIGHTNING_DEPENDENCIES_DIR}/boost)
-find_package(Boost 1.65.1 REQUIRED)
-if(Boost_FOUND)
-	add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
-endif()
-
-if(MSVC)
-	get_msvc_postfix(POSTFIX)
-	get_msvc_major_version(VC_MAJOR_VERSION)
-	target_link_libraries(${PROJECT_NAME} debug ${Boost_LIBRARY_DIRS}/libboost_filesystem-vc${POSTFIX}-mt-gd-1_65_1.lib)
-	target_link_libraries(${PROJECT_NAME} debug ${Boost_LIBRARY_DIRS}/libboost_system-vc${POSTFIX}-mt-gd-1_65_1.lib)
-	target_link_libraries(${PROJECT_NAME} optimized ${Boost_LIBRARY_DIRS}/libboost_filesystem-vc${POSTFIX}-mt-1_65_1.lib)
-	target_link_libraries(${PROJECT_NAME} optimized ${Boost_LIBRARY_DIRS}/libboost_system-vc${POSTFIX}-mt-1_65_1.lib)
-	target_link_libraries(${PROJECT_NAME} debug ${LIGHTNING_DEPENDENCIES_DIR}/tbb/lib/ia32/vc${VC_MAJOR_VERSION}/tbb_debug.lib)
-	target_link_libraries(${PROJECT_NAME} optimized ${LIGHTNING_DEPENDENCIES_DIR}/tbb/lib/ia32/vc${VC_MAJOR_VERSION}/tbb.lib)
-	target_link_libraries(${PROJECT_NAME} debug ${LIGHTNING_DEPENDENCIES_DIR}/rttr/lib/Debug/rttr_core_d.lib)
-	target_link_libraries(${PROJECT_NAME} optimized ${LIGHTNING_DEPENDENCIES_DIR}/rttr/lib/Release/rttr_core.lib)
-	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi")
-	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TBB_DLLS} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy_if_different ${TBB_DLLS} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTTR_DLLS} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy_if_different ${RTTR_DLLS} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release)

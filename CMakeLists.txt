@@ -13,7 +13,32 @@ message(STATUS "Dependencies directory is ${LIGHTNING_DEPENDENCIES_DIR}")
 # options end
 
 project(Lightning)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_INSTALL_PREFIX ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
+file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release)
 message(STATUS "Configuring project Lightning")
+
+#find boost
+set(BOOST_ROOT ${LIGHTNING_DEPENDENCIES_DIR}/boost)
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+find_package(Boost 1.68.0 REQUIRED COMPONENTS system filesystem)
+add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
+
+#find rttr
+set(RTTR_ROOT ${LIGHTNING_DEPENDENCIES_DIR}/rttr)
+find_package(rttr REQUIRED)
+
+#find tbb
+set(TBB_INSTALL_DIR ${LIGHTNING_DEPENDENCIES_DIR}/tbb)
+set(TBB_ROOT ${LIGHTNING_DEPENDENCIES_DIR}/tbb)
+find_package(tbb REQUIRED)
+
+#find freeimage
+set(FREEIMAGE_ROOT ${LIGHTNING_DEPENDENCIES_DIR}/FreeImage)
+find_package(FreeImage REQUIRED)
+
 add_subdirectory(foundation)
 add_subdirectory(utilities)
 add_subdirectory(platform)
@@ -25,7 +50,6 @@ add_subdirectory(scene)
 add_subdirectory(jobsystem)
 
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 if (WIN32)
 	add_definitions(-DLIGHTNING_WIN32)
@@ -51,6 +75,7 @@ source_group("libloader" FILES ${LIBRARY_HEADERS} ${LIBRARY_SOURCES})
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${LIGHTNING_LINKER_FLAGS})
 define_dll_export_macro(LIB)
 
+
 include_directories(${CMAKE_SOURCE_DIR}/foundation 
 					${CMAKE_SOURCE_DIR}/foundation/memory
 					${CMAKE_SOURCE_DIR}/foundation/math
@@ -62,10 +87,10 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/render/shader
 					${CMAKE_SOURCE_DIR}/render/texture
 					${CMAKE_SOURCE_DIR}/utilities
-					${LIGHTNING_DEPENDENCIES_DIR}/boost
-					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
-					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include
-					${LIGHTNING_DEPENDENCIES_DIR}/rttr/src)
+					${Boost_INCLUDE_DIR}
+					${TBB_INCLUDE_DIR}
+					${RTTR_INCLUDE_DIR}
+					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include)
 
 add_executable(${PROJECT_NAME} WIN32 ${HEADER_FILES} ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} foundation platform render)
@@ -76,10 +101,4 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc")
 	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
-	get_msvc_major_version(VC_MAJOR_VERSION)
-	file(COPY ${LIGHTNING_DEPENDENCIES_DIR}/tbb/bin/ia32/vc${VC_MAJOR_VERSION}/Debug/tbb_debug.dll DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
-	file(COPY ${LIGHTNING_DEPENDENCIES_DIR}/FreeImage/x32/FreeImaged.dll DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
-	file(COPY ${LIGHTNING_DEPENDENCIES_DIR}/FreeImage/x32/FreeImage.dll DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release)
-	file(COPY ${LIGHTNING_DEPENDENCIES_DIR}/rttr/bin/x32/Debug/rttr_core_d.dll DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
-	file(COPY ${LIGHTNING_DEPENDENCIES_DIR}/rttr/bin/x32/Release/rttr_core.dll DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release)
 endif()

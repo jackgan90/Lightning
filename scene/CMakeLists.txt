@@ -31,10 +31,10 @@ include_directories(${CMAKE_SOURCE_DIR}/render
 					${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/foundation/math
 					${CMAKE_SOURCE_DIR}/utilities
-					${LIGHTNING_DEPENDENCIES_DIR}/boost
-					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
-					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include
-					${LIGHTNING_DEPENDENCIES_DIR}/rttr/src)
+					${Boost_INCLUDE_DIR}
+					${TBB_INCLUDE_DIR}
+					${RTTR_INCLUDE_DIR}
+					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include)
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 if(MSVC)

@@ -19,9 +19,9 @@ define_dll_export_macro(LOADER)
 
 
 include_directories(${CMAKE_SOURCE_DIR}/foundation 
-					${LIGHTNING_DEPENDENCIES_DIR}/boost
-					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
-					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include)
+					${Boost_INCLUDE_DIR}
+					${TBB_INCLUDE_DIR}
+					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include)
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 add_dependencies(${PROJECT_NAME} foundation)
 target_link_libraries(${PROJECT_NAME} foundation)

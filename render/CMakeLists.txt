@@ -130,6 +130,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 define_dll_export_macro(RENDERER)
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_CURRENT_SOURCE_DIR}/types
 					${CMAKE_CURRENT_SOURCE_DIR}/shader
@@ -141,11 +142,12 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/platform 
 					${CMAKE_SOURCE_DIR}/window
 					${CMAKE_SOURCE_DIR}/loader
-					${LIGHTNING_DEPENDENCIES_DIR}/FreeImage
-					${LIGHTNING_DEPENDENCIES_DIR}/boost
-					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
-					${LIGHTNING_DEPENDENCIES_DIR}/rttr/src
-					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include)
+					${FREEIMAGE_INCLUDE_DIR}
+					${Boost_INCLUDE_DIR}
+					${RTTR_INCLUDE_DIR}
+					${TBB_INCLUDE_DIR}
+					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include)
+
 if(LIGHTNING_USE_D3D12)
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/d3d12
 						${LIGHTNING_DEPENDENCIES_DIR}/d3d12)
@@ -159,13 +161,16 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc /arch:SSE2")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
-if(WIN32)
-	target_link_libraries(${PROJECT_NAME} debug ${LIGHTNING_DEPENDENCIES_DIR}/FreeImage/x32/FreeImaged.lib)
-	target_link_libraries(${PROJECT_NAME} optimized ${LIGHTNING_DEPENDENCIES_DIR}/FreeImage/x32/FreeImage.lib)
-endif()
+target_link_libraries(${PROJECT_NAME} ${FREEIMAGE_LIBRARIES})
 add_dependencies(${PROJECT_NAME} foundation window utilities loader)
 target_link_libraries(${PROJECT_NAME} foundation window utilities loader)
 if(LIGHTNING_USE_D3D12)
 	target_link_libraries(${PROJECT_NAME} dxgi.lib d3d12.lib d3dcompiler.lib)
 	target_link_libraries(${PROJECT_NAME} dxguid.lib)
 endif()
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FREEIMAGE_DLLS} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FREEIMAGE_DLLS} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release)

@@ -49,10 +49,11 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/scene
 					${CMAKE_SOURCE_DIR}/loader
 					${CMAKE_SOURCE_DIR}/entities
-					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include
-					${LIGHTNING_DEPENDENCIES_DIR}/boost
-					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include
-					${LIGHTNING_DEPENDENCIES_DIR}/rttr/src)
+					${Boost_INCLUDE_DIR}
+					${TBB_INCLUDE_DIR}
+					${RTTR_INCLUDE_DIR}
+					${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include)
+
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 add_dependencies(${PROJECT_NAME} foundation window render scene loader)

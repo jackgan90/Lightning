@@ -22,9 +22,9 @@ include_directories( ${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/utilities
 					${CMAKE_SOURCE_DIR}/foundation/memory
 					${LIGHTNING_DEPENDENCIES_DIR}/eigen
-					${LIGHTNING_DEPENDENCIES_DIR}/boost
-					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include
-					${LIGHTNING_DEPENDENCIES_DIR}/rttr/src)
+					${Boost_INCLUDE_DIR}
+					${TBB_INCLUDE_DIR}
+					${RTTR_INCLUDE_DIR})
 if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /wd4251 /wd4275 /EHsc /MDd")
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_DEBUG} /wd4251 /wd4275 /EHsc /MD")

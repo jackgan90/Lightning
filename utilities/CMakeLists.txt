@@ -14,8 +14,8 @@ set(SOURCES enginealgo.cpp)
 include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${CMAKE_SOURCE_DIR}/foundation/memory
 					${CMAKE_CURRENT_SOURCE_DIR}
-					${LIGHTNING_DEPENDENCIES_DIR}/boost
-					${LIGHTNING_DEPENDENCIES_DIR}/tbb/include)
+					${Boost_INCLUDE_DIR}
+					${TBB_INCLUDE_DIR})
 
 if (WIN32)
 	add_definitions(-DLIGHTNING_WIN32)
