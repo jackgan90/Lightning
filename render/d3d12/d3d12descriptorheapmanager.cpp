@@ -2,7 +2,7 @@
 #include "tbb/mutex.h"
 #include "d3d12descriptorheapmanager.h"
 #include "renderer.h"
-#include "logger.h"
+#include "Logger.h"
 
 namespace {
 	using Mutex = tbb::mutex;

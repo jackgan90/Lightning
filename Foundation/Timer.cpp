@@ -1,6 +1,6 @@
 #include <cassert>
 #include <algorithm>
-#include "timer.h"
+#include "Timer.h"
 
 namespace Lightning
 {

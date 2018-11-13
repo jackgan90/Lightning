@@ -1,6 +1,6 @@
 #pragma once
 #include <cstdint>
-#include "plainobject.h"
+#include "PlainObject.h"
 
 namespace Lightning
 {

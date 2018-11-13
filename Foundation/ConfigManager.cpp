@@ -1,7 +1,7 @@
 #include <boost/property_tree/exceptions.hpp>
 #include <cstdlib>
-#include "configmanager.h"
-#include "logger.h"
+#include "ConfigManager.h"
+#include "Logger.h"
 
 namespace Lightning
 {

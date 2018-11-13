@@ -4,7 +4,7 @@
 #include <random>
 #include <type_traits>
 #include <functional>
-#include "common.h"
+#include "Common.h"
 
 #define PLAIN_OBJECT_HASH_SPECILIZATION(Class)\
 namespace std{\

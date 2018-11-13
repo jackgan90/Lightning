@@ -3,11 +3,11 @@
 #include <mutex>
 #include <functional>
 #include "LoaderExportDef.h"
-#include "singleton.h"
+#include "Singleton.h"
 #include "ISerializer.h"
-#include "container.h"
+#include "Container.h"
 #include "tbb/task.h"
-#include "filesystem.h"
+#include "FileSystem.h"
 
 namespace Lightning
 {

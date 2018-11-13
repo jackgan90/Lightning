@@ -2,9 +2,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <thread>
-#include "container.h"
-#include "foundationexportdef.h"
-#include "threadlocalsingleton.h"
+#include "Container.h"
+#include "FoundationExportDef.h"
+#include "ThreadLocalSingleton.h"
 
 namespace Lightning
 {

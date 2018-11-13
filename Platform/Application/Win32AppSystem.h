@@ -2,7 +2,7 @@
 #include "PlatformExportDef.h"
 #include "AppSystem.h"
 #include "WindowSystem.h"
-#include "filesystem.h"
+#include "FileSystem.h"
 
 namespace Lightning
 {

@@ -1,6 +1,6 @@
 #include "textureserializer.h"
 #include "FreeImage.h"
-#include "logger.h"
+#include "Logger.h"
 
 namespace Lightning
 {

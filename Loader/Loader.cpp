@@ -1,7 +1,7 @@
 #include "Loader.h"
-#include "logger.h"
+#include "Logger.h"
 #include "tbb/task.h"
-#include "environment.h"
+#include "Environment.h"
 
 namespace Lightning
 {

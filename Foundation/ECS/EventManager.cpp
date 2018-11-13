@@ -1,4 +1,4 @@
-#include "eventmanager.h"
+#include "EventManager.h"
 
 namespace Lightning
 {

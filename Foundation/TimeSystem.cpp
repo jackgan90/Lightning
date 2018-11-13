@@ -2,7 +2,7 @@
 #include <ctime>
 #include <sstream>
 #include <iomanip>
-#include "timesystem.h"
+#include "TimeSystem.h"
 
 namespace Lightning
 {

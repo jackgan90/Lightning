@@ -30,34 +30,34 @@ set(ECS_SOURCES		ECS/Component.cpp
 					ECS/EntityManager.cpp
 					ECS/EventManager.cpp)
 
-set(HEADERS	common.h
-			timesystem.h
-			filesystem.h
-			logger.h
-			filesystemfactory.h
-			configmanager.h
-			foundationexportdef.h
-			singleton.h
-			counter.h
-			plainobject.h
-			murmurhash3.h
-			timer.h
-			timermanager.h
-			container.h
-			enumoperation.h
-			threadlocalsingleton.h
-			environment.h
-			systempriority.h
+set(HEADERS	Common.h
+			TimeSystem.h
+			FileSystem.h
+			Logger.h
+			FileSystemFactory.h
+			ConfigManager.h
+			FoundationExportDef.h
+			Singleton.h
+			Counter.h
+			PlainObject.h
+			MurmurHash3.h
+			Timer.h
+			TimerManager.h
+			Container.h
+			EnumOperation.h
+			ThreadLocalSingleton.h
+			Environment.h
+			SystemPriority.h
 			)
-set(SOURCES common.cpp
-			filesystem.cpp
-			configmanager.cpp
-			filesystemfactory.cpp
-			murmurhash3.cpp
-			timer.cpp
-			timermanager.cpp
-			timesystem.cpp
-			environment.cpp)
+set(SOURCES Common.cpp
+			FileSystem.cpp
+			ConfigManager.cpp
+			FileSystemFactory.cpp
+			MurmurHash3.cpp
+			Timer.cpp
+			TimerManager.cpp
+			TimeSystem.cpp
+			Environment.cpp)
 
 list(APPEND HEADERS ${MEMORY_HEADERS} ${MATH_HEADERS} ${ECS_HEADERS})
 list(APPEND SOURCES ${MEMORY_SOURCES} ${MATH_SOURCES} ${ECS_SOURCES})

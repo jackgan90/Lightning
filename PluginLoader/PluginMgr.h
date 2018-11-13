@@ -2,8 +2,8 @@
 #include <string>
 #include "PluginExportDef.h"
 #include "Plugin.h"
-#include "singleton.h"
-#include "container.h"
+#include "Singleton.h"
+#include "Container.h"
 
 namespace Lightning
 {

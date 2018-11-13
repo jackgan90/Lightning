@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <memory>
 #include "boost/noncopyable.hpp"
-#include "container.h"
-#include "threadlocalsingleton.h"
+#include "Container.h"
+#include "ThreadLocalSingleton.h"
 #include "tbb/spin_mutex.h"
 
 namespace Lightning

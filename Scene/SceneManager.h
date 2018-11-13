@@ -1,7 +1,7 @@
 #pragma once
-#include "container.h"
+#include "Container.h"
 #include "SceneExportDef.h"
-#include "singleton.h"
+#include "Singleton.h"
 #include "Scene.h"
 
 namespace Lightning

@@ -1,7 +1,7 @@
 #include <d3d12.h>
 #include <dxgi.h>
-#include "common.h"
-#include "logger.h"
+#include "Common.h"
+#include "Logger.h"
 #include "WinWindowSystem.h"
 #include "renderer.h"
 #include "d3d12renderer.h"
@@ -9,7 +9,7 @@
 #include "d3d12rendertarget.h"
 #include "d3d12rendertargetmanager.h"
 #include "d3d12descriptorheapmanager.h"
-#include "configmanager.h"
+#include "ConfigManager.h"
 
 namespace Lightning
 {

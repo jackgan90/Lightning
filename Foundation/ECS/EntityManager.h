@@ -1,9 +1,9 @@
 #pragma once
-#include "foundationexportdef.h"
-#include "event.h"
-#include "entity.h"
-#include "container.h"
-#include "singleton.h"
+#include "FoundationExportDef.h"
+#include "Event.h"
+#include "Entity.h"
+#include "Container.h"
+#include "Singleton.h"
 
 namespace Lightning
 {

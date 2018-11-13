@@ -1,5 +1,5 @@
-#include "entitymanager.h"
-#include "systemmanager.h"
+#include "EntityManager.h"
+#include "SystemManager.h"
 
 namespace Lightning
 {

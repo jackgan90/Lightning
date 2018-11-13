@@ -3,7 +3,7 @@
 #undef max
 #include <cstdint>
 #include <memory>
-#include "foundationexportdef.h"
+#include "FoundationExportDef.h"
 #include "rttr/type"
 
 namespace Lightning

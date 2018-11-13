@@ -2,8 +2,8 @@
 #include <d3d12.h>
 #include <wrl/client.h>
 #include <d3dcompiler.h>
-#include "threadlocalsingleton.h"
-#include "container.h"
+#include "ThreadLocalSingleton.h"
+#include "Container.h"
 #include "d3d12constantbuffermanager.h"
 #include "d3d12descriptorheapmanager.h"
 #include "ishader.h"

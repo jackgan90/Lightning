@@ -2,7 +2,7 @@
 #include "renderer.h"
 #include "d3d12constantbuffermanager.h"
 #include "d3d12descriptorheapmanager.h"
-#include "threadlocalsingleton.h"
+#include "ThreadLocalSingleton.h"
 #include "d3d12shader.h"
 
 namespace Lightning

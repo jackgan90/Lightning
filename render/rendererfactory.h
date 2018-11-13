@@ -1,10 +1,10 @@
 #pragma once
-#include "common.h"
-#include "singleton.h"
+#include "Common.h"
+#include "Singleton.h"
 #include "rendererexportdef.h"
 #include "irenderer.h"
 #include "WindowSystem.h"
-#include "filesystem.h"
+#include "FileSystem.h"
 
 
 namespace Lightning

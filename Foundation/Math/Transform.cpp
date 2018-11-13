@@ -1,7 +1,7 @@
 #include <cassert>
 #include <algorithm>
 #include <random>
-#include "logger.h"
+#include "Logger.h"
 #include "transform.h"
 #undef min
 #undef max

@@ -1,7 +1,7 @@
 #pragma once
 #include <exception>
 #include "rendererexportdef.h"
-#include "logger.h"
+#include "Logger.h"
 
 namespace Lightning
 {

@@ -2,7 +2,7 @@
 #include <cassert>
 #include <cmath>
 #include <limits>
-#include "common.h"
+#include "Common.h"
 #include "Matrix.h"
 
 namespace Lightning

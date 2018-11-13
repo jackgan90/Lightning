@@ -4,8 +4,8 @@
 #include "ECS/Entity.h"
 #include "ECS/System.h"
 #include "ECS/Event.h"
-#include "filesystem.h"
-#include "timermanager.h"
+#include "FileSystem.h"
+#include "TimerManager.h"
 #include "AppComponent.h"
 
 namespace Lightning

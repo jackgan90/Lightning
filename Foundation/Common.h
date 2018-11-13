@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <cstdlib> //for size_t
-#include "foundationexportdef.h"
+#include "FoundationExportDef.h"
 
 #define DYNAMIC_CAST_PTR(subclass, smartptr) (dynamic_cast<subclass*>(smartptr.get()))
 #define STATIC_CAST_PTR(subclass, smartptr) (static_cast<subclass*>(smartptr.get()))

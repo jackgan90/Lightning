@@ -1,5 +1,5 @@
 #pragma once
-#include "foundationexportdef.h"
+#include "FoundationExportDef.h"
 #include "Math/Matrix.h"
 #include "Math/Vector.h"
 #include "Math/Quaternion.h"

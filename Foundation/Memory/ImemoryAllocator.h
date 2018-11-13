@@ -1,7 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <cassert>
-#include "foundationexportdef.h"
+#include "FoundationExportDef.h"
 
 #define ALLOC(allocator, size, type) \
 	static_cast<type*>((allocator)->Allocate((size), __FILE__, __FUNCTION__, __LINE__))

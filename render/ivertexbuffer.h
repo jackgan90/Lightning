@@ -1,7 +1,7 @@
 #pragma once
 #include <boost/functional/hash.hpp>
-#include "container.h"
-#include "plainobject.h"
+#include "Container.h"
+#include "PlainObject.h"
 #include "gpubuffer.h"
 #include "semantics.h"
 

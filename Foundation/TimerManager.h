@@ -1,8 +1,8 @@
 #pragma once
 #include <thread>
-#include "container.h"
-#include "singleton.h"
-#include "timer.h"
+#include "Container.h"
+#include "Singleton.h"
+#include "Timer.h"
 
 namespace Lightning
 {

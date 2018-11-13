@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <boost/functional/hash.hpp>
 #include <cassert>
-#include "plainobject.h"
+#include "PlainObject.h"
 #include "ishader.h"
 #include "irendertarget.h"
 #include "vertexbuffer.h"

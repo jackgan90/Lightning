@@ -1,9 +1,9 @@
 #include <algorithm>
-#include "logger.h"
-#include "filesystem.h"
-#include "common.h"
-#include "configmanager.h"
-#include "environment.h"
+#include "Logger.h"
+#include "FileSystem.h"
+#include "Common.h"
+#include "ConfigManager.h"
+#include "Environment.h"
 
 namespace Lightning
 {

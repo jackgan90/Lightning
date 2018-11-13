@@ -2,8 +2,8 @@
 #include <functional>
 #include <cstdint>
 #include <chrono>
-#include "container.h"
-#include "foundationexportdef.h"
+#include "Container.h"
+#include "FoundationExportDef.h"
 
 namespace Lightning
 {

@@ -1,6 +1,6 @@
 #include "shaderserializer.h"
 #include "renderer.h"
-#include "logger.h"
+#include "Logger.h"
 
 namespace Lightning
 {

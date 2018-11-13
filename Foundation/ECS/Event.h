@@ -4,8 +4,8 @@
 #include <cstdint>
 #include <functional>
 #include "rttr/type"
-#include "entity.h"
-#include "container.h"
+#include "Entity.h"
+#include "Container.h"
 
 namespace Lightning
 {

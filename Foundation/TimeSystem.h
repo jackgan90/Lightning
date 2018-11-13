@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "foundationexportdef.h"
+#include "FoundationExportDef.h"
 
 namespace Lightning
 {

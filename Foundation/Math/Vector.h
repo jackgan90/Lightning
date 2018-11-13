@@ -2,7 +2,7 @@
 #include <cmath>
 #include <limits>
 #include <functional>
-#include "plainobject.h"
+#include "PlainObject.h"
 
 namespace Lightning
 {

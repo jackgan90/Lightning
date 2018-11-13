@@ -1,4 +1,4 @@
-#include "systemmanager.h"
+#include "SystemManager.h"
 
 namespace Lightning
 {

@@ -7,8 +7,8 @@
 #include <memory>
 #include <algorithm>
 #include "rttr/type"
-#include "container.h"
-#include "component.h"
+#include "Container.h"
+#include "Component.h"
 
 namespace Lightning
 {

@@ -5,9 +5,9 @@
 #include <functional>
 #include <wrl\client.h>
 #include <atomic>
-#include "container.h"
-#include "threadlocalsingleton.h"
-#include "singleton.h"
+#include "Container.h"
+#include "ThreadLocalSingleton.h"
+#include "Singleton.h"
 #include "d3d12device.h"
 
 namespace Lightning

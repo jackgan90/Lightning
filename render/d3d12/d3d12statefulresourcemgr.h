@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
-#include "singleton.h"
-#include "container.h"
+#include "Singleton.h"
+#include "Container.h"
 #include "renderconstants.h"
 #include "d3d12commandencoder.h"
 #include "d3d12statefulresource.h"

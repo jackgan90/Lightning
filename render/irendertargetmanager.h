@@ -1,9 +1,9 @@
 #pragma once
 #include <memory>
-#include "container.h"
+#include "Container.h"
 #include "rendererexportdef.h"
 #include "irendertarget.h"
-#include "singleton.h"
+#include "Singleton.h"
 
 namespace Lightning
 {

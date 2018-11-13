@@ -1,4 +1,4 @@
-#include "timermanager.h"
+#include "TimerManager.h"
 
 namespace Lightning
 {

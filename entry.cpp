@@ -6,7 +6,7 @@
 #include <Windows.h>	//for WinMain
 #include "Win32AppSystem.h"
 #endif
-#include "logger.h" //for logging
+#include "Logger.h" //for logging
 
 using Lightning::Foundation::EntityManager;
 using Lightning::Foundation::EventManager;

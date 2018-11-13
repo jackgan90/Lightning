@@ -1,6 +1,6 @@
 #pragma once
 #include <cstdint>
-#include "enumoperation.h"
+#include "EnumOperation.h"
 
 namespace Lightning
 {

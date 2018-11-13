@@ -1,14 +1,14 @@
 #pragma once
 #include <string>
 #include <fstream>
-#include "singleton.h"
-#include "timesystem.h"
+#include "Singleton.h"
+#include "TimeSystem.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
 #ifdef _MSC_VER
 #include "spdlog/sinks/msvc_sink.h"
 #endif
-#include "foundationexportdef.h"
+#include "FoundationExportDef.h"
 
 #define LOG_INFO(text, ...)\
 	Lightning::Foundation::Logger::Instance()->Log(Lightning::Foundation::LogLevel::Info, text, __VA_ARGS__)

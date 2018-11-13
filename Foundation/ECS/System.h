@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <memory>
-#include "entity.h"
+#include "Entity.h"
 
 namespace Lightning
 {

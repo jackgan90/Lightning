@@ -1,6 +1,6 @@
 #include <cstdlib>
 #include <iostream>
-#include "container.h"
+#include "Container.h"
 #include "catch.hpp"
 #include "Math/Matrix.h"
 #include "HelperStubs.h"

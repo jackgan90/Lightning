@@ -1,7 +1,7 @@
 #include <d3dx12.h>
 #include <d3dcompiler.h>
 #include <functional>
-#include "common.h"
+#include "Common.h"
 #include "d3d12renderer.h"
 #include "d3d12device.h"
 #include "d3d12rendertarget.h"
@@ -11,8 +11,8 @@
 #include "d3d12indexbuffer.h"
 #include "renderconstants.h"
 #include "semantics.h"
-#include "logger.h"
-#include "configmanager.h"
+#include "Logger.h"
+#include "ConfigManager.h"
 #include "FrameMemoryAllocator.h"
 #include "d3d12descriptorheapmanager.h"
 #include "d3d12constantbuffermanager.h"

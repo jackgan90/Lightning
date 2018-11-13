@@ -4,7 +4,7 @@
 #include <boost/functional/hash.hpp>
 #include "rendererexportdef.h"
 #include "shaderdefine.h"
-#include "filesystem.h"
+#include "FileSystem.h"
 #include "HashableObject.h"
 #include "semantics.h"
 #include "renderexception.h"

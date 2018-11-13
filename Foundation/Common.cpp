@@ -1,5 +1,5 @@
-#include "common.h"
-#include "murmurhash3.h"
+#include "Common.h"
+#include "MurmurHash3.h"
 
 namespace Lightning
 {

@@ -1,8 +1,8 @@
 #pragma once
-#include "event.h"
-#include "foundationexportdef.h"
+#include "Event.h"
+#include "FoundationExportDef.h"
 #include "rttr/type"
-#include "singleton.h"
+#include "Singleton.h"
 
 namespace Lightning
 {

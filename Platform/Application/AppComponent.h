@@ -1,8 +1,8 @@
 #pragma once
 #include "ECS/Component.h"
-#include "filesystem.h"
+#include "FileSystem.h"
 #include "irenderer.h"
-#include "timer.h"
+#include "Timer.h"
 
 namespace Lightning
 {

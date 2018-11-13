@@ -4,8 +4,8 @@
 #include <exception>
 #include "WindowExportDef.h"
 #include "WindowEvents.h"
-#include "logger.h"
-#include "systempriority.h"
+#include "Logger.h"
+#include "SystemPriority.h"
 #include "ECS/Event.h"
 #include "ECS/System.h"
 #include "ECS/Entity.h"

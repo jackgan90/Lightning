@@ -3,7 +3,7 @@
 #define USE_CUSTOM_CONCURRENT_QUEUE
 
 #ifndef USE_CUSTOM_CONCURRENT_QUEUE
-#include "concurrentqueue.h"
+#include "ConcurrentQueue.h"
 #endif // !USE_CUSTOM_CONCURRENT_QUEUE
 #ifdef JOB_ASSERT
 #include <cstring>

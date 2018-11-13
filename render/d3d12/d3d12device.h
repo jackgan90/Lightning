@@ -3,11 +3,11 @@
 #include <dxgi1_4.h>
 #include <wrl\client.h>
 #include <memory>
-#include "threadlocalsingleton.h"
-#include "container.h"
+#include "ThreadLocalSingleton.h"
+#include "Container.h"
 #include "device.h"
 #include "StackAllocator.h"
-#include "filesystem.h"
+#include "FileSystem.h"
 #include "d3d12shader.h"
 #include "d3d12commandencoder.h"
 #include "d3d12statefulresource.h"
