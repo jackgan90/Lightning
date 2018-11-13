@@ -11,8 +11,8 @@ set(HEADERS UtilitiesExportDef.h
 set(SOURCES EngineAlgo.cpp)
 
 
-include_directories(${CMAKE_SOURCE_DIR}/foundation
-					${CMAKE_SOURCE_DIR}/foundation/memory
+include_directories(${CMAKE_SOURCE_DIR}/Foundation
+					${CMAKE_SOURCE_DIR}/Foundation/Memory
 					${CMAKE_CURRENT_SOURCE_DIR}
 					${Boost_INCLUDE_DIR}
 					${TBB_INCLUDE_DIR})

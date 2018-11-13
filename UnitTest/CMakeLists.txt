@@ -17,10 +17,10 @@ endif()
 
 add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
 
-include_directories( ${CMAKE_SOURCE_DIR}/foundation
-					${CMAKE_SOURCE_DIR}/render/types
-					${CMAKE_SOURCE_DIR}/utilities
-					${CMAKE_SOURCE_DIR}/foundation/memory
+include_directories( ${CMAKE_SOURCE_DIR}/Foundation
+					${CMAKE_SOURCE_DIR}/Render/Types
+					${CMAKE_SOURCE_DIR}/Utilities
+					${CMAKE_SOURCE_DIR}/Foundation/Memory
 					${LIGHTNING_DEPENDENCIES_DIR}/eigen
 					${Boost_INCLUDE_DIR}
 					${TBB_INCLUDE_DIR}

@@ -79,7 +79,7 @@ add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
 
 define_dll_export_macro(FOUNDATION)
 
-include_directories(${CMAKE_SOURCE_DIR}/foundation
+include_directories(${CMAKE_SOURCE_DIR}/Foundation
 					${Boost_INCLUDE_DIR}
 					${TBB_INCLUDE_DIR}
 					${RTTR_INCLUDE_DIR}

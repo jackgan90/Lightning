@@ -23,14 +23,14 @@ if (WIN32)
 endif()
 
 define_dll_export_macro(SCENE)
-include_directories(${CMAKE_SOURCE_DIR}/render
-					${CMAKE_SOURCE_DIR}/render/types
-					${CMAKE_SOURCE_DIR}/render/shader
-					${CMAKE_SOURCE_DIR}/window
-					${CMAKE_SOURCE_DIR}/entities
-					${CMAKE_SOURCE_DIR}/foundation
-					${CMAKE_SOURCE_DIR}/foundation/math
-					${CMAKE_SOURCE_DIR}/utilities
+include_directories(${CMAKE_SOURCE_DIR}/Render
+					${CMAKE_SOURCE_DIR}/Render/Types
+					${CMAKE_SOURCE_DIR}/Render/Shader
+					${CMAKE_SOURCE_DIR}/Window
+					${CMAKE_SOURCE_DIR}/Entities
+					${CMAKE_SOURCE_DIR}/Foundation
+					${CMAKE_SOURCE_DIR}/Foundation/Math
+					${CMAKE_SOURCE_DIR}/Utilities
 					${Boost_INCLUDE_DIR}
 					${TBB_INCLUDE_DIR}
 					${RTTR_INCLUDE_DIR}

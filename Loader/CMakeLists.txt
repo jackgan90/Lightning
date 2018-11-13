@@ -18,7 +18,7 @@ endif()
 define_dll_export_macro(LOADER)
 
 
-include_directories(${CMAKE_SOURCE_DIR}/foundation 
+include_directories(${CMAKE_SOURCE_DIR}/Foundation 
 					${Boost_INCLUDE_DIR}
 					${TBB_INCLUDE_DIR}
 					${SPDLOG_INCLUDE_DIR})

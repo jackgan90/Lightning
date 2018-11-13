@@ -132,16 +132,16 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 define_dll_export_macro(RENDERER)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}
-					${CMAKE_CURRENT_SOURCE_DIR}/types
-					${CMAKE_CURRENT_SOURCE_DIR}/shader
-					${CMAKE_CURRENT_SOURCE_DIR}/texture
-					${CMAKE_SOURCE_DIR}/foundation
-					${CMAKE_SOURCE_DIR}/foundation/memory
-					${CMAKE_SOURCE_DIR}/foundation/math
-					${CMAKE_SOURCE_DIR}/utilities
-					${CMAKE_SOURCE_DIR}/platform 
-					${CMAKE_SOURCE_DIR}/window
-					${CMAKE_SOURCE_DIR}/loader
+					${CMAKE_CURRENT_SOURCE_DIR}/Types
+					${CMAKE_CURRENT_SOURCE_DIR}/Shader
+					${CMAKE_CURRENT_SOURCE_DIR}/Texture
+					${CMAKE_SOURCE_DIR}/Foundation
+					${CMAKE_SOURCE_DIR}/Foundation/Memory
+					${CMAKE_SOURCE_DIR}/Foundation/Math
+					${CMAKE_SOURCE_DIR}/Utilities
+					${CMAKE_SOURCE_DIR}/Platform 
+					${CMAKE_SOURCE_DIR}/Window
+					${CMAKE_SOURCE_DIR}/Loader
 					${FREEIMAGE_INCLUDE_DIR}
 					${Boost_INCLUDE_DIR}
 					${RTTR_INCLUDE_DIR}

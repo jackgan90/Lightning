@@ -79,17 +79,17 @@ set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${LIGHTNING_LINKER_FLAGS})
 define_dll_export_macro(PLUGIN)
 
 
-include_directories(${CMAKE_SOURCE_DIR}/foundation 
-					${CMAKE_SOURCE_DIR}/foundation/memory
-					${CMAKE_SOURCE_DIR}/foundation/math
-					${CMAKE_SOURCE_DIR}/platform 
-					${CMAKE_SOURCE_DIR}/platform/application 
-					${CMAKE_SOURCE_DIR}/window
-					${CMAKE_SOURCE_DIR}/render
-					${CMAKE_SOURCE_DIR}/render/types
-					${CMAKE_SOURCE_DIR}/render/shader
-					${CMAKE_SOURCE_DIR}/render/texture
-					${CMAKE_SOURCE_DIR}/utilities
+include_directories(${CMAKE_SOURCE_DIR}/Foundation 
+					${CMAKE_SOURCE_DIR}/Foundation/Memory
+					${CMAKE_SOURCE_DIR}/Foundation/Math
+					${CMAKE_SOURCE_DIR}/Platform 
+					${CMAKE_SOURCE_DIR}/Platform/Application 
+					${CMAKE_SOURCE_DIR}/Window
+					${CMAKE_SOURCE_DIR}/Render
+					${CMAKE_SOURCE_DIR}/Render/Types
+					${CMAKE_SOURCE_DIR}/Render/Shader
+					${CMAKE_SOURCE_DIR}/Render/Texture
+					${CMAKE_SOURCE_DIR}/Utilities
 					${Boost_INCLUDE_DIR}
 					${TBB_INCLUDE_DIR}
 					${RTTR_INCLUDE_DIR}
