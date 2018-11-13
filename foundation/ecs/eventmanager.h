@@ -78,9 +78,9 @@ namespace Lightning
 		private:
 			EventManager();
 			friend class Singleton<EventManager>;
-			using EventSubscribers = container::unordered_map<EventSubscriberID, EventSubscriber>;
+			using EventSubscribers = Container::UnorderedMap<EventSubscriberID, EventSubscriber>;
 			EventSubscriberID mCurrentID;
-			container::unordered_map<rttr::type, EventSubscribers> mSubscribers;
+			Container::UnorderedMap<rttr::type, EventSubscribers> mSubscribers;
 			EventSubscribers::iterator mItSubscriber;
 			bool mItSubscriberValid;
 		};

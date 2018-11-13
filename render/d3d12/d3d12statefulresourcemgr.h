@@ -14,14 +14,14 @@ namespace Lightning
 		{
 		public:
 			void Notify(ID3D12GraphicsCommandList* cmdList, D3D12StatefulResource* resource);
-			void FixResourceStates(container::vector<ID3D12CommandList*>& commandLists);
+			void FixResourceStates(Container::Vector<ID3D12CommandList*>& commandLists);
 			void Clear();
 		private:
 			friend class Foundation::Singleton<D3D12StatefulResourceMgr>;
 			ID3D12GraphicsCommandList* GetCommandList();
-			using CommandListResources = container::unordered_set<D3D12StatefulResource*>;
+			using CommandListResources = Container::UnorderedSet<D3D12StatefulResource*>;
 			D3D12StatefulResourceMgr();
-			container::unordered_map<ID3D12GraphicsCommandList*, CommandListResources> mCmdListResources;
+			Container::UnorderedMap<ID3D12GraphicsCommandList*, CommandListResources> mCmdListResources;
 			//command lists that only use to fix resource states.
 			D3D12CommandEncoder* mEncoders[RENDER_FRAME_COUNT];
 			std::size_t mEncoderIndex;

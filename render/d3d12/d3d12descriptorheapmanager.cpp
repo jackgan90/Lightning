@@ -14,7 +14,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::container;
+		using Foundation::Container;
 		D3D12DescriptorHeapManager::D3D12DescriptorHeapManager()
 		{
 			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
@@ -113,7 +113,7 @@ namespace Lightning
 			return std::get<1>(res);
 		}
 
-		container::tuple<bool, D3D12DescriptorHeapManager::DescriptorHeapStore*> D3D12DescriptorHeapManager::CreateHeapStore(
+		Container::Tuple<bool, D3D12DescriptorHeapManager::DescriptorHeapStore*> D3D12DescriptorHeapManager::CreateHeapStore(
 			D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT descriptorCount)
 		{
 			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
@@ -140,7 +140,7 @@ namespace Lightning
 			return res;
 		}
 
-		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocatePersistentHeap(container::vector<DescriptorHeapStore*>& heapList, UINT count)
+		Container::Tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocatePersistentHeap(Container::Vector<DescriptorHeapStore*>& heapList, UINT count)
 		{
 			//loop over existing heap list reversely and try to allocate from it
 			for (long long i = heapList.size() - 1; i >= 0;i--)
@@ -152,7 +152,7 @@ namespace Lightning
 			return std::make_tuple<bool, DescriptorHeap*>(false, nullptr);
 		}
 
-		container::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocatePersistentHeap(DescriptorHeapStore* heapStore, UINT count)
+		Container::Tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocatePersistentHeap(DescriptorHeapStore* heapStore, UINT count)
 		{
 			auto res = std::make_tuple<bool, DescriptorHeap*>(false, nullptr);
 			if(count > heapStore->freeDescriptors)
@@ -164,7 +164,7 @@ namespace Lightning
 				auto descriptorCount = right - left;
 				if (descriptorCount >= count)
 				{
-					container::tuple<UINT, UINT> interval;
+					Container::Tuple<UINT, UINT> interval;
 					//split this interval into 2 intervals and mark left interval as used
 					if (descriptorCount == count)
 					{

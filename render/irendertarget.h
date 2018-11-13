@@ -8,7 +8,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::container;
+		using Foundation::Container;
 
 		using RenderTargetID = int;
 		class LIGHTNING_RENDER_API IRenderTarget
@@ -25,6 +25,6 @@ namespace Lightning
 			virtual ~IRenderTarget() = default;
 		};
 		using SharedRenderTargetPtr = std::shared_ptr<IRenderTarget>;
-		using RenderTargetList = container::vector<IRenderTarget*>;
+		using RenderTargetList = Container::Vector<IRenderTarget*>;
 	}
 }

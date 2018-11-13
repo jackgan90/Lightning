@@ -3,10 +3,10 @@
 
 namespace helper
 {
-	using Lightning::Foundation::container;
+	using Lightning::Foundation::Container;
 	template<typename... T>
-	constexpr auto make_array(T&&... elements)->container::array<typename std::decay<typename std::common_type<T...>::type>::type, sizeof...(elements)>
+	constexpr auto make_array(T&&... elements)->Container::Array<typename std::decay<typename std::common_type<T...>::type>::type, sizeof...(elements)>
 	{
-		return container::array<typename std::decay<typename std::common_type<T...>::type>::type, sizeof...(elements)>{std::forward<T>(elements)...};
+		return Container::Array<typename std::decay<typename std::common_type<T...>::type>::type, sizeof...(elements)>{std::forward<T>(elements)...};
 	}
 }

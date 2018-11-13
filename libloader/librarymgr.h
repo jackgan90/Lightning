@@ -9,7 +9,7 @@ namespace Lightning
 {
 	namespace Lib
 	{
-		using Foundation::container;
+		using Foundation::Container;
 		class LIGHTNING_LIB_API LibraryMgr : Foundation::Singleton<LibraryMgr>
 		{
 		public:
@@ -20,7 +20,7 @@ namespace Lightning
 		private:
 			friend class Foundation::Singleton<LibraryMgr>;
 			LibraryMgr();
-			container::unordered_map<std::string, LibraryPtr> mLibraries;
+			Container::UnorderedMap<std::string, LibraryPtr> mLibraries;
 		};
 	}
 }

@@ -19,54 +19,54 @@ namespace Lightning
 {
 	namespace Foundation
 	{
-		struct container
+		struct Container
 		{
 			template<typename T>
-			using vector = std::vector<T>;
+			using Vector = std::vector<T>;
 
 			template<typename T>
-			using concurrent_vector = tbb::concurrent_vector<T>;
+			using ConcurrentVector = tbb::concurrent_vector<T>;
 
 			template<typename T>
-			using list = std::list<T>;
+			using List = std::list<T>;
 
 			template<typename K, typename V>
-			using unordered_map = std::unordered_map<K, V>;
+			using UnorderedMap = std::unordered_map<K, V>;
 
 			template<typename K, typename V>
-			using concurrent_unordered_map = tbb::concurrent_unordered_map<K, V>;
+			using ConcurrentUnorderedMap = tbb::concurrent_unordered_map<K, V>;
 
 			template<typename K, typename V>
-			using map = std::map<K, V>;
+			using Map = std::map<K, V>;
 
 			template<typename T>
-			using unordered_set = std::unordered_set<T>;
+			using UnorderedSet = std::unordered_set<T>;
 
 			template<typename T>
-			using concurrent_unordered_set = tbb::concurrent_unordered_set<T>;
+			using ConcurrentUnorderedSet = tbb::concurrent_unordered_set<T>;
 
 			template<typename T>
-			using set = std::set<T>;
+			using Set = std::set<T>;
 
 			template<typename T>
-			using deque = std::deque<T>;
+			using Deque = std::deque<T>;
 
 			template<typename T>
-			using queue = std::queue<T>;
+			using Queue = std::queue<T>;
 
 			template<typename T,
-				typename Container = vector<T>,
+				typename Container = Vector<T>,
 				typename Compare = std::less<typename Container::value_type>>
-			using priority_queue = std::priority_queue<T, Container, Compare>;
+			using PriorityQueue = std::priority_queue<T, Container, Compare>;
 
 			template<typename T>
-			using concurrent_queue = tbb::concurrent_queue<T>;
+			using ConcurrentQueue = tbb::concurrent_queue<T>;
 
 			template<typename T, std::size_t Size>
-			using array = std::array<T, Size>;
+			using Array = std::array<T, Size>;
 
 			template<typename... Args>
-			using tuple = std::tuple<Args...>;
+			using Tuple = std::tuple<Args...>;
 		};
 
 	}

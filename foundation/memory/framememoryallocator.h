@@ -67,9 +67,9 @@ namespace Lightning
 				std::size_t mHead;
 				std::size_t mTail;
 				std::size_t mFrameSize;
-				container::deque<FrameMarker> mFrameMarkers;
+				Container::Deque<FrameMarker> mFrameMarkers;
 			};
-			ThreadLocalSingleton<container::vector<RingBuffer>> mBuffers;
+			ThreadLocalSingleton<Container::Vector<RingBuffer>> mBuffers;
 		};
 	}
 }

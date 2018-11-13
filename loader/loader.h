@@ -13,7 +13,7 @@ namespace Lightning
 {
 	namespace Loading
 	{
-		using Foundation::container;
+		using Foundation::Container;
 		using LoadFinishHandler = std::function<void(void*)>;
 		struct LoadTask
 		{
@@ -48,9 +48,9 @@ namespace Lightning
 			void DisposeFileAndBuffer(const std::string& path, const Foundation::SharedFilePtr& file);
 			static void IOThread();
 			bool mRunning;
-			container::concurrent_queue<LoadTask> mTasks;
-			container::concurrent_queue<std::string> mDisposedPathes;
-			container::unordered_map<std::string, std::shared_ptr<char>> mBuffers;
+			Container::ConcurrentQueue<LoadTask> mTasks;
+			Container::ConcurrentQueue<std::string> mDisposedPathes;
+			Container::UnorderedMap<std::string, std::shared_ptr<char>> mBuffers;
 			std::mutex mTaskQueueMutex;
 			std::condition_variable mCondVar;
 			Foundation::SharedFileSystemPtr mFileSystem;

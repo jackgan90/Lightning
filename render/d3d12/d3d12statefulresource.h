@@ -13,7 +13,7 @@ namespace Lightning
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
-		using Foundation::container;
+		using Foundation::Container;
 		class D3D12StatefulResource : private boost::noncopyable
 		{
 		public:
@@ -34,7 +34,7 @@ namespace Lightning
 				//basically this state is only for local state.Global state doesn't need it
 				D3D12_RESOURCE_STATES firstState;
 			};
-			using CommandListResourceStates = container::unordered_map<ID3D12GraphicsCommandList*, ResourceState>;
+			using CommandListResourceStates = Container::UnorderedMap<ID3D12GraphicsCommandList*, ResourceState>;
 			ComPtr<ID3D12Resource> mResource;
 			ResourceState mGlobalState;
 			CommandListResourceStates mLocalStates;

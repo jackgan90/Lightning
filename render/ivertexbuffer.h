@@ -9,7 +9,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::container;
+		using Foundation::Container;
 		struct VertexComponent : Foundation::PlainObject<VertexComponent>
 		{
 			VertexComponent():
@@ -36,7 +36,7 @@ namespace Lightning
 
 		struct VertexDescriptor
 		{
-			container::vector<VertexComponent> components;
+			Container::Vector<VertexComponent> components;
 		};
 
 		class LIGHTNING_RENDER_API IVertexBuffer : public GPUBuffer

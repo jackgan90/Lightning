@@ -8,7 +8,7 @@ namespace Lightning
 {
 	namespace Scene
 	{
-		using Foundation::container;
+		using Foundation::Container;
 		using Foundation::Singleton;
 		class LIGHTNING_SCENE_API SceneManager : public Singleton<SceneManager>
 		{
@@ -34,7 +34,7 @@ namespace Lightning
 			void OnFrameUpdate();
 		protected:
 			std::uint32_t mCurrentSceneID;
-			container::unordered_map<std::uint32_t, Scene*> mScenes;
+			Container::UnorderedMap<std::uint32_t, Scene*> mScenes;
 			Scene* mForegroundScene;
 		};
 	}

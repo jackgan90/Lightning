@@ -46,7 +46,7 @@ namespace Lightning
 			void Update();
 		private:
 			friend class Singleton<EntityManager>;
-			using EntityMap = container::unordered_map<EntityID, EntityPtr>;
+			using EntityMap = Container::UnorderedMap<EntityID, EntityPtr>;
 			EntityManager();
 			EntityID mCurrentEntityID;
 			EntityMap mEntities;

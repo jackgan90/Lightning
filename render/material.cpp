@@ -17,7 +17,7 @@ namespace Lightning
 			return it->second.shader.get();
 		}
 
-		void Material::GetShaders(container::vector<IShader*>& shaders)
+		void Material::GetShaders(Container::Vector<IShader*>& shaders)
 		{
 			auto vs = GetShader(ShaderType::VERTEX);
 			if (vs)

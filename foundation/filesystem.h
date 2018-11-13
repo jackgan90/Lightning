@@ -68,7 +68,7 @@ namespace Lightning
 			const std::string GetRoot() const override{ return mRoot.string(); }
 		protected:
 			boost::filesystem::path mRoot;
-			container::unordered_map<std::string, SharedFilePtr> mCachedFiles;
+			Container::UnorderedMap<std::string, SharedFilePtr> mCachedFiles;
 		};
 
 		class GeneralFile : public IFile

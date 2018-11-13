@@ -233,7 +233,7 @@ namespace Lightning
 				}
 			}
 
-			using ComponentMap = container::unordered_map<rttr::type, ComponentPtr>;
+			using ComponentMap = Container::UnorderedMap<rttr::type, ComponentPtr>;
 			using CompAddedFunc = std::function<void(const ComponentPtr&)>;
 			using CompRemovedFunc = std::function<void(const ComponentPtr&)>;
 			using CompAddedFuncPtr = std::shared_ptr<CompAddedFunc>;
@@ -249,17 +249,17 @@ namespace Lightning
 				rttr::type componentType;
 				CompRemovedFuncPtr func;
 			};
-			using CompRemovedFuncList = container::list<CompRemovedFuncPtr>;
-			using CompAddedFuncList = container::list<CompAddedFuncPtr>;
+			using CompRemovedFuncList = Container::List<CompRemovedFuncPtr>;
+			using CompAddedFuncList = Container::List<CompAddedFuncPtr>;
 			ComponentMap mComponents;
 			ComponentMap::iterator mItComponent;
 			bool mItComponentValid;
-			container::unordered_map<EntityFuncID, TypedCompRemovedFunc> mCompRemovedFuncs;
-			container::unordered_map<rttr::type, CompRemovedFuncList> mCompRemovedFuncLists;
+			Container::UnorderedMap<EntityFuncID, TypedCompRemovedFunc> mCompRemovedFuncs;
+			Container::UnorderedMap<rttr::type, CompRemovedFuncList> mCompRemovedFuncLists;
 			CompRemovedFuncList::iterator mItRemovedFunc;
 			bool mItRemovedFuncValid;
-			container::unordered_map<EntityFuncID, TypedCompAddedFunc> mCompAddedFuncs;
-			container::unordered_map<rttr::type, CompAddedFuncList> mCompAddedFuncLists;
+			Container::UnorderedMap<EntityFuncID, TypedCompAddedFunc> mCompAddedFuncs;
+			Container::UnorderedMap<rttr::type, CompAddedFuncList> mCompAddedFuncLists;
 			CompAddedFuncList::iterator mItAddedFunc;
 			bool mItAddedFuncValid;
 			EntityID mID;

@@ -40,7 +40,7 @@ namespace Lightning
 					mSystems.insert(mSystems.end(), system);
 			}
 			friend class Singleton<SystemManager>;
-			using SystemList = container::list<SystemPtr<ISystem>>;
+			using SystemList = Container::List<SystemPtr<ISystem>>;
 			SystemManager();
 			SystemList mSystems;
 		};

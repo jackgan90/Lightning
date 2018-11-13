@@ -12,7 +12,7 @@ namespace Lightning
 	namespace Render
 	{
 		using Foundation::SharedFileSystemPtr;
-		using Foundation::container;
+		using Foundation::Container;
 		using Window::SharedWindowPtr;
 
 		struct FrameResource
@@ -81,10 +81,10 @@ namespace Lightning
 			SharedFileSystemPtr mFs;
 			std::unique_ptr<IDevice> mDevice;
 			std::unique_ptr<ISwapChain> mSwapChain;
-			container::vector<std::unique_ptr<RenderPass>> mRenderPasses;
+			Container::Vector<std::unique_ptr<RenderPass>> mRenderPasses;
 			std::size_t mFrameResourceIndex;
 			ColorF mClearColor;
-			container::unordered_map<RendererEvent, container::vector<RendererCallback>> mCallbacks;
+			Container::UnorderedMap<RendererEvent, Container::Vector<RendererCallback>> mCallbacks;
 			FrameResource mFrameResources[RENDER_FRAME_COUNT];
 			SharedWindowPtr mOutputWindow;
 		};

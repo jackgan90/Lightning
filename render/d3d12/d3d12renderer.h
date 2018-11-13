@@ -38,7 +38,7 @@ namespace Lightning
 			void Start()override;
 			void ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectIList* rects=nullptr)override;
 			void ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr)override;
-			void ApplyRenderTargets(const container::vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)override;
+			void ApplyRenderTargets(const Container::Vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)override;
 			void ApplyPipelineState(const PipelineState& state)override;
 			void BindGPUBuffer(std::uint8_t slot, const SharedGPUBufferPtr& buffer)override;
 			void Draw(const DrawParam& param)override;
@@ -65,10 +65,10 @@ namespace Lightning
 				D3D12RootBoundResource resource;
 				D3D12_GPU_DESCRIPTOR_HANDLE handle;
 			};
-			using PipelineCacheMap = container::unordered_map<std::size_t, PipelineStateRootSignature>;
-			using RootSignatureMap = container::unordered_map<std::size_t, ComPtr<ID3D12RootSignature>>;
+			using PipelineCacheMap = Container::UnorderedMap<std::size_t, PipelineStateRootSignature>;
+			using RootSignatureMap = Container::UnorderedMap<std::size_t, ComPtr<ID3D12RootSignature>>;
 
-			ComPtr<ID3D12RootSignature> GetRootSignature(const container::vector<IShader*>& shaders);
+			ComPtr<ID3D12RootSignature> GetRootSignature(const Container::Vector<IShader*>& shaders);
 			PipelineStateRootSignature CreateAndCachePipelineState(const PipelineState& pState, std::size_t hashValue);
 			void BindShaderResources(const PipelineState& state);
 			void ApplyRasterizerState(const RasterizerState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
@@ -80,7 +80,7 @@ namespace Lightning
 			void UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::uint8_t  layoutCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			//Analyze shader root resources.
 			//Returns number of constant buffers used by this shader
-			std::size_t AnalyzeShaderRootResources(IShader *pShader, container::unordered_map<ShaderType, container::vector<ShaderResourceHandle>>& resourceHandles);
+			std::size_t AnalyzeShaderRootResources(IShader *pShader, Container::UnorderedMap<ShaderType, Container::Vector<ShaderResourceHandle>>& resourceHandles);
 
 			ComPtr<IDXGIFactory4> mDXGIFactory;
 			ComPtr<ID3D12CommandQueue> mCommandQueue;

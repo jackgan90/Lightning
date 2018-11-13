@@ -13,7 +13,7 @@ namespace Lightning
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Vector4f;
 		using Foundation::Math::DegreesToRadians;
-		using Foundation::container;
+		using Foundation::Container;
 		using Render::ShaderArgument;
 		Primitive::Primitive():mFirstDraw(true)
 			,mColor(0, 0, 0, 255)

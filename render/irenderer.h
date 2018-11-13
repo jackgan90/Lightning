@@ -86,7 +86,7 @@ namespace Lightning
 			//clear a specified render target,possibly parts of it defined by an array of rects
 			virtual void ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectIList* rects=nullptr) = 0;
 			virtual void ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr) = 0;
-			virtual void ApplyRenderTargets(const container::vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer) = 0;
+			virtual void ApplyRenderTargets(const Container::Vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer) = 0;
 			virtual void ApplyPipelineState(const PipelineState& state) = 0;
 			//bind pBuffer to a GPU slot(does not copy data,just binding), each invocation will override previous binding
 			virtual void BindGPUBuffer(std::uint8_t slot, const SharedGPUBufferPtr& buffer) = 0;

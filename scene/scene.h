@@ -10,7 +10,7 @@ namespace Lightning
 {
 	namespace Scene
 	{
-		using Foundation::container;
+		using Foundation::Container;
 
 		class LIGHTNING_SCENE_API Scene
 		{
@@ -24,7 +24,7 @@ namespace Lightning
 		protected:
 			Camera* mActiveCamera;
 			std::uint32_t mID;
-			container::vector<SharedDrawablePtr> mDrawables;
+			Container::Vector<SharedDrawablePtr> mDrawables;
 			SceneRenderData mRenderData;
 		};
 	}

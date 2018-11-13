@@ -6,7 +6,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::container;
+		using Foundation::Container;
 		template<typename T>
 		struct Rect : Foundation::PlainObject<Rect<T>>
 		{
@@ -21,7 +21,7 @@ namespace Lightning
 		using RectI = Rect<int>;
 		using RectF = Rect<float>;
 		template<typename T>
-		using RectList = container::vector<Rect<T>>;
+		using RectList = Container::Vector<Rect<T>>;
 		using RectIList = RectList<int>;
 		using RectFList = RectList<float>;
 	}

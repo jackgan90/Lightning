@@ -6,7 +6,7 @@ namespace Lightning
 {
 	namespace Utility
 	{
-		std::size_t CalculateHash(const std::string& str, const container::unordered_map<std::string, std::string>& map)
+		std::size_t CalculateHash(const std::string& str, const Container::UnorderedMap<std::string, std::string>& map)
 		{
 			//TODO : do test about hash collision
 			std::size_t seed = 0;

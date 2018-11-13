@@ -27,7 +27,7 @@ namespace Lightning
 
 		void D3D12ForwardRenderPass::OnAddRenderNode(const RenderNode& node)
 		{
-			using ShaderContainer = container::vector<IShader*>;
+			using ShaderContainer = Container::Vector<IShader*>;
 			static Foundation::ThreadLocalSingleton<ShaderContainer> shadersContainer;
 			auto& shaders = *shadersContainer;
 			shaders.clear();

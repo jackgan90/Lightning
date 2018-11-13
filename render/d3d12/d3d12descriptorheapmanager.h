@@ -15,7 +15,7 @@ namespace Lightning
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
-		using Foundation::container;
+		using Foundation::Container;
 		struct DescriptorHeap
 		{
 			D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle;
@@ -44,13 +44,13 @@ namespace Lightning
 			{
 				D3D12_DESCRIPTOR_HEAP_DESC desc;
 				ComPtr<ID3D12DescriptorHeap> heap;
-				container::list<container::tuple<UINT, UINT>> freeIntervals;
+				Container::List<Container::Tuple<UINT, UINT>> freeIntervals;
 				std::size_t freeDescriptors;
 			};
 			struct DescriptorHeapEx : DescriptorHeap
 			{
 				DescriptorHeapStore *pStore;
-				container::tuple<UINT, UINT> interval;
+				Container::Tuple<UINT, UINT> interval;
 			};
 
 			//represents heaps allocated in one frame
@@ -64,13 +64,13 @@ namespace Lightning
 			};
 			DescriptorHeap* AllocatePersistentHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count);
 			DescriptorHeap* AllocateFrameHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count);
-			container::tuple<bool, DescriptorHeapStore*> CreateHeapStore(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT descriptorCount);
-			container::tuple<bool, DescriptorHeap*> TryAllocatePersistentHeap(DescriptorHeapStore* heapInfo, UINT count);
+			Container::Tuple<bool, DescriptorHeapStore*> CreateHeapStore(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT descriptorCount);
+			Container::Tuple<bool, DescriptorHeap*> TryAllocatePersistentHeap(DescriptorHeapStore* heapInfo, UINT count);
 			void Deallocate(DescriptorHeapEx* pHeapEx);
-			container::tuple<bool, DescriptorHeap*> TryAllocatePersistentHeap(container::vector<DescriptorHeapStore*>& heapList, UINT count);
+			Container::Tuple<bool, DescriptorHeap*> TryAllocatePersistentHeap(Container::Vector<DescriptorHeapStore*>& heapList, UINT count);
 
 			//persistent heaps are heaps persist longer than one frame.Examples are RTV and DSV heaps
-			container::vector<DescriptorHeapStore*> mPersistentHeaps[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES][2];
+			Container::Vector<DescriptorHeapStore*> mPersistentHeaps[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES][2];
 			//frame heaps are heaps that only needs validation in one frame.After a frame finished,the content of heaps doesn't matter
 			FrameHeap mFrameHeaps[RENDER_FRAME_COUNT][D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES][2];
 

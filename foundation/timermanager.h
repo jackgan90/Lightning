@@ -14,7 +14,7 @@ namespace Lightning
 			ITimer* CreateTimer(std::size_t resolution);
 			ITimer* GetTimer();
 		private:
-			container::unordered_map< std::thread::id, container::vector<ITimer*>> mTimers;
+			Container::UnorderedMap< std::thread::id, Container::Vector<ITimer*>> mTimers;
 			static constexpr std::size_t sBucketCount = 4096;
 		};
 	}

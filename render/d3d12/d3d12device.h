@@ -20,7 +20,7 @@ namespace Lightning
 		using Microsoft::WRL::ComPtr;
 		using Foundation::SharedFileSystemPtr;
 		using Foundation::StackAllocator;
-		using Foundation::container;
+		using Foundation::Container;
 		class LIGHTNING_RENDER_API D3D12Device : public Device
 		{
 		public:

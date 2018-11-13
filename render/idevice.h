@@ -18,7 +18,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::container;
+		using Foundation::Container;
 		using ShaderLoadFinishHandler = std::function<void(const SharedShaderPtr&)>;
 		using TextureLoadFinishHandler = std::function<void(const SharedTexturePtr&)>;
 		class LIGHTNING_RENDER_API IDevice

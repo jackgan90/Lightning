@@ -37,7 +37,7 @@ namespace Lightning
 				char* ptr;
 				std::size_t current;
 			};
-			container::vector<Buffer> mBuffers;
+			Container::Vector<Buffer> mBuffers;
 			static constexpr const std::size_t BUFFER_SIZE = sizeof(T) * BufferObjects;
 		};
 	}

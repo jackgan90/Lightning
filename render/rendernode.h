@@ -19,7 +19,7 @@ namespace Lightning
 			Transform transform;		//position rotation scale
 			Matrix4f viewMatrix;		//camera view matrix
 			Matrix4f projectionMatrix;//camera projection matrix
-			container::vector<SharedRenderTargetPtr> renderTargets;
+			Container::Vector<SharedRenderTargetPtr> renderTargets;
 			SharedDepthStencilBufferPtr depthStencilBuffer;
 		};
 		//RenderQueue is a very important concept.Every drawable object will encode there data to a RenderNode struct.
@@ -28,6 +28,6 @@ namespace Lightning
 		//queue won't be cleared until next time the renderer renders to the same swap chain,which ensures the 
 		//render resource validation during this frame(render resources won't be deleted because a render node
 		//holds all shared_ptr referring to them).
-		using RenderQueue = container::vector<RenderNode>;
+		using RenderQueue = Container::Vector<RenderNode>;
 	}
 }

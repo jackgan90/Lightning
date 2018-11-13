@@ -193,7 +193,7 @@ namespace Lightning
 			}
 		}
 
-		void D3D12Renderer::ApplyRenderTargets(const container::vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)
+		void D3D12Renderer::ApplyRenderTargets(const Container::Vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)
 		{
 			assert(renderTargets.size() <= MAX_RENDER_TARGET_COUNT);
 			auto commandList = GetGraphicsCommandList();
@@ -306,7 +306,7 @@ namespace Lightning
 			ApplyRasterizerState(state.rasterizerState, desc);
 			ApplyBlendStates(0, state.blendStates, state.renderTargetCount, desc);
 			ApplyDepthStencilState(state.depthStencilState, desc);
-			container::vector<IShader*> shaders;
+			Container::Vector<IShader*> shaders;
 			ApplyShader(state.vs, desc);
 			ApplyShader(state.fs, desc);
 			ApplyShader(state.gs, desc);
@@ -364,7 +364,7 @@ namespace Lightning
 			return stateAndSignature;
 		}
 
-		ComPtr<ID3D12RootSignature> D3D12Renderer::GetRootSignature(const container::vector<IShader*>& shaders)
+		ComPtr<ID3D12RootSignature> D3D12Renderer::GetRootSignature(const Container::Vector<IShader*>& shaders)
 		{	
 			//TODO : according to MSDN,pipeline state object can have 0 shader bound.But I found if I omit vertex shader
 			//,the pipeline state creation will fail.Need to find the reason
@@ -383,7 +383,7 @@ namespace Lightning
 			}
 
 			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-			container::vector<D3D12_ROOT_PARAMETER> cbParameters;
+			Container::Vector<D3D12_ROOT_PARAMETER> cbParameters;
 			for (std::size_t i = 0;i < shaders.size();++i)
 			{
 				const auto& parameters = static_cast<D3D12Shader*>(shaders[i])->GetRootParameters();
@@ -423,7 +423,7 @@ namespace Lightning
 		void D3D12Renderer::BindShaderResources(const PipelineState& state)
 		{
 			std::size_t constantBuffers{ 0 };
-			using ResourceContainer = container::unordered_map<ShaderType, container::vector<ShaderResourceHandle>>;
+			using ResourceContainer = Container::UnorderedMap<ShaderType, Container::Vector<ShaderResourceHandle>>;
 			static Foundation::ThreadLocalSingleton<ResourceContainer> container;
 			auto& boundResources = *container;
 			boundResources.clear();
@@ -447,7 +447,7 @@ namespace Lightning
 			{
 				constantBuffers += AnalyzeShaderRootResources(state.ds, boundResources);
 			}
-			container::vector<ID3D12DescriptorHeap*> descriptorHeaps;
+			Container::Vector<ID3D12DescriptorHeap*> descriptorHeaps;
 			if (constantBuffers > 0)
 			{
 				auto constantHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
@@ -555,7 +555,7 @@ namespace Lightning
 
 
 		std::size_t D3D12Renderer::AnalyzeShaderRootResources(IShader *pShader, 
-			container::unordered_map<ShaderType, container::vector<D3D12Renderer::ShaderResourceHandle>>& resourceHandles)
+			Container::UnorderedMap<ShaderType, Container::Vector<D3D12Renderer::ShaderResourceHandle>>& resourceHandles)
 		{
 			std::size_t constantBuffers{ 0 };
 			for (const auto& resource : static_cast<D3D12Shader*>(pShader)->GetRootBoundResources())
@@ -719,7 +719,7 @@ namespace Lightning
 		{
 			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
 			auto renderTarget = static_cast<D3D12RenderTarget*>(defaultRenderTarget.get());
-			container::vector<ID3D12CommandList*> commandLists;
+			Container::Vector<ID3D12CommandList*> commandLists;
 			mCmdEncoders[mFrameResourceIndex].for_each([&commandLists](D3D12CommandEncoder& encoder) {
 				commandLists.push_back(encoder.GetCommandList());
 			});

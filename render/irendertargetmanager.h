@@ -23,7 +23,7 @@ namespace Lightning
 		};
 		using SharedRenderTargetManagerPtr = std::shared_ptr<IRenderTargetManager>;
 
-		using RenderTargetMap = container::concurrent_unordered_map<RenderTargetID, SharedRenderTargetPtr>;
+		using RenderTargetMap = Container::ConcurrentUnorderedMap<RenderTargetID, SharedRenderTargetPtr>;
 		template<typename Derived>
 		class RenderTargetManager : public IRenderTargetManager, public Foundation::Singleton<Derived>
 		{
@@ -71,7 +71,7 @@ namespace Lightning
 				mRenderTargets[rtID] = ptr;
 			}
 			RenderTargetMap mRenderTargets;
-			container::concurrent_unordered_set<RenderTargetID> mDestroyedTargetIDs;
+			Container::ConcurrentUnorderedSet<RenderTargetID> mDestroyedTargetIDs;
 		};
 	}
 }

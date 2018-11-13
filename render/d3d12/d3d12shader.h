@@ -13,7 +13,7 @@ namespace Lightning
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
-		using Foundation::container;
+		using Foundation::Container;
 		enum class D3D12RootResourceType
 		{
 			ConstantBuffers,
@@ -29,7 +29,7 @@ namespace Lightning
 		struct D3D12RootBoundResource
 		{
 			D3D12RootResourceType type;
-			container::vector<D3D12ConstantBuffer> buffers;
+			Container::Vector<D3D12ConstantBuffer> buffers;
 		};
 
 		//Thread unsafe
@@ -48,9 +48,9 @@ namespace Lightning
 			void Compile()override;
 			void* GetByteCodeBuffer()const;
 			SIZE_T GetByteCodeBufferSize()const;
-			const container::vector<D3D12_ROOT_PARAMETER>& GetRootParameters()const;
+			const Container::Vector<D3D12_ROOT_PARAMETER>& GetRootParameters()const;
 			std::size_t GetRootParameterCount()const;
-			const container::vector<D3D12RootBoundResource>& GetRootBoundResources();
+			const Container::Vector<D3D12RootBoundResource>& GetRootBoundResources();
 			UINT GetConstantBufferCount();
 			UINT GetConstantBufferSize();
 		private:
@@ -69,10 +69,10 @@ namespace Lightning
 			public:
 				ShaderResourceProxy();
 				std::uint8_t* GetConstantBuffer(std::size_t size);
-				container::vector<D3D12RootBoundResource>& GetRootBoundResources();
+				Container::Vector<D3D12RootBoundResource>& GetRootBoundResources();
 				~ShaderResourceProxy();
 			private:
-				container::vector<D3D12RootBoundResource> mRootBoundResources[RENDER_FRAME_COUNT];
+				Container::Vector<D3D12RootBoundResource> mRootBoundResources[RENDER_FRAME_COUNT];
 				std::uint8_t *mConstantBuffer;
 				std::size_t mBufferSize;
 			};
@@ -81,10 +81,10 @@ namespace Lightning
 			void UpdateRootBoundResources();
 			ComPtr<ID3D10Blob> mByteCode;
 			D3D12_SHADER_DESC mDesc;
-			container::unordered_map<std::string, ArgumentInfo> mArguments;
-			container::vector<D3D12_ROOT_PARAMETER> mRootParameters;
+			Container::UnorderedMap<std::string, ArgumentInfo> mArguments;
+			Container::Vector<D3D12_ROOT_PARAMETER> mRootParameters;
 			//each offset corresponds to mIntermediateBuffer
-			container::unordered_map<std::size_t, ConstantBufferInfo> mConstantBufferInfo;
+			Container::UnorderedMap<std::size_t, ConstantBufferInfo> mConstantBufferInfo;
 			D3D12_DESCRIPTOR_RANGE *mDescriptorRanges;
 			UINT mTotalConstantBufferSize;
 			//buffer used to cache constant buffer value
