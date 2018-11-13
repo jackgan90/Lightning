@@ -4,13 +4,13 @@ message(STATUS "Configuring project window")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(HEADERS	windowexportdef.h
-			windowcomponent.h
-			windowsystem.h
-			windowevents.h)
+set(HEADERS	WindowExportDef.h
+			WindowComponent.h
+			WindowSystem.h
+			WindowEvents.h)
 
-set(SOURCES	windowsystem.cpp
-			winwindowsystem.cpp)
+set(SOURCES	WindowSystem.cpp
+			WinWindowSystem.cpp)
 
 if(WIN32)
 	add_definitions(-DLIGHTNING_WIN32)

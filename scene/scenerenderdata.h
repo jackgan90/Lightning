@@ -1,6 +1,6 @@
 #pragma once
-#include "sceneexportdef.h"
-#include "camera.h"
+#include "SceneExportDef.h"
+#include "Camera.h"
 
 namespace Lightning
 {

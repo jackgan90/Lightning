@@ -5,7 +5,7 @@
 #include "irenderfence.h"
 #include "filesystem.h"
 #include "renderpass.h"
-#include "windowsystem.h"
+#include "WindowSystem.h"
 
 namespace Lightning
 {

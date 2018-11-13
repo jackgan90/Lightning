@@ -1,10 +1,10 @@
 #include "ecs/entitymanager.h"
 #include "ecs/systemmanager.h"
 #include "ecs/eventmanager.h"
-#include "appcomponent.h"
+#include "AppComponent.h"
 #ifdef LIGHTNING_WIN32
 #include <Windows.h>	//for WinMain
-#include "win32appsystem.h"
+#include "Win32AppSystem.h"
 #endif
 #include "logger.h" //for logging
 

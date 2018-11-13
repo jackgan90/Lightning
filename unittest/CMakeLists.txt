@@ -2,11 +2,11 @@ project(UnitTest)
 message(STATUS "Configuring project test")
 
 set(HEADERS catch.hpp)
-set(SOURCES main.cpp
-			memorytest.cpp
-			mathtest.cpp
-			helperstubtest.cpp
-			ecstest.cpp)
+set(SOURCES Main.cpp
+			MemoryTest.cpp
+			MathTest.cpp
+			HelperStubTest.cpp
+			ECSTest.cpp)
 
 if (WIN32)
 	add_definitions(-DLIGHTNING_WIN32)

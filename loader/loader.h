@@ -2,9 +2,9 @@
 #include <thread>
 #include <mutex>
 #include <functional>
-#include "loaderexportdef.h"
+#include "LoaderExportDef.h"
 #include "singleton.h"
-#include "iserializer.h"
+#include "ISerializer.h"
 #include "container.h"
 #include "tbb/task.h"
 #include "filesystem.h"

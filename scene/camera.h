@@ -1,6 +1,6 @@
 #pragma once
 #include <cmath>
-#include "sceneexportdef.h"
+#include "SceneExportDef.h"
 #include "transform.h"
 
 namespace Lightning

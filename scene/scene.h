@@ -1,10 +1,10 @@
 #pragma once
 #include <cstdint>
 #include "container.h"
-#include "sceneexportdef.h"
-#include "camera.h"
-#include "drawable.h"
-#include "scenerenderdata.h"
+#include "SceneExportDef.h"
+#include "Camera.h"
+#include "Drawable.h"
+#include "SceneRenderData.h"
 
 namespace Lightning
 {

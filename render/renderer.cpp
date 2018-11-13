@@ -6,7 +6,7 @@
 #include "framememoryallocator.h"
 #include "serializers/shaderserializer.h"
 #include "serializers/textureserializer.h"
-#include "loader.h"
+#include "Loader.h"
 
 namespace Lightning
 {

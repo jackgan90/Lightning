@@ -1,13 +1,13 @@
 project(JobSystem)
 message(STATUS "Configuring project jobsystem")
 
-set(HEADERS job.h
-			joballocator.h
-			jobqueue.h
-			jobmanager.h
-			jobinterface.h
-			concurrentqueue.h)
-set(SOURCES main.cpp)
+set(HEADERS Job.h
+			JobAllocator.h
+			JobQueue.h
+			JobManager.h
+			JobInterface.h
+			ConcurrentQueue.h)
+set(SOURCES Main.cpp)
 
 if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /wd4251 /wd4275 /EHsc /MDd")

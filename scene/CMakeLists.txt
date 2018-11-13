@@ -1,19 +1,19 @@
 project(Scene)
 message(STATUS "Configuring project scene")
 
-set(HEADERS sceneexportdef.h 
-			scene.h 
-			scenemanager.h
-			drawable.h
-			primitive.h
-			camera.h
-			scenerenderdata.h)
+set(HEADERS SceneExportDef.h 
+			Scene.h 
+			SceneManager.h
+			Drawable.h
+			Primitive.h
+			Camera.h
+			SceneRenderData.h)
 
-set(SOURCES scene.cpp 
-			scenemanager.cpp
-			primitive.cpp
-			camera.cpp
-			scenerenderdata.cpp)
+set(SOURCES Scene.cpp 
+			SceneManager.cpp
+			Primitive.cpp
+			Camera.cpp
+			SceneRenderData.cpp)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

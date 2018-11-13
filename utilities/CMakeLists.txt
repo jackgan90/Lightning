@@ -4,11 +4,11 @@ message(STATUS "Configuring project utilities")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(HEADERS utilitiesexportdef.h
-			enginealgo.h
-			hashableobject.h
-			helperstubs.h)
-set(SOURCES enginealgo.cpp)
+set(HEADERS UtilitiesExportDef.h
+			EngineAlgo.h
+			HashableObject.h
+			HelperStubs.h)
+set(SOURCES EngineAlgo.cpp)
 
 
 include_directories(${CMAKE_SOURCE_DIR}/foundation

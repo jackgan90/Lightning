@@ -61,22 +61,22 @@ if(LIGHTNING_USE_D3D12)
 	add_definitions(-DLIGHTNING_USE_D3D12)
 endif()
 
-set(LIBRARY_HEADERS	libloader/libexportdef.h
-					libloader/library.h
-					libloader/librarymgr.h)
+set(LIBRARY_HEADERS	PluginLoader/PluginExportDef.h
+					PluginLoader/Plugin.h
+					PluginLoader/PluginMgr.h)
 
-set(LIBRARY_SOURCES	libloader/library.cpp
-					libloader/librarymgr.cpp)
+set(LIBRARY_SOURCES	PluginLoader/Plugin.cpp
+					PluginLoader/PluginMgr.cpp)
 
-set(SOURCE_FILES	entry.cpp)
+set(SOURCE_FILES	Entry.cpp)
 
 list(APPEND HEADER_FILES ${LIBRARY_HEADERS})
 list(APPEND SOURCE_FILES ${LIBRARY_SOURCES})
 
-source_group("libloader" FILES ${LIBRARY_HEADERS} ${LIBRARY_SOURCES})
+source_group("PluginLoader" FILES ${LIBRARY_HEADERS} ${LIBRARY_SOURCES})
 
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${LIGHTNING_LINKER_FLAGS})
-define_dll_export_macro(LIB)
+define_dll_export_macro(PLUGIN)
 
 
 include_directories(${CMAKE_SOURCE_DIR}/foundation 

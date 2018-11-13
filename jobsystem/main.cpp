@@ -1,6 +1,6 @@
 #include<cstdlib>
 #include <iostream>
-#include "jobinterface.h"
+#include "JobInterface.h"
 #include <random>
 
 using JobSystem::JobManager;

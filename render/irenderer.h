@@ -12,7 +12,7 @@
 #include "math/matrix.h"
 #include "rendernode.h"
 #include "renderpass.h"
-#include "windowsystem.h"
+#include "WindowSystem.h"
 
 namespace Lightning
 {

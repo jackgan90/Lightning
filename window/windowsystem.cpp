@@ -1,4 +1,4 @@
-#include "windowsystem.h"
+#include "WindowSystem.h"
 #include "ecs/entitymanager.h"
 #include "ecs/eventmanager.h"
 #include "rttr/detail/registration/registration_manager.h"

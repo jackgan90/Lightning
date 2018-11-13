@@ -1,6 +1,6 @@
 #include <cassert>
 #include "device.h"
-#include "loader.h"
+#include "Loader.h"
 #include "serializers/shaderserializer.h"
 #include "serializers/textureserializer.h"
 

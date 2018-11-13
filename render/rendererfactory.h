@@ -3,7 +3,7 @@
 #include "singleton.h"
 #include "rendererexportdef.h"
 #include "irenderer.h"
-#include "windowsystem.h"
+#include "WindowSystem.h"
 #include "filesystem.h"
 
 

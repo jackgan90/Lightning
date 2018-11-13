@@ -4,13 +4,13 @@
 #ifdef LIGHTNING_WIN32
 #include <Windows.h>
 #endif
-#include "libexportdef.h"
+#include "PluginExportDef.h"
 
 namespace Lightning
 {
 	namespace Lib
 	{
-		class LIGHTNING_LIB_API Library
+		class LIGHTNING_PLUGIN_API Plugin
 		{
 		public:
 			std::string GetName()const { return mName; }
@@ -19,15 +19,15 @@ namespace Lightning
 			bool Unload();
 			std::string GetFullName()const;
 		private:
-			friend class LibraryMgr;
-			Library(const std::string& name);
+			friend class PluginMgr;
+			Plugin(const std::string& name);
 			std::string mName;
 #ifdef LIGHTNING_WIN32
 			HMODULE mHandle;
-			static constexpr char* LibPostfix = ".dll";
+			static constexpr char* PluginExtension = ".dll";
 #endif
 		};
 
-		using LibraryPtr = std::shared_ptr<Library>;
+		using PluginPtr = std::shared_ptr<Plugin>;
 	}
 }

@@ -2,14 +2,14 @@
 #include <memory>
 #include <unordered_map>
 #include <exception>
-#include "windowexportdef.h"
-#include "windowevents.h"
+#include "WindowExportDef.h"
+#include "WindowEvents.h"
 #include "logger.h"
 #include "systempriority.h"
 #include "ecs/event.h"
 #include "ecs/system.h"
 #include "ecs/entity.h"
-#include "windowcomponent.h"
+#include "WindowComponent.h"
 
 #define WINDOW_MSG_CLASS_HANDLER(EventType, Handler)\
 Foundation::EventManager::Instance()->Subscribe<Window::##EventType##>([&](const EventType& event){\

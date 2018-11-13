@@ -1,10 +1,10 @@
-#include "library.h"
+#include "Plugin.h"
 
 namespace Lightning
 {
 	namespace Lib
 	{
-		Library::Library(const std::string& name): mName(name)
+		Plugin::Plugin(const std::string& name): mName(name)
 #ifdef LIGHTNING_WIN32
 			, mHandle(NULL)
 #endif
@@ -12,14 +12,14 @@ namespace Lightning
 			Load();
 		}
 
-		bool Library::IsLoaded()const
+		bool Plugin::IsLoaded()const
 		{
 #ifdef LIGHTNING_WIN32
 			return mHandle != NULL;
 #endif
 		}
 
-		bool Library::Load()
+		bool Plugin::Load()
 		{
 			if (IsLoaded())
 				return false;
@@ -29,7 +29,7 @@ namespace Lightning
 			return IsLoaded();
 		}
 
-		bool Library::Unload()
+		bool Plugin::Unload()
 		{
 			if (!IsLoaded())
 				return false;
@@ -41,9 +41,9 @@ namespace Lightning
 			return !IsLoaded();
 		}
 
-		std::string Library::GetFullName()const
+		std::string Plugin::GetFullName()const
 		{
-			return mName + LibPostfix;
+			return mName + PluginExtension;
 		}
 	}
 }

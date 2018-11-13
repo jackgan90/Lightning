@@ -4,7 +4,7 @@
 #include <algorithm>
 #include "container.h"
 #include "math/vector.h"
-#include "primitive.h"
+#include "Primitive.h"
 
 namespace Lightning
 {

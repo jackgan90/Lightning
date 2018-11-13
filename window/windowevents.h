@@ -2,7 +2,7 @@
 #undef min
 #undef max
 #include <functional>
-#include "windowsystem.h"
+#include "WindowSystem.h"
 #include "ecs/event.h"
 
 namespace Lightning

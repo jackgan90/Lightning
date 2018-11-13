@@ -7,8 +7,8 @@
 #include <vector>
 #include <iostream>
 #include <chrono>
-#include "joballocator.h"
-#include "jobqueue.h"
+#include "JobAllocator.h"
+#include "JobQueue.h"
 #undef min
 
 namespace JobSystem

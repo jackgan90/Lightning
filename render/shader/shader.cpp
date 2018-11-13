@@ -1,5 +1,5 @@
 #include <boost/functional/hash.hpp>
-#include "enginealgo.h"
+#include "EngineAlgo.h"
 #include "ishader.h"
 
 namespace Lightning

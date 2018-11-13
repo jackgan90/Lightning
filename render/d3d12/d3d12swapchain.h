@@ -5,7 +5,7 @@
 #include <wrl\client.h>
 #include <unordered_map>
 #include "iswapchain.h"
-#include "windowsystem.h"
+#include "WindowSystem.h"
 #include "d3d12rendertargetmanager.h"
 #include "d3d12typemapper.h"
 

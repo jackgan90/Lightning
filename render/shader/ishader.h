@@ -5,7 +5,7 @@
 #include "rendererexportdef.h"
 #include "shaderdefine.h"
 #include "filesystem.h"
-#include "hashableobject.h"
+#include "HashableObject.h"
 #include "semantics.h"
 #include "renderexception.h"
 #include "math/matrix.h"

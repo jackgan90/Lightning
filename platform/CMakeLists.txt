@@ -1,18 +1,18 @@
 project(Platform)
 message(STATUS "Configuring project platform")
 
-set(APPLICATION_SUBSYSTEM_DIR "application")
+set(APPLICATION_SUBSYSTEM_DIR "Application")
 
-set(HEADERS	platformexportdef.h)
+set(HEADERS	PlatformExportDef.h)
 
-set(APPLICATION_HEADERS		${APPLICATION_SUBSYSTEM_DIR}/appsystem.h
-							${APPLICATION_SUBSYSTEM_DIR}/appcomponent.h)
-set(APPLICATION_SOURCES		${APPLICATION_SUBSYSTEM_DIR}/appsystem.cpp)
+set(APPLICATION_HEADERS		${APPLICATION_SUBSYSTEM_DIR}/AppSystem.h
+							${APPLICATION_SUBSYSTEM_DIR}/AppComponent.h)
+set(APPLICATION_SOURCES		${APPLICATION_SUBSYSTEM_DIR}/AppSystem.cpp)
 
 
 if(WIN32)
-	list(APPEND APPLICATION_HEADERS ${APPLICATION_SUBSYSTEM_DIR}/win32appsystem.h)
-	list(APPEND APPLICATION_SOURCES ${APPLICATION_SUBSYSTEM_DIR}/win32appsystem.cpp)
+	list(APPEND APPLICATION_HEADERS ${APPLICATION_SUBSYSTEM_DIR}/Win32AppSystem.h)
+	list(APPEND APPLICATION_SOURCES ${APPLICATION_SUBSYSTEM_DIR}/Win32AppSystem.cpp)
 endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -26,7 +26,7 @@ if(LIGHTNING_USE_D3D12)
 	include_directories(${CMAKE_SOURCE_DIR}/render/d3d12)
 endif()
 
-source_group("application" FILES 
+source_group("Application" FILES 
 			${APPLICATION_HEADERS}
 			${APPLICATION_SOURCES})
 

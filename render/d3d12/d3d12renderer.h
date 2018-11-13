@@ -5,7 +5,7 @@
 #ifndef NDEBUG
 #include <dxgidebug.h>
 #endif
-#include "windowsystem.h"
+#include "WindowSystem.h"
 #include "irenderfence.h"
 #include "renderer.h"
 #include "filesystem.h"

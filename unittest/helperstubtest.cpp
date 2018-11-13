@@ -1,5 +1,5 @@
 #include "catch.hpp"
-#include "helperstubs.h"
+#include "HelperStubs.h"
 
 namespace
 {

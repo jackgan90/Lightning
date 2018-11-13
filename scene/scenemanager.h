@@ -1,8 +1,8 @@
 #pragma once
 #include "container.h"
-#include "sceneexportdef.h"
+#include "SceneExportDef.h"
 #include "singleton.h"
-#include "scene.h"
+#include "Scene.h"
 
 namespace Lightning
 {

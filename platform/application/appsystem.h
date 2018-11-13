@@ -1,12 +1,12 @@
 #pragma once
 #include <memory>
-#include "platformexportdef.h"
+#include "PlatformExportDef.h"
 #include "ecs/entity.h"
 #include "ecs/system.h"
 #include "ecs/event.h"
 #include "filesystem.h"
 #include "timermanager.h"
-#include "appcomponent.h"
+#include "AppComponent.h"
 
 namespace Lightning
 {

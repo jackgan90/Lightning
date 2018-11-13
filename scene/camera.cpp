@@ -1,4 +1,4 @@
-#include "camera.h"
+#include "Camera.h"
 #include "renderer.h"
 #define EPSILON 0.0001
 

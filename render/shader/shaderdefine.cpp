@@ -1,6 +1,6 @@
 #include <algorithm>
 #include "shaderdefine.h"
-#include "enginealgo.h"
+#include "EngineAlgo.h"
 
 namespace Lightning
 {

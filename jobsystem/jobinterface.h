@@ -1,5 +1,5 @@
 #pragma once
-#include "jobmanager.h"
+#include "JobManager.h"
 
 #define JOB_RUN_ON_THREAD(jobName, jobType, parentJob, threadId, function, ...)\
 	auto handle##jobName = JobSystem::JobManager::Instance().AllocateJob(jobType, parentJob, (function), __VA_ARGS__);\

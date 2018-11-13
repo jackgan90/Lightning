@@ -1,6 +1,6 @@
 #include <boost/functional/hash.hpp>
 #include <functional>
-#include "enginealgo.h"
+#include "EngineAlgo.h"
 
 namespace Lightning
 {

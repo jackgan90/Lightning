@@ -1,5 +1,5 @@
 #pragma once
-#include "utilitiesexportdef.h"
+#include "UtilitiesExportDef.h"
 
 namespace Lightning
 {

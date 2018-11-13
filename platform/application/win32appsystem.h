@@ -1,7 +1,7 @@
 #pragma once
-#include "platformexportdef.h"
-#include "appsystem.h"
-#include "windowsystem.h"
+#include "PlatformExportDef.h"
+#include "AppSystem.h"
+#include "WindowSystem.h"
 #include "filesystem.h"
 
 namespace Lightning

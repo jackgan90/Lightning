@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <cstdint>
-#include "drawable.h"
+#include "Drawable.h"
 #include "material.h"
 #include "vertexbuffer.h"
 #include "indexbuffer.h"
