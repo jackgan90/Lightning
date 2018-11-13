@@ -1,4 +1,4 @@
-project(scene)
+project(Scene)
 message(STATUS "Configuring project scene")
 
 set(HEADERS sceneexportdef.h 
@@ -45,5 +45,5 @@ if(MSVC)
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
 
-add_dependencies(${PROJECT_NAME} foundation utilities render)
-target_link_libraries(${PROJECT_NAME} foundation utilities render)
+add_dependencies(${PROJECT_NAME} Foundation Utilities Render)
+target_link_libraries(${PROJECT_NAME} Foundation Utilities Render)

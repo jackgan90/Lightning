@@ -1,4 +1,4 @@
-project(utilities)
+project(Utilities)
 message(STATUS "Configuring project utilities")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -33,5 +33,5 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
-add_dependencies(${PROJECT_NAME} foundation)
-target_link_libraries(${PROJECT_NAME} foundation)
+add_dependencies(${PROJECT_NAME} Foundation)
+target_link_libraries(${PROJECT_NAME} Foundation)

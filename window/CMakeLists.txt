@@ -1,4 +1,4 @@
-project(window)
+project(Window)
 message(STATUS "Configuring project window")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
@@ -32,7 +32,7 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${SPDLOG_INCLUDE_DIR})
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
-add_dependencies(${PROJECT_NAME} foundation)
+add_dependencies(${PROJECT_NAME} Foundation)
 
 if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /wd4251 /wd4275 /EHsc /MDd")
@@ -41,5 +41,5 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
-target_link_libraries(${PROJECT_NAME} foundation)
+target_link_libraries(${PROJECT_NAME} Foundation)
 

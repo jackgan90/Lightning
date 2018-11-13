@@ -96,8 +96,8 @@ include_directories(${CMAKE_SOURCE_DIR}/foundation
 					${SPDLOG_INCLUDE_DIR})
 
 add_executable(${PROJECT_NAME} WIN32 ${HEADER_FILES} ${SOURCE_FILES})
-add_dependencies(${PROJECT_NAME} foundation platform render)
-target_link_libraries(${PROJECT_NAME} platform render)
+add_dependencies(${PROJECT_NAME} Foundation Platform Render)
+target_link_libraries(${PROJECT_NAME} Platform Render)
 if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /wd4251 /wd4275 /EHsc /MDd")
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_DEBUG} /wd4251 /wd4275 /EHsc /MD")

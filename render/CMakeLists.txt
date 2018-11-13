@@ -1,4 +1,4 @@
-project(render)
+project(Render)
 message(STATUS "Configuring project renderer")
 
 
@@ -162,8 +162,8 @@ if(MSVC)
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
 target_link_libraries(${PROJECT_NAME} ${FREEIMAGE_LIBRARIES})
-add_dependencies(${PROJECT_NAME} foundation window utilities loader)
-target_link_libraries(${PROJECT_NAME} foundation window utilities loader)
+add_dependencies(${PROJECT_NAME} Foundation Window Utilities Loader)
+target_link_libraries(${PROJECT_NAME} Foundation Window Utilities Loader)
 if(LIGHTNING_USE_D3D12)
 	target_link_libraries(${PROJECT_NAME} dxgi.lib d3d12.lib d3dcompiler.lib)
 	target_link_libraries(${PROJECT_NAME} dxguid.lib)

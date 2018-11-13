@@ -1,4 +1,4 @@
-project(unittest)
+project(UnitTest)
 message(STATUS "Configuring project test")
 
 set(HEADERS catch.hpp)
@@ -34,8 +34,8 @@ endif()
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 add_executable(${PROJECT_NAME} WIN32 ${HEADERS} ${SOURCES})
-add_dependencies(${PROJECT_NAME} foundation)
-target_link_libraries(${PROJECT_NAME} foundation)
+add_dependencies(${PROJECT_NAME} Foundation)
+target_link_libraries(${PROJECT_NAME} Foundation)
 if(MSVC)
 	set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE")
 endif()

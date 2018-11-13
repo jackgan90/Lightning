@@ -1,4 +1,4 @@
-project(jobsystem)
+project(JobSystem)
 message(STATUS "Configuring project jobsystem")
 
 set(HEADERS job.h

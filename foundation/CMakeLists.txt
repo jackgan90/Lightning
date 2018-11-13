@@ -1,4 +1,4 @@
-project(foundation)
+project(Foundation)
 message(STATUS "Configuring project foundation")
 
 set(MEMORY_HEADERS	memory/imemoryallocator.h
