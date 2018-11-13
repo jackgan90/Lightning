@@ -3,7 +3,7 @@
 #include <cmath>
 #include <limits>
 #include "common.h"
-#include "matrix.h"
+#include "Matrix.h"
 
 namespace Lightning
 {

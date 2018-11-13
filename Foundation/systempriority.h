@@ -1,6 +1,6 @@
 #pragma once
 #include <cstdint>
-#include "ecs/system.h"
+#include "ECS/System.h"
 
 namespace Lightning
 {

@@ -1,7 +1,7 @@
 #include <unordered_map>
 #include "forwardrenderpass.h"
 #include "renderer.h"
-#include "framememoryallocator.h"
+#include "FrameMemoryAllocator.h"
 #include "tbb/flow_graph.h"
 #include "tbb/parallel_for.h"
 

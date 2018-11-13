@@ -8,8 +8,8 @@
 #include "HashableObject.h"
 #include "semantics.h"
 #include "renderexception.h"
-#include "math/matrix.h"
-#include "math/vector.h"
+#include "Math/Matrix.h"
+#include "Math/Vector.h"
 
 namespace Lightning
 {

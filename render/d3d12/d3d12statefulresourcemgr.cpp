@@ -2,7 +2,7 @@
 #include "tbb/spin_mutex.h"
 #include "renderer.h"
 #include "d3d12device.h"
-#include "framememoryallocator.h"
+#include "FrameMemoryAllocator.h"
 
 namespace
 {

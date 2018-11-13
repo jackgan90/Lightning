@@ -3,7 +3,7 @@
 #include <cmath>
 #include <algorithm>
 #include "container.h"
-#include "math/vector.h"
+#include "Math/Vector.h"
 #include "Primitive.h"
 
 namespace Lightning

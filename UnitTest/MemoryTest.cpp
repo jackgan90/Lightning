@@ -6,9 +6,9 @@
 #include <cstdint>
 #include "catch.hpp"
 #include "container.h"
-#include "stackallocator.h"
-#include "poolallocator.h"
-#include "framememoryallocator.h"
+#include "StackAllocator.h"
+#include "PoolAllocator.h"
+#include "FrameMemoryAllocator.h"
 
 using Lightning::Foundation::IMemoryAllocator;
 using Lightning::Foundation::PoolAllocator;

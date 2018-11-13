@@ -1,5 +1,5 @@
 #pragma once
-#include "imemoryallocator.h"
+#include "IMemoryAllocator.h"
 //#define ENABLE_MEMORY_LOG
 
 namespace Lightning

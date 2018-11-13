@@ -1,5 +1,5 @@
 #pragma once
-#include "framememoryallocator.h"
+#include "FrameMemoryAllocator.h"
 
 namespace Lightning
 {

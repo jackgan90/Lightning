@@ -3,7 +3,7 @@
 #undef max
 #include <functional>
 #include "WindowSystem.h"
-#include "ecs/event.h"
+#include "ECS/Event.h"
 
 namespace Lightning
 {

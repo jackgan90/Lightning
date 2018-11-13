@@ -1,5 +1,5 @@
 #pragma once
-#include "ecs/component.h"
+#include "ECS/Component.h"
 #include "filesystem.h"
 #include "irenderer.h"
 #include "timer.h"

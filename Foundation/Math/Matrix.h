@@ -1,6 +1,6 @@
 #pragma once
 #include <type_traits>
-#include "vector.h"
+#include "Vector.h"
 
 namespace Lightning
 {

@@ -1,8 +1,8 @@
 #pragma once
 #include "foundationexportdef.h"
-#include "math/matrix.h"
-#include "math/vector.h"
-#include "math/quaternion.h"
+#include "Math/Matrix.h"
+#include "Math/Vector.h"
+#include "Math/Quaternion.h"
 
 namespace Lightning
 {

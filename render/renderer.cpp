@@ -3,7 +3,7 @@
 #include "renderer.h"
 #include "forwardrenderpass.h"
 #include "deferedrenderpass.h"
-#include "framememoryallocator.h"
+#include "FrameMemoryAllocator.h"
 #include "serializers/shaderserializer.h"
 #include "serializers/textureserializer.h"
 #include "Loader.h"

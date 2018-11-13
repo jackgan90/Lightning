@@ -11,7 +11,7 @@
 #include "Loader.h"
 #include "systempriority.h"
 #include "AppComponent.h"
-#include "ecs/eventmanager.h"
+#include "ECS/EventManager.h"
 #include "tbb/task_scheduler_init.h"
 
 namespace Lightning

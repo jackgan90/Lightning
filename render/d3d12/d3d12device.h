@@ -6,7 +6,7 @@
 #include "threadlocalsingleton.h"
 #include "container.h"
 #include "device.h"
-#include "stackallocator.h"
+#include "StackAllocator.h"
 #include "filesystem.h"
 #include "d3d12shader.h"
 #include "d3d12commandencoder.h"

@@ -1,9 +1,9 @@
 #pragma once
 #include <memory>
 #include "PlatformExportDef.h"
-#include "ecs/entity.h"
-#include "ecs/system.h"
-#include "ecs/event.h"
+#include "ECS/Entity.h"
+#include "ECS/System.h"
+#include "ECS/Event.h"
 #include "filesystem.h"
 #include "timermanager.h"
 #include "AppComponent.h"

@@ -9,7 +9,7 @@
 #include "idepthstencilbuffer.h"
 #include "irendertargetmanager.h"
 #include "color.h"
-#include "math/matrix.h"
+#include "Math/Matrix.h"
 #include "rendernode.h"
 #include "renderpass.h"
 #include "WindowSystem.h"

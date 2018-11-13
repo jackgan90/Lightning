@@ -2,7 +2,7 @@
 #include <dxgi.h>
 #include "common.h"
 #include "logger.h"
-#include "winwindowsystem.h"
+#include "WinWindowSystem.h"
 #include "renderer.h"
 #include "d3d12renderer.h"
 #include "d3d12swapchain.h"

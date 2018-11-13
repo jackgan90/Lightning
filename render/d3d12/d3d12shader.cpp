@@ -5,7 +5,7 @@
 #include "renderer.h"
 #include "d3d12shader.h"
 #include "rendererhelper.h"
-#include "framememoryallocator.h"
+#include "FrameMemoryAllocator.h"
 
 namespace Lightning
 {

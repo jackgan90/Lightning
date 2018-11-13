@@ -13,7 +13,7 @@
 #include "semantics.h"
 #include "logger.h"
 #include "configmanager.h"
-#include "framememoryallocator.h"
+#include "FrameMemoryAllocator.h"
 #include "d3d12descriptorheapmanager.h"
 #include "d3d12constantbuffermanager.h"
 #include "tbb/spin_mutex.h"

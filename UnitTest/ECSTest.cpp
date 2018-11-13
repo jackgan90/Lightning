@@ -1,9 +1,9 @@
 #include <iostream>
 #include <random>
 #include "catch.hpp"
-#include "ecs/entitymanager.h"
-#include "ecs/systemmanager.h"
-#include "ecs/event.h"
+#include "ECS/EntityManager.h"
+#include "ECS/SystemManager.h"
+#include "ECS/Event.h"
 
 namespace
 {

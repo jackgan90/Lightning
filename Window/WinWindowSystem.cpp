@@ -1,8 +1,8 @@
 #include "common.h"
-#include "winwindowsystem.h"
+#include "WinWindowSystem.h"
 #include "logger.h"
 #include "container.h"
-#include "ecs/eventmanager.h"
+#include "ECS/EventManager.h"
 
 namespace Lightning
 {

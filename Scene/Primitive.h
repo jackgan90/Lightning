@@ -8,7 +8,7 @@
 #include "renderconstants.h"
 #include "rendernode.h"
 #include "color.h"
-#include "quaternion.h"
+#include "Quaternion.h"
 
 namespace Lightning
 {

@@ -1,7 +1,7 @@
 #pragma once
 #include <algorithm>
 #include <type_traits>
-#include "imemoryallocator.h"
+#include "IMemoryAllocator.h"
 
 namespace Lightning
 {

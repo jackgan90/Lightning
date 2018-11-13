@@ -1,34 +1,34 @@
 project(Foundation)
 message(STATUS "Configuring project foundation")
 
-set(MEMORY_HEADERS	memory/imemoryallocator.h
-					memory/poolallocator.h
-					memory/stackallocator.h
-					memory/framememoryallocator.h
-					memory/memorypool.h)
+set(MEMORY_HEADERS	Memory/IMemoryAllocator.h
+					Memory/PoolAllocator.h
+					Memory/StackAllocator.h
+					Memory/FrameMemoryAllocator.h
+					Memory/MemoryPool.h)
 
-set(MEMORY_SOURCES	memory/framememoryallocator.cpp)
+set(MEMORY_SOURCES	Memory/FrameMemoryAllocator.cpp)
 
-set(MATH_HEADERS	math/common.h
-					math/vector.h
-					math/matrix.h
-					math/quaternion.h
-					math/transform.h)
+set(MATH_HEADERS	Math/Common.h
+					Math/Vector.h
+					Math/Matrix.h
+					Math/Quaternion.h
+					Math/Transform.h)
 
-set(MATH_SOURCES	math/transform.cpp)
+set(MATH_SOURCES	Math/Transform.cpp)
 
-set(ECS_HEADERS		ecs/entity.h
-					ecs/component.h
-					ecs/system.h
-					ecs/event.h
-					ecs/eventmanager.h
-					ecs/entitymanager.h
-					ecs/systemmanager.h)
+set(ECS_HEADERS		ECS/Entity.h
+					ECS/Component.h
+					ECS/System.h
+					ECS/Event.h
+					ECS/EventManager.h
+					ECS/EntityManager.h
+					ECS/SystemManager.h)
 
-set(ECS_SOURCES		ecs/component.cpp
-					ecs/systemmanager.cpp
-					ecs/entitymanager.cpp
-					ecs/eventmanager.cpp)
+set(ECS_SOURCES		ECS/Component.cpp
+					ECS/SystemManager.cpp
+					ECS/EntityManager.cpp
+					ECS/EventManager.cpp)
 
 set(HEADERS	common.h
 			timesystem.h
@@ -62,9 +62,9 @@ set(SOURCES common.cpp
 list(APPEND HEADERS ${MEMORY_HEADERS} ${MATH_HEADERS} ${ECS_HEADERS})
 list(APPEND SOURCES ${MEMORY_SOURCES} ${MATH_SOURCES} ${ECS_SOURCES})
 
-source_group("memory" FILES	${MEMORY_HEADERS} ${MEMORY_SOURCES})
-source_group("math" FILES ${MATH_HEADERS} ${MATH_SOURCES})
-source_group("ecs" FILES ${ECS_HEADERS} ${ECS_SOURCES})
+source_group("Memory" FILES	${MEMORY_HEADERS} ${MEMORY_SOURCES})
+source_group("Math" FILES ${MATH_HEADERS} ${MATH_SOURCES})
+source_group("ECS" FILES ${ECS_HEADERS} ${ECS_SOURCES})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

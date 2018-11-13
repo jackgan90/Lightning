@@ -6,9 +6,9 @@
 #include "WindowEvents.h"
 #include "logger.h"
 #include "systempriority.h"
-#include "ecs/event.h"
-#include "ecs/system.h"
-#include "ecs/entity.h"
+#include "ECS/Event.h"
+#include "ECS/System.h"
+#include "ECS/Entity.h"
 #include "WindowComponent.h"
 
 #define WINDOW_MSG_CLASS_HANDLER(EventType, Handler)\

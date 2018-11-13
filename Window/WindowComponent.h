@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "ecs/component.h"
+#include "ECS/Component.h"
 
 namespace Lightning
 {

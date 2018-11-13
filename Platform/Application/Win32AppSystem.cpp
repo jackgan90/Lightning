@@ -3,9 +3,9 @@
 #include "rendererfactory.h"
 #include "logger.h"
 #include "SceneManager.h"
-#include "ecs/systemmanager.h"
-#include "ecs/eventmanager.h"
-#include "winwindowsystem.h"
+#include "ECS/SystemManager.h"
+#include "ECS/EventManager.h"
+#include "WinWindowSystem.h"
 #include "timesystem.h"
 #undef min
 #undef max

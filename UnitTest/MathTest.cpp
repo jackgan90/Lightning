@@ -2,9 +2,9 @@
 #include <iostream>
 #include "container.h"
 #include "catch.hpp"
-#include "math/matrix.h"
+#include "Math/Matrix.h"
 #include "HelperStubs.h"
-#include "math/vector.h"
+#include "Math/Vector.h"
 #include "rect.h"
 #include "color.h"
 
