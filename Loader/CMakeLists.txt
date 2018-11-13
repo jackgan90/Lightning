@@ -1,7 +1,7 @@
 include(helpers)
 
 project(Loader)
-message(STATUS "Configuring project loader")
+message(STATUS "Configuring project Loader")
 
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

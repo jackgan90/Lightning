@@ -1,5 +1,5 @@
 project(Render)
-message(STATUS "Configuring project renderer")
+message(STATUS "Configuring project Render")
 
 
 set(HEADERS RendererExportDef.h

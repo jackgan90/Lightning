@@ -1,5 +1,5 @@
 project(Scene)
-message(STATUS "Configuring project scene")
+message(STATUS "Configuring project Scene")
 
 set(HEADERS SceneExportDef.h 
 			Scene.h 

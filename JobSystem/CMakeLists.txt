@@ -1,5 +1,5 @@
 project(JobSystem)
-message(STATUS "Configuring project jobsystem")
+message(STATUS "Configuring project JobSystem")
 
 set(HEADERS Job.h
 			JobAllocator.h

@@ -42,15 +42,15 @@ find_package(FreeImage REQUIRED)
 #spdlog
 set(SPDLOG_INCLUDE_DIR ${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include)
 
-add_subdirectory(foundation)
-add_subdirectory(utilities)
-add_subdirectory(platform)
-add_subdirectory(window)
-add_subdirectory(render)
-add_subdirectory(unittest)
-add_subdirectory(loader)
-add_subdirectory(scene)
-add_subdirectory(jobsystem)
+add_subdirectory(Foundation)
+add_subdirectory(Utilities)
+add_subdirectory(Platform)
+add_subdirectory(Window)
+add_subdirectory(Render)
+add_subdirectory(Unittest)
+add_subdirectory(Loader)
+add_subdirectory(Scene)
+add_subdirectory(JobSystem)
 
 
 

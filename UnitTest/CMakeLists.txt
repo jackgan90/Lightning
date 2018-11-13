@@ -1,5 +1,5 @@
 project(UnitTest)
-message(STATUS "Configuring project test")
+message(STATUS "Configuring project UnitTest")
 
 set(HEADERS catch.hpp)
 set(SOURCES Main.cpp

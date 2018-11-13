@@ -1,5 +1,5 @@
 project(Platform)
-message(STATUS "Configuring project platform")
+message(STATUS "Configuring project Platform")
 
 set(APPLICATION_SUBSYSTEM_DIR "Application")
 

@@ -1,5 +1,5 @@
 project(Foundation)
-message(STATUS "Configuring project foundation")
+message(STATUS "Configuring project Foundation")
 
 set(MEMORY_HEADERS	Memory/IMemoryAllocator.h
 					Memory/PoolAllocator.h
