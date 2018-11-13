@@ -2,12 +2,12 @@
 #include <memory>
 #include <cstdint>
 #include "Drawable.h"
-#include "material.h"
-#include "vertexbuffer.h"
-#include "indexbuffer.h"
-#include "renderconstants.h"
-#include "rendernode.h"
-#include "color.h"
+#include "Material.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "RenderConstants.h"
+#include "RenderNode.h"
+#include "Color.h"
 #include "Quaternion.h"
 
 namespace Lightning

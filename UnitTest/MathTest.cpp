@@ -5,8 +5,8 @@
 #include "Math/Matrix.h"
 #include "HelperStubs.h"
 #include "Math/Vector.h"
-#include "rect.h"
-#include "color.h"
+#include "Rect.h"
+#include "Color.h"
 
 namespace
 {

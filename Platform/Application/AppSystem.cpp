@@ -2,11 +2,11 @@
 #include "FileSystemFactory.h"
 #include "AppSystem.h"
 #include "Logger.h"
-#include "irenderer.h"
+#include "IRenderer.h"
 #include "SceneManager.h"
 //include primitives here just for simple scene construction
 #include "Primitive.h"
-#include "transform.h"
+#include "Transform.h"
 #include "ConfigManager.h"
 #include "Loader.h"
 #include "SystemPriority.h"

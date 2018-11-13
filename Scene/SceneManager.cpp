@@ -1,6 +1,6 @@
 #pragma once
 #include "SceneManager.h"
-#include "renderer.h"
+#include "Renderer.h"
 
 namespace Lightning
 {

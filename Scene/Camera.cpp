@@ -1,5 +1,5 @@
 #include "Camera.h"
-#include "renderer.h"
+#include "Renderer.h"
 #define EPSILON 0.0001
 
 namespace Lightning

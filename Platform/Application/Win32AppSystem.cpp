@@ -1,6 +1,6 @@
 #include "Common.h"
 #include "Win32AppSystem.h"
-#include "rendererfactory.h"
+#include "RendererFactory.h"
 #include "Logger.h"
 #include "SceneManager.h"
 #include "ECS/SystemManager.h"

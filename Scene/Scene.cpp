@@ -1,5 +1,5 @@
 #include "Scene.h"
-#include "renderer.h"
+#include "Renderer.h"
 
 namespace Lightning
 {

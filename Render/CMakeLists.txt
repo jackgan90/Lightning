@@ -1,0 +1,176 @@
+project(Render)
+message(STATUS "Configuring project renderer")
+
+
+set(HEADERS RendererExportDef.h
+			IDevice.h
+			Device.h
+			ISwapChain.h
+			IRenderTarget.h
+			IrenderTargetManager.h
+			IDepthStencilBuffer.h
+			IRenderer.h
+			IRenderFence.h
+			Renderer.h
+			PipelineState.h
+			Semantics.h
+			IVertexBuffer.h
+			VertexBuffer.h
+			IIndexBuffer.h
+			IndexBuffer.h
+			RendererHelper.h
+			RenderException.h
+			RendererFactory.h
+			IGPUBuffer.h
+			GPUBuffer.h
+			RenderConstants.h
+			Geometry.h
+			Material.h
+			RenderPass.h
+			ForwardRenderPass.h
+			DeferedRenderPass.h
+			RenderNode.h)
+set(SOURCES Renderer.cpp
+			Device.cpp
+			VertexBuffer.cpp
+			IndexBuffer.cpp
+			RendererHelper.cpp
+			RendererFactory.cpp
+			GPUBuffer.cpp
+			Geometry.cpp
+			Material.cpp
+			RenderPass.cpp
+			ForwardRenderPass.cpp
+			DeferedRenderPass.cpp)
+
+set(TYPES_HEADERS	Types/Color.h
+					Types/Rect.h)
+
+set(SHADER_HEADERS	Shader/IShader.h
+					Shader/ShaderDefine.h)
+set(SHADER_SOURCES	Shader/ShaderDefine.cpp
+					Shader/Shader.cpp)
+
+set(TEXTURE_HEADERS	Texture/ITexture.h)
+
+set(SERIALIZERS_HEADERS	Serializers/ShaderSerializer.h
+						Serializers/TextureSerializer.h)
+
+set(SERIALIZERS_SOURCES	Serializers/ShaderSerializer.cpp
+						Serializers/TextureSerializer.cpp)
+
+set(UTILITY_HEADERS RenderAllocator.h)
+set(UTILITY_SOURCES RenderAllocator.cpp)
+
+list(APPEND HEADERS ${TYPES_HEADERS} ${SHADER_HEADERS} ${UTILITY_HEADERS} ${SERIALIZERS_HEADERS} ${TEXTURE_HEADERS})
+list(APPEND SOURCES ${SHADER_SOURCES} ${UTILITY_SOURCES} ${SERIALIZERS_SOURCES})
+
+source_group("Types" FILES ${TYPES_HEADERS})
+source_group("Shader" FILES ${SHADER_HEADERS}
+							${SHADER_SOURCES})
+
+source_group("Texture" FILES ${TEXTURE_HEADERS})
+
+source_group("Utility" FILES ${UTILITY_HEADERS} ${UTILITY_SOURCES})
+
+source_group("Serializers" FILES ${SERIALIZERS_HEADERS} ${SERIALIZERS_SOURCES})
+
+if (WIN32)
+	add_definitions(-DLIGHTNING_WIN32)
+endif()
+if(LIGHTNING_USE_D3D12)
+	add_definitions(-DLIGHTNING_USE_D3D12)
+endif()
+
+if(LIGHTNING_USE_D3D12)
+	add_definitions(-DLIGHTNING_USE_D3D12)
+	set(D3D12_HEADERS	D3D12/D3D12Device.h
+						D3D12/D3D12SwapChain.h
+						D3D12/D3D12RenderTarget.h
+						D3D12/D3D12DepthStencilBuffer.h
+						D3D12/D3D12RenderTargetManager.h
+						D3D12/D3D12Renderer.h
+						D3D12/D3D12RenderFence.h
+						D3D12/D3D12DescriptorHeapManager.h
+						D3D12/D3D12TypeMapper.h
+						D3D12/D3D12Shader.h
+						D3D12/D3D12BufferResource.h
+						D3D12/D3D12VertexBuffer.h
+						D3D12/D3D12IndexBuffer.h
+						D3D12/D3D12ConstantBufferManager.h
+						D3D12/D3D12CommandEncoder.h
+						D3D12/D3D12StatefulResource.h
+						D3D12/D3D12StatefulResourceMgr.h
+						D3D12/D3D12ForwardRenderPass.h
+						D3D12/D3D12Texture.h)
+	set(D3D12_SOURCES	D3D12/D3D12Device.cpp
+						D3D12/D3D12SwapChain.cpp
+						D3D12/D3D12RenderTarget.cpp
+						D3D12/D3D12DepthStencilBuffer.cpp
+						D3D12/D3D12RenderTargetManager.cpp
+						D3D12/D3D12Renderer.cpp
+						D3D12/D3D12RenderFence.cpp
+						D3D12/D3D12DescriptorHeapManager.cpp
+						D3D12/D3D12Shader.cpp
+						D3D12/D3D12BufferResource.cpp
+						D3D12/D3D12VertexBuffer.cpp
+						D3D12/D3D12IndexBuffer.cpp
+						D3D12/D3D12ConstantBufferManager.cpp
+						D3D12/D3D12CommandEncoder.cpp
+						D3D12/D3D12StatefulResource.cpp
+						D3D12/D3D12StatefulResourceMgr.cpp
+						D3D12/D3D12ForwardRenderPass.cpp
+						D3D12/D3D12Texture.cpp)
+	list(APPEND HEADERS ${D3D12_HEADERS})
+	list(APPEND SOURCES ${D3D12_SOURCES})
+	source_group("D3D12" FILES ${D3D12_HEADERS} ${D3D12_SOURCES})
+endif()
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+
+define_dll_export_macro(RENDERER)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}
+					${CMAKE_CURRENT_SOURCE_DIR}/types
+					${CMAKE_CURRENT_SOURCE_DIR}/shader
+					${CMAKE_CURRENT_SOURCE_DIR}/texture
+					${CMAKE_SOURCE_DIR}/foundation
+					${CMAKE_SOURCE_DIR}/foundation/memory
+					${CMAKE_SOURCE_DIR}/foundation/math
+					${CMAKE_SOURCE_DIR}/utilities
+					${CMAKE_SOURCE_DIR}/platform 
+					${CMAKE_SOURCE_DIR}/window
+					${CMAKE_SOURCE_DIR}/loader
+					${FREEIMAGE_INCLUDE_DIR}
+					${Boost_INCLUDE_DIR}
+					${RTTR_INCLUDE_DIR}
+					${TBB_INCLUDE_DIR}
+					${SPDLOG_INCLUDE_DIR})
+
+if(LIGHTNING_USE_D3D12)
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/D3D12
+						${LIGHTNING_DEPENDENCIES_DIR}/D3D12)
+endif()
+
+add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
+if(MSVC)
+	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /wd4251 /wd4275 /EHsc /MDd")
+	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_DEBUG} /wd4251 /wd4275 /EHsc /MD")
+	set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc")
+	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc")
+	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
+endif()
+target_link_libraries(${PROJECT_NAME} ${FREEIMAGE_LIBRARIES})
+add_dependencies(${PROJECT_NAME} Foundation Window Utilities Loader)
+target_link_libraries(${PROJECT_NAME} Foundation Window Utilities Loader)
+if(LIGHTNING_USE_D3D12)
+	target_link_libraries(${PROJECT_NAME} dxgi.lib d3d12.lib d3dcompiler.lib)
+	target_link_libraries(${PROJECT_NAME} dxguid.lib)
+endif()
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FREEIMAGE_DLLS} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy_if_different ${FREEIMAGE_DLLS} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release)
