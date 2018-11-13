@@ -67,7 +67,17 @@ namespace Lightning
 
 			template<typename... Args>
 			using Tuple = std::tuple<Args...>;
+
 		};
 
+	}
+}
+
+namespace Lightning
+{
+	template<std::size_t N, class... Types>
+	auto GetTupleElement(Foundation::Container::Tuple<Types...>& t)noexcept -> decltype(std::get<N>(t))
+	{
+		return std::get<N>(t);
 	}
 }
