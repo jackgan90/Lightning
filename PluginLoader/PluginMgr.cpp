@@ -20,7 +20,7 @@ namespace Lightning
 			}
 			PluginInfo info;
 #ifdef LIGHTNING_WIN32
-			info.handle = ::LoadLibrary(name.c_str());
+			info.handle = ::LoadLibrary((name + Plugin::PluginExtension).c_str());
 			if (info.handle)
 			{
 				GetPluginProc pFunc = (GetPluginProc)::GetProcAddress(info.handle, GET_PLUGIN_FUNC);
