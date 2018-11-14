@@ -1,33 +1,35 @@
 #pragma once
 #include <memory>
 #include <string>
+#include <atomic>
 #ifdef LIGHTNING_WIN32
 #include <Windows.h>
 #endif
-#include "PluginExportDef.h"
 
 namespace Lightning
 {
-	namespace Lib
+	namespace Plugins
 	{
-		class LIGHTNING_PLUGIN_API Plugin
+		class Plugin
 		{
 		public:
 			std::string GetName()const { return mName; }
-			bool IsLoaded()const;
-			bool Load();
-			bool Unload();
+			//Decrease the reference count of this plugin,returns true if the plugin is deleted
+			bool Release();
+			void AddRef();
 			std::string GetFullName()const;
-		private:
+		protected:
 			friend class PluginMgr;
 			Plugin(const std::string& name);
+			Plugin(const Plugin&) = delete;
+			Plugin& operator=(const Plugin&) = delete;
+			//Load and Unload is only called by PluginMgr
 			std::string mName;
+			std::atomic<int> mRefCount;
 #ifdef LIGHTNING_WIN32
-			HMODULE mHandle;
 			static constexpr char* PluginExtension = ".dll";
 #endif
 		};
-
-		using PluginPtr = std::shared_ptr<Plugin>;
+		typedef Plugin* (*GetPluginProc)(class PluginMgr*);
 	}
 }

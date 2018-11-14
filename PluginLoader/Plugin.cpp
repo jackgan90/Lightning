@@ -2,43 +2,27 @@
 
 namespace Lightning
 {
-	namespace Lib
+	namespace Plugins
 	{
-		Plugin::Plugin(const std::string& name): mName(name)
-#ifdef LIGHTNING_WIN32
-			, mHandle(NULL)
-#endif
+		Plugin::Plugin(const std::string& name): mName(name), mRefCount(1)
 		{
-			Load();
+			AddRef();
 		}
 
-		bool Plugin::IsLoaded()const
+		void Plugin::AddRef()
 		{
-#ifdef LIGHTNING_WIN32
-			return mHandle != NULL;
-#endif
+			mRefCount.fetch_add(1, std::memory_order_relaxed);
 		}
 
-		bool Plugin::Load()
+		bool Plugin::Release()
 		{
-			if (IsLoaded())
-				return false;
-#ifdef LIGHTNING_WIN32
-			mHandle = ::LoadLibrary(GetFullName().c_str());
-#endif
-			return IsLoaded();
-		}
-
-		bool Plugin::Unload()
-		{
-			if (!IsLoaded())
-				return false;
-#ifdef LIGHTNING_WIN32
-			auto res = ::FreeLibrary(mHandle);
-			if (res)
-				mHandle = NULL;
-#endif
-			return !IsLoaded();
+			auto oldRefCount = mRefCount.fetch_sub(1, std::memory_order_relaxed);
+			if (oldRefCount == 1)
+			{
+				delete this;
+				return true;
+			}
+			return false;
 		}
 
 		std::string Plugin::GetFullName()const

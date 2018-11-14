@@ -1,26 +1,36 @@
 #pragma once
 #include <string>
-#include "PluginExportDef.h"
+#include <mutex>
 #include "Plugin.h"
-#include "Singleton.h"
 #include "Container.h"
 
 namespace Lightning
 {
-	namespace Lib
+	class Engine;
+	namespace Plugins
 	{
 		using Foundation::Container;
-		class LIGHTNING_PLUGIN_API PluginMgr : Foundation::Singleton<PluginMgr>
+		//An instance of a PluginMgr can only be created by Engine.
+		class PluginMgr
 		{
 		public:
-			PluginPtr Load(const std::string& pluginName);
+			Plugin* Load(const std::string& pluginName);
+			Plugin* GetPlugin(const std::string& pluginName);
 			bool Unload(const std::string& pluginName);
-			bool Unload(const PluginPtr& pluginName);
 			void UnloadAll();
 		private:
-			friend class Foundation::Singleton<PluginMgr>;
+			friend class Engine;
+			struct PluginInfo
+			{
+				Plugin* pPlugin;
+#ifdef LIGHTNING_WIN32
+				HMODULE handle;
+#endif
+			};
 			PluginMgr();
-			Container::UnorderedMap<std::string, PluginPtr> mPlugins;
+			Container::UnorderedMap<std::string, PluginInfo> mPlugins;
+			std::recursive_mutex mPluginsMutex;
+			static constexpr char* GET_PLUGIN_FUNC = "GetPlugin";
 		};
 	}
 }
