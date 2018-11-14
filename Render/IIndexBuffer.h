@@ -12,7 +12,7 @@ namespace Lightning
 			UINT32,
 		};
 
-		class LIGHTNING_RENDER_API IIndexBuffer : public GPUBuffer
+		class IIndexBuffer : public GPUBuffer
 		{
 		public:
 			IIndexBuffer(std::uint32_t bufferSize, IndexType type) : GPUBuffer(bufferSize), mType(type){}

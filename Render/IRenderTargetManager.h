@@ -9,7 +9,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNING_RENDER_API IRenderTargetManager
+		class IRenderTargetManager
 		{
 		public:
 			//create a render target

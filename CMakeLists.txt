@@ -43,7 +43,6 @@ find_package(FreeImage REQUIRED)
 set(SPDLOG_INCLUDE_DIR ${LIGHTNING_DEPENDENCIES_DIR}/spdlog/include)
 
 add_subdirectory(Foundation)
-add_subdirectory(Utilities)
 add_subdirectory(Platform)
 add_subdirectory(Window)
 add_subdirectory(Render)
@@ -89,7 +88,6 @@ include_directories(${CMAKE_SOURCE_DIR}/Foundation
 					${CMAKE_SOURCE_DIR}/Render/Types
 					${CMAKE_SOURCE_DIR}/Render/Shader
 					${CMAKE_SOURCE_DIR}/Render/Texture
-					${CMAKE_SOURCE_DIR}/Utilities
 					${Boost_INCLUDE_DIR}
 					${TBB_INCLUDE_DIR}
 					${RTTR_INCLUDE_DIR}

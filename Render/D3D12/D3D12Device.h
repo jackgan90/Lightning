@@ -21,7 +21,7 @@ namespace Lightning
 		using Foundation::SharedFileSystemPtr;
 		using Foundation::StackAllocator;
 		using Foundation::Container;
-		class LIGHTNING_RENDER_API D3D12Device : public Device
+		class D3D12Device : public Device
 		{
 		public:
 			friend class D3D12Renderer;

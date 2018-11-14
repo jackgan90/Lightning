@@ -10,7 +10,7 @@ namespace Lightning
 	namespace Render
 	{
 		//a wrapper class for vb/ib 
-		struct LIGHTNING_RENDER_API Geometry
+		struct Geometry
 		{
 			SharedVertexBufferPtr vbs[MAX_GEOMETRY_BUFFER_COUNT];
 			SharedIndexBufferPtr ib;

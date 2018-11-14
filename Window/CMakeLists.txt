@@ -24,7 +24,6 @@ define_dll_export_macro(WINDOW)
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 
 include_directories(${CMAKE_SOURCE_DIR}/Foundation
-					${CMAKE_SOURCE_DIR}/Utilities
 					${CMAKE_SOURCE_DIR}/Foundation/Memory
 					${Boost_INCLUDE_DIR}
 					${TBB_INCLUDE_DIR}

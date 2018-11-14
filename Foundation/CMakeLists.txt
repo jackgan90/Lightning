@@ -40,6 +40,7 @@ set(HEADERS	Common.h
 			Singleton.h
 			Counter.h
 			PlainObject.h
+			HashableObject.h
 			MurmurHash3.h
 			Timer.h
 			TimerManager.h

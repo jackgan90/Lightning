@@ -19,13 +19,13 @@ namespace Lightning
 	namespace Render
 	{
 		using Window::WindowSystem;
-		class LIGHTNING_RENDER_API DeviceInitException : public RendererException
+		class DeviceInitException : public RendererException
 		{
 		public:
 			DeviceInitException(const char*const w):RendererException(w){}
 		};
 
-		class LIGHTNING_RENDER_API SwapChainInitException : public RendererException
+		class SwapChainInitException : public RendererException
 		{
 		public:
 			SwapChainInitException(const char*const w):RendererException(w){}
@@ -66,7 +66,7 @@ namespace Lightning
 		};
 
 		using RendererCallback = std::function<void()>;
-		class LIGHTNING_RENDER_API IRenderer
+		class IRenderer
 		{
 		public:
 			virtual ~IRenderer() = default;

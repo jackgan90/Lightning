@@ -39,7 +39,7 @@ namespace Lightning
 			Container::Vector<VertexComponent> components;
 		};
 
-		class LIGHTNING_RENDER_API IVertexBuffer : public GPUBuffer
+		class IVertexBuffer : public GPUBuffer
 		{
 		public:
 			IVertexBuffer(std::uint32_t bufferSize):GPUBuffer(bufferSize){}

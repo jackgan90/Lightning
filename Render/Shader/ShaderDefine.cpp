@@ -1,6 +1,5 @@
 #include <algorithm>
 #include "ShaderDefine.h"
-#include "EngineAlgo.h"
 
 namespace Lightning
 {
@@ -14,8 +13,6 @@ namespace Lightning
 		ShaderDefine::ShaderDefine(const MacroContainer& map)
 		{
 			mMacros = map;
-			Utility::erase_if(mMacros, mMacros.begin(), mMacros.end(),
-				[&](const std::pair<const std::string, const std::string>& macro) {return macro.first.length() <= 0; });
 		}
 
 		bool ShaderDefine::operator==(const ShaderDefine& define)const
@@ -70,8 +67,6 @@ namespace Lightning
 
 		void ShaderDefine::Exclude(const ShaderDefine& define)
 		{
-			Utility::erase_if(mMacros, mMacros.begin(), mMacros.end(),
-				[&](const std::pair<const std::string, const std::string>& macro) {return define.HasMacro(macro.first); });
 		}
 
 

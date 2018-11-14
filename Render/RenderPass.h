@@ -12,7 +12,7 @@ namespace Lightning
 			DEFERED
 		};
 
-		class LIGHTNING_RENDER_API RenderPass
+		class RenderPass
 		{
 		public:
 			virtual ~RenderPass(){}

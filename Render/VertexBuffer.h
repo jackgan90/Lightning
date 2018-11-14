@@ -10,7 +10,7 @@ namespace Lightning
 	namespace Render
 	{
 
-		class LIGHTNING_RENDER_API VertexBuffer : public IVertexBuffer
+		class VertexBuffer : public IVertexBuffer
 		{
 		public:
 			const VertexComponent& GetVertexComponent(size_t index)override;

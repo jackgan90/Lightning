@@ -12,7 +12,7 @@ namespace Lightning
 	namespace Render
 	{
 		using Foundation::Math::Transform;
-		struct LIGHTNING_RENDER_API RenderNode
+		struct RenderNode
 		{
 			SharedGeometryPtr geometry;	//vb ib 
 			SharedMaterialPtr material;	//shader material attributes

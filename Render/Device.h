@@ -6,7 +6,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNING_RENDER_API Device : public IDevice
+		class Device : public IDevice
 		{
 		public:
 			friend class Renderer;

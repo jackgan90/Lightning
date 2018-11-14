@@ -16,7 +16,7 @@ namespace Lightning
 		using Microsoft::WRL::ComPtr;
 		using Window::WindowSystem;
 		class D3D12Renderer;
-		class LIGHTNING_RENDER_API D3D12SwapChain : public ISwapChain
+		class D3D12SwapChain : public ISwapChain
 		{
 		public:
 			//we have to use raw pointer,because at the time the swap chain is created, D3D12Renderer is not constructed successfully yet

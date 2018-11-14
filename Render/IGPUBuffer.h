@@ -15,7 +15,7 @@ namespace Lightning
 		};
 		
 
-		class LIGHTNING_RENDER_API IGPUBuffer
+		class IGPUBuffer
 		{
 		public:
 			virtual ~IGPUBuffer(){}

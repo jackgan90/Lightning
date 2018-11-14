@@ -6,7 +6,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNING_RENDER_API GPUBuffer : public IGPUBuffer, private boost::noncopyable
+		class GPUBuffer : public IGPUBuffer, private boost::noncopyable
 		{
 		public:
 			GPUBuffer(std::uint32_t bufferSize);

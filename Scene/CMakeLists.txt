@@ -30,7 +30,6 @@ include_directories(${CMAKE_SOURCE_DIR}/Render
 					${CMAKE_SOURCE_DIR}/Entities
 					${CMAKE_SOURCE_DIR}/Foundation
 					${CMAKE_SOURCE_DIR}/Foundation/Math
-					${CMAKE_SOURCE_DIR}/Utilities
 					${Boost_INCLUDE_DIR}
 					${TBB_INCLUDE_DIR}
 					${RTTR_INCLUDE_DIR}
@@ -45,5 +44,5 @@ if(MSVC)
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
 
-add_dependencies(${PROJECT_NAME} Foundation Utilities Render)
-target_link_libraries(${PROJECT_NAME} Foundation Utilities Render)
+add_dependencies(${PROJECT_NAME} Foundation Render)
+target_link_libraries(${PROJECT_NAME} Foundation Render)

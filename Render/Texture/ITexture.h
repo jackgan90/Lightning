@@ -14,12 +14,12 @@ namespace Lightning
 			TEXTURE_TYPE_NUM
 		};
 
-		struct LIGHTNING_RENDER_API TextureDescriptor
+		struct TextureDescriptor
 		{
 			TEXTURE_TYPE type;
 		};
 
-		class LIGHTNING_RENDER_API ITexture
+		class ITexture
 		{
 		public:
 			virtual ~ITexture(){}

@@ -14,7 +14,7 @@ namespace Lightning
 	{
 		using Microsoft::WRL::ComPtr;
 		class D3D12SwapChain;
-		class LIGHTNING_RENDER_API D3D12RenderTargetManager : public RenderTargetManager<D3D12RenderTargetManager>
+		class D3D12RenderTargetManager : public RenderTargetManager<D3D12RenderTargetManager>
 		{
 		public:
 			D3D12RenderTargetManager();

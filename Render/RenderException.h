@@ -7,7 +7,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNING_RENDER_API RendererException : public std::exception
+		class RendererException : public std::exception
 		{
 		public:
 			explicit RendererException(const char*const w) : std::exception(w)

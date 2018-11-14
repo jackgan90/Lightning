@@ -28,7 +28,7 @@ namespace Lightning
 		using Window::SharedWindowPtr;
 		using Microsoft::WRL::ComPtr;
 		//Thread safe
-		class LIGHTNING_RENDER_API D3D12Renderer : public Renderer
+		class D3D12Renderer : public Renderer
 		{
 		public:
 			D3D12Renderer(const SharedWindowPtr& pWindow, const SharedFileSystemPtr& fs);

@@ -8,7 +8,7 @@ namespace Lightning
 	namespace Render
 	{
 		//Thread unsafe
-		class LIGHTNING_RENDER_API D3D12VertexBuffer : public VertexBuffer 
+		class D3D12VertexBuffer : public VertexBuffer 
 		{
 		public:
 			D3D12VertexBuffer(D3D12Device* pDevice, std::uint32_t bufferSize, const VertexDescriptor& descriptor);

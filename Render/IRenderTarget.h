@@ -11,7 +11,7 @@ namespace Lightning
 		using Foundation::Container;
 
 		using RenderTargetID = int;
-		class LIGHTNING_RENDER_API IRenderTarget
+		class IRenderTarget
 		{
 		public:
 			//get pixel sample count

@@ -20,7 +20,7 @@ namespace Lightning
 		using Foundation::Math::Vector4f;
 		using Foundation::Math::Matrix3f;
 		using Foundation::Math::Matrix4f;
-		class LIGHTNING_RENDER_API ShaderCompileException : public RendererException
+		class ShaderCompileException : public RendererException
 		{
 		public:
 			ShaderCompileException(const char*const w):RendererException(w){}
@@ -54,7 +54,7 @@ namespace Lightning
 		using ShaderArgumentRegister = std::uint8_t;
 		using ShaderArgumentSpace = std::uint8_t;
 
-		struct LIGHTNING_RENDER_API ShaderArgument
+		struct ShaderArgument
 		{
 			ShaderArgumentType type;
 			ShaderArgumentRegister registerIndex;
@@ -119,7 +119,7 @@ namespace Lightning
 			}
 		};
 
-		class LIGHTNING_RENDER_API IShader : public HashableObject
+		class IShader : public HashableObject
 		{
 		public:
 			virtual std::string GetEntryPoint()const = 0; 
@@ -137,7 +137,7 @@ namespace Lightning
 
 		using SharedShaderPtr = std::shared_ptr<IShader>;
 
-		class LIGHTNING_RENDER_API Shader : public IShader
+		class Shader : public IShader
 		{
 		public:
 			static size_t Hash(const ShaderType& type, const std::string& shaderName, const ShaderDefine& defineMap);

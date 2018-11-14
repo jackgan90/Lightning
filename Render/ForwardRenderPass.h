@@ -9,7 +9,7 @@ namespace Lightning
 	{
 		using Foundation::Container;
 
-		class LIGHTNING_RENDER_API ForwardRenderPass : public RenderPass
+		class ForwardRenderPass : public RenderPass
 		{
 		public:	
 			ForwardRenderPass():RenderPass(RenderPassType::FORWARD){}

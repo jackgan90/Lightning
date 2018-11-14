@@ -8,7 +8,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNING_RENDER_API IDepthStencilBuffer
+		class IDepthStencilBuffer
 		{
 		public:
 			virtual ~IDepthStencilBuffer() = default;

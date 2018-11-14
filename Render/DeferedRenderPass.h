@@ -5,7 +5,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNING_RENDER_API DeferedRenderPass : public RenderPass
+		class DeferedRenderPass : public RenderPass
 		{
 		public:	
 			DeferedRenderPass():RenderPass(RenderPassType::DEFERED){}

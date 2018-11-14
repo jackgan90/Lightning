@@ -9,7 +9,7 @@ namespace Lightning
 	namespace Scene
 	{
 		using Render::IRenderer;
-		class LIGHTNING_SCENE_API IDrawable
+		class IDrawable
 		{
 		public:
 			virtual ~IDrawable() = default;

@@ -7,7 +7,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		class LIGHTNING_RENDER_API ISwapChain
+		class ISwapChain
 		{
 		public:
 			virtual ~ISwapChain() = default;

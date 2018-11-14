@@ -3,7 +3,6 @@
 #include "Container.h"
 #include "catch.hpp"
 #include "Math/Matrix.h"
-#include "HelperStubs.h"
 #include "Math/Vector.h"
 #include "Rect.h"
 #include "Color.h"

@@ -8,7 +8,7 @@ namespace Lightning
 	namespace Render
 	{
 		//Thread unsafe
-		class LIGHTNING_RENDER_API D3D12IndexBuffer : public IndexBuffer
+		class D3D12IndexBuffer : public IndexBuffer
 		{
 		public:
 			D3D12IndexBuffer(D3D12Device* pDevice, std::uint32_t bufferSize, IndexType type);

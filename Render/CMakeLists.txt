@@ -138,7 +138,6 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/Foundation
 					${CMAKE_SOURCE_DIR}/Foundation/Memory
 					${CMAKE_SOURCE_DIR}/Foundation/Math
-					${CMAKE_SOURCE_DIR}/Utilities
 					${CMAKE_SOURCE_DIR}/Platform 
 					${CMAKE_SOURCE_DIR}/Window
 					${CMAKE_SOURCE_DIR}/Loader
@@ -162,8 +161,8 @@ if(MSVC)
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
 target_link_libraries(${PROJECT_NAME} ${FREEIMAGE_LIBRARIES})
-add_dependencies(${PROJECT_NAME} Foundation Window Utilities Loader)
-target_link_libraries(${PROJECT_NAME} Foundation Window Utilities Loader)
+add_dependencies(${PROJECT_NAME} Foundation Window Loader)
+target_link_libraries(${PROJECT_NAME} Foundation Window Loader)
 if(LIGHTNING_USE_D3D12)
 	target_link_libraries(${PROJECT_NAME} dxgi.lib d3d12.lib d3dcompiler.lib)
 	target_link_libraries(${PROJECT_NAME} dxguid.lib)
