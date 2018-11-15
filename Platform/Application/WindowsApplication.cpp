@@ -1,11 +1,10 @@
 #include "Common.h"
-#include "Win32AppSystem.h"
+#include "WindowsApplication.h"
 #include "RendererFactory.h"
 #include "Logger.h"
 #include "SceneManager.h"
-#include "ECS/SystemManager.h"
 #include "ECS/EventManager.h"
-#include "WinWindowSystem.h"
+#include "WindowsGameWindow.h"
 #include "TimeSystem.h"
 #undef min
 #undef max
@@ -19,32 +18,31 @@ namespace Lightning
 		using Scene::SceneManager;
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Vector2i;
-		using Foundation::SystemManager;
 
 		Vector2i mousePosition;
-		Win32AppSystem::Win32AppSystem()
+		WindowsApplication::WindowsApplication()
 		{
 		}
 
-		Win32AppSystem::~Win32AppSystem()
+		WindowsApplication::~WindowsApplication()
 		{
 		}
 
-		void Win32AppSystem::Update(const EntityPtr& entity)
+		void WindowsApplication::Update()
 		{
-			AppSystem::Update(entity);
+			Application::Update();
 		}
 
-		void Win32AppSystem::RegisterWindowHandlers()
+		void WindowsApplication::RegisterWindowHandlers()
 		{
-			AppSystem::RegisterWindowHandlers();
+			Application::RegisterWindowHandlers();
 			WINDOW_MSG_CLASS_HANDLER(MouseWheelEvent, OnMouseWheel);
 			WINDOW_MSG_CLASS_HANDLER(KeyEvent, OnKeyDown);
 			WINDOW_MSG_CLASS_HANDLER(MouseDownEvent, OnMouseDown);
 			WINDOW_MSG_CLASS_HANDLER(MouseMoveEvent, OnMouseMove);
 		}
 
-		void Win32AppSystem::OnKeyDown(const Window::KeyEvent& event)
+		void WindowsApplication::OnKeyDown(const Window::KeyEvent& event)
 		{
 			auto scene = SceneManager::Instance()->GetForegroundScene();
 			if (scene)
@@ -84,6 +82,8 @@ namespace Lightning
 						camOffset *= 0.3f;
 						camOffset = camera->CameraDirectionToWorld(camOffset);
 						auto targetPosition = position + camOffset;
+						camera->MoveTo(targetPosition);
+						/*
 						static std::size_t timerId{ 0 };
 						static std::size_t repeatInterval = 1000 / 60;
 						static long long now{ 0 };
@@ -113,13 +113,14 @@ namespace Lightning
 							moveDir.Normalize();
 							camera->MoveTo(camPos + moveDir * moveDistance);
 						});
+						*/
 					}
 				}
 			}
 
 		}
 
-		void Win32AppSystem::OnMouseDown(const Window::MouseDownEvent& event)
+		void WindowsApplication::OnMouseDown(const Window::MouseDownEvent& event)
 		{
 			if (event.pressedKey & VK_MOUSERBUTTON)
 			{
@@ -128,7 +129,7 @@ namespace Lightning
 			}
 		}
 
-		void Win32AppSystem::OnMouseMove(const Window::MouseMoveEvent& event)
+		void WindowsApplication::OnMouseMove(const Window::MouseMoveEvent& event)
 		{
 			if (event.pressedKey & VK_MOUSERBUTTON)
 			{
@@ -153,7 +154,7 @@ namespace Lightning
 		}
 
 
-		void Win32AppSystem::OnMouseWheel(const MouseWheelEvent& event)
+		void WindowsApplication::OnMouseWheel(const MouseWheelEvent& event)
 		{
 			auto scene = SceneManager::Instance()->GetForegroundScene();
 			if (scene)
@@ -172,14 +173,14 @@ namespace Lightning
 			}
 		}
 
-		SharedWindowPtr Win32AppSystem::CreateMainWindow()
+		SharedWindowPtr WindowsApplication::CreateMainWindow()
 		{
-			return SystemManager::Instance()->CreateSystem<WinWindowSystem>();
+			return std::make_shared<WindowsGameWindow>();
 		}
 
-		UniqueRendererPtr Win32AppSystem::CreateRenderer()
+		UniqueRendererPtr WindowsApplication::CreateRenderer()
 		{
-			return RendererFactory::Instance()->CreateRenderer(mAppComponent->window, mAppComponent->fileSystem);
+			return RendererFactory::Instance()->CreateRenderer(mWindow, mFileSystem);
 		}
 	}
 }

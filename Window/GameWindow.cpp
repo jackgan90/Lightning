@@ -1,4 +1,4 @@
-#include "WindowSystem.h"
+#include "GameWindow.h"
 #include "ECS/EntityManager.h"
 #include "ECS/EventManager.h"
 
@@ -9,17 +9,15 @@ namespace Lightning
 		using Foundation::EventManager;
 		using Foundation::EntityManager;
 
-		WindowSystem::~WindowSystem()
+		GameWindow::~GameWindow()
 		{
 		}
 
-		WindowSystem::WindowSystem() : System(WindowSystemPriority)
+		GameWindow::GameWindow()
 		{
-			mEntity = EntityManager::Instance()->CreateEntity<WindowEntity>();
-			mComponent = mEntity->AddComponent<WindowComponent>();
 		}
 
-		void WindowSystem::OnIdle()
+		void GameWindow::OnIdle()
 		{
 			WindowIdleEvent event(this);
 			EventManager::Instance()->RaiseEvent<WindowIdleEvent>(event);

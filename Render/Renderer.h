@@ -5,7 +5,7 @@
 #include "IRenderFence.h"
 #include "FileSystem.h"
 #include "RenderPass.h"
-#include "WindowSystem.h"
+#include "GameWindow.h"
 
 namespace Lightning
 {
@@ -58,7 +58,7 @@ namespace Lightning
 			void ShutDown()override;
 			void RegisterCallback(RendererEvent evt, RendererCallback cb)override;
 			static IRenderer* Instance() { return sInstance; }
-			WindowSystem* GetOutputWindow()override { return mOutputWindow.get(); }
+			GameWindow* GetOutputWindow()override { return mOutputWindow.get(); }
 			const RenderQueue& GetRenderQueue()override;
 			SharedDepthStencilBufferPtr GetDefaultDepthStencilBuffer()override;
 		protected:

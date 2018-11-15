@@ -1,12 +1,9 @@
 #pragma once
 #include <memory>
 #include "PlatformExportDef.h"
-#include "ECS/Entity.h"
-#include "ECS/System.h"
 #include "ECS/Event.h"
 #include "FileSystem.h"
-#include "TimerManager.h"
-#include "AppComponent.h"
+#include "GameWindow.h"
 
 namespace Lightning
 {
@@ -17,29 +14,31 @@ namespace Lightning
 	namespace App
 	{
 		using UniqueRendererPtr = std::unique_ptr<Render::IRenderer>;
-
-		using Foundation::Entity;
-		using Foundation::EntityPtr;
-		using Foundation::ComponentPtr;
 		using Window::SharedWindowPtr;
+		using Foundation::SharedFileSystemPtr;
 		
-		class LIGHTNING_PLATFORM_API AppSystem : public Foundation::System
+		class LIGHTNING_PLATFORM_API Application
 		{
 		public:
-			AppSystem();
-			virtual ~AppSystem();
-			void Update(const EntityPtr& entity)override;
-		protected:
+			Application();
+			virtual ~Application();
+			virtual void Update();
 			virtual void Start();
+			bool IsRunning() { return mRunning; }
+			int GetExitCode()const { return mExitCode; }
+		protected:
 			virtual void OnWindowIdle(const Window::WindowIdleEvent& event);
 			virtual SharedWindowPtr CreateMainWindow() = 0;
 			virtual UniqueRendererPtr CreateRenderer() = 0;
 			virtual void RegisterWindowHandlers();
-			virtual void OnAppComponentRemoved(const ComponentPtr& component);
 			//For test
 			void GenerateSceneObjects();
 
-			std::shared_ptr<AppComponent> mAppComponent;
+			SharedFileSystemPtr mFileSystem;
+			UniqueRendererPtr mRenderer;
+			SharedWindowPtr mWindow;
+			int mExitCode;
+			bool mRunning;
 		};
 
 	}

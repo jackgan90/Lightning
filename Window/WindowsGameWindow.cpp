@@ -1,5 +1,5 @@
 #include "Common.h"
-#include "WinWindowSystem.h"
+#include "WindowsGameWindow.h"
 #include "Logger.h"
 #include "Container.h"
 #include "ECS/EventManager.h"
@@ -9,18 +9,18 @@ namespace Lightning
 	namespace Window
 	{
 		using Foundation::EventManager;
-		LRESULT CALLBACK WinWindowSystem::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+		LRESULT CALLBACK WindowsGameWindow::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			if (uMsg == WM_NCCREATE)
 			{
 				CREATESTRUCT* pCS = reinterpret_cast<CREATESTRUCT*>(lParam);
 				LPVOID pThis = pCS->lpCreateParams;
 				SetWindowLongPtr(hwnd, 0, reinterpret_cast<LONG_PTR>(pThis));
-				auto pWindow = reinterpret_cast<WinWindowSystem*>(pThis);
+				auto pWindow = reinterpret_cast<WindowsGameWindow*>(pThis);
 				pWindow->mHwnd = hwnd;
 				return TRUE;
 			}
-			auto pWindow = reinterpret_cast<WinWindowSystem*>(GetWindowLongPtrW(hwnd, 0));
+			auto pWindow = reinterpret_cast<WindowsGameWindow*>(GetWindowLongPtrW(hwnd, 0));
 			switch (uMsg)
 			{
 			case WM_SIZE:
@@ -132,25 +132,25 @@ namespace Lightning
 			return 0;
 		}
 
-		WinWindowSystem::WinWindowSystem() : mHwnd(nullptr)
+		WindowsGameWindow::WindowsGameWindow() : mHwnd(nullptr)
 		{
-			mComponent->caption = "Lightning Win32 Window";
-			mComponent->width = 800;
-			mComponent->height = 600;
+			mCaption = "Lightning Win32 Window";
+			mWidth = 800;
+			mHeight = 600;
 			HINSTANCE hInstance = ::GetModuleHandle(NULL);
 			RegisterWindowClass(hInstance);
 			CreateWindowInternal(hInstance);
 			LOG_INFO("Create window succeed!");
 		}
 
-		void WinWindowSystem::RegisterWindowClass(HINSTANCE hInstance)
+		void WindowsGameWindow::RegisterWindowClass(HINSTANCE hInstance)
 		{
 			WNDCLASSEX wndcls;
 			wndcls.cbSize = sizeof(WNDCLASSEX);
 			wndcls.style = CS_HREDRAW | CS_VREDRAW;
 			wndcls.lpfnWndProc = WndProc;
 			wndcls.cbClsExtra = 0;
-			wndcls.cbWndExtra = sizeof(WinWindowSystem*);
+			wndcls.cbWndExtra = sizeof(WindowsGameWindow*);
 			wndcls.hInstance = hInstance;
 			wndcls.hIcon = ::LoadIcon(hInstance, IDI_APPLICATION);
 			wndcls.hCursor = ::LoadCursor(NULL, IDC_ARROW);
@@ -166,16 +166,16 @@ namespace Lightning
 			LOG_INFO("Register window class succeed!");
 		}
 
-		void WinWindowSystem::CreateWindowInternal(HINSTANCE hInstance)
+		void WindowsGameWindow::CreateWindowInternal(HINSTANCE hInstance)
 		{
 			RECT windowRect;
 			windowRect.left = 0;
-			windowRect.right = mComponent->width;
+			windowRect.right = mWidth;
 			windowRect.top = 0;
-			windowRect.bottom = mComponent->height;
+			windowRect.bottom = mHeight;
 			::AdjustWindowRectEx(&windowRect, WS_OVERLAPPEDWINDOW, FALSE, NULL);
 			LOG_DEBUG("Window width:{0}, window height:{1}", windowRect.right - windowRect.left, windowRect.bottom - windowRect.top);
-			HWND hWnd = ::CreateWindowEx(0, sWindowClassName, mComponent->caption.c_str(), 
+			HWND hWnd = ::CreateWindowEx(0, sWindowClassName, mCaption.c_str(), 
 				WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 
 				windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, NULL, NULL, hInstance, static_cast<LPVOID>(this));
 
@@ -186,7 +186,7 @@ namespace Lightning
 		}
 
 
-		WinWindowSystem::~WinWindowSystem()
+		WindowsGameWindow::~WindowsGameWindow()
 		{
 			if(mHwnd)
 			{ 
@@ -196,7 +196,7 @@ namespace Lightning
 			LOG_INFO("Win32 window destructed!");
 		}
 
-		void WinWindowSystem::Update(const EntityPtr& entity)
+		void WindowsGameWindow::Update()
 		{
 			MSG msg{};
 			if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -215,11 +215,11 @@ namespace Lightning
 			}
 			else
 			{
-				WindowSystem::OnIdle();
+				GameWindow::OnIdle();
 			}
 		}
 
-		bool WinWindowSystem::Show(bool show)
+		bool WindowsGameWindow::Show(bool show)
 		{
 			if (!mHwnd)
 				return false;

@@ -1,7 +1,7 @@
 #pragma once
 #include "PlatformExportDef.h"
-#include "AppSystem.h"
-#include "WindowSystem.h"
+#include "Application.h"
+#include "GameWindow.h"
 #include "FileSystem.h"
 
 namespace Lightning
@@ -9,12 +9,12 @@ namespace Lightning
 	namespace App
 	{
 		using Window::SharedWindowPtr;
-		class LIGHTNING_PLATFORM_API Win32AppSystem : public AppSystem
+		class WindowsApplication : public Application
 		{
 		public:
-			Win32AppSystem();
-			~Win32AppSystem()override;
-			void Update(const EntityPtr& entity)override;
+			WindowsApplication();
+			~WindowsApplication()override;
+			void Update()override;
 		protected:
 			void OnMouseWheel(const Window::MouseWheelEvent& event);
 			void OnKeyDown(const Window::KeyEvent& event);

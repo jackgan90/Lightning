@@ -3,7 +3,7 @@
 #include "Singleton.h"
 #include "RendererExportDef.h"
 #include "IRenderer.h"
-#include "WindowSystem.h"
+#include "GameWindow.h"
 #include "FileSystem.h"
 
 

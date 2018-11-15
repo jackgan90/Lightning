@@ -1,6 +1,6 @@
 #include "Common.h"
 #include "FileSystemFactory.h"
-#include "AppSystem.h"
+#include "Application.h"
 #include "Logger.h"
 #include "IRenderer.h"
 #include "SceneManager.h"
@@ -10,7 +10,6 @@
 #include "ConfigManager.h"
 #include "Loader.h"
 #include "SystemPriority.h"
-#include "AppComponent.h"
 #include "ECS/EventManager.h"
 #include "tbb/task_scheduler_init.h"
 
@@ -26,46 +25,25 @@ namespace Lightning
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Transform;
 		using Foundation::EventManager;
-		using Foundation::TimerManager;
-		AppSystem::AppSystem() : System(Foundation::AppSystemPriority)
+		Application::Application() : mExitCode(0), mRunning(false)
 		{
 		}
 
-		AppSystem::~AppSystem()
+		Application::~Application()
 		{
 		}
 
-		void AppSystem::Update(const EntityPtr& entity)
+		void Application::Update()
 		{
-			auto appComponent = entity->GetComponent<AppComponent>();
-			if (appComponent)
-			{
-				bool started{ true };
-				if (!mAppComponent)
-				{
-					mAppComponent = appComponent;
-					entity->RegisterCompRemovedFunc<AppComponent>([this](const std::shared_ptr<AppComponent>& component) {
-						this->OnAppComponentRemoved(component);
-					});
-					started = false;
-				}
-				if (!appComponent->fileSystem)
-				{
-					appComponent->fileSystem = FileSystemFactory::Instance()->CreateFileSystem();
-					Loading::Loader::Instance()->SetFileSystem(appComponent->fileSystem);
-					LOG_INFO("File system created!Current working directory:{0}", 
-						appComponent->fileSystem->GetRoot().c_str());
-				}
-				if (!started)
-				{
-					Start();
-					LOG_INFO("Application initialized successfully!");
-				}
-			}
+			if (mWindow)
+				mWindow->Update();
+			if (mRenderer)
+				mRenderer->Render();
 		}
 
-		void AppSystem::Start()
+		void Application::Start()
 		{
+			mRunning = true;
 			static tbb::task_scheduler_init init(tbb::task_scheduler_init::deferred);
 			auto threadCount = Foundation::ConfigManager::Instance()->GetConfig().ThreadCount;
 			if (threadCount == 0)
@@ -76,14 +54,20 @@ namespace Lightning
 			{
 				init.initialize(threadCount);
 			}
-			mAppComponent->window = CreateMainWindow();
-			mAppComponent->renderer = CreateRenderer();
-			mAppComponent->renderer->Start();
-			mAppComponent->timer = TimerManager::Instance()->CreateTimer(10);
-			mAppComponent->timer->Start();
+			mFileSystem = FileSystemFactory::Instance()->CreateFileSystem();
+			LOG_INFO("File system created!Current working directory:{0}", mFileSystem->GetRoot().c_str());
+			Loading::Loader::Instance()->SetFileSystem(mFileSystem);
+			mWindow = CreateMainWindow();
+			mRenderer = CreateRenderer();
+			mRenderer->Start();
 			EventManager::Instance()->Subscribe<WindowDestroyedEvent>([this](const WindowDestroyedEvent& event) {
-				mAppComponent->exitCode = event.exitCode;
-				mAppComponent->Remove();
+				mRunning = false;
+				mExitCode = int(event.exitCode);
+				SceneManager::Instance()->DestroyAll();
+				mRenderer->ShutDown();
+				mRenderer.reset();
+				Loading::Loader::Instance()->Finalize();
+				LOG_INFO("Application quit.");
 			});
 			//Create a simple scene here just for test
 			auto scene = SceneManager::Instance()->CreateScene();
@@ -97,11 +81,11 @@ namespace Lightning
 
 			//End of scene creation
 			RegisterWindowHandlers();
-			mAppComponent->window->Show(true);
+			mWindow->Show(true);
 			LOG_INFO("Application start successfully!");
 		}
 
-		void AppSystem::GenerateSceneObjects()
+		void Application::GenerateSceneObjects()
 		{
 			auto scene = SceneManager::Instance()->GetForegroundScene();
 			static std::random_device rd;
@@ -145,35 +129,14 @@ namespace Lightning
 			}
 		}
 
-		void AppSystem::RegisterWindowHandlers()
+		void Application::RegisterWindowHandlers()
 		{
 			WINDOW_MSG_CLASS_HANDLER(WindowIdleEvent, OnWindowIdle);
 		}
-		
-		void AppSystem::OnAppComponentRemoved(const ComponentPtr& component)
+
+		void Application::OnWindowIdle(const WindowIdleEvent& event)
 		{
-			SceneManager::Instance()->DestroyAll();
-			auto appComponent = std::static_pointer_cast<AppComponent, Component>(component);
-			if (appComponent->renderer)
-			{
-				appComponent->renderer->ShutDown();
-				appComponent->renderer.reset();
-			}
-			Loading::Loader::Instance()->Finalize();
-			LOG_INFO("Application quit.");
+
 		}
-
-		void AppSystem::OnWindowIdle(const WindowIdleEvent& event)
-		{
-			if (mAppComponent)
-			{
-				if (mAppComponent->timer)
-					mAppComponent->timer->Tick();
-				if (mAppComponent->renderer)
-					mAppComponent->renderer->Render();
-			}
-		}
-
-
 	}
 }

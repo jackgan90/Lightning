@@ -5,11 +5,6 @@
 #include "WindowExportDef.h"
 #include "WindowEvents.h"
 #include "Logger.h"
-#include "SystemPriority.h"
-#include "ECS/Event.h"
-#include "ECS/System.h"
-#include "ECS/Entity.h"
-#include "WindowComponent.h"
 
 #define WINDOW_MSG_CLASS_HANDLER(EventType, Handler)\
 Foundation::EventManager::Instance()->Subscribe<Window::##EventType##>([&](const EventType& event){\
@@ -20,12 +15,6 @@ namespace Lightning
 {
 	namespace Window
 	{
-		using Foundation::System;
-		using Foundation::WindowSystemPriority;
-		using Foundation::Entity;
-		using Foundation::EntityPtr;
-		using Foundation::ComponentPtr;
-
 		class WindowInitException : public std::exception
 		{
 		public:
@@ -36,25 +25,22 @@ namespace Lightning
 			}
 		};
 
-		class WindowEntity : public Entity
-		{
-
-		};
-
-		class LIGHTNING_WINDOW_API WindowSystem : public System
+		class LIGHTNING_WINDOW_API GameWindow
 		{
 		public:
 			virtual bool Show(bool show) = 0;
-			virtual ~WindowSystem();
+			virtual ~GameWindow();
+			virtual void Update() = 0;
 			//Only left for backwards compatibility,will remove later once refactoring is over
-			std::uint32_t GetWidth()const { return mComponent->width; }
-			std::uint32_t GetHeight()const { return mComponent->height; }
+			std::uint32_t GetWidth()const { return mWidth; }
+			std::uint32_t GetHeight()const { return mHeight; }
 		protected:
-			WindowSystem();
+			GameWindow();
 			virtual void OnIdle();
-			std::shared_ptr<WindowEntity> mEntity;
-			std::shared_ptr<WindowComponent> mComponent;
+			std::string mCaption;
+			std::uint32_t mWidth;
+			std::uint32_t mHeight;
 		};
-		using SharedWindowPtr = std::shared_ptr<WindowSystem>;
+		using SharedWindowPtr = std::shared_ptr<GameWindow>;
 	}
 }

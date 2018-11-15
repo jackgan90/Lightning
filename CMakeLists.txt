@@ -67,7 +67,9 @@ set(LIBRARY_HEADERS	PluginLoader/PluginExportDef.h
 set(LIBRARY_SOURCES	PluginLoader/Plugin.cpp
 					PluginLoader/PluginMgr.cpp)
 
-set(SOURCE_FILES	Entry.cpp)
+set(HEADER_FILES	Engine.h)
+set(SOURCE_FILES	Engine.cpp
+					Entry.cpp)
 
 list(APPEND HEADER_FILES ${LIBRARY_HEADERS})
 list(APPEND SOURCE_FILES ${LIBRARY_SOURCES})
