@@ -12,7 +12,6 @@ namespace Lightning
 		public:
 			PlatformPlugin(const char* name) : Plugin(name){}
 			virtual App::Application* CreateApplication() = 0;
-			virtual void DestroyApplication(App::Application* pApp) = 0;
 		};
 	}
 }

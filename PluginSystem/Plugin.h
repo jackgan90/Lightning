@@ -28,7 +28,6 @@ namespace Lightning
 			}
 			Plugin(const Plugin&) = delete;
 			Plugin& operator=(const Plugin&) = delete;
-			virtual void Finalize() = 0;
 			//Load and Unload is only called by PluginMgr
 			std::string mName;
 			int GetRefCount()const { return mRefCount; }
@@ -38,7 +37,6 @@ namespace Lightning
 				auto oldRefCount = mRefCount.fetch_sub(1, std::memory_order_relaxed);
 				if (oldRefCount == 1)
 				{
-					Finalize();
 					return true;
 				}
 				return false;

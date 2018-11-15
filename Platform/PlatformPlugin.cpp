@@ -1,3 +1,4 @@
+#include <memory>
 #include "PlatformPlugin.h"
 #include "Application/ApplicationFactory.h"
 #include "PlatformExportDef.h"
@@ -13,8 +14,8 @@ namespace Lightning
 		public:
 			PlatformPluginImpl(const char* name);
 			App::Application* CreateApplication()override;
-			void DestroyApplication(App::Application* pApp)override;
-			void Finalize()override;
+		private:
+			std::unique_ptr<App::Application> mApp;
 		};
 
 		PlatformPluginImpl::PlatformPluginImpl(const char* name) : PlatformPlugin(name)
@@ -24,17 +25,8 @@ namespace Lightning
 
 		App::Application* PlatformPluginImpl::CreateApplication()
 		{
-			return App::ApplicationFactory::CreateApplication();
-		}
-
-		void PlatformPluginImpl::DestroyApplication(App::Application* pApp)
-		{
-			delete pApp;
-		}
-
-		void PlatformPluginImpl::Finalize()
-		{
-
+			mApp = ApplicationFactory::CreateApplication();
+			return mApp.get();
 		}
 	}
 }
