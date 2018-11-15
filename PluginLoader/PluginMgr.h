@@ -1,36 +1,46 @@
 #pragma once
 #include <string>
 #include <mutex>
-#include "Plugin.h"
-#include "Container.h"
+#include <unordered_map>
+#include <tuple>
+#include "IPluginMgr.h"
+#ifdef LIGHTNING_WIN32
+#include <Windows.h>
+#endif
+
 
 namespace Lightning
 {
 	class Engine;
 	namespace Plugins
 	{
-		using Foundation::Container;
 		//An instance of a PluginMgr can only be created by Engine.
-		class PluginMgr
+		class PluginMgr : public IPluginMgr
 		{
 		public:
-			Plugin* Load(const std::string& pluginName);
-			Plugin* GetPlugin(const std::string& pluginName);
-			bool Unload(const std::string& pluginName);
-			void UnloadAll();
+			Plugin* Load(const std::string& pluginName)override;
+			Plugin* GetPlugin(const std::string& pluginName)override;
+			bool Unload(const std::string& pluginName)override;
+			void UnloadAll()override;
 		private:
 			friend class Engine;
 			struct PluginInfo
 			{
 				Plugin* pPlugin;
+				ReleasePluginProc ReleaseProc;
 #ifdef LIGHTNING_WIN32
 				HMODULE handle;
 #endif
 			};
+			using PluginTable = std::unordered_map<std::string, PluginInfo>;
+			void UnloadAllImpl();
+			std::tuple<bool, PluginTable::iterator> UnloadImpl(const std::string& pluginName);
 			PluginMgr();
-			Container::UnorderedMap<std::string, PluginInfo> mPlugins;
+			~PluginMgr();
+			PluginTable mPlugins;
 			std::recursive_mutex mPluginsMutex;
-			static constexpr char* GET_PLUGIN_FUNC = "GetPlugin";
+			static constexpr char* GET_PLUGIN_PROC = "GetPlugin";
+			static constexpr char* RELEASE_PLUGIN_PROC = "ReleasePlugin";
 		};
 	}
 }

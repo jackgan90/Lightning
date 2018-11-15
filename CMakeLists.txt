@@ -62,10 +62,10 @@ endif()
 
 set(LIBRARY_HEADERS	PluginLoader/PluginExportDef.h
 					PluginLoader/Plugin.h
+					PluginLoader/IPluginMgr.h
 					PluginLoader/PluginMgr.h)
 
-set(LIBRARY_SOURCES	PluginLoader/Plugin.cpp
-					PluginLoader/PluginMgr.cpp)
+set(LIBRARY_SOURCES	PluginLoader/PluginMgr.cpp)
 
 set(HEADER_FILES	Engine.h)
 set(SOURCE_FILES	Engine.cpp
@@ -97,7 +97,7 @@ include_directories(${CMAKE_SOURCE_DIR}/Foundation
 
 add_executable(${PROJECT_NAME} WIN32 ${HEADER_FILES} ${SOURCE_FILES})
 add_dependencies(${PROJECT_NAME} Foundation Platform Render)
-target_link_libraries(${PROJECT_NAME} Platform Render)
+target_link_libraries(${PROJECT_NAME} Render)
 if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /wd4251 /wd4275 /EHsc /MDd")
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_DEBUG} /wd4251 /wd4275 /EHsc /MD")

@@ -1,9 +1,9 @@
 #include "Engine.h"
-#include "Application/ApplicationFactory.h"
+#include "PlatformPlugin.h"
 
 namespace Lightning
 {
-	using App::ApplicationFactory;
+	using Plugins::PlatformPlugin;
 	Engine::Engine()
 	{
 
@@ -11,14 +11,20 @@ namespace Lightning
 
 	int Engine::Run()
 	{
-		mApplication = ApplicationFactory::CreateApplication();
-		mApplication->Start();
+		auto pluginMgr = GetPluginMgr();
+		auto platformPlugin = pluginMgr->Load<PlatformPlugin>("Platform");
+		auto application = platformPlugin->CreateApplication();
+		application->Start();
 
-		while (mApplication->IsRunning())
+		while (application->IsRunning())
 		{
-			mApplication->Update();
+			application->Update();
 		}
 
-		return mApplication->GetExitCode();
+		auto exitCode = application->GetExitCode();
+		platformPlugin->DestroyApplication(application);
+		application = nullptr;
+		pluginMgr->UnloadAll();
+		return exitCode;
 	}
 }

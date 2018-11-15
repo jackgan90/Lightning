@@ -1,21 +1,18 @@
 #pragma once
-#include "PlatformExportDef.h"
 #include "PluginLoader/Plugin.h"
-#ifdef LIGHTNING_WIN32
-#include "Application/Win32AppSystem.h"
-#endif
+#include "Application/Application.h"
+#include "Application/ApplicationFactory.h"
 
 namespace Lightning
 {
 	namespace Plugins
 	{
-		class LIGHTNING_PLATFORM_API PlatformPlugin : public Plugin
+		class PlatformPlugin : public Plugins::Plugin
 		{
 		public:
-			PlatformPlugin(const char* name);
-#ifdef LIGHTNING_WIN32
-			App::Win32AppSystem* CreateWin32AppSystem();
-#endif
+			PlatformPlugin(const char* name) : Plugin(name){}
+			virtual App::Application* CreateApplication() = 0;
+			virtual void DestroyApplication(App::Application* pApp) = 0;
 		};
 	}
 }

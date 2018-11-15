@@ -1,27 +1,49 @@
-#include <PlatformPlugin.h>
+#include "PlatformPlugin.h"
+#include "Application/ApplicationFactory.h"
+#include "PlatformExportDef.h"
 
 namespace Lightning
 {
 	namespace Plugins
 	{
-		PlatformPlugin::PlatformPlugin(const char* name):Plugin(name)
+		using App::ApplicationFactory;
+
+		class PlatformPluginImpl : public PlatformPlugin
+		{
+		public:
+			PlatformPluginImpl(const char* name);
+			App::Application* CreateApplication()override;
+			void DestroyApplication(App::Application* pApp)override;
+		};
+
+		PlatformPluginImpl::PlatformPluginImpl(const char* name) : PlatformPlugin(name)
 		{
 
 		}
-#ifdef LIGHTNING_WIN32
-		App::Win32AppSystem* PlatformPlugin::CreateWin32AppSystem()
+
+		App::Application* PlatformPluginImpl::CreateApplication()
 		{
-			return new App::Win32AppSystem;
+			return App::ApplicationFactory::CreateApplication();
 		}
-#endif
+
+		void PlatformPluginImpl::DestroyApplication(App::Application* pApp)
+		{
+			delete pApp;
+		}
 
 	}
 }
 
 extern "C"
 {
-	LIGHTNING_PLATFORM_API Lightning::Plugins::Plugin* GetPlugin(const char* name, Lightning::Plugins::PluginMgr* mgr)
+	LIGHTNING_PLATFORM_API Lightning::Plugins::Plugin* GetPlugin(const char* name, Lightning::Plugins::IPluginMgr* mgr)
 	{
-		return new Lightning::Plugins::PlatformPlugin(name);
+		return new Lightning::Plugins::PlatformPluginImpl(name);
 	}
+
+	LIGHTNING_PLATFORM_API void ReleasePlugin(Lightning::Plugins::Plugin* pPlugin)
+	{
+		delete pPlugin;
+	}
+
 }

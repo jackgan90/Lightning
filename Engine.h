@@ -14,7 +14,7 @@ namespace Lightning
 			static Engine sInstance;
 			return &sInstance;
 		}
-		Plugins::PluginMgr* GetPluginMgr()const
+		Plugins::IPluginMgr* GetPluginMgr()const
 		{
 			static Plugins::PluginMgr sPluginMgr;
 			return &sPluginMgr;
@@ -22,6 +22,5 @@ namespace Lightning
 		int Run();
 	private:
 		Engine();
-		std::unique_ptr<App::Application> mApplication;
 	};
 }

@@ -1,16 +1,14 @@
 #pragma once
-#include <memory>
-#include "PlatformExportDef.h"
-#include "Application/Application.h"
+#include "Application.h"
 
 namespace Lightning
 {
 	namespace App
 	{
-		class LIGHTNING_PLATFORM_API ApplicationFactory
+		class ApplicationFactory
 		{
 		public:
-			static std::unique_ptr<Application> CreateApplication();
+			static Application* CreateApplication();
 		};
 	}
 }

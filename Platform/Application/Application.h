@@ -17,7 +17,7 @@ namespace Lightning
 		using Window::SharedWindowPtr;
 		using Foundation::SharedFileSystemPtr;
 		
-		class LIGHTNING_PLATFORM_API Application
+		class Application
 		{
 		public:
 			Application();

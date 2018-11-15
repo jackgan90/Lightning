@@ -9,6 +9,11 @@ namespace Lightning
 
 		}
 
+		PluginMgr::~PluginMgr()
+		{
+			UnloadAllImpl();
+		}
+
 		Plugin* PluginMgr::Load(const std::string& name)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mPluginsMutex);
@@ -23,16 +28,19 @@ namespace Lightning
 			info.handle = ::LoadLibrary((name + Plugin::PluginExtension).c_str());
 			if (info.handle)
 			{
-				GetPluginProc pFunc = (GetPluginProc)::GetProcAddress(info.handle, GET_PLUGIN_FUNC);
-				if (pFunc)
+				GetPluginProc pGetProc = (GetPluginProc)::GetProcAddress(info.handle, GET_PLUGIN_PROC);
+				ReleasePluginProc pReleaseProc = (ReleasePluginProc)::GetProcAddress(info.handle, RELEASE_PLUGIN_PROC);
+				if (pGetProc && pReleaseProc)
 				{
-					info.pPlugin = pFunc(this);
+					info.ReleaseProc = pReleaseProc;
+					info.pPlugin = pGetProc(name.c_str(), this);
 					if (info.pPlugin)
 					{
 						mPlugins.emplace(name, info);
 						return info.pPlugin;
 					}
 				}
+				::FreeLibrary(info.handle);
 			}
 #endif
 			return nullptr;
@@ -51,25 +59,54 @@ namespace Lightning
 
 		bool PluginMgr::Unload(const std::string& name)
 		{
+			auto result = UnloadImpl(name);
+			return std::get<0>(result);
+		}
+
+		void PluginMgr::UnloadAll()
+		{
+			UnloadAllImpl();
+		}
+
+		std::tuple<bool, PluginMgr::PluginTable::iterator> PluginMgr::UnloadImpl(const std::string& name)
+		{
+			std::tuple<bool, PluginMgr::PluginTable::iterator> result;
+			std::get<0>(result) = false;
 			std::lock_guard<std::recursive_mutex> lock(mPluginsMutex);
+			std::get<1>(result) = mPlugins.end();
 			auto it = mPlugins.find(name);
 			if (it != mPlugins.end())
 			{
 				if (it->second.pPlugin->Release())
 				{
-					mPlugins.erase(it);
+#ifdef LIGHTNING_WIN32
+					it->second.ReleaseProc(it->second.pPlugin);
+					::FreeLibrary(it->second.handle);
+#endif
+					std::get<1>(result) = mPlugins.erase(it);
 				}
-				return true;
+				std::get<0>(result) = true;
 			}
-			return false;
+			return result;
 		}
 
-		void PluginMgr::UnloadAll()
+		void PluginMgr::UnloadAllImpl()
 		{
 			std::lock_guard<std::recursive_mutex> lock(mPluginsMutex);
-			for (auto it = mPlugins.begin();it != mPlugins.end();++it)
+			for (auto it = mPlugins.begin();it != mPlugins.end();)
 			{
-				Unload(it->first);
+				auto result = UnloadImpl(it->first);
+				bool succeed = std::get<0>(result);
+				auto& nit = std::get<1>(result);
+				if (succeed)
+				{
+					if (nit != mPlugins.end())
+						it = nit;
+					else
+						break;
+				}
+				else
+					++it;
 			}
 		}
 	}

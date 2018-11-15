@@ -12,21 +12,5 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 #endif
 {
 	LOG_INFO("This is Lighting entry.");
-	//auto appEntity = EntityManager::Instance()->CreateEntity<Entity>();
-	//auto appComponent = appEntity->AddComponent<AppComponent>();
-	//int exitCode{ 0 };
-	//Lightning::Foundation::EntityFuncID id = 
-	//appEntity->RegisterCompRemovedFunc<AppComponent>([&](const std::shared_ptr<AppComponent>& comp) {
-	//	exitCode = static_cast<int>(comp->exitCode);
-	//	running = false;
-	//	appEntity->UnregisterCompRemovedFunc(id);
-	//});
-//#ifdef LIGHTNING_WIN32
-	//auto app = SystemManager::Instance()->CreateSystem<Win32AppSystem>();
-//#endif
-	//while (running)
-	//{
-	//	EntityManager::Instance()->Update();
-	//}
 	return Lightning::Engine::Instance()->Run();
 }
