@@ -28,7 +28,11 @@ namespace Lightning
 			}
 			Plugin(const Plugin&) = delete;
 			Plugin& operator=(const Plugin&) = delete;
-
+			virtual void Finalize() = 0;
+			//Load and Unload is only called by PluginMgr
+			std::string mName;
+			std::atomic<int> mRefCount;
+		private:
 			bool Release()
 			{
 				auto oldRefCount = mRefCount.fetch_sub(1, std::memory_order_relaxed);
@@ -43,10 +47,6 @@ namespace Lightning
 			{
 				mRefCount.fetch_add(1, std::memory_order_relaxed);
 			}
-			virtual void Finalize() = 0;
-			//Load and Unload is only called by PluginMgr
-			std::string mName;
-			std::atomic<int> mRefCount;
 #ifdef LIGHTNING_WIN32
 			static constexpr char* PluginExtension = ".dll";
 #endif
