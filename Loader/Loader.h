@@ -2,7 +2,6 @@
 #include <thread>
 #include <mutex>
 #include <functional>
-#include "LoaderExportDef.h"
 #include "Singleton.h"
 #include "ISerializer.h"
 #include "Container.h"
@@ -34,7 +33,7 @@ namespace Lightning
 			bool mOwnBuffer;
 		};
 
-		class LIGHTNING_LOADER_API Loader : public Foundation::Singleton<Loader>
+		class Loader : public Foundation::Singleton<Loader>
 		{
 		public:
 			virtual void Finalize();

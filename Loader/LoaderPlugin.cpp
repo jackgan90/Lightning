@@ -8,11 +8,17 @@ namespace Lightning
 		{
 		public:
 			Loading::Loader* GetLoader()override;
+			~LoaderPluginImpl()override;
 		};
 
 		Loading::Loader* LoaderPluginImpl::GetLoader()
 		{
 			return Loading::Loader::Instance();
+		}
+
+		LoaderPluginImpl::~LoaderPluginImpl()
+		{
+			Loading::Loader::Instance()->Finalize();
 		}
 	}
 }

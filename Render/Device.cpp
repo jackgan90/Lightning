@@ -17,15 +17,15 @@ namespace Lightning
 		void Device::CreateShaderFromFile(ShaderType type, const std::string& path,
 			const ShaderDefine& defineMap, ShaderLoadFinishHandler handler)
 		{
-			auto ser = new ShaderSerializer(type, path, defineMap, handler);
-			Loader::Instance()->Load(path, ser);
+			//auto ser = new ShaderSerializer(type, path, defineMap, handler);
+			//Loader::Instance()->Load(path, ser);
 		}
 
 		void Device::CreateTextureFromFile(const TextureDescriptor& descriptor, const std::string& path,
 			TextureLoadFinishHandler handler)
 		{
-			auto ser = new TextureSerializer(descriptor, path, handler);
-			Loader::Instance()->Load(path, ser);
+			//auto ser = new TextureSerializer(descriptor, path, handler);
+			//Loader::Instance()->Load(path, ser);
 		}
 
 		SharedShaderPtr Device::GetDefaultShader(ShaderType type)

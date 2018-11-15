@@ -9,8 +9,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(PLUGIN_HEADERS	LoaderPlugin.h)
 set(PLUGIN_SOURCES	LoaderPlugin.cpp)
 
-set(HEADERS LoaderExportDef.h
-			ISerializer.h
+set(HEADERS ISerializer.h
 			Loader.h)
 set(SOURCES Loader.cpp)
 

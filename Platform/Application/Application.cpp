@@ -93,7 +93,6 @@ namespace Lightning
 			SceneManager::Instance()->DestroyAll();
 			mRenderer->ShutDown();
 			mRenderer.reset();
-			Plugins::gPluginMgr->GetPlugin<Plugins::LoaderPlugin>("Loader")->GetLoader()->Finalize();
 			Plugins::gPluginMgr->Unload("Loader");
 			LOG_INFO("Application quit.");
 		}

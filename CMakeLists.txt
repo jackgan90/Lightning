@@ -60,8 +60,7 @@ if(LIGHTNING_USE_D3D12)
 	add_definitions(-DLIGHTNING_USE_D3D12)
 endif()
 
-set(LIBRARY_HEADERS	PluginSystem/PluginExportDef.h
-					PluginSystem/Plugin.h
+set(LIBRARY_HEADERS	PluginSystem/Plugin.h
 					PluginSystem/IPluginMgr.h
 					PluginSystem/PluginMgr.h)
 
