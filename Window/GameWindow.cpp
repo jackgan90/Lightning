@@ -1,5 +1,4 @@
 #include "GameWindow.h"
-#include "ECS/EntityManager.h"
 #include "ECS/EventManager.h"
 
 namespace Lightning
