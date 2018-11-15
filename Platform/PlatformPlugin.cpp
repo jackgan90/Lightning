@@ -14,6 +14,7 @@ namespace Lightning
 			PlatformPluginImpl(const char* name);
 			App::Application* CreateApplication()override;
 			void DestroyApplication(App::Application* pApp)override;
+			void Finalize()override;
 		};
 
 		PlatformPluginImpl::PlatformPluginImpl(const char* name) : PlatformPlugin(name)
@@ -31,6 +32,10 @@ namespace Lightning
 			delete pApp;
 		}
 
+		void PlatformPluginImpl::Finalize()
+		{
+
+		}
 	}
 }
 

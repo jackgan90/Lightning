@@ -34,6 +34,7 @@ namespace Lightning
 				auto oldRefCount = mRefCount.fetch_sub(1, std::memory_order_relaxed);
 				if (oldRefCount == 1)
 				{
+					Finalize();
 					return true;
 				}
 				return false;
@@ -42,6 +43,7 @@ namespace Lightning
 			{
 				mRefCount.fetch_add(1, std::memory_order_relaxed);
 			}
+			virtual void Finalize() = 0;
 			//Load and Unload is only called by PluginMgr
 			std::string mName;
 			std::atomic<int> mRefCount;
