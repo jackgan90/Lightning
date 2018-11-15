@@ -4,7 +4,7 @@
 namespace Lightning
 {
 	using App::ApplicationFactory;
-	Engine::Engine() :mRunning(false)
+	Engine::Engine()
 	{
 
 	}

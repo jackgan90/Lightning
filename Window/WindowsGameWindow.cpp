@@ -215,7 +215,7 @@ namespace Lightning
 			}
 			else
 			{
-				GameWindow::OnIdle();
+				OnIdle();
 			}
 		}
 

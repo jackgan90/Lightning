@@ -23,6 +23,5 @@ namespace Lightning
 	private:
 		Engine();
 		std::unique_ptr<App::Application> mApplication;
-		bool mRunning;
 	};
 }

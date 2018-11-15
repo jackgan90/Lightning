@@ -6,7 +6,7 @@ namespace Lightning
 	{
 		Plugin::Plugin(const std::string& name): mName(name), mRefCount(1)
 		{
-			AddRef();
+
 		}
 
 		void Plugin::AddRef()
