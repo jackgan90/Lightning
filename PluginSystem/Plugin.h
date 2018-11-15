@@ -31,7 +31,7 @@ namespace Lightning
 			virtual void Finalize() = 0;
 			//Load and Unload is only called by PluginMgr
 			std::string mName;
-			std::atomic<int> mRefCount;
+			int GetRefCount()const { return mRefCount; }
 		private:
 			bool Release()
 			{
@@ -47,6 +47,7 @@ namespace Lightning
 			{
 				mRefCount.fetch_add(1, std::memory_order_relaxed);
 			}
+			std::atomic<int> mRefCount;
 #ifdef LIGHTNING_WIN32
 			static constexpr char* PluginExtension = ".dll";
 #endif
