@@ -4,7 +4,7 @@
 #ifdef LIGHTNING_LOADER_EXPORT
 #define LIGHTNING_LOADER_API __declspec(dllexport)
 #else
-#define LIGHTNING_LOADER_API __declspec(dllimport)
+#define LIGHTNING_LOADER_API
 #endif
 #else
 #define LIGHTNING_LOADER_API 

@@ -1,6 +1,5 @@
 #pragma once
 #include <memory>
-#include "PlatformExportDef.h"
 #include "ECS/Event.h"
 #include "FileSystem.h"
 #include "GameWindow.h"
@@ -31,6 +30,7 @@ namespace Lightning
 			virtual SharedWindowPtr CreateMainWindow() = 0;
 			virtual UniqueRendererPtr CreateRenderer() = 0;
 			virtual void RegisterWindowHandlers();
+			virtual void OnQuit(int exitCode);
 			//For test
 			void GenerateSceneObjects();
 

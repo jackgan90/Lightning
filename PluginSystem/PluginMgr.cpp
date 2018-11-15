@@ -33,9 +33,10 @@ namespace Lightning
 				if (pGetProc && pReleaseProc)
 				{
 					info.ReleaseProc = pReleaseProc;
-					info.pPlugin = pGetProc(name.c_str(), this);
+					info.pPlugin = pGetProc(this);
 					if (info.pPlugin)
 					{
+						info.pPlugin->SetName(name);
 						mPlugins.emplace(name, info);
 						return info.pPlugin;
 					}

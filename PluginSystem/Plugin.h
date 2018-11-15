@@ -4,12 +4,39 @@
 #include <string>
 #include <atomic>
 
+#ifdef LIGHTNING_WIN32
+#define LIGHTNING_PLUGIN_DLL_EXPORT __declspec(dllexport)
+#else
+#define LIGHTNING_PLUGIN_DLL_EXPORT
+#endif
+
+#define LIGHTNING_PLUGIN_INTERFACE(pluginImpl)\
+namespace Lightning\
+{\
+	namespace Plugins\
+	{\
+		IPluginMgr* gPluginMgr;\
+	}\
+}\
+extern "C"\
+{\
+	LIGHTNING_PLUGIN_DLL_EXPORT Lightning::Plugins::Plugin* GetPlugin(Lightning::Plugins::IPluginMgr* mgr)\
+	{\
+		Lightning::Plugins::gPluginMgr = mgr;\
+		return new Lightning::Plugins::##pluginImpl();\
+	}\
+	LIGHTNING_PLUGIN_DLL_EXPORT void ReleasePlugin(Lightning::Plugins::Plugin* pPlugin)\
+	{\
+		delete pPlugin;\
+	}\
+}\
+
 namespace Lightning
 {
 	namespace Plugins
 	{
 		typedef void(*ReleasePluginProc)(class Plugin*);
-		typedef Plugin* (*GetPluginProc)(const char* name, class IPluginMgr*);
+		typedef Plugin* (*GetPluginProc)(class IPluginMgr*);
 
 		class Plugin
 		{
@@ -22,8 +49,9 @@ namespace Lightning
 			}
 			virtual ~Plugin(){}
 		protected:
+			friend class IPluginMgr;
 			friend class PluginMgr;
-			Plugin(const char* name) : mName(name), mRefCount(1)
+			Plugin() : mName(""), mRefCount(1)
 			{
 			}
 			Plugin(const Plugin&) = delete;
@@ -44,6 +72,10 @@ namespace Lightning
 			void AddRef()
 			{
 				mRefCount.fetch_add(1, std::memory_order_relaxed);
+			}
+			void SetName(const std::string& name)
+			{
+				mName = name;
 			}
 			std::atomic<int> mRefCount;
 #ifdef LIGHTNING_WIN32

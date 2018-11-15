@@ -19,6 +19,12 @@ namespace Lightning
 			{
 				return static_cast<T*>(Load(pluginName));
 			}
+			
+			template<typename T>
+			std::enable_if_t<std::is_base_of<Plugin, T>::value, T*> GetPlugin(const std::string& pluginName)
+			{
+				return static_cast<T*>(GetPlugin(pluginName));
+			}
 		};
 	}
 }

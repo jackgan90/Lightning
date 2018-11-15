@@ -10,7 +10,6 @@ namespace Lightning
 		class PlatformPlugin : public Plugins::Plugin
 		{
 		public:
-			PlatformPlugin(const char* name) : Plugin(name){}
 			virtual App::Application* CreateApplication() = 0;
 		};
 	}

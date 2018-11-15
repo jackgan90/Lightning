@@ -3,9 +3,8 @@ message(STATUS "Configuring project Platform")
 
 set(APPLICATION_SUBSYSTEM_DIR "Application")
 
-set(HEADERS	PlatformExportDef.h
-			PlatformPlugin.h)
-set(SOURCES PlatformPlugin.cpp)
+set(PLUGIN_HEADERS	PlatformPlugin.h)
+set(PLUGIN_SOURCES	PlatformPlugin.cpp)
 
 set(APPLICATION_HEADERS		${APPLICATION_SUBSYSTEM_DIR}/Application.h
 							${APPLICATION_SUBSYSTEM_DIR}/ApplicationFactory.h)
@@ -33,8 +32,12 @@ source_group("Application" FILES
 			${APPLICATION_HEADERS}
 			${APPLICATION_SOURCES})
 
-list(APPEND HEADERS ${APPLICATION_HEADERS})
-list(APPEND SOURCES ${APPLICATION_SOURCES})
+source_group("Plugin" FILES
+			${PLUGIN_HEADERS}
+			${PLUGIN_SOURCES})
+
+list(APPEND HEADERS ${APPLICATION_HEADERS} ${PLUGIN_HEADERS})
+list(APPEND SOURCES ${APPLICATION_SOURCES} ${PLUGIN_SOURCES})
 
 define_dll_export_macro(PLATFORM)
 
@@ -69,5 +72,5 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
-target_link_libraries(${PROJECT_NAME} Foundation Window Render Scene Loader)
+target_link_libraries(${PROJECT_NAME} Foundation Window Render Scene)
 

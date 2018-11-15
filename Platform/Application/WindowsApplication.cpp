@@ -20,19 +20,6 @@ namespace Lightning
 		using Foundation::Math::Vector2i;
 
 		Vector2i mousePosition;
-		WindowsApplication::WindowsApplication()
-		{
-		}
-
-		WindowsApplication::~WindowsApplication()
-		{
-		}
-
-		void WindowsApplication::Update()
-		{
-			Application::Update();
-		}
-
 		void WindowsApplication::RegisterWindowHandlers()
 		{
 			Application::RegisterWindowHandlers();

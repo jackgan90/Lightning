@@ -37,13 +37,13 @@ namespace Lightning
 		class LIGHTNING_LOADER_API Loader : public Foundation::Singleton<Loader>
 		{
 		public:
+			virtual void Finalize();
+			virtual void SetFileSystem(const Foundation::SharedFileSystemPtr& fs);
+			virtual void Load(const std::string& path, ISerializer* ser);
+			virtual ~Loader();
+		private:
 			friend class Foundation::Singleton<Loader>;
 			friend class DeserializeTask;
-			void Finalize();
-			void SetFileSystem(const Foundation::SharedFileSystemPtr& fs);
-			void Load(const std::string& path, ISerializer* ser);
-			~Loader();
-		private:
 			Loader();
 			void DisposeFileAndBuffer(const std::string& path, const Foundation::SharedFilePtr& file);
 			static void IOThread();

@@ -9,12 +9,18 @@
 #include "Transform.h"
 #include "ConfigManager.h"
 #include "Loader.h"
+#include "PluginSystem/IPluginMgr.h"
+#include "LoaderPlugin.h"
 #include "SystemPriority.h"
 #include "ECS/EventManager.h"
 #include "tbb/task_scheduler_init.h"
 
 namespace Lightning
 {
+	namespace Plugins
+	{
+		extern IPluginMgr* gPluginMgr;
+	}
 	namespace App
 	{
 		using Foundation::FileSystemFactory;
@@ -44,6 +50,7 @@ namespace Lightning
 		void Application::Start()
 		{
 			mRunning = true;
+			auto loaderPlugin = Plugins::gPluginMgr->Load<Plugins::LoaderPlugin>("Loader");
 			static tbb::task_scheduler_init init(tbb::task_scheduler_init::deferred);
 			auto threadCount = Foundation::ConfigManager::Instance()->GetConfig().ThreadCount;
 			if (threadCount == 0)
@@ -56,18 +63,12 @@ namespace Lightning
 			}
 			mFileSystem = FileSystemFactory::Instance()->CreateFileSystem();
 			LOG_INFO("File system created!Current working directory:{0}", mFileSystem->GetRoot().c_str());
-			Loading::Loader::Instance()->SetFileSystem(mFileSystem);
+			loaderPlugin->GetLoader()->SetFileSystem(mFileSystem);
 			mWindow = CreateMainWindow();
 			mRenderer = CreateRenderer();
 			mRenderer->Start();
 			EventManager::Instance()->Subscribe<WindowDestroyedEvent>([this](const WindowDestroyedEvent& event) {
-				mRunning = false;
-				mExitCode = int(event.exitCode);
-				SceneManager::Instance()->DestroyAll();
-				mRenderer->ShutDown();
-				mRenderer.reset();
-				Loading::Loader::Instance()->Finalize();
-				LOG_INFO("Application quit.");
+				OnQuit(int(event.exitCode));
 			});
 			//Create a simple scene here just for test
 			auto scene = SceneManager::Instance()->CreateScene();
@@ -83,6 +84,18 @@ namespace Lightning
 			RegisterWindowHandlers();
 			mWindow->Show(true);
 			LOG_INFO("Application start successfully!");
+		}
+
+		void Application::OnQuit(int exitCode)
+		{
+			mRunning = false;
+			mExitCode = exitCode;
+			SceneManager::Instance()->DestroyAll();
+			mRenderer->ShutDown();
+			mRenderer.reset();
+			Plugins::gPluginMgr->GetPlugin<Plugins::LoaderPlugin>("Loader")->GetLoader()->Finalize();
+			Plugins::gPluginMgr->Unload("Loader");
+			LOG_INFO("Application quit.");
 		}
 
 		void Application::GenerateSceneObjects()
