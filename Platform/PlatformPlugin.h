@@ -1,5 +1,5 @@
 #pragma once
-#include "PluginLoader/Plugin.h"
+#include "PluginSystem/Plugin.h"
 #include "Application/Application.h"
 #include "Application/ApplicationFactory.h"
 

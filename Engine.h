@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "PluginLoader/PluginMgr.h"
+#include "PluginSystem/PluginMgr.h"
 #include "Application/Application.h"
 
 namespace Lightning

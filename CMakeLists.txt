@@ -60,12 +60,12 @@ if(LIGHTNING_USE_D3D12)
 	add_definitions(-DLIGHTNING_USE_D3D12)
 endif()
 
-set(LIBRARY_HEADERS	PluginLoader/PluginExportDef.h
-					PluginLoader/Plugin.h
-					PluginLoader/IPluginMgr.h
-					PluginLoader/PluginMgr.h)
+set(LIBRARY_HEADERS	PluginSystem/PluginExportDef.h
+					PluginSystem/Plugin.h
+					PluginSystem/IPluginMgr.h
+					PluginSystem/PluginMgr.h)
 
-set(LIBRARY_SOURCES	PluginLoader/PluginMgr.cpp)
+set(LIBRARY_SOURCES	PluginSystem/PluginMgr.cpp)
 
 set(HEADER_FILES	Engine.h)
 set(SOURCE_FILES	Engine.cpp
@@ -74,7 +74,7 @@ set(SOURCE_FILES	Engine.cpp
 list(APPEND HEADER_FILES ${LIBRARY_HEADERS})
 list(APPEND SOURCE_FILES ${LIBRARY_SOURCES})
 
-source_group("PluginLoader" FILES ${LIBRARY_HEADERS} ${LIBRARY_SOURCES})
+source_group("PluginSystem" FILES ${LIBRARY_HEADERS} ${LIBRARY_SOURCES})
 
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${LIGHTNING_LINKER_FLAGS})
 define_dll_export_macro(PLUGIN)
