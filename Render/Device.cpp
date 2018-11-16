@@ -9,9 +9,12 @@ namespace Lightning
 	namespace Render
 	{
 		using Loading::Loader;
-		Device::Device()
+		Device::~Device()
 		{
-
+			for (auto& pair : mDefaultShaders)
+			{
+				pair.second->Release();
+			}
 		}
 
 		void Device::CreateShaderFromFile(ShaderType type, const std::string& path,
@@ -28,11 +31,11 @@ namespace Lightning
 			//Loader::Instance()->Load(path, ser);
 		}
 
-		SharedShaderPtr Device::GetDefaultShader(ShaderType type)
+		IShader* Device::GetDefaultShader(ShaderType type)
 		{
 			auto it = mDefaultShaders.find(type);
 			if (it == mDefaultShaders.end())
-				return SharedShaderPtr();
+				return nullptr;
 			return it->second;
 		}
 	}

@@ -11,6 +11,7 @@ namespace Lightning
 		class PlatformPluginImpl : public PlatformPlugin
 		{
 		public:
+			PlatformPluginImpl(IPluginMgr*){}
 			IApplication* CreateApplication()override;
 		private:
 			std::unique_ptr<IApplication> mApp;

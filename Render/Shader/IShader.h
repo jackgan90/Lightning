@@ -2,7 +2,6 @@
 #include <string>
 #include <exception>
 #include <boost/functional/hash.hpp>
-#include "RendererExportDef.h"
 #include "ShaderDefine.h"
 #include "FileSystem.h"
 #include "HashableObject.h"
@@ -10,6 +9,7 @@
 #include "RenderException.h"
 #include "Math/Matrix.h"
 #include "Math/Vector.h"
+#include "RefCount.h"
 
 namespace Lightning
 {
@@ -119,7 +119,7 @@ namespace Lightning
 			}
 		};
 
-		class IShader : public HashableObject
+		class IShader : public HashableObject, public Plugins::RefCount
 		{
 		public:
 			virtual std::string GetEntryPoint()const = 0; 
@@ -134,8 +134,6 @@ namespace Lightning
 			virtual const char* const GetSource()const = 0;
 			virtual void GetShaderModelVersion(int& major, int& minor) = 0;
 		};
-
-		using SharedShaderPtr = std::shared_ptr<IShader>;
 
 		class Shader : public IShader
 		{

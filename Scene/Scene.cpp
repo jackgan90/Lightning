@@ -19,6 +19,10 @@ namespace Lightning
 				delete mActiveCamera;
 				mActiveCamera = nullptr;
 			}
+			for (auto drawable : mDrawables)
+			{
+				drawable->Release();
+			}
 		}
 
 		void Scene::Update()
@@ -31,7 +35,11 @@ namespace Lightning
 
 		void Scene::AddDrawable(IDrawable* drawable)
 		{
-			mDrawables.emplace_back(drawable);
+			if (drawable)
+			{
+				drawable->AddRef();
+				mDrawables.emplace_back(drawable);
+			}
 		}
 
 	}

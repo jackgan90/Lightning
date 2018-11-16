@@ -2,7 +2,7 @@
 #include "RendererExportDef.h"
 #include "Container.h"
 #include "Geometry.h"
-#include "Material.h"
+#include "IMaterial.h"
 #include "IRenderTarget.h"
 #include "IDepthStencilBuffer.h"
 #include "Transform.h"
@@ -15,7 +15,7 @@ namespace Lightning
 		struct RenderNode
 		{
 			SharedGeometryPtr geometry;	//vb ib 
-			SharedMaterialPtr material;	//shader material attributes
+			IMaterial* material;	//shader material attributes
 			Transform transform;		//position rotation scale
 			Matrix4f viewMatrix;		//camera view matrix
 			Matrix4f projectionMatrix;//camera projection matrix

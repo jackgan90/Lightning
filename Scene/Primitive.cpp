@@ -5,9 +5,15 @@
 #include "Container.h"
 #include "Math/Vector.h"
 #include "Primitive.h"
+#include "IPluginMgr.h"
+#include "RenderPlugin.h"
 
 namespace Lightning
 {
+	namespace Plugins
+	{
+		extern IPluginMgr* gPluginMgr;
+	}
 	namespace Scene
 	{
 		using Foundation::Math::Vector3f;
@@ -15,14 +21,18 @@ namespace Lightning
 		using Foundation::Math::DegreesToRadians;
 		using Foundation::Container;
 		using Render::ShaderArgument;
+		extern Plugins::RenderPlugin* gRenderPlugin;
+
 		Primitive::Primitive():mFirstDraw(true)
 			,mColor(0, 0, 0, 255)
 		{
+			mRenderNode.material = nullptr;
 		}
 
 		Primitive::~Primitive()
 		{
-
+			if (mRenderNode.material)
+				mRenderNode.material->Release();
 		}
 
 		void Primitive::SetColor(const Color32& color)
@@ -125,7 +135,7 @@ namespace Lightning
 			mRenderNode.geometry->ib->Unlock(0, ibSize);
 			mRenderNode.geometry->primType = Render::PrimitiveType::TRIANGLE_LIST;
 			
-			mRenderNode.material = std::make_shared<Render::Material>();
+			mRenderNode.material = gRenderPlugin->CreateMaterial();
 			mRenderNode.material->RequireSemantic(Render::RenderSemantics::WVP);
 			auto device = renderer.GetDevice();
 			mRenderNode.material->SetShader(device->GetDefaultShader(Render::ShaderType::VERTEX));

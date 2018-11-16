@@ -9,6 +9,7 @@ namespace Lightning
 		class LoaderPluginImpl : public LoaderPlugin
 		{
 		public:
+			LoaderPluginImpl(IPluginMgr*){}
 			ILoader* GetLoader()override;
 			~LoaderPluginImpl()override;
 		};

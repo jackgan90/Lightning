@@ -1,10 +1,9 @@
 #pragma once
 #include <memory>
 #include "Container.h"
-#include "RendererExportDef.h"
 #include "Semantics.h"
-#include "IShader.h"
 #include "PipelineState.h"
+#include "IMaterial.h"
 
 namespace Lightning
 {
@@ -15,23 +14,23 @@ namespace Lightning
 		using ShaderArgumentList = Container::Vector<ShaderArgument>;
 		struct ShaderAndArgument
 		{
-			SharedShaderPtr shader;
+			IShader* shader;
 			ShaderArgumentList arguments;
 		};
 		using MaterialShaderMap = Container::UnorderedMap<ShaderType, ShaderAndArgument>;
-		class LIGHTNING_RENDER_API Material
+		class Material : public IMaterial
 		{
 		public:
-			Material();
-			void RequireSemantic(RenderSemantics semantic) { mSemantics.emplace(semantic); }
+			~Material()override;
+			void RequireSemantic(RenderSemantics semantic) override{ mSemantics.emplace(semantic); }
+			void SetShader(IShader* shader)override;
+			void SetArgument(ShaderType type, const ShaderArgument& arg)override;
+			void EnableBlend(bool enable)override;
 			const SemanticSet& GetSemanticRequirements()const { return mSemantics; }
 			IShader* GetShader(ShaderType type);
 			void GetShaders(Container::Vector<IShader*>& shaders);
-			void SetShader(const SharedShaderPtr& pShader);
 			void RemoveShader(ShaderType type);
-			void SetArgument(ShaderType type, const ShaderArgument& arg);
 			const MaterialShaderMap& GetMaterialShaderMap()const;
-			void EnableBlend(bool enable);
 			const BlendState& GetBlendState()const { return mBlendState; }
 		protected:
 			SemanticSet mSemantics;

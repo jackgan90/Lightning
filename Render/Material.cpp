@@ -4,9 +4,12 @@ namespace Lightning
 {
 	namespace Render
 	{
-		Material::Material()
+		Material::~Material()
 		{
-
+			for (auto& pair : mShaders)
+			{
+				pair.second.shader->Release();
+			}
 		}
 
 		IShader* Material::GetShader(ShaderType type)
@@ -14,7 +17,7 @@ namespace Lightning
 			auto it = mShaders.find(type);
 			if (it == mShaders.end())
 				return nullptr;
-			return it->second.shader.get();
+			return it->second.shader;
 		}
 
 		void Material::GetShaders(Container::Vector<IShader*>& shaders)
@@ -36,18 +39,22 @@ namespace Lightning
 				shaders.push_back(tes);
 		}
 
-		void Material::SetShader(const SharedShaderPtr& pShader)
+		void Material::SetShader(IShader* shader)
 		{
-			if (!pShader)
+			if (!shader)
 				return;
-			mShaders[pShader->GetType()].shader = pShader;
+			shader->AddRef();
+			mShaders[shader->GetType()].shader = shader;
 		}
 
 		void Material::RemoveShader(ShaderType type)
 		{
 			auto it = mShaders.find(type);
 			if (it != mShaders.end())
+			{
+				it->second.shader->Release();
 				mShaders.erase(it);
+			}
 		}
 
 		void Material::SetArgument(ShaderType type, const ShaderArgument& arg)

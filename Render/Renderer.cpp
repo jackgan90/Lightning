@@ -92,6 +92,8 @@ namespace Lightning
 
 		void Renderer::AddRenderNode(const RenderNode& node)
 		{
+			if (node.material)
+				node.material->AddRef();
 			mFrameResources[mFrameResourceIndex].renderQueue.push_back(node);
 			for (auto& pass : mRenderPasses)
 			{

@@ -2,6 +2,7 @@
 #include "ForwardRenderPass.h"
 #include "Renderer.h"
 #include "FrameMemoryAllocator.h"
+#include "Material.h"
 #include "tbb/flow_graph.h"
 #include "tbb/parallel_for.h"
 
@@ -52,14 +53,15 @@ namespace Lightning
 			state.renderTargets[0] = pSwapChain->GetDefaultRenderTarget().get();
 			if (node.material)
 			{
-				state.vs = node.material->GetShader(ShaderType::VERTEX);
-				state.fs = node.material->GetShader(ShaderType::FRAGMENT);
-				state.gs = node.material->GetShader(ShaderType::GEOMETRY);
-				state.hs = node.material->GetShader(ShaderType::TESSELATION_CONTROL);
-				state.ds = node.material->GetShader(ShaderType::TESSELATION_EVALUATION);
+				auto material = static_cast<Material*>(node.material);
+				state.vs = material->GetShader(ShaderType::VERTEX);
+				state.fs = material->GetShader(ShaderType::FRAGMENT);
+				state.gs = material->GetShader(ShaderType::GEOMETRY);
+				state.hs = material->GetShader(ShaderType::TESSELATION_CONTROL);
+				state.ds = material->GetShader(ShaderType::TESSELATION_EVALUATION);
 				for (auto i = 0;i < state.renderTargetCount;++i)
 				{
-					state.blendStates[i] = node.material->GetBlendState();
+					state.blendStates[i] = material->GetBlendState();
 					if (state.blendStates[i].enable)
 					{
 						state.depthStencilState.depthWriteEnable = false;
@@ -83,7 +85,8 @@ namespace Lightning
 		{
 			if (!node.material)
 				return;
-			const auto& shaderMap = node.material->GetMaterialShaderMap();
+			auto material = static_cast<Material*>(node.material);
+			const auto& shaderMap = material->GetMaterialShaderMap();
 			for (const auto& shaderAndArgs : shaderMap)
 			{
 				for (const auto& arg : shaderAndArgs.second.arguments)
@@ -91,14 +94,14 @@ namespace Lightning
 					shaderAndArgs.second.shader->SetArgument(arg);
 				}
 			}
-			auto semantics = node.material->GetSemanticRequirements();
+			auto semantics = material->GetSemanticRequirements();
 			for (auto semantic : semantics)
 			{
 				switch (semantic)
 				{
 				case RenderSemantics::WVP:
 				{
-					auto vs = node.material->GetShader(ShaderType::VERTEX);
+					auto vs = material->GetShader(ShaderType::VERTEX);
 					if (vs)
 					{
 						//We know that transform.ToMatrix4 may change it's internal matrix

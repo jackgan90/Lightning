@@ -2,7 +2,6 @@
 #include <cstdint>
 #include "IScene.h"
 #include "Container.h"
-#include "SmartPointer.h"
 #include "SceneRenderData.h"
 
 namespace Lightning
@@ -10,7 +9,6 @@ namespace Lightning
 	namespace Scene
 	{
 		using Foundation::Container;
-		using Plugins::SmartPointer;
 		class Scene : public IScene
 		{
 		public:
@@ -23,7 +21,7 @@ namespace Lightning
 		protected:
 			ICamera* mActiveCamera;
 			std::uint32_t mID;
-			Container::Vector<SmartPointer<IDrawable>> mDrawables;
+			Container::Vector<IDrawable*> mDrawables;
 			SceneRenderData mRenderData;
 		};
 	}

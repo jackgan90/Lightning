@@ -24,6 +24,11 @@ namespace Lightning
 
 			void OnFrameBegin()
 			{
+				for (auto& node : renderQueue)
+				{
+					if (node.material)
+						node.material->Release();
+				}
 				renderQueue.clear();
 			}
 
@@ -35,6 +40,11 @@ namespace Lightning
 					fence = nullptr;
 				}
 				defaultDepthStencilBuffer.reset();
+				for (auto& node : renderQueue)
+				{
+					if (node.material)
+						node.material->Release();
+				}
 				renderQueue.clear();
 			}
 		};

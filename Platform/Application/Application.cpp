@@ -74,6 +74,7 @@ namespace Lightning
 				p->SetColor(color);
 				p->SetWorldRotation(Transform::RandomRotation());
 				scene->AddDrawable(p);
+				p->Release();
 			}
 		}
 		//For test only end

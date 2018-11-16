@@ -24,7 +24,7 @@ extern "C"\
 	LIGHTNING_PLUGIN_DLL_EXPORT Lightning::Plugins::Plugin* GetPlugin(Lightning::Plugins::IPluginMgr* mgr)\
 	{\
 		Lightning::Plugins::gPluginMgr = mgr;\
-		return new Lightning::Plugins::##pluginImpl();\
+		return new Lightning::Plugins::##pluginImpl(mgr);\
 	}\
 }\
 
