@@ -1,7 +1,6 @@
 #pragma once
 #include "PluginSystem/Plugin.h"
 #include "Application/IApplication.h"
-#include "Application/ApplicationFactory.h"
 
 namespace Lightning
 {
