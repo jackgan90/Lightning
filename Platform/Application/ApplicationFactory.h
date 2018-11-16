@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "Application.h"
+#include "IApplication.h"
 
 namespace Lightning
 {
@@ -9,7 +9,7 @@ namespace Lightning
 		class ApplicationFactory
 		{
 		public:
-			static std::unique_ptr<Application> CreateApplication();
+			static std::unique_ptr<IApplication> CreateApplication();
 		};
 	}
 }

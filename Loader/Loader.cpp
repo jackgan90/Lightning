@@ -41,7 +41,7 @@ namespace Lightning
 			mCondVar.notify_one();
 		}
 
-		void Loader::SetFileSystem(const Foundation::SharedFileSystemPtr& fs)
+		void Loader::SetFileSystem(Foundation::IFileSystem* fs)
 		{
 			mFileSystem = fs;
 		}

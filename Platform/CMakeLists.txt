@@ -6,7 +6,8 @@ set(APPLICATION_SUBSYSTEM_DIR "Application")
 set(PLUGIN_HEADERS	PlatformPlugin.h)
 set(PLUGIN_SOURCES	PlatformPlugin.cpp)
 
-set(APPLICATION_HEADERS		${APPLICATION_SUBSYSTEM_DIR}/Application.h
+set(APPLICATION_HEADERS		${APPLICATION_SUBSYSTEM_DIR}/IApplication.h
+							${APPLICATION_SUBSYSTEM_DIR}/Application.h
 							${APPLICATION_SUBSYSTEM_DIR}/ApplicationFactory.h)
 set(APPLICATION_SOURCES		${APPLICATION_SUBSYSTEM_DIR}/Application.cpp
 							${APPLICATION_SUBSYSTEM_DIR}/ApplicationFactory.cpp)

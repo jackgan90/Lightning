@@ -1,6 +1,6 @@
 #pragma once
 #include "PluginSystem/Plugin.h"
-#include "Loader.h"
+#include "ILoader.h"
 
 namespace Lightning
 {
@@ -9,7 +9,7 @@ namespace Lightning
 		class LoaderPlugin : public Plugin
 		{
 		public:
-			virtual Loading::Loader* GetLoader() = 0;
+			virtual Loading::ILoader* GetLoader() = 0;
 		};
 	}
 }

@@ -7,16 +7,16 @@ namespace Lightning
 	namespace Plugins
 	{
 		using App::ApplicationFactory;
-
+		using App::IApplication;
 		class PlatformPluginImpl : public PlatformPlugin
 		{
 		public:
-			App::Application* CreateApplication()override;
+			IApplication* CreateApplication()override;
 		private:
-			std::unique_ptr<App::Application> mApp;
+			std::unique_ptr<IApplication> mApp;
 		};
 
-		App::Application* PlatformPluginImpl::CreateApplication()
+		IApplication* PlatformPluginImpl::CreateApplication()
 		{
 			mApp = ApplicationFactory::CreateApplication();
 			return mApp.get();

@@ -7,7 +7,7 @@ namespace Lightning
 {
 	namespace App
 	{
-		std::unique_ptr<Application> ApplicationFactory::CreateApplication()
+		std::unique_ptr<IApplication> ApplicationFactory::CreateApplication()
 		{
 #ifdef LIGHTNING_WIN32
 			return std::make_unique<WindowsApplication>();

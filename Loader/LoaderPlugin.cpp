@@ -1,24 +1,26 @@
 #include "LoaderPlugin.h"
+#include "Loader.h"
 
 namespace Lightning
 {
 	namespace Plugins
 	{
+		using namespace Loading;
 		class LoaderPluginImpl : public LoaderPlugin
 		{
 		public:
-			Loading::Loader* GetLoader()override;
+			ILoader* GetLoader()override;
 			~LoaderPluginImpl()override;
 		};
 
-		Loading::Loader* LoaderPluginImpl::GetLoader()
+		ILoader* LoaderPluginImpl::GetLoader()
 		{
-			return Loading::Loader::Instance();
+			return Loader::Instance();
 		}
 
 		LoaderPluginImpl::~LoaderPluginImpl()
 		{
-			Loading::Loader::Instance()->Finalize();
+			Loader::Instance()->Finalize();
 		}
 	}
 }

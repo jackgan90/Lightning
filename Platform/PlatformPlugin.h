@@ -1,6 +1,6 @@
 #pragma once
 #include "PluginSystem/Plugin.h"
-#include "Application/Application.h"
+#include "Application/IApplication.h"
 #include "Application/ApplicationFactory.h"
 
 namespace Lightning
@@ -10,7 +10,7 @@ namespace Lightning
 		class PlatformPlugin : public Plugins::Plugin
 		{
 		public:
-			virtual App::Application* CreateApplication() = 0;
+			virtual App::IApplication* CreateApplication() = 0;
 		};
 	}
 }

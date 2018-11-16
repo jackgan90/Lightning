@@ -10,6 +10,7 @@ set(PLUGIN_HEADERS	LoaderPlugin.h)
 set(PLUGIN_SOURCES	LoaderPlugin.cpp)
 
 set(HEADERS ISerializer.h
+			ILoader.h
 			Loader.h)
 set(SOURCES Loader.cpp)
 

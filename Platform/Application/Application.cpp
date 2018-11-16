@@ -111,7 +111,7 @@ namespace Lightning
 			}
 			mFileSystem = FileSystemFactory::Instance()->CreateFileSystem();
 			LOG_INFO("File system created!Current working directory:{0}", mFileSystem->GetRoot().c_str());
-			loaderPlugin->GetLoader()->SetFileSystem(mFileSystem);
+			loaderPlugin->GetLoader()->SetFileSystem(mFileSystem.get());
 			mWindow = CreateMainWindow();
 			mRenderer = CreateRenderer();
 			mRenderer->Start();

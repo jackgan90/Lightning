@@ -2,11 +2,10 @@
 #include <thread>
 #include <mutex>
 #include <functional>
+#include "ILoader.h"
 #include "Singleton.h"
-#include "ISerializer.h"
 #include "Container.h"
 #include "tbb/task.h"
-#include "FileSystem.h"
 
 namespace Lightning
 {
@@ -33,13 +32,13 @@ namespace Lightning
 			bool mOwnBuffer;
 		};
 
-		class Loader : public Foundation::Singleton<Loader>
+		class Loader : public ILoader, public Foundation::Singleton<Loader>
 		{
 		public:
-			virtual void Finalize();
-			virtual void SetFileSystem(const Foundation::SharedFileSystemPtr& fs);
-			virtual void Load(const std::string& path, ISerializer* ser);
-			virtual ~Loader();
+			void Finalize()override;
+			void SetFileSystem(Foundation::IFileSystem* fs)override;
+			void Load(const std::string& path, ISerializer* ser)override;
+			~Loader()override;
 		private:
 			friend class Foundation::Singleton<Loader>;
 			friend class DeserializeTask;
@@ -52,7 +51,7 @@ namespace Lightning
 			Container::UnorderedMap<std::string, std::shared_ptr<char>> mBuffers;
 			std::mutex mTaskQueueMutex;
 			std::condition_variable mCondVar;
-			Foundation::SharedFileSystemPtr mFileSystem;
+			Foundation::IFileSystem* mFileSystem;
 		};
 	}
 }

@@ -3,6 +3,7 @@
 #include "ECS/Event.h"
 #include "FileSystem.h"
 #include "GameWindow.h"
+#include "IApplication.h"
 
 namespace Lightning
 {
@@ -16,15 +17,15 @@ namespace Lightning
 		using Window::SharedWindowPtr;
 		using Foundation::SharedFileSystemPtr;
 		
-		class Application
+		class Application : public IApplication
 		{
 		public:
 			Application();
-			virtual ~Application();
-			virtual void Update();
-			virtual void Start();
-			bool IsRunning() { return mRunning; }
-			int GetExitCode()const { return mExitCode; }
+			~Application()override;
+			void Update()override;
+			void Start()override;
+			bool IsRunning() override{ return mRunning; }
+			int GetExitCode()const override{ return mExitCode; }
 		protected:
 			virtual void OnWindowIdle(const Window::WindowIdleEvent& event);
 			virtual SharedWindowPtr CreateMainWindow() = 0;
