@@ -1,9 +1,7 @@
 #pragma once
 #include <cstdint>
+#include "IScene.h"
 #include "Container.h"
-#include "SceneExportDef.h"
-#include "Camera.h"
-#include "Drawable.h"
 #include "SceneRenderData.h"
 
 namespace Lightning
@@ -12,19 +10,19 @@ namespace Lightning
 	{
 		using Foundation::Container;
 
-		class LIGHTNING_SCENE_API Scene
+		class Scene : public IScene
 		{
 		public:
 			Scene(std::uint32_t id);
-			virtual ~Scene();
-			std::uint32_t GetID()const { return mID; }
-			virtual void Update();
-			void AddDrawable(const SharedDrawablePtr& drawable);
-			Camera* GetActiveCamera() { return mActiveCamera; }
+			~Scene()override;
+			std::uint32_t GetID()const override{ return mID; }
+			void Update()override;
+			void AddDrawable(IDrawable* )override;
+			ICamera* GetActiveCamera()override { return mActiveCamera; }
 		protected:
-			Camera* mActiveCamera;
+			ICamera* mActiveCamera;
 			std::uint32_t mID;
-			Container::Vector<SharedDrawablePtr> mDrawables;
+			Container::Vector<std::unique_ptr<IDrawable>> mDrawables;
 			SceneRenderData mRenderData;
 		};
 	}

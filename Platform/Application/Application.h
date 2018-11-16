@@ -31,8 +31,6 @@ namespace Lightning
 			virtual UniqueRendererPtr CreateRenderer() = 0;
 			virtual void RegisterWindowHandlers();
 			virtual void OnQuit(int exitCode);
-			//For test
-			void GenerateSceneObjects();
 
 			SharedFileSystemPtr mFileSystem;
 			UniqueRendererPtr mRenderer;

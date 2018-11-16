@@ -1,42 +1,36 @@
 #pragma once
 #include <memory>
 #include <cstdint>
-#include "Drawable.h"
 #include "Material.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
-#include "RenderConstants.h"
 #include "RenderNode.h"
-#include "Color.h"
-#include "Quaternion.h"
+#include "IPrimitive.h"
 
 namespace Lightning
 {
 	namespace Scene
 	{
-		using Render::PrimitiveType;
-		using Render::Color32;
 		using Foundation::Math::Transform;
-		using Foundation::Math::Quaternionf;
-		class LIGHTNING_SCENE_API Primitive : public IDrawable
+		class Primitive : public IPrimitive
 		{
 		public:
 			Primitive();
-			virtual ~Primitive();
+			~Primitive()override;
 			void Draw(IRenderer& renderer, const SceneRenderData& sceneRenderData) override;
-			PrimitiveType GetPrimitiveType()const { return mRenderNode.geometry->primType; }
-			void SetWorldPosition(const Vector3f& pos) { mTransform.SetPosition(pos); }
-			Vector3f GetWorldPosition()const { return mTransform.GetPosition(); }
-			void SetWorldRotation(const Quaternionf& rot) { mTransform.SetRotation(rot); }
-			Quaternionf GetWorldRotation()const { return mTransform.GetRotation(); }
-			Color32 GetColor()const { return mColor; }
-			void GetColor(float& a, float& r, float& g, float& b);
-			void SetColor(const Color32& color);
+			PrimitiveType GetPrimitiveType()const override{ return mRenderNode.geometry->primType; }
+			void SetWorldPosition(const Vector3f& pos) override{ mTransform.SetPosition(pos); }
+			Vector3f GetWorldPosition()const override{ return mTransform.GetPosition(); }
+			void SetWorldRotation(const Quaternionf& rot) override{ mTransform.SetRotation(rot); }
+			Quaternionf GetWorldRotation()const override{ return mTransform.GetRotation(); }
+			Color32 GetColor()const override{ return mColor; }
+			void GetColor(float& a, float& r, float& g, float& b)override;
+			void SetColor(const Color32& color)override;
 			//color is in ARGB order
-			void SetColor(std::uint32_t color);
-			void SetColor(float a, float r, float g, float b);
-			void SetTransparency(std::uint8_t transparency);
-			void SetTransparency(float transparency);
+			void SetColor(std::uint32_t color)override;
+			void SetColor(float a, float r, float g, float b)override;
+			void SetTransparency(std::uint8_t transparency)override;
+			void SetTransparency(float transparency)override;
 		protected:
 			void GenerateRenderNode(IRenderer&);
 			virtual std::uint8_t *GetVertices() = 0;
@@ -64,7 +58,7 @@ namespace Lightning
 		};
 
 
-		class LIGHTNING_SCENE_API Cube : public Primitive
+		class Cube : public Primitive
 		{
 		public:
 			Cube(float width = 1.0f, float height = 1.0f, float thickness = 1.0f);
@@ -81,7 +75,7 @@ namespace Lightning
 			static CubeDataSource sDataSource;
 		};
 
-		class LIGHTNING_SCENE_API Cylinder : public Primitive
+		class Cylinder : public Primitive
 		{
 		public:
 			Cylinder(float height, float radius);
@@ -101,7 +95,7 @@ namespace Lightning
 			static constexpr std::size_t AngularUnit{ 10 };
 		};
 
-		class LIGHTNING_SCENE_API Hemisphere : public Primitive
+		class Hemisphere : public Primitive
 		{
 		public:
 			Hemisphere(float radius = 1.0f);
@@ -125,7 +119,7 @@ namespace Lightning
 			static constexpr std::size_t AngularUnit{ 10 };
 		};
 
-		class LIGHTNING_SCENE_API Sphere : public Hemisphere
+		class Sphere : public Hemisphere
 		{
 		public:
 			Sphere(float radius = 1.0f);

@@ -1,6 +1,7 @@
 #pragma once
 #include "SceneManager.h"
 #include "Renderer.h"
+#include "Scene.h"
 
 namespace Lightning
 {
@@ -30,10 +31,15 @@ namespace Lightning
 
 		SceneManager::~SceneManager()
 		{
-			DestroyAll();
+			DestroyAllScenesImpl();
 		}
 
-		void SceneManager::DestroyAll()
+		void SceneManager::DestroyAllScenes()
+		{
+			DestroyAllScenesImpl();
+		}
+
+		void SceneManager::DestroyAllScenesImpl()
 		{
 			for (auto it = mScenes.begin();it != mScenes.end();++it)
 			{
@@ -42,12 +48,22 @@ namespace Lightning
 			mScenes.clear();
 		}
 
-		Scene* SceneManager::GetForegroundScene()
+		IScene* SceneManager::CreateScene()
+		{
+			auto scene = new Scene(mCurrentSceneID);
+			mScenes[mCurrentSceneID] = scene;
+			mCurrentSceneID++;
+			if (!GetForegroundScene())
+				SetForegroundScene(scene);
+			return scene;
+		}
+
+		IScene* SceneManager::GetForegroundScene()
 		{
 			return mForegroundScene;
 		}
 
-		void SceneManager::SetForegroundScene(Scene* scene)
+		void SceneManager::SetForegroundScene(IScene* scene)
 		{
 			mForegroundScene = scene;
 		}

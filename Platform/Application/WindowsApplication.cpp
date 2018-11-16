@@ -2,24 +2,36 @@
 #include "WindowsApplication.h"
 #include "RendererFactory.h"
 #include "Logger.h"
-#include "SceneManager.h"
 #include "ECS/EventManager.h"
 #include "WindowsGameWindow.h"
 #include "TimeSystem.h"
+#include "PluginSystem/IPluginMgr.h"
+#include "ScenePlugin.h"
 #undef min
 #undef max
 
 namespace Lightning
 {
+	namespace Plugins
+	{
+		extern IPluginMgr* gPluginMgr;
+	}
 	namespace App
 	{
 		using Render::RendererFactory;
 		using namespace Window;
-		using Scene::SceneManager;
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Vector2i;
 
 		Vector2i mousePosition;
+
+		void WindowsApplication::Start()
+		{
+			Application::Start();
+			auto scenePlugin = Plugins::gPluginMgr->GetPlugin<Plugins::ScenePlugin>("Scene");
+			mSceneMgr = scenePlugin->GetSceneManager();
+		}
+
 		void WindowsApplication::RegisterWindowHandlers()
 		{
 			Application::RegisterWindowHandlers();
@@ -31,7 +43,7 @@ namespace Lightning
 
 		void WindowsApplication::OnKeyDown(const Window::KeyEvent& event)
 		{
-			auto scene = SceneManager::Instance()->GetForegroundScene();
+			auto scene = mSceneMgr->GetForegroundScene();
 			if (scene)
 			{
 				auto camera = scene->GetActiveCamera();
@@ -120,7 +132,7 @@ namespace Lightning
 		{
 			if (event.pressedKey & VK_MOUSERBUTTON)
 			{
-				auto scene = SceneManager::Instance()->GetForegroundScene();
+				auto scene = mSceneMgr->GetForegroundScene();
 				if (scene)
 				{
 					auto camera = scene->GetActiveCamera();
@@ -143,7 +155,7 @@ namespace Lightning
 
 		void WindowsApplication::OnMouseWheel(const MouseWheelEvent& event)
 		{
-			auto scene = SceneManager::Instance()->GetForegroundScene();
+			auto scene = mSceneMgr->GetForegroundScene();
 			if (scene)
 			{
 				auto camera = scene->GetActiveCamera();

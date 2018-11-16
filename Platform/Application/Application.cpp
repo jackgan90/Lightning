@@ -3,15 +3,15 @@
 #include "Application.h"
 #include "Logger.h"
 #include "IRenderer.h"
-#include "SceneManager.h"
+#include "ISceneManager.h"
 //include primitives here just for simple scene construction
-#include "Primitive.h"
+#include "IPrimitive.h"
 #include "Transform.h"
 #include "ConfigManager.h"
 #include "Loader.h"
 #include "PluginSystem/IPluginMgr.h"
 #include "LoaderPlugin.h"
-#include "SystemPriority.h"
+#include "ScenePlugin.h"
 #include "ECS/EventManager.h"
 #include "tbb/task_scheduler_init.h"
 
@@ -24,13 +24,60 @@ namespace Lightning
 	namespace App
 	{
 		using Foundation::FileSystemFactory;
-		using Scene::SceneManager;
+		using Scene::ISceneManager;
 		using namespace Window;
 		using Foundation::Math::EulerAnglef;
 		using Foundation::Math::Quaternionf;
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Transform;
 		using Foundation::EventManager;
+
+		//For test only
+		void GenerateSceneObjects(ISceneManager* sceneMgr, Plugins::ScenePlugin* scenePlugin)
+		{
+			auto scene = sceneMgr->GetForegroundScene();
+			static std::random_device rd;
+			static std::mt19937 mt(rd());
+			static std::uniform_real_distribution<float> rDist(-2, 2);
+			static std::uniform_int_distribution<int> dist(0, 3);
+			static std::uniform_int_distribution<int> cDist(0, 255);
+			for (auto i = 0;i < 200;++i)
+			{
+				Scene::IPrimitive* p{ nullptr };
+				switch (dist(mt))
+				{
+				case 0:
+					p = scenePlugin->CreateCube(1.0f, 1.0f, 1.0f);
+					break;
+				case 1:
+					p = scenePlugin->CreateCylinder(2.0f, 1.0f);
+					break;
+				case 2:
+					p = scenePlugin->CreateHemisphere(1.0f);
+					break;
+				case 3:
+					p = scenePlugin->CreateSphere(1.0f);
+					break;
+				default:
+					break;
+				}
+				Vector3f pos;
+				pos.x = rDist(mt);
+				pos.y = rDist(mt);
+				pos.z = rDist(mt);
+				p->SetWorldPosition(pos);
+				Render::Color32 color;
+				color.a = 255;
+				color.r = cDist(mt);
+				color.g = cDist(mt);
+				color.b = cDist(mt);
+				p->SetColor(color);
+				p->SetWorldRotation(Transform::RandomRotation());
+				scene->AddDrawable(p);
+			}
+		}
+		//For test only end
+
 		Application::Application() : mExitCode(0), mRunning(false)
 		{
 		}
@@ -51,6 +98,7 @@ namespace Lightning
 		{
 			mRunning = true;
 			auto loaderPlugin = Plugins::gPluginMgr->Load<Plugins::LoaderPlugin>("Loader");
+			auto scenePlugin = Plugins::gPluginMgr->Load<Plugins::ScenePlugin>("Scene");
 			static tbb::task_scheduler_init init(tbb::task_scheduler_init::deferred);
 			auto threadCount = Foundation::ConfigManager::Instance()->GetConfig().ThreadCount;
 			if (threadCount == 0)
@@ -71,13 +119,14 @@ namespace Lightning
 				OnQuit(int(event.exitCode));
 			});
 			//Create a simple scene here just for test
-			auto scene = SceneManager::Instance()->CreateScene();
+			auto sceneMgr = scenePlugin->GetSceneManager();
+			auto scene = sceneMgr->CreateScene();
 			auto camera = scene->GetActiveCamera();
 			camera->MoveTo(Render::Vector3f({0.0f, 0.0f, 2.0f}));
 			camera->LookAt(Render::Vector3f({ 0.0f, 0.0f, 0.0f }));
 			//camera->SetRotation(Quaternionf(EulerAnglef(3.14 + 0.0, 0, 0)));
 			//camera->SetCameraType(Scene::CameraType::Orthographic);
-			GenerateSceneObjects();
+			GenerateSceneObjects(sceneMgr, scenePlugin);
 			//camera->RotateTowards(Render::Vector3f(0.0f, 1.0f, -1.0f));
 
 			//End of scene creation
@@ -90,56 +139,15 @@ namespace Lightning
 		{
 			mRunning = false;
 			mExitCode = exitCode;
-			SceneManager::Instance()->DestroyAll();
+			auto sceneMgr = Plugins::gPluginMgr->GetPlugin<Plugins::ScenePlugin>("Scene")->GetSceneManager();
+			sceneMgr->DestroyAllScenes();
 			mRenderer->ShutDown();
 			mRenderer.reset();
 			Plugins::gPluginMgr->Unload("Loader");
+			Plugins::gPluginMgr->Unload("Scene");
 			LOG_INFO("Application quit.");
 		}
 
-		void Application::GenerateSceneObjects()
-		{
-			auto scene = SceneManager::Instance()->GetForegroundScene();
-			static std::random_device rd;
-			static std::mt19937 mt(rd());
-			static std::uniform_real_distribution<float> rDist(-2, 2);
-			static std::uniform_int_distribution<int> dist(0, 3);
-			static std::uniform_int_distribution<int> cDist(0, 255);
-			for (auto i = 0;i < 200;++i)
-			{
-				std::shared_ptr<Scene::Primitive> p;
-				switch (dist(mt))
-				{
-				case 0:
-					p = std::make_shared<Scene::Cube>();
-					break;
-				case 1:
-					p = std::make_shared<Scene::Cylinder>(2.0f, 1.0f);
-					break;
-				case 2:
-					p = std::make_shared<Scene::Hemisphere>();
-					break;
-				case 3:
-					p = std::make_shared<Scene::Sphere>();
-					break;
-				default:
-					break;
-				}
-				Vector3f pos;
-				pos.x = rDist(mt);
-				pos.y = rDist(mt);
-				pos.z = rDist(mt);
-				p->SetWorldPosition(pos);
-				Render::Color32 color;
-				color.a = 255;
-				color.r = cDist(mt);
-				color.g = cDist(mt);
-				color.b = cDist(mt);
-				p->SetColor(color);
-				p->SetWorldRotation(Transform::RandomRotation());
-				scene->AddDrawable(p);
-			}
-		}
 
 		void Application::RegisterWindowHandlers()
 		{

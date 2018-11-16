@@ -1,8 +1,7 @@
 #pragma once
+#include "ISceneManager.h"
 #include "Container.h"
-#include "SceneExportDef.h"
 #include "Singleton.h"
-#include "Scene.h"
 
 namespace Lightning
 {
@@ -10,32 +9,25 @@ namespace Lightning
 	{
 		using Foundation::Container;
 		using Foundation::Singleton;
-		class LIGHTNING_SCENE_API SceneManager : public Singleton<SceneManager>
+		class SceneManager : public ISceneManager, public Singleton<SceneManager>
 		{
-			friend class Singleton<SceneManager>;
 		public:
 			SceneManager();
 			~SceneManager();
-			template<typename... Args>
-			Scene* CreateScene(Args&&... args)
-			{
-				auto scene = new Scene(mCurrentSceneID, std::forward<Args>(args)...);
-				mScenes[mCurrentSceneID] = scene;
-				mCurrentSceneID++;
-				if (!GetForegroundScene())
-					SetForegroundScene(scene);
-				return scene;
-			}
-			Scene* GetForegroundScene();
-			void SetForegroundScene(Scene* scene);
-			void Update();
-			void DestroyScene(const std::uint32_t sceneId);
-			void DestroyAll();
-			void OnFrameUpdate();
+			IScene* CreateScene()override;
+			IScene* GetForegroundScene()override;
+			void SetForegroundScene(IScene* scene)override;
+			void Update()override;
+			void DestroyScene(const std::uint32_t sceneId)override;
+			void DestroyAllScenes()override;
+			void OnFrameUpdate()override;
 		protected:
+			void DestroyAllScenesImpl();
 			std::uint32_t mCurrentSceneID;
-			Container::UnorderedMap<std::uint32_t, Scene*> mScenes;
-			Scene* mForegroundScene;
+			Container::UnorderedMap<std::uint32_t, IScene*> mScenes;
+			IScene* mForegroundScene;
+		private:
+			friend class Singleton<SceneManager>;
 		};
 	}
 }

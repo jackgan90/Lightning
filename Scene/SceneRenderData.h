@@ -1,14 +1,13 @@
 #pragma once
-#include "SceneExportDef.h"
-#include "Camera.h"
+#include "ICamera.h"
 
 namespace Lightning
 {
 	namespace Scene
 	{
-		struct LIGHTNING_SCENE_API SceneRenderData
+		struct SceneRenderData
 		{
-			Camera* camera;
+			ICamera* camera;
 		};
 	}
 }

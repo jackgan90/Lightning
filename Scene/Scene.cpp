@@ -1,5 +1,6 @@
 #include "Scene.h"
 #include "Renderer.h"
+#include "Camera.h"
 
 namespace Lightning
 {
@@ -28,9 +29,9 @@ namespace Lightning
 			}
 		}
 
-		void Scene::AddDrawable(const SharedDrawablePtr& drawable)
+		void Scene::AddDrawable(IDrawable* drawable)
 		{
-			mDrawables.push_back(drawable);
+			mDrawables.emplace_back(drawable);
 		}
 
 	}
