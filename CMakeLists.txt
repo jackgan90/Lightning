@@ -62,9 +62,11 @@ endif()
 
 set(LIBRARY_HEADERS	PluginSystem/Plugin.h
 					PluginSystem/IPluginMgr.h
-					PluginSystem/PluginMgr.h)
+					PluginSystem/RefCount.h
+					PluginSystem/SmartPointer.h
+					PluginMgrImpl/PluginMgr.h)
 
-set(LIBRARY_SOURCES	PluginSystem/PluginMgr.cpp)
+set(LIBRARY_SOURCES	PluginMgrImpl/PluginMgr.cpp)
 
 set(HEADER_FILES	Engine.h)
 set(SOURCE_FILES	Engine.cpp
@@ -89,6 +91,7 @@ include_directories(${CMAKE_SOURCE_DIR}/Foundation
 					${CMAKE_SOURCE_DIR}/Render/Types
 					${CMAKE_SOURCE_DIR}/Render/Shader
 					${CMAKE_SOURCE_DIR}/Render/Texture
+					${CMAKE_SOURCE_DIR}/PluginSystem
 					${Boost_INCLUDE_DIR}
 					${TBB_INCLUDE_DIR}
 					${RTTR_INCLUDE_DIR}

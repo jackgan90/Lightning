@@ -1,5 +1,5 @@
-#include <GPUBuffer.h>
 #include <cassert>
+#include "GPUBuffer.h"
 
 namespace Lightning
 {

@@ -9,7 +9,7 @@
 #include "Transform.h"
 #include "ConfigManager.h"
 #include "Loader.h"
-#include "PluginSystem/IPluginMgr.h"
+#include "IPluginMgr.h"
 #include "LoaderPlugin.h"
 #include "ScenePlugin.h"
 #include "ECS/EventManager.h"

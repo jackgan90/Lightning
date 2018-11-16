@@ -141,7 +141,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_CURRENT_SOURCE_DIR}/Types
 					${CMAKE_CURRENT_SOURCE_DIR}/Shader
 					${CMAKE_CURRENT_SOURCE_DIR}/Texture
-					${CMAKE_SOURCE_DIR}
+					${CMAKE_SOURCE_DIR}/PluginSystem
 					${CMAKE_SOURCE_DIR}/Foundation
 					${CMAKE_SOURCE_DIR}/Foundation/Memory
 					${CMAKE_SOURCE_DIR}/Foundation/Math

@@ -44,8 +44,8 @@ define_dll_export_macro(PLATFORM)
 
 set(CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS} ${PLATFORM_LINKER_FLAGS})
 
-include_directories(${CMAKE_SOURCE_DIR}
-					${CMAKE_CURRENT_SOURCE_DIR} 
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR} 
+					${CMAKE_SOURCE_DIR}/PluginSystem
 					${CMAKE_SOURCE_DIR}/Foundation
 					${CMAKE_SOURCE_DIR}/Foundation/Memory
 					${CMAKE_SOURCE_DIR}/Foundation/Math

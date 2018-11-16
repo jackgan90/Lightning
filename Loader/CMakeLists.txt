@@ -28,7 +28,7 @@ source_group("Plugin" FILES
 define_dll_export_macro(LOADER)
 
 
-include_directories(${CMAKE_SOURCE_DIR}
+include_directories(${CMAKE_SOURCE_DIR}/PluginSystem
 					${CMAKE_SOURCE_DIR}/Foundation 
 					${Boost_INCLUDE_DIR}
 					${TBB_INCLUDE_DIR}

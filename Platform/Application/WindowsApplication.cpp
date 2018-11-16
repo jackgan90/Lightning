@@ -5,7 +5,7 @@
 #include "ECS/EventManager.h"
 #include "WindowsGameWindow.h"
 #include "TimeSystem.h"
-#include "PluginSystem/IPluginMgr.h"
+#include "IPluginMgr.h"
 #include "ScenePlugin.h"
 #undef min
 #undef max
