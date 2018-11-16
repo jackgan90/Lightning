@@ -27,7 +27,6 @@ namespace Lightning
 			struct PluginInfo
 			{
 				Plugin* pPlugin;
-				ReleasePluginProc ReleaseProc;
 #ifdef LIGHTNING_WIN32
 				HMODULE handle;
 #endif
@@ -40,7 +39,6 @@ namespace Lightning
 			PluginTable mPlugins;
 			std::recursive_mutex mPluginsMutex;
 			static constexpr char* GET_PLUGIN_PROC = "GetPlugin";
-			static constexpr char* RELEASE_PLUGIN_PROC = "ReleasePlugin";
 		};
 	}
 }

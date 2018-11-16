@@ -25,19 +25,12 @@ extern "C"\
 		Lightning::Plugins::gPluginMgr = mgr;\
 		return new Lightning::Plugins::##pluginImpl();\
 	}\
-	LIGHTNING_PLUGIN_DLL_EXPORT void ReleasePlugin(Lightning::Plugins::Plugin* pPlugin)\
-	{\
-		delete pPlugin;\
-	}\
 }\
 
 namespace Lightning
 {
 	namespace Plugins
 	{
-		typedef void(*ReleasePluginProc)(class Plugin*);
-		typedef Plugin* (*GetPluginProc)(class IPluginMgr*);
-
 		class Plugin
 		{
 		public:
@@ -60,16 +53,17 @@ namespace Lightning
 			std::string mName;
 			int GetRefCount()const { return mRefCount; }
 		private:
-			bool Release()
+			virtual bool Release()
 			{
 				auto oldRefCount = mRefCount.fetch_sub(1, std::memory_order_relaxed);
 				if (oldRefCount == 1)
 				{
+					delete this;
 					return true;
 				}
 				return false;
 			}
-			void AddRef()
+			virtual void AddRef()
 			{
 				mRefCount.fetch_add(1, std::memory_order_relaxed);
 			}
@@ -82,5 +76,6 @@ namespace Lightning
 			static constexpr char* PluginExtension = ".dll";
 #endif
 		};
+		typedef Plugin* (*GetPluginProc)(class IPluginMgr*);
 	}
 }

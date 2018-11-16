@@ -29,10 +29,8 @@ namespace Lightning
 			if (info.handle)
 			{
 				GetPluginProc pGetProc = (GetPluginProc)::GetProcAddress(info.handle, GET_PLUGIN_PROC);
-				ReleasePluginProc pReleaseProc = (ReleasePluginProc)::GetProcAddress(info.handle, RELEASE_PLUGIN_PROC);
-				if (pGetProc && pReleaseProc)
+				if (pGetProc)
 				{
-					info.ReleaseProc = pReleaseProc;
 					info.pPlugin = pGetProc(this);
 					if (info.pPlugin)
 					{
@@ -81,7 +79,7 @@ namespace Lightning
 				if (it->second.pPlugin->Release())
 				{
 #ifdef LIGHTNING_WIN32
-					it->second.ReleaseProc(it->second.pPlugin);
+					//it->second.ReleaseProc(it->second.pPlugin);
 					::FreeLibrary(it->second.handle);
 #endif
 					std::get<1>(result) = mPlugins.erase(it);
