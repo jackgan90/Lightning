@@ -25,6 +25,7 @@ set(HEADERS RendererExportDef.h
 			GPUBuffer.h
 			RenderConstants.h
 			Geometry.h
+			IMaterial.h
 			Material.h
 			RenderPass.h
 			ForwardRenderPass.h
@@ -62,8 +63,11 @@ set(SERIALIZERS_SOURCES	Serializers/ShaderSerializer.cpp
 set(UTILITY_HEADERS RenderAllocator.h)
 set(UTILITY_SOURCES RenderAllocator.cpp)
 
-list(APPEND HEADERS ${TYPES_HEADERS} ${SHADER_HEADERS} ${UTILITY_HEADERS} ${SERIALIZERS_HEADERS} ${TEXTURE_HEADERS})
-list(APPEND SOURCES ${SHADER_SOURCES} ${UTILITY_SOURCES} ${SERIALIZERS_SOURCES})
+set(PLUGIN_HEADERS	RenderPlugin.h)
+set(PLUGIN_SOURCES	RenderPlugin.cpp)
+
+list(APPEND HEADERS ${TYPES_HEADERS} ${SHADER_HEADERS} ${UTILITY_HEADERS} ${SERIALIZERS_HEADERS} ${TEXTURE_HEADERS} ${PLUGIN_HEADERS})
+list(APPEND SOURCES ${SHADER_SOURCES} ${UTILITY_SOURCES} ${SERIALIZERS_SOURCES} ${PLUGIN_SOURCES})
 
 source_group("Types" FILES ${TYPES_HEADERS})
 source_group("Shader" FILES ${SHADER_HEADERS}
@@ -74,6 +78,8 @@ source_group("Texture" FILES ${TEXTURE_HEADERS})
 source_group("Utility" FILES ${UTILITY_HEADERS} ${UTILITY_SOURCES})
 
 source_group("Serializers" FILES ${SERIALIZERS_HEADERS} ${SERIALIZERS_SOURCES})
+
+source_group("Plugin" FILES ${PLUGIN_HEADERS} ${PLUGIN_SOURCES})
 
 if (WIN32)
 	add_definitions(-DLIGHTNING_WIN32)
@@ -135,6 +141,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_CURRENT_SOURCE_DIR}/Types
 					${CMAKE_CURRENT_SOURCE_DIR}/Shader
 					${CMAKE_CURRENT_SOURCE_DIR}/Texture
+					${CMAKE_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/Foundation
 					${CMAKE_SOURCE_DIR}/Foundation/Memory
 					${CMAKE_SOURCE_DIR}/Foundation/Math
