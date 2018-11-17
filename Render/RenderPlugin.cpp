@@ -28,13 +28,14 @@ namespace Lightning
 
 		RenderPluginImpl::RenderPluginImpl(IPluginMgr* mgr):mRenderer(nullptr), mPluginMgr(mgr)
 		{
-			auto foundation = mPluginMgr->Load<FoundationPlugin>("Foundation");
-			foundation->InitLogger("Render", Foundation::Logger::Instance());
+			INIT_LOGGER(mgr, Render)
+			LOG_INFO("Render plugin init.");
 		}
 
 		RenderPluginImpl::~RenderPluginImpl()
 		{
-			mPluginMgr->Unload("Foundation");
+			LOG_INFO("Render plugin unloaded.");
+			UNLOAD_FOUNDATION(mPluginMgr)
 			DestroyRendererImpl(mRenderer);
 		}
 

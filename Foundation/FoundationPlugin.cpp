@@ -20,6 +20,7 @@ namespace Lightning
 			}
 			~FoundationPluginImpl()override
 			{
+				LOG_INFO("Foundation plugin unloaded.");
 				mFileSink->flush();
 			}
 			void InitLogger(const char* name, Foundation::Logger* logger)override;

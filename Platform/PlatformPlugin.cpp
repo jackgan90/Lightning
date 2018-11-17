@@ -24,13 +24,14 @@ namespace Lightning
 
 		PlatformPluginImpl::PlatformPluginImpl(IPluginMgr* mgr):mPluginMgr(mgr)
 		{
-			auto foundation = mPluginMgr->Load<FoundationPlugin>("Foundation");
-			foundation->InitLogger("Platform", Foundation::Logger::Instance());
+			INIT_LOGGER(mgr, Platform)
+			LOG_INFO("Platform plugin init.");
 		}
 
 		PlatformPluginImpl::~PlatformPluginImpl()
 		{
-			mPluginMgr->Unload("Platform");
+			LOG_INFO("Platform plugin unloaded.");
+			UNLOAD_FOUNDATION(mPluginMgr)
 		}
 
 		IApplication* PlatformPluginImpl::CreateApplication()

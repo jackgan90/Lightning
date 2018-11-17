@@ -21,14 +21,15 @@ namespace Lightning
 
 		LoaderPluginImpl::LoaderPluginImpl(IPluginMgr* mgr) : mPluginMgr(mgr)
 		{
-			auto foundation = mPluginMgr->Load<FoundationPlugin>("Foundation");
-			foundation->InitLogger("Loader", Foundation::Logger::Instance());
+			INIT_LOGGER(mgr, Loader);
+			LOG_INFO("Loader plugin init.");
 		}
 
 		LoaderPluginImpl::~LoaderPluginImpl()
 		{
+			LOG_INFO("Loader plugin unloaded!");
 			Loader::Instance()->Finalize();
-			mPluginMgr->Unload("Foundation");
+			UNLOAD_FOUNDATION(mPluginMgr)
 		}
 
 		ILoader* LoaderPluginImpl::GetLoader()

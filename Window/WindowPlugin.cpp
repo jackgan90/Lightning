@@ -22,13 +22,14 @@ namespace Lightning
 
 		WindowPluginImpl::WindowPluginImpl(IPluginMgr* mgr):mPluginMgr(mgr)
 		{
-			auto foundation = mPluginMgr->Load<FoundationPlugin>("Foundation");
-			foundation->InitLogger("Window", Foundation::Logger::Instance());
+			INIT_LOGGER(mgr, Window)
+			LOG_INFO("Window plugin init.");
 		}
 
 		WindowPluginImpl::~WindowPluginImpl()
 		{
-			mPluginMgr->Unload("Foundation");
+			LOG_INFO("Window plugin unloaded.");
+			UNLOAD_FOUNDATION(mPluginMgr)
 		}
 
 		Window::IWindow* WindowPluginImpl::NewWindow()
