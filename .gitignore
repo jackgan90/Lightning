@@ -52,3 +52,4 @@ Temporary Items
 tags
 *.temp
 *.lock
+*.vs
