@@ -4,8 +4,7 @@ message(STATUS "Configuring project Window")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(HEADERS	WindowExportDef.h
-			IWindow.h
+set(HEADERS	IWindow.h
 			GameWindow.h
 			WindowsGameWindow.h
 			WindowEvents.h)
