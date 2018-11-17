@@ -8,7 +8,7 @@ namespace Lightning
 {
 	namespace Foundation
 	{
-		class LIGHTNING_FOUNDATION_API SystemManager : public Singleton<SystemManager>
+		class SystemManager : public Singleton<SystemManager>
 		{
 		public:
 			template<typename S, typename... Args>

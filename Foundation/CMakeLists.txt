@@ -15,7 +15,6 @@ set(MATH_HEADERS	Math/Common.h
 					Math/Quaternion.h
 					Math/Transform.h)
 
-set(MATH_SOURCES	Math/Transform.cpp)
 
 set(ECS_HEADERS		ECS/Entity.h
 					ECS/Component.h
@@ -62,10 +61,10 @@ set(SOURCES Common.cpp
 			Environment.cpp)
 
 list(APPEND HEADERS ${MEMORY_HEADERS} ${MATH_HEADERS} ${ECS_HEADERS})
-list(APPEND SOURCES ${MEMORY_SOURCES} ${MATH_SOURCES} ${ECS_SOURCES})
+list(APPEND SOURCES ${MEMORY_SOURCES} ${ECS_SOURCES})
 
 source_group("Memory" FILES	${MEMORY_HEADERS} ${MEMORY_SOURCES})
-source_group("Math" FILES ${MATH_HEADERS} ${MATH_SOURCES})
+source_group("Math" FILES ${MATH_HEADERS})
 source_group("ECS" FILES ${ECS_HEADERS} ${ECS_SOURCES})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)

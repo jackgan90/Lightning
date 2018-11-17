@@ -8,7 +8,7 @@ namespace Lightning
 {
 	namespace Foundation
 	{
-		class LIGHTNING_FOUNDATION_API TimerManager : public Singleton<TimerManager>
+		class TimerManager : public Singleton<TimerManager>
 		{
 		public:
 			ITimer* CreateTimer(std::size_t resolution);

@@ -10,7 +10,7 @@ namespace Lightning
 {
 	namespace Foundation
 	{
-		struct LIGHTNING_FOUNDATION_API Component : std::enable_shared_from_this<Component>
+		struct Component : std::enable_shared_from_this<Component>
 		{
 			friend class Entity;
 			void Remove();

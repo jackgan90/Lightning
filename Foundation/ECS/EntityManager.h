@@ -9,7 +9,7 @@ namespace Lightning
 {
 	namespace Foundation
 	{
-		class LIGHTNING_FOUNDATION_API EntityManager : public Singleton<EntityManager>
+		class EntityManager : public Singleton<EntityManager>
 		{
 		public:
 			template<typename E>

@@ -15,7 +15,7 @@ namespace Lightning
 {
 	namespace Foundation
 	{
-		struct LIGHTNING_FOUNDATION_API MemoryInfo
+		struct MemoryInfo
 		{
 			void* address;
 			size_t size;
@@ -25,7 +25,7 @@ namespace Lightning
 			size_t line;
 #endif
 		};
-		class LIGHTNING_FOUNDATION_API IMemoryAllocator
+		class IMemoryAllocator
 		{
 		public:
 			IMemoryAllocator() :mAllocatedSize(0), mAllocatedCount(0){}

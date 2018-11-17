@@ -15,7 +15,7 @@ namespace Lightning
 			REPEAT,
 		};
 
-		class LIGHTNING_FOUNDATION_API ITimer
+		class ITimer
 		{
 		public:
 			virtual ~ITimer() {};
@@ -27,7 +27,7 @@ namespace Lightning
 		};
 
 		//simple thread-unsafe wheel timer implementation
-		class LIGHTNING_FOUNDATION_API WheelTimer : public ITimer
+		class WheelTimer : public ITimer
 		{
 		public:
 			WheelTimer(std::size_t wheelSlots, std::size_t resolution);

@@ -6,7 +6,7 @@ namespace Lightning
 {
 	namespace Foundation
 	{
-		class LIGHTNING_FOUNDATION_API Time
+		class Time
 		{
 		public:
 			//static std::string GetCurrentTimeString();
