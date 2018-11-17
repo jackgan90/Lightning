@@ -2,7 +2,6 @@
 #include <memory>
 #include <string>
 #include "Container.h"
-#include "RendererExportDef.h"
 
 
 namespace Lightning

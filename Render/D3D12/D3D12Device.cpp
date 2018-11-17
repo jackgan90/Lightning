@@ -71,7 +71,7 @@ namespace Lightning
 			"	float3 diffuse = dot(N, L);\n"
 			"	return float4(color.rgb * diffuse, color.a) ;\n"
 			"}\n";
-		D3D12Device::D3D12Device(IDXGIFactory4* factory, const SharedFileSystemPtr& fs)
+		D3D12Device::D3D12Device(IDXGIFactory4* factory)
 			:Device()
 		{
 			CreateNativeDevice(factory);

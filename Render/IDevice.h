@@ -2,7 +2,6 @@
 #include <memory>
 #include <functional>
 #include "Container.h"
-#include "RendererExportDef.h"
 #include "IRenderTarget.h"
 #include "IDepthStencilBuffer.h"
 #include "PipelineState.h"

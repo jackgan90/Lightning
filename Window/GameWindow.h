@@ -4,12 +4,8 @@
 #include <exception>
 #include "WindowExportDef.h"
 #include "WindowEvents.h"
+#include "IWindow.h"
 #include "Logger.h"
-
-#define WINDOW_MSG_CLASS_HANDLER(EventType, Handler)\
-Foundation::EventManager::Instance()->Subscribe<Window::##EventType##>([&](const EventType& event){\
-	this->Handler(event);\
-})
 
 namespace Lightning
 {
@@ -25,15 +21,12 @@ namespace Lightning
 			}
 		};
 
-		class LIGHTNING_WINDOW_API GameWindow
+		class LIGHTNING_WINDOW_API GameWindow : public IWindow
 		{
 		public:
-			virtual bool Show(bool show) = 0;
-			virtual ~GameWindow();
-			virtual void Update() = 0;
 			//Only left for backwards compatibility,will remove later once refactoring is over
-			std::uint32_t GetWidth()const { return mWidth; }
-			std::uint32_t GetHeight()const { return mHeight; }
+			std::uint32_t GetWidth()const override{ return mWidth; }
+			std::uint32_t GetHeight()const override{ return mHeight; }
 		protected:
 			GameWindow();
 			virtual void OnIdle();
@@ -41,6 +34,5 @@ namespace Lightning
 			std::uint32_t mWidth;
 			std::uint32_t mHeight;
 		};
-		using SharedWindowPtr = std::shared_ptr<GameWindow>;
 	}
 }

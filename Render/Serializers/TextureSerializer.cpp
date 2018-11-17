@@ -18,7 +18,7 @@ namespace Lightning
 
 		}
 
-		void TextureSerializer::Deserialize(const Foundation::SharedFilePtr& file, char* buffer)
+		void TextureSerializer::Deserialize(Foundation::IFile* file, char* buffer)
 		{
 			FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
 			BYTE* data = reinterpret_cast<BYTE*>(buffer);

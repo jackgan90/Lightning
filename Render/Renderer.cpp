@@ -14,11 +14,12 @@ namespace Lightning
 	{
 		IRenderer* Renderer::sInstance{ nullptr };
 		Foundation::FrameMemoryAllocator g_RenderAllocator;
-		Renderer::Renderer(const SharedFileSystemPtr& fs, const SharedWindowPtr& pWindow) :
-			mOutputWindow(pWindow),
-			mFrameCount(0), mFs(fs), mFrameResourceIndex(0), mClearColor(0.5f, 0.5f, 0.5f, 1.0f)
+		Renderer::Renderer(Window::IWindow* window) :
+			mOutputWindow(window),
+			mFrameCount(0), mFrameResourceIndex(0), mClearColor(0.5f, 0.5f, 0.5f, 1.0f)
 		{
 			assert(!sInstance);
+			mOutputWindow->AddRef();
 			sInstance = this;
 		}
 
@@ -153,10 +154,11 @@ namespace Lightning
 			{
 				mFrameResources[i].Release();
 			}
-			mOutputWindow.reset();
+			mOutputWindow->Release();
 			mDevice.reset();
 			mSwapChain.reset();
 			mRenderPasses.clear();
+			mCallbacks.clear();
 		}
 
 		const RenderQueue& Renderer::GetRenderQueue()

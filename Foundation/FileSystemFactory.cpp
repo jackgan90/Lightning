@@ -1,13 +1,14 @@
 #include <memory>
 #include "FileSystemFactory.h"
+#include "FileSystem.h"
 
 namespace Lightning
 {
 	namespace Foundation
 	{
-		SharedFileSystemPtr FileSystemFactory::CreateFileSystem()
+		IFileSystem* FileSystemFactory::CreateFileSystem()
 		{
-			return std::make_unique<GeneralFileSystem>();
+			return new GeneralFileSystem();
 		}
 	}
 }

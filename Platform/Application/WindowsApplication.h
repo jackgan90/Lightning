@@ -1,14 +1,18 @@
 #pragma once
 #include "Application.h"
-#include "GameWindow.h"
-#include "FileSystem.h"
+#include "IWindow.h"
+#include "IFileSystem.h"
 #include "ISceneManager.h"
 
 namespace Lightning
 {
+	namespace Render
+	{
+		class IRenderer;
+	}
+
 	namespace App
 	{
-		using Window::SharedWindowPtr;
 		class WindowsApplication : public Application
 		{
 		public:
@@ -19,8 +23,7 @@ namespace Lightning
 			void OnMouseDown(const Window::MouseDownEvent& event);
 			void OnMouseMove(const Window::MouseMoveEvent& event);
 			void RegisterWindowHandlers()override;
-			SharedWindowPtr CreateMainWindow()override;
-			UniqueRendererPtr CreateRenderer()override;
+			IWindow* CreateMainWindow()override;
 		private:
 			Scene::ISceneManager* mSceneMgr;
 		};

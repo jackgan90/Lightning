@@ -1,6 +1,5 @@
 #pragma once
 #include <memory>
-#include "RendererExportDef.h"
 
 namespace Lightning
 {

@@ -2,14 +2,14 @@
 #undef min
 #undef max
 #include <functional>
-#include "GameWindow.h"
+#include "IWindow.h"
 #include "ECS/Event.h"
 
 namespace Lightning
 {
 	namespace Window
 	{
-		class GameWindow;
+		class IWindow;
 		using Foundation::Event;
 		enum VirtualKeyCode
 		{
@@ -28,33 +28,33 @@ namespace Lightning
 
 		struct WindowEvent : Event
 		{
-			WindowEvent(const GameWindow* ptr) : pWindow(ptr){}
-			const GameWindow* pWindow;
+			WindowEvent(const IWindow* ptr) : pWindow(ptr){}
+			const IWindow* pWindow;
 			RTTR_ENABLE(Event)
 		};
 
 		struct WindowCreatedEvent : WindowEvent
 		{
-			WindowCreatedEvent(const GameWindow* ptr) : WindowEvent(ptr){}
+			WindowCreatedEvent(const IWindow* ptr) : WindowEvent(ptr){}
 			RTTR_ENABLE(WindowEvent)
 		};
 
 		struct WindowDestroyedEvent : WindowEvent
 		{
-			WindowDestroyedEvent(const GameWindow* ptr) : WindowEvent(ptr){}
+			WindowDestroyedEvent(const IWindow* ptr) : WindowEvent(ptr){}
 			long long exitCode;
 			RTTR_ENABLE(WindowEvent)
 		};
 
 		struct WindowIdleEvent : WindowEvent
 		{
-			WindowIdleEvent(const GameWindow* ptr) : WindowEvent(ptr){}
+			WindowIdleEvent(const IWindow* ptr) : WindowEvent(ptr){}
 			RTTR_ENABLE(WindowEvent)
 		};
 
 		struct WindowResizeEvent : WindowEvent
 		{
-			WindowResizeEvent(const GameWindow* ptr) : WindowEvent(ptr){}
+			WindowResizeEvent(const IWindow* ptr) : WindowEvent(ptr){}
 			unsigned int width;
 			unsigned int height;
 			RTTR_ENABLE(WindowEvent)
@@ -62,7 +62,7 @@ namespace Lightning
 
 		struct MouseWheelEvent : WindowEvent
 		{
-			MouseWheelEvent(const GameWindow* ptr) : WindowEvent(ptr){}
+			MouseWheelEvent(const IWindow* ptr) : WindowEvent(ptr){}
 			int wheel_delta;
 			bool is_vertical;
 			RTTR_ENABLE(WindowEvent)
@@ -70,14 +70,14 @@ namespace Lightning
 
 		struct KeyEvent : WindowEvent
 		{
-			KeyEvent(const GameWindow* ptr) : WindowEvent(ptr){}
+			KeyEvent(const IWindow* ptr) : WindowEvent(ptr){}
 			VirtualKeyCode code;
 			RTTR_ENABLE(WindowEvent)
 		};
 
 		struct MouseDownEvent : WindowEvent
 		{
-			MouseDownEvent(const GameWindow* ptr) : WindowEvent(ptr){}
+			MouseDownEvent(const IWindow* ptr) : WindowEvent(ptr){}
 			std::size_t x;
 			std::size_t y;
 			VirtualKeyCode pressedKey;
@@ -86,7 +86,7 @@ namespace Lightning
 
 		struct MouseMoveEvent : WindowEvent
 		{
-			MouseMoveEvent(const GameWindow* ptr) : WindowEvent(ptr){}
+			MouseMoveEvent(const IWindow* ptr) : WindowEvent(ptr){}
 			std::size_t x;
 			std::size_t y;
 			VirtualKeyCode pressedKey;

@@ -3,17 +3,15 @@
 #include "Container.h"
 #include "IRenderer.h"
 #include "IRenderFence.h"
-#include "FileSystem.h"
+#include "IFileSystem.h"
 #include "RenderPass.h"
-#include "GameWindow.h"
+#include "IWindow.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::SharedFileSystemPtr;
 		using Foundation::Container;
-		using Window::SharedWindowPtr;
 
 		struct FrameResource
 		{
@@ -49,7 +47,7 @@ namespace Lightning
 			}
 		};
 
-		class LIGHTNING_RENDER_API Renderer : public IRenderer
+		class Renderer : public IRenderer
 		{
 		public:
 			~Renderer()override;
@@ -61,18 +59,18 @@ namespace Lightning
 			std::uint64_t GetCurrentFrameCount()const override;
 			void SetClearColor(const ColorF& color)override;
 			void AddRenderNode(const RenderNode& item)override;
-			//TODO there can be multiple render passes in effect simultaneously,shoulc change it
+			//TODO there can be multiple render passes in effect simultaneously,should change it
 			void AddRenderPass(RenderPassType type)override;
 			std::size_t GetFrameResourceIndex()const override;
 			void Start()override;
 			void ShutDown()override;
 			void RegisterCallback(RendererEvent evt, RendererCallback cb)override;
 			static IRenderer* Instance() { return sInstance; }
-			GameWindow* GetOutputWindow()override { return mOutputWindow.get(); }
+			Window::IWindow* GetOutputWindow()override { return mOutputWindow; }
 			const RenderQueue& GetRenderQueue()override;
 			SharedDepthStencilBufferPtr GetDefaultDepthStencilBuffer()override;
 		protected:
-			Renderer(const SharedFileSystemPtr& fs, const SharedWindowPtr& pWindow);
+			Renderer(Window::IWindow* window);
 			void WaitForPreviousFrame(bool waitAll);
 			void InvokeEventCallback(RendererEvent evt);
 			virtual void OnFrameBegin();
@@ -88,7 +86,6 @@ namespace Lightning
 			virtual RenderPass* CreateRenderPass(RenderPassType type);
 			static IRenderer* sInstance;
 			std::uint64_t mFrameCount;
-			SharedFileSystemPtr mFs;
 			std::unique_ptr<IDevice> mDevice;
 			std::unique_ptr<ISwapChain> mSwapChain;
 			Container::Vector<std::unique_ptr<RenderPass>> mRenderPasses;
@@ -96,7 +93,7 @@ namespace Lightning
 			ColorF mClearColor;
 			Container::UnorderedMap<RendererEvent, Container::Vector<RendererCallback>> mCallbacks;
 			FrameResource mFrameResources[RENDER_FRAME_COUNT];
-			SharedWindowPtr mOutputWindow;
+			Window::IWindow* mOutputWindow;
 		};
 	}
 }

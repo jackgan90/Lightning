@@ -1,11 +1,11 @@
 #include "Common.h"
 #include "WindowsApplication.h"
-#include "RendererFactory.h"
 #include "Logger.h"
 #include "ECS/EventManager.h"
 #include "WindowsGameWindow.h"
 #include "TimeSystem.h"
 #include "IPluginMgr.h"
+#include "IRenderer.h"
 #include "ScenePlugin.h"
 #undef min
 #undef max
@@ -18,10 +18,10 @@ namespace Lightning
 	}
 	namespace App
 	{
-		using Render::RendererFactory;
 		using namespace Window;
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Vector2i;
+		using Render::IRenderer;
 
 		Vector2i mousePosition;
 
@@ -172,14 +172,10 @@ namespace Lightning
 			}
 		}
 
-		SharedWindowPtr WindowsApplication::CreateMainWindow()
+		IWindow* WindowsApplication::CreateMainWindow()
 		{
-			return std::make_shared<WindowsGameWindow>();
+			return new WindowsGameWindow();
 		}
 
-		UniqueRendererPtr WindowsApplication::CreateRenderer()
-		{
-			return RendererFactory::Instance()->CreateRenderer(mWindow, mFileSystem);
-		}
 	}
 }

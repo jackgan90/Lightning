@@ -165,7 +165,7 @@ namespace Lightning
 
 		}
 
-		SharedFilePtr GeneralFileSystem::FindFile(const std::string& filename, FileAccess bitmask)
+		IFile* GeneralFileSystem::FindFile(const std::string& filename, FileAccess bitmask)
 		{
 			assert(Environment::IsInLoaderIOThread() && "FindFile must be called from LoaderIO Thread!");
 			auto cachedFile = mCachedFiles.find(filename);
@@ -180,7 +180,8 @@ namespace Lightning
 				});
 				if (it != end)
 				{
-					mCachedFiles.insert(std::make_pair(filename, SharedFilePtr(new GeneralFile(it->path().string(), bitmask))));
+					auto file = new GeneralFile(it->path().string(), bitmask);
+					mCachedFiles.insert(std::make_pair(filename, file));
 					return mCachedFiles[filename];
 				}
 			}
@@ -188,7 +189,7 @@ namespace Lightning
 			{
 				LOG_ERROR(e.what());
 			}
-			return SharedFilePtr();
+			return nullptr;
 		}
 
 		bool GeneralFileSystem::SetRoot(std::string root_path)

@@ -1,74 +1,28 @@
 #pragma once
 #include <string>
 #include <memory>
-#include <fstream>
 #include <boost/filesystem.hpp>
 #include "Container.h"
 #include "FoundationExportDef.h"
 #include "Singleton.h"
-#include "EnumOperation.h"
+#include "IFileSystem.h"
 
 namespace Lightning
 {
 	namespace Foundation
 	{
-		using FileSize = std::streamsize;
-
-		enum class FilePointerType
-		{
-			Read,
-			Write
-		};
-
-		enum class FileAnchor
-		{
-			Begin,
-			Current,
-			End
-		};
-
-		enum class FileAccess : std::uint8_t
-		{
-			READ = 0x01,
-			WRITE = 0x02,
-		};
-		ENABLE_ENUM_BITMASK_OPERATORS(FileAccess)
-		class LIGHTNING_FOUNDATION_API IFile
-		{
-		public:
-			virtual ~IFile() = default;
-			virtual FileSize GetSize() = 0;
-			virtual FileSize Read(char* buf, FileSize length) = 0;
-			virtual void SetFilePointer(FilePointerType type, FileAnchor anchor, FileSize offset) = 0;
-			virtual void Close() = 0;
-			virtual bool IsOpen()const = 0;
-			virtual const std::string GetPath()const = 0;
-			virtual const std::string GetName()const = 0;
-		};
-		using SharedFilePtr = std::shared_ptr<IFile>;
-
-		class LIGHTNING_FOUNDATION_API IFileSystem
-		{
-		public:
-			virtual ~IFileSystem() = default;
-			//Thread unsafe.Application must call this method from loader IO thread
-			virtual SharedFilePtr FindFile(const std::string& filename, FileAccess bitmask) = 0;
-			virtual bool SetRoot(std::string root_path) = 0;
-			virtual const std::string GetRoot() const = 0;
-		};
-		using SharedFileSystemPtr = std::shared_ptr<IFileSystem>;
 
 		class LIGHTNING_FOUNDATION_API GeneralFileSystem : public IFileSystem
 		{
 		public:
 			GeneralFileSystem();
 			~GeneralFileSystem()override;
-			SharedFilePtr FindFile(const std::string& fileName, FileAccess bitMask)override;
+			IFile* FindFile(const std::string& fileName, FileAccess bitMask)override;
 			bool SetRoot(std::string rootPath)override;
 			const std::string GetRoot() const override{ return mRoot.string(); }
 		protected:
 			boost::filesystem::path mRoot;
-			Container::UnorderedMap<std::string, SharedFilePtr> mCachedFiles;
+			Container::UnorderedMap<std::string, IFile*> mCachedFiles;
 		};
 
 		class GeneralFile : public IFile

@@ -1,5 +1,4 @@
 #pragma once
-#include "RendererExportDef.h"
 #include "Container.h"
 #include "Geometry.h"
 #include "IMaterial.h"

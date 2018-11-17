@@ -41,7 +41,7 @@ namespace Lightning
 			//device , swap chain and depth stencil buffer are parent class's members but we still release them here because we need to track alive resources
 		}
 
-		D3D12Renderer::D3D12Renderer(const SharedWindowPtr& pWindow, const SharedFileSystemPtr& fs) : Renderer(fs, pWindow)
+		D3D12Renderer::D3D12Renderer(Window::IWindow* window) : Renderer(window)
 		{
 #ifndef NDEBUG
 			EnableDebugLayer();
@@ -120,7 +120,7 @@ namespace Lightning
 
 		IDevice* D3D12Renderer::CreateDevice()
 		{
-			auto device = new D3D12Device(mDXGIFactory.Get(), mFs);
+			auto device = new D3D12Device(mDXGIFactory.Get());
 			D3D12_COMMAND_QUEUE_DESC desc = {};
 			mCommandQueue = device->CreateCommandQueue(&desc);
 			return device;
@@ -656,7 +656,7 @@ namespace Lightning
 
 		ISwapChain* D3D12Renderer::CreateSwapChain()
 		{
-			return new D3D12SwapChain(mDXGIFactory.Get(), GetCommandQueue(), mOutputWindow.get());
+			return new D3D12SwapChain(mDXGIFactory.Get(), GetCommandQueue(), mOutputWindow);
 		}
 
 		IDepthStencilBuffer* D3D12Renderer::CreateDepthStencilBuffer(std::uint32_t width, std::uint32_t height)

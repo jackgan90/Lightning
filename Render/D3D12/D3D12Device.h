@@ -18,14 +18,13 @@ namespace Lightning
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
-		using Foundation::SharedFileSystemPtr;
 		using Foundation::StackAllocator;
 		using Foundation::Container;
 		class D3D12Device : public Device
 		{
 		public:
 			friend class D3D12Renderer;
-			D3D12Device(IDXGIFactory4* factory, const SharedFileSystemPtr& fs);
+			D3D12Device(IDXGIFactory4* factory);
 			~D3D12Device()override;
 			SharedVertexBufferPtr CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor)override;
 			SharedIndexBufferPtr CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;

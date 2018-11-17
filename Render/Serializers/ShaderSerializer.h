@@ -13,7 +13,7 @@ namespace Lightning
 			ShaderSerializer(ShaderType type, const std::string& path, 
 				const ShaderDefine& defineMap, ShaderLoadFinishHandler handler);
 			void Serialize(char** buffer)override;
-			void Deserialize(const Foundation::SharedFilePtr& file, char* buffer)override;
+			void Deserialize(Foundation::IFile* file, char* buffer)override;
 			void Dispose()override;
 		private:
 			ShaderType mType;

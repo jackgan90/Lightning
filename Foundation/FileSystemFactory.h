@@ -1,6 +1,6 @@
 #pragma once
 #include "FoundationExportDef.h"
-#include "FileSystem.h"
+#include "IFileSystem.h"
 #include "Singleton.h"
 
 namespace Lightning
@@ -10,7 +10,7 @@ namespace Lightning
 		class LIGHTNING_FOUNDATION_API FileSystemFactory : public Singleton<FileSystemFactory>
 		{
 		public:
-			SharedFileSystemPtr CreateFileSystem();
+			IFileSystem* CreateFileSystem();
 		};
 	}
 }

@@ -18,7 +18,7 @@ namespace Lightning
 
 		}
 
-		void ShaderSerializer::Deserialize(const Foundation::SharedFilePtr& file, char* buffer)
+		void ShaderSerializer::Deserialize(Foundation::IFile* file, char* buffer)
 		{
 			auto device = Renderer::Instance()->GetDevice();
 			auto shader = device->CreateShader(mType, mPath, buffer, mDefineMap);

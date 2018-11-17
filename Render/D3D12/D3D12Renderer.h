@@ -5,10 +5,10 @@
 #ifndef NDEBUG
 #include <dxgidebug.h>
 #endif
-#include "GameWindow.h"
+#include "IWindow.h"
 #include "IRenderFence.h"
 #include "Renderer.h"
-#include "FileSystem.h"
+#include "IFileSystem.h"
 #include "D3D12DescriptorHeapManager.h"
 #include "D3D12SwapChain.h"
 #include "D3D12RenderTargetManager.h"
@@ -25,13 +25,12 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Window::SharedWindowPtr;
 		using Microsoft::WRL::ComPtr;
 		//Thread safe
 		class D3D12Renderer : public Renderer
 		{
 		public:
-			D3D12Renderer(const SharedWindowPtr& pWindow, const SharedFileSystemPtr& fs);
+			D3D12Renderer(Window::IWindow* window);
 			~D3D12Renderer()override;
 			float GetNDCNearPlane()const override { return 0.0f; }
 			void ShutDown()override;

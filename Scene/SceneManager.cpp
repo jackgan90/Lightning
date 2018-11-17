@@ -1,6 +1,7 @@
 #pragma once
 #include "SceneManager.h"
-#include "Renderer.h"
+#include "IRenderer.h"
+#include "RenderPlugin.h"
 #include "Scene.h"
 
 namespace Lightning
@@ -8,6 +9,7 @@ namespace Lightning
 	namespace Scene
 	{
 		using Render::Renderer;
+		extern Plugins::RenderPlugin* gRenderPlugin;
 		void SceneManager::Update()
 		{
 			for (auto& scene : mScenes)
@@ -26,7 +28,7 @@ namespace Lightning
 
 		SceneManager::SceneManager():mForegroundScene(nullptr)
 		{
-			Renderer::Instance()->RegisterCallback(Render::RendererEvent::FRAME_UPDATE, [this]() {OnFrameUpdate(); });
+			gRenderPlugin->GetRenderer()->RegisterCallback(Render::RendererEvent::FRAME_UPDATE, [this]() {OnFrameUpdate(); });
 		}
 
 		SceneManager::~SceneManager()

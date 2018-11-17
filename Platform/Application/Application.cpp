@@ -12,6 +12,7 @@
 #include "IPluginMgr.h"
 #include "LoaderPlugin.h"
 #include "ScenePlugin.h"
+#include "RenderPlugin.h"
 #include "ECS/EventManager.h"
 #include "tbb/task_scheduler_init.h"
 
@@ -23,9 +24,9 @@ namespace Lightning
 	}
 	namespace App
 	{
+		using namespace Window;
 		using Foundation::FileSystemFactory;
 		using Scene::ISceneManager;
-		using namespace Window;
 		using Foundation::Math::EulerAnglef;
 		using Foundation::Math::Quaternionf;
 		using Foundation::Math::Vector3f;
@@ -79,7 +80,12 @@ namespace Lightning
 		}
 		//For test only end
 
-		Application::Application() : mExitCode(0), mRunning(false)
+		Application::Application() 
+		: mExitCode(0)
+		, mRunning(false)
+		, mFileSystem(nullptr)
+		, mWindow(nullptr)
+		, mRenderer(nullptr)
 		{
 		}
 
@@ -89,9 +95,9 @@ namespace Lightning
 
 		void Application::Update()
 		{
-			if (mWindow)
+			if (mRunning && mWindow)
 				mWindow->Update();
-			if (mRenderer)
+			if (mRunning && mRenderer)
 				mRenderer->Render();
 		}
 
@@ -100,6 +106,7 @@ namespace Lightning
 			mRunning = true;
 			auto loaderPlugin = Plugins::gPluginMgr->Load<Plugins::LoaderPlugin>("Loader");
 			auto scenePlugin = Plugins::gPluginMgr->Load<Plugins::ScenePlugin>("Scene");
+			Plugins::gPluginMgr->Load("Render");
 			static tbb::task_scheduler_init init(tbb::task_scheduler_init::deferred);
 			auto threadCount = Foundation::ConfigManager::Instance()->GetConfig().ThreadCount;
 			if (threadCount == 0)
@@ -112,7 +119,7 @@ namespace Lightning
 			}
 			mFileSystem = FileSystemFactory::Instance()->CreateFileSystem();
 			LOG_INFO("File system created!Current working directory:{0}", mFileSystem->GetRoot().c_str());
-			loaderPlugin->GetLoader()->SetFileSystem(mFileSystem.get());
+			loaderPlugin->GetLoader()->SetFileSystem(mFileSystem);
 			mWindow = CreateMainWindow();
 			mRenderer = CreateRenderer();
 			mRenderer->Start();
@@ -143,9 +150,11 @@ namespace Lightning
 			auto sceneMgr = Plugins::gPluginMgr->GetPlugin<Plugins::ScenePlugin>("Scene")->GetSceneManager();
 			sceneMgr->DestroyAllScenes();
 			mRenderer->ShutDown();
-			mRenderer.reset();
-			Plugins::gPluginMgr->Unload("Loader");
+			if (mFileSystem)
+				mFileSystem->Release();
+			Plugins::gPluginMgr->Unload("Render");
 			Plugins::gPluginMgr->Unload("Scene");
+			Plugins::gPluginMgr->Unload("Loader");
 			LOG_INFO("Application quit.");
 		}
 
@@ -158,6 +167,12 @@ namespace Lightning
 		void Application::OnWindowIdle(const WindowIdleEvent& event)
 		{
 
+		}
+
+		IRenderer* Application::CreateRenderer()
+		{
+			auto renderPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::RenderPlugin>("Render");
+			return renderPlugin->CreateRenderer(mWindow);
 		}
 	}
 }

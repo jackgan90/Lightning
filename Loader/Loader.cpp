@@ -7,12 +7,18 @@ namespace Lightning
 {
 	namespace Loading
 	{
-		DeserializeTask::DeserializeTask(const LoadTask& loadTask, const Foundation::SharedFilePtr& file, 
+		DeserializeTask::DeserializeTask(const LoadTask& loadTask, Foundation::IFile* file, 
 			const std::shared_ptr<char>& buffer, bool ownBuffer)
 			:mLoadTask(loadTask), mFile(file), mBuffer(buffer), mOwnBuffer(ownBuffer)
 		{
-
+			mFile->AddRef();
 		}
+
+		DeserializeTask::~DeserializeTask()
+		{
+			mFile->Release();
+		}
+
 
 		tbb::task* DeserializeTask::execute()
 		{
@@ -25,7 +31,7 @@ namespace Lightning
 			return nullptr;
 		}
 
-		Loader::Loader() : mRunning(true)
+		Loader::Loader() : mRunning(true), mFileSystem(nullptr)
 		{
 			std::thread t(IOThread);
 			t.detach();
@@ -33,6 +39,8 @@ namespace Lightning
 
 		Loader::~Loader()
 		{
+			if (mFileSystem)
+				mFileSystem->Release();
 		}
 
 		void Loader::Finalize()
@@ -43,7 +51,11 @@ namespace Lightning
 
 		void Loader::SetFileSystem(Foundation::IFileSystem* fs)
 		{
+			if (mFileSystem)
+				mFileSystem->Release();
 			mFileSystem = fs;
+			if (mFileSystem)
+				mFileSystem->AddRef();
 		}
 
 		void Loader::Load(const std::string& path, ISerializer* ser)
@@ -55,7 +67,7 @@ namespace Lightning
 			mCondVar.notify_one();
 		}
 
-		void Loader::DisposeFileAndBuffer(const std::string& path, const Foundation::SharedFilePtr& file)
+		void Loader::DisposeFileAndBuffer(const std::string& path, Foundation::IFile* file)
 		{
 			mDisposedPathes.push(path);
 			file->Close();
@@ -82,7 +94,6 @@ namespace Lightning
 				{
 					LOG_INFO("Start to load file : {0}", task.path);
 					auto file = mgr->mFileSystem->FindFile(task.path, Foundation::FileAccess::READ);
-					static Foundation::SharedFilePtr EmptyFile;
 					if (!file)
 					{
 						LOG_ERROR("Can't find file : {0}", task.path.c_str());

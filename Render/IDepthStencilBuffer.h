@@ -1,7 +1,6 @@
 #pragma once
 #include <cstdint>
 #include <memory>
-#include "RendererExportDef.h"
 #include "RenderConstants.h"
 
 namespace Lightning

@@ -22,12 +22,13 @@ namespace Lightning
 		class DeserializeTask : public tbb::task
 		{
 		public:
-			DeserializeTask(const LoadTask& loaderTask, const Foundation::SharedFilePtr& file, 
+			DeserializeTask(const LoadTask& loaderTask, Foundation::IFile* file, 
 				const std::shared_ptr<char>& buffer, bool ownBuffer);
+			~DeserializeTask()override;
 			tbb::task* execute()override;
 		private:
 			LoadTask mLoadTask;
-			Foundation::SharedFilePtr mFile;
+			Foundation::IFile* mFile;
 			std::shared_ptr<char> mBuffer;
 			bool mOwnBuffer;
 		};
@@ -43,7 +44,7 @@ namespace Lightning
 			friend class Foundation::Singleton<Loader>;
 			friend class DeserializeTask;
 			Loader();
-			void DisposeFileAndBuffer(const std::string& path, const Foundation::SharedFilePtr& file);
+			void DisposeFileAndBuffer(const std::string& path, Foundation::IFile* file);
 			static void IOThread();
 			bool mRunning;
 			Container::ConcurrentQueue<LoadTask> mTasks;

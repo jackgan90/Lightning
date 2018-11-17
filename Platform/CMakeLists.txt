@@ -73,5 +73,5 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_RELEASE} /DNDEBUG /wd4251 /wd4275 /EHsc")
 	set_property(TARGET ${PROJECT_NAME} APPEND PROPERTY LINK_FLAGS_DEBUG /DEBUG)
 endif()
-target_link_libraries(${PROJECT_NAME} Foundation Window Render)
+target_link_libraries(${PROJECT_NAME} Foundation Window)
 

@@ -1,5 +1,4 @@
 #pragma once
-#include "RendererExportDef.h"
 #include "RenderNode.h"
 
 namespace Lightning

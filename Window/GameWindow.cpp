@@ -8,10 +8,6 @@ namespace Lightning
 		using Foundation::EventManager;
 		using Foundation::EntityManager;
 
-		GameWindow::~GameWindow()
-		{
-		}
-
 		GameWindow::GameWindow()
 		{
 		}

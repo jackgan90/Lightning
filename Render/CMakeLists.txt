@@ -2,8 +2,7 @@ project(Render)
 message(STATUS "Configuring project Render")
 
 
-set(HEADERS RendererExportDef.h
-			IDevice.h
+set(HEADERS IDevice.h
 			Device.h
 			ISwapChain.h
 			IRenderTarget.h

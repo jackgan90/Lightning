@@ -19,14 +19,14 @@ namespace Lightning
 		using Foundation::EngineConfig;
 		using Window::GameWindow;
 		using Window::WindowsGameWindow;
-		D3D12SwapChain::D3D12SwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, GameWindow* pWindow)
+		D3D12SwapChain::D3D12SwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, Window::IWindow* window)
 		{
-			CreateNativeSwapChain(factory, pCommandQueue, pWindow);
+			CreateNativeSwapChain(factory, pCommandQueue, window);
 			mSwapChain->GetDesc(&mDesc);
 			BindRenderTargets();
 		}
 
-		void D3D12SwapChain::CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, GameWindow* pWindow)
+		void D3D12SwapChain::CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, Window::IWindow* pWindow)
 		{
 			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
 			UINT sampleCount = 1;

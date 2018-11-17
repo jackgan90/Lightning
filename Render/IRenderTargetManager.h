@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include "Container.h"
-#include "RendererExportDef.h"
 #include "IRenderTarget.h"
 #include "Singleton.h"
 
