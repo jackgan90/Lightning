@@ -29,7 +29,7 @@ namespace Lightning
 
 		IMaterial* RenderPluginImpl::CreateMaterial()
 		{
-			return new Material();
+			return NEW_REF_OBJ(Material);
 		}
 
 		IRenderer* RenderPluginImpl::GetRenderer()

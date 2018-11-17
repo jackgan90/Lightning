@@ -18,7 +18,7 @@ namespace Lightning
 		Window::IWindow* WindowPluginImpl::NewWindow()
 		{
 #ifdef LIGHTNING_WIN32
-			return new Window::WindowsGameWindow();
+			return NEW_REF_OBJ(Window::WindowsGameWindow);
 #endif
 			return nullptr;
 		}

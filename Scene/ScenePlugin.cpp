@@ -37,22 +37,22 @@ namespace Lightning
 
 		IPrimitive* ScenePluginImpl::CreateCube(float width, float height, float thickness)
 		{
-			return new Cube(width, height, thickness);
+			return NEW_REF_OBJ(Cube, width, height, thickness);
 		}
 
 		IPrimitive* ScenePluginImpl::CreateCylinder(float height, float radius)
 		{
-			return new Cylinder(height, radius);
+			return NEW_REF_OBJ(Cylinder, height, radius);
 		}
 
 		IPrimitive* ScenePluginImpl::CreateHemisphere(float radius)
 		{
-			return new Hemisphere(radius);
+			return NEW_REF_OBJ(Hemisphere, radius);
 		}
 
 		IPrimitive* ScenePluginImpl::CreateSphere(float radius)
 		{
-			return new Sphere(radius);
+			return NEW_REF_OBJ(Sphere, radius);
 		}
 	}
 }

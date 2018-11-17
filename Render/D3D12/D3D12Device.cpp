@@ -138,7 +138,7 @@ namespace Lightning
 		IShader* D3D12Device::CreateShader(ShaderType type, const std::string& shaderName, 
 			const char* const shaderSource, const ShaderDefine& defineMap)
 		{
-			return new D3D12Shader(mDevice.Get(), type, shaderName, DEFAULT_SHADER_ENTRY, shaderSource);
+			return NEW_REF_OBJ(D3D12Shader, mDevice.Get(), type, shaderName, DEFAULT_SHADER_ENTRY, shaderSource);
 		}
 
 		SharedTexturePtr D3D12Device::CreateTexture(const TextureDescriptor& descriptor, char* buffer)

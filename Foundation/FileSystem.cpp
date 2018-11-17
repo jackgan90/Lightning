@@ -162,7 +162,10 @@ namespace Lightning
 		
 		GeneralFileSystem::~GeneralFileSystem()
 		{
-
+			for (auto& file : mCachedFiles)
+			{
+				file.second->Release();
+			}
 		}
 
 		IFile* GeneralFileSystem::FindFile(const std::string& filename, FileAccess bitmask)
@@ -180,7 +183,7 @@ namespace Lightning
 				});
 				if (it != end)
 				{
-					auto file = new GeneralFile(it->path().string(), bitmask);
+					auto file = NEW_REF_OBJ(GeneralFile, it->path().string(), bitmask);
 					mCachedFiles.insert(std::make_pair(filename, file));
 					return mCachedFiles[filename];
 				}

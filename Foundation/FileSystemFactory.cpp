@@ -8,7 +8,7 @@ namespace Lightning
 	{
 		IFileSystem* FileSystemFactory::CreateFileSystem()
 		{
-			return new GeneralFileSystem();
+			return NEW_REF_OBJ(GeneralFileSystem);
 		}
 	}
 }
