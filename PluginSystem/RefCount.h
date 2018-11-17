@@ -2,6 +2,7 @@
 #include <atomic>
 #ifndef NDEBUG
 #include <cassert>
+#include <mutex>
 #include <unordered_map>
 #endif
 
@@ -33,14 +34,20 @@ public:
 		allocation.typeName = typeName;
 		allocation.line = line;
 		allocation.size = size;
-		mAllocations[mem] = allocation;
+		{
+			std::lock_guard<std::mutex> lock(mMapMutex);
+			mAllocations[mem] = allocation;
+		}
 		return mem;
 	}
 
 	void Deallocate(void* p)
 	{
 		std::free(p);
-		mAllocations.erase(p);
+		{
+			std::lock_guard<std::mutex> lock(mMapMutex);
+			mAllocations.erase(p);
+		}
 	}
 private:
 	struct Allocation
@@ -51,6 +58,7 @@ private:
 		int line;
 	};
 	std::unordered_map<void*, Allocation> mAllocations;
+	std::mutex mMapMutex;
 };
 #else
 #define NEW_REF_OBJ(Type, ...) new Type(__VA_ARGS__)
