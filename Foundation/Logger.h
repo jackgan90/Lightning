@@ -31,9 +31,8 @@ namespace Lightning
 			Error
 		};
 
-		class LIGHTNING_FOUNDATION_API Logger : public Singleton<Logger>
+		class Logger : public Singleton<Logger>
 		{
-			friend class Singleton<Logger>;
 		public:
 			~Logger()
 			{
@@ -41,6 +40,7 @@ namespace Lightning
 			template<typename... Args>
 			void Log(LogLevel level, const char* text, Args&&... args)
 			{
+				assert(mLogger && "Logger is not initialized!Please call FoundationPlugin::InitLogger first!");
 				switch (level)
 				{
 				case LogLevel::Info:
@@ -63,38 +63,23 @@ namespace Lightning
 			{
 				Log(level, text.c_str(), std::forward<Args>(args)...);
 			}
-		protected:
-			Logger()
-			{
-				auto fileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(LogFileName, true);
+			void Init(const char* name, const std::shared_ptr<spdlog::sinks::basic_file_sink_mt>& fileSink
 #ifdef _MSC_VER
-				auto msvcSink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
-				mLogger = std::shared_ptr<spdlog::logger>(new spdlog::logger("Lightning", {fileSink, msvcSink}));
+				, const std::shared_ptr<spdlog::sinks::msvc_sink_mt>& msvcSink
+#endif
+			)
+			{
+#ifdef _MSC_VER
+				mLogger = std::unique_ptr<spdlog::logger>(new spdlog::logger(name, {fileSink, msvcSink}));
 #else
-				mLogger = std::shared_ptr<spdlog::logger>(new spdlog::logger("Lightning", { fileSink }));
+				mLogger = std::unique_ptr<spdlog::logger>(new spdlog::logger(name, {fileSink}));
 #endif
 				mLogger->set_level(spdlog::level::debug);
 			}
 		private:
-			std::string Logger::LogLevelToPrefix(LogLevel level)const
-			{
-				switch (level)
-				{
-				case LogLevel::Debug:
-					return "[Debug]";
-				case LogLevel::Info:
-					return "[Info]";
-				case LogLevel::Warning:
-					return "[Warning]";
-				case LogLevel::Error:
-					return "[Error]";
-				default:
-					return "[Unknown]";
-				}
-				return "";
-			}
-			std::shared_ptr<spdlog::logger> mLogger;
-			static constexpr char* LogFileName = "log.txt";
+			friend class Singleton<Logger>;
+			Logger() = default;
+			std::unique_ptr<spdlog::logger> mLogger;
 		};
 	}
 } 

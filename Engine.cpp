@@ -22,6 +22,7 @@ namespace Lightning
 		}
 
 		auto exitCode = application->GetExitCode();
+		pluginMgr->Unload("Platform");
 		pluginMgr->UnloadAll();
 		return exitCode;
 	}

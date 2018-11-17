@@ -1,0 +1,51 @@
+#include <memory>
+#include "FoundationPlugin.h"
+#include "IPluginMgr.h"
+
+namespace Lightning
+{
+	namespace Plugins
+	{
+		class FoundationPluginImpl : public FoundationPlugin
+		{
+		public:
+			FoundationPluginImpl(IPluginMgr* mgr)
+			{
+				mFileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(LogFileName, true);
+#ifdef _MSC_VER
+				mMsvcSink = std::make_shared<spdlog::sinks::msvc_sink_mt>();
+#endif
+				InitLoggerImpl("Foundation", Foundation::Logger::Instance());
+				LOG_INFO("Foundation plugin init.");
+			}
+			~FoundationPluginImpl()override
+			{
+				mFileSink->flush();
+			}
+			void InitLogger(const char* name, Foundation::Logger* logger)override;
+		private:
+			void InitLoggerImpl(const char* name, Foundation::Logger* logger);
+			std::shared_ptr<spdlog::sinks::basic_file_sink_mt> mFileSink;
+#ifdef _MSC_VER
+			std::shared_ptr<spdlog::sinks::msvc_sink_mt> mMsvcSink;
+#endif
+			static constexpr char* LogFileName = "F:\\Lightning_dev\\log.txt";
+		};
+
+		void FoundationPluginImpl::InitLogger(const char* name, Foundation::Logger* logger)
+		{
+			InitLoggerImpl(name, logger);
+		}
+
+		void FoundationPluginImpl::InitLoggerImpl(const char* name, Foundation::Logger* logger)
+		{
+#ifdef _MSC_VER
+			logger->Init(name, mFileSink, mMsvcSink);
+#else
+			logger->Init(name, mFileSink);
+#endif
+		}
+	}
+}
+
+LIGHTNING_PLUGIN_INTERFACE(FoundationPluginImpl)

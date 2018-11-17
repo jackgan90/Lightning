@@ -2,6 +2,9 @@
 #include "Material.h"
 #include "Renderer.h"
 #include "RendererFactory.h"
+#include "IPluginMgr.h"
+#include "Logger.h"
+#include "FoundationPlugin.h"
 
 namespace Lightning
 {
@@ -11,19 +14,27 @@ namespace Lightning
 		class RenderPluginImpl : public RenderPlugin
 		{
 		public:
-			RenderPluginImpl(IPluginMgr*):mRenderer(nullptr){}
+			RenderPluginImpl(IPluginMgr*);
 			~RenderPluginImpl()override;
 			IMaterial* CreateMaterial()override;
 			IRenderer* GetRenderer()override;
 			Render::IRenderer* CreateRenderer(Window::IWindow*)override;
 			void DestroyRenderer(Render::IRenderer*)override;
 		private:
-			IRenderer* mRenderer;
 			void DestroyRendererImpl(Render::IRenderer*);
+			IPluginMgr* mPluginMgr;
+			IRenderer* mRenderer;
 		};
+
+		RenderPluginImpl::RenderPluginImpl(IPluginMgr* mgr):mRenderer(nullptr), mPluginMgr(mgr)
+		{
+			auto foundation = mPluginMgr->Load<FoundationPlugin>("Foundation");
+			foundation->InitLogger("Render", Foundation::Logger::Instance());
+		}
 
 		RenderPluginImpl::~RenderPluginImpl()
 		{
+			mPluginMgr->Unload("Foundation");
 			DestroyRendererImpl(mRenderer);
 		}
 

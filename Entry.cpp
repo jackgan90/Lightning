@@ -11,6 +11,5 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 					 int       nCmdShow)
 #endif
 {
-	LOG_INFO("This is Lighting entry.");
 	return Lightning::Engine::Instance()->Run();
 }

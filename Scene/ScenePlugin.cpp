@@ -3,6 +3,8 @@
 #include "Primitive.h"
 #include "IPluginMgr.h"
 #include "RenderPlugin.h"
+#include "Logger.h"
+#include "FoundationPlugin.h"
 
 namespace Lightning
 {
@@ -18,16 +20,27 @@ namespace Lightning
 		{
 		public:
 			ScenePluginImpl(IPluginMgr* mgr);
+			~ScenePluginImpl()override;
 			ISceneManager* GetSceneManager()override;
 			IPrimitive* CreateCube(float width, float height, float thickness)override;
 			IPrimitive* CreateCylinder(float height, float radius)override;
 			IPrimitive* CreateHemisphere(float radius)override;
 			IPrimitive* CreateSphere(float radius)override;
+		private:
+			IPluginMgr* mPluginMgr;
 		};
 
-		ScenePluginImpl::ScenePluginImpl(IPluginMgr* mgr)
+		ScenePluginImpl::ScenePluginImpl(IPluginMgr* mgr):mPluginMgr(mgr)
 		{
+			auto foundation = mgr->Load<FoundationPlugin>("Foundation");
+			foundation->InitLogger("Scene", Foundation::Logger::Instance());
 			Scene::gRenderPlugin = mgr->Load<RenderPlugin>("Render");
+		}
+
+		ScenePluginImpl::~ScenePluginImpl()
+		{
+			mPluginMgr->Unload("Render");
+			mPluginMgr->Unload("Foundation");
 		}
 
 		ISceneManager* ScenePluginImpl::GetSceneManager()

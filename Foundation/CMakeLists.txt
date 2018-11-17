@@ -29,6 +29,9 @@ set(ECS_SOURCES		ECS/Component.cpp
 					ECS/EntityManager.cpp
 					ECS/EventManager.cpp)
 
+set(PLUGIN_HEADERS	FoundationPlugin.h)
+set(PLUGIN_SOURCES	FoundationPlugin.cpp)
+
 set(HEADERS	Common.h
 			TimeSystem.h
 			IFileSystem.h
@@ -60,12 +63,14 @@ set(SOURCES Common.cpp
 			TimeSystem.cpp
 			Environment.cpp)
 
-list(APPEND HEADERS ${MEMORY_HEADERS} ${MATH_HEADERS} ${ECS_HEADERS})
-list(APPEND SOURCES ${MEMORY_SOURCES} ${ECS_SOURCES})
+
+list(APPEND HEADERS ${MEMORY_HEADERS} ${MATH_HEADERS} ${ECS_HEADERS} ${PLUGIN_HEADERS})
+list(APPEND SOURCES ${MEMORY_SOURCES} ${ECS_SOURCES} ${PLUGIN_SOURCES})
 
 source_group("Memory" FILES	${MEMORY_HEADERS} ${MEMORY_SOURCES})
 source_group("Math" FILES ${MATH_HEADERS})
 source_group("ECS" FILES ${ECS_HEADERS} ${ECS_SOURCES})
+source_group("Plugin" FILES ${PLUGIN_HEADERS} ${PLUGIN_SOURCES})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
