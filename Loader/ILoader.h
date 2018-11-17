@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "FileSystem.h"
+#include "IFileSystem.h"
 #include "ISerializer.h"
 
 namespace Lightning

@@ -13,12 +13,20 @@ set(HEADERS	WindowExportDef.h
 set(SOURCES	GameWindow.cpp
 			WindowsGameWindow.cpp)
 
+set(PLUGIN_HEADERS WindowPlugin.h)
+set(PLUGIN_SOURCES WindowPlugin.cpp)
+
 if(WIN32)
 	add_definitions(-DLIGHTNING_WIN32)
 endif()
 if(LIGHTNING_USE_D3D12)
 	add_definitions(-DLIGHTNING_USE_D3D12)
 endif()
+
+list(APPEND HEADERS ${PLUGIN_HEADERS})
+list(APPEND SOURCES ${PLUGIN_SOURCES})
+
+source_group("Plugin" FILES ${PLUGIN_HEADERS} ${PLUGIN_SOURCES})
 
 define_dll_export_macro(WINDOW)
 

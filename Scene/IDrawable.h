@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include "RefCount.h"
-#include "Renderer.h"
+#include "IRenderer.h"
 #include "SceneRenderData.h"
 
 namespace Lightning

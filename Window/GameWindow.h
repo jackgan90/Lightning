@@ -2,7 +2,6 @@
 #include <memory>
 #include <unordered_map>
 #include <exception>
-#include "WindowExportDef.h"
 #include "WindowEvents.h"
 #include "IWindow.h"
 #include "Logger.h"
@@ -21,7 +20,7 @@ namespace Lightning
 			}
 		};
 
-		class LIGHTNING_WINDOW_API GameWindow : public IWindow
+		class GameWindow : public IWindow
 		{
 		public:
 			//Only left for backwards compatibility,will remove later once refactoring is over

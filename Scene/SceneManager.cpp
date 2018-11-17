@@ -8,7 +8,7 @@ namespace Lightning
 {
 	namespace Scene
 	{
-		using Render::Renderer;
+		using Render::IRenderer;
 		extern Plugins::RenderPlugin* gRenderPlugin;
 		void SceneManager::Update()
 		{

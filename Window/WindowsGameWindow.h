@@ -7,7 +7,7 @@ namespace Lightning
 {
 	namespace Window
 	{
-		class LIGHTNING_WINDOW_API WindowsGameWindow : public GameWindow
+		class WindowsGameWindow : public GameWindow
 		{
 		public:
 			WindowsGameWindow();

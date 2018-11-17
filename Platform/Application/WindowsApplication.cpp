@@ -2,7 +2,6 @@
 #include "WindowsApplication.h"
 #include "Logger.h"
 #include "ECS/EventManager.h"
-#include "WindowsGameWindow.h"
 #include "TimeSystem.h"
 #include "IPluginMgr.h"
 #include "IRenderer.h"
@@ -171,11 +170,5 @@ namespace Lightning
 				}
 			}
 		}
-
-		IWindow* WindowsApplication::CreateMainWindow()
-		{
-			return new WindowsGameWindow();
-		}
-
 	}
 }

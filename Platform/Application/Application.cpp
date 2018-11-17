@@ -13,6 +13,7 @@
 #include "LoaderPlugin.h"
 #include "ScenePlugin.h"
 #include "RenderPlugin.h"
+#include "WindowPlugin.h"
 #include "ECS/EventManager.h"
 #include "tbb/task_scheduler_init.h"
 
@@ -105,8 +106,9 @@ namespace Lightning
 		{
 			mRunning = true;
 			auto loaderPlugin = Plugins::gPluginMgr->Load<Plugins::LoaderPlugin>("Loader");
+			auto windowPlugin = Plugins::gPluginMgr->Load<Plugins::WindowPlugin>("Window");
+			auto renderPlugin = Plugins::gPluginMgr->Load<Plugins::RenderPlugin>("Render");
 			auto scenePlugin = Plugins::gPluginMgr->Load<Plugins::ScenePlugin>("Scene");
-			Plugins::gPluginMgr->Load("Render");
 			static tbb::task_scheduler_init init(tbb::task_scheduler_init::deferred);
 			auto threadCount = Foundation::ConfigManager::Instance()->GetConfig().ThreadCount;
 			if (threadCount == 0)
@@ -120,8 +122,8 @@ namespace Lightning
 			mFileSystem = FileSystemFactory::Instance()->CreateFileSystem();
 			LOG_INFO("File system created!Current working directory:{0}", mFileSystem->GetRoot().c_str());
 			loaderPlugin->GetLoader()->SetFileSystem(mFileSystem);
-			mWindow = CreateMainWindow();
-			mRenderer = CreateRenderer();
+			mWindow = windowPlugin->NewWindow();
+			mRenderer = renderPlugin->CreateRenderer(mWindow);
 			mRenderer->Start();
 			EventManager::Instance()->Subscribe<WindowDestroyedEvent>([this](const WindowDestroyedEvent& event) {
 				OnQuit(int(event.exitCode));
@@ -152,8 +154,12 @@ namespace Lightning
 			mRenderer->ShutDown();
 			if (mFileSystem)
 				mFileSystem->Release();
-			Plugins::gPluginMgr->Unload("Render");
+			if (mWindow)
+				mWindow->Release();
 			Plugins::gPluginMgr->Unload("Scene");
+			Plugins::gPluginMgr->Unload("Render");
+			//Don't unload window here, cuz OnQuit is called from WndProc,unload here will cause process crash
+			//Plugins::gPluginMgr->Unload("Window");
 			Plugins::gPluginMgr->Unload("Loader");
 			LOG_INFO("Application quit.");
 		}
@@ -167,12 +173,6 @@ namespace Lightning
 		void Application::OnWindowIdle(const WindowIdleEvent& event)
 		{
 
-		}
-
-		IRenderer* Application::CreateRenderer()
-		{
-			auto renderPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::RenderPlugin>("Render");
-			return renderPlugin->CreateRenderer(mWindow);
 		}
 	}
 }

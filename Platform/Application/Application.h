@@ -1,20 +1,15 @@
 #pragma once
 #include <memory>
-#include "ECS/Event.h"
+#include "WindowEvents.h"
 #include "IFileSystem.h"
 #include "IWindow.h"
-#include "WindowEvents.h"
 #include "IApplication.h"
+#include "IRenderer.h"
 
 namespace Lightning
 {
-	namespace Render
-	{
-		class IRenderer;
-	}
 	namespace App
 	{
-		using UniqueRendererPtr = std::unique_ptr<Render::IRenderer>;
 		using Render::IRenderer;
 		using Foundation::IFileSystem;
 		using Window::IWindow;
@@ -30,8 +25,6 @@ namespace Lightning
 			int GetExitCode()const override{ return mExitCode; }
 		protected:
 			virtual void OnWindowIdle(const Window::WindowIdleEvent& event);
-			virtual IRenderer* CreateRenderer();
-			virtual IWindow* CreateMainWindow() = 0;
 			virtual void RegisterWindowHandlers();
 			virtual void OnQuit(int exitCode);
 

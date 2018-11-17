@@ -3,7 +3,6 @@
 #include <exception>
 #include <boost/functional/hash.hpp>
 #include "ShaderDefine.h"
-#include "FileSystem.h"
 #include "HashableObject.h"
 #include "Semantics.h"
 #include "RenderException.h"

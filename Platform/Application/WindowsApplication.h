@@ -1,6 +1,5 @@
 #pragma once
 #include "Application.h"
-#include "IWindow.h"
 #include "IFileSystem.h"
 #include "ISceneManager.h"
 
@@ -23,7 +22,6 @@ namespace Lightning
 			void OnMouseDown(const Window::MouseDownEvent& event);
 			void OnMouseMove(const Window::MouseMoveEvent& event);
 			void RegisterWindowHandlers()override;
-			IWindow* CreateMainWindow()override;
 		private:
 			Scene::ISceneManager* mSceneMgr;
 		};

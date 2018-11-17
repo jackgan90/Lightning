@@ -1,9 +1,6 @@
 #pragma once
 #include <memory>
 #include <cstdint>
-#include "Material.h"
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
 #include "RenderNode.h"
 #include "IPrimitive.h"
 
