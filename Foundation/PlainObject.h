@@ -46,7 +46,7 @@ namespace Lightning
 				static std::mt19937 mt(rd());
 				static std::uniform_int_distribution<std::uint32_t> dist(1, static_cast<std::uint32_t>(-1));
 				static std::uint32_t seed = dist(mt);
-				return Hash(this, sizeof(Derived), seed);
+				return Utility::Hash(this, sizeof(Derived), seed);
 			}
 		};
 	}

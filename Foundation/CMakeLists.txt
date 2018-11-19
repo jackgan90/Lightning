@@ -53,8 +53,7 @@ set(HEADERS	Common.h
 			Environment.h
 			SystemPriority.h
 			)
-set(SOURCES Common.cpp
-			FileSystem.cpp
+set(SOURCES FileSystem.cpp
 			ConfigManager.cpp
 			FileSystemFactory.cpp
 			MurmurHash3.cpp

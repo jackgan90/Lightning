@@ -193,7 +193,7 @@ namespace std{
 			{
 				std::memcpy(buffer + 2 + i * VERTEX_COMPONENT_SIZE, &state.components[i], VERTEX_COMPONENT_SIZE);
 			}
-			return Lightning::Foundation::Hash(buffer, sizeof(buffer), 0x12345678u);
+			return Lightning::Foundation::Utility::Hash(buffer, sizeof(buffer), 0x12345678u);
 		}
 	};
 
@@ -208,7 +208,7 @@ namespace std{
 			std::memset(&buffer[inputLayoutOffset], 0, sizeof(state.inputLayouts));
 			*reinterpret_cast<std::size_t*>(&buffer[sizeof(state)]) = \
 				std::hash<Lightning::Render::VertexInputLayout>{}(*state.inputLayouts);
-			return Lightning::Foundation::Hash(buffer, sizeof(buffer), 0x12345678u);
+			return Lightning::Foundation::Utility::Hash(buffer, sizeof(buffer), 0x12345678u);
 		}
 	};
 }
