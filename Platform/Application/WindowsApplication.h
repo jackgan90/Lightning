@@ -17,10 +17,10 @@ namespace Lightning
 		public:
 			void Start()override;
 		protected:
-			void OnMouseWheel(const Window::MouseWheelEvent& event);
-			void OnKeyDown(const Window::KeyEvent& event);
-			void OnMouseDown(const Window::MouseDownEvent& event);
-			void OnMouseMove(const Window::MouseMoveEvent& event);
+			void OnMouseWheel(const Foundation::IEvent& event);
+			void OnKeyDown(const Foundation::IEvent& event);
+			void OnMouseDown(const Foundation::IEvent& event);
+			void OnMouseMove(const Foundation::IEvent& event);
 			void RegisterWindowHandlers()override;
 		private:
 			Scene::ISceneManager* mSceneMgr;

@@ -1,23 +1,19 @@
 #pragma once
 #undef min
 #undef max
-#include <cstdint>
-#include <functional>
-#include "rttr/type"
-#include "Entity.h"
-#include "Container.h"
+#include "IEvent.h"
 
 namespace Lightning
 {
 	namespace Foundation
 	{
-		using EventSubscriberID = std::uint64_t;
-
-		struct Event
+		struct Event : IEvent
 		{
-			virtual ~Event() {}
-			RTTR_ENABLE()
+		public:
+			Event(std::uint64_t id):mTypeIdentifier(id){}
+			std::uint64_t TypeIdentifier()const override { return mTypeIdentifier; }
+		private:
+			std::uint64_t mTypeIdentifier;
 		};
-		using EventSubscriber = std::function<void(const Event&)>;
 	}
 }

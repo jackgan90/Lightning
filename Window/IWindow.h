@@ -2,8 +2,8 @@
 #include <cstdint>
 #include "RefCount.h"
 
-#define WINDOW_MSG_CLASS_HANDLER(EventType, Handler)\
-Foundation::EventManager::Instance()->Subscribe<Window::##EventType##>([&](const EventType& event){\
+#define WINDOW_MSG_CLASS_HANDLER(EventMgr, EventType, Handler)\
+EventMgr->Subscribe(EventType, [&](const Foundation::IEvent& event){\
 	this->Handler(event);\
 })
 

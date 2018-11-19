@@ -1,5 +1,6 @@
 #include <memory>
 #include "FoundationPlugin.h"
+#include "ECS/EventManager.h"
 #include "IPluginMgr.h"
 
 namespace Lightning
@@ -24,6 +25,7 @@ namespace Lightning
 				mFileSink->flush();
 			}
 			void InitLogger(const char* name, Foundation::Logger* logger)override;
+			Foundation::IEventManager* GetEventManager()override;
 		private:
 			void InitLoggerImpl(const char* name, Foundation::Logger* logger);
 			std::shared_ptr<spdlog::sinks::basic_file_sink_mt> mFileSink;
@@ -45,6 +47,11 @@ namespace Lightning
 #else
 			logger->Init(name, mFileSink);
 #endif
+		}
+
+		Foundation::IEventManager* FoundationPluginImpl::GetEventManager()
+		{
+			return Foundation::EventManager::Instance();
 		}
 	}
 }

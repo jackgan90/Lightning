@@ -1,21 +1,26 @@
 #include "GameWindow.h"
 #include "ECS/EventManager.h"
+#include "IPluginMgr.h"
+#include "FoundationPlugin.h"
 
 namespace Lightning
 {
+	namespace Plugins
+	{
+		extern IPluginMgr* gPluginMgr;
+	}
 	namespace Window
 	{
-		using Foundation::EventManager;
-		using Foundation::EntityManager;
-
 		GameWindow::GameWindow()
 		{
+			auto foundationPlugin = Lightning::Plugins::gPluginMgr->GetPlugin<Lightning::Plugins::FoundationPlugin>("Foundation");
+			mEventMgr = foundationPlugin->GetEventManager();
 		}
 
 		void GameWindow::OnIdle()
 		{
 			WindowIdleEvent event(this);
-			EventManager::Instance()->RaiseEvent<WindowIdleEvent>(event);
+			mEventMgr->RaiseEvent(event);
 		}
 	}
 }

@@ -1,14 +1,9 @@
-#include "Common.h"
 #include "WindowsGameWindow.h"
-#include "Logger.h"
-#include "Container.h"
-#include "ECS/EventManager.h"
 
 namespace Lightning
 {
 	namespace Window
 	{
-		using Foundation::EventManager;
 		LRESULT CALLBACK WindowsGameWindow::WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			if (uMsg == WM_NCCREATE)
@@ -30,7 +25,7 @@ namespace Lightning
 				WindowResizeEvent event(pWindow);
 				event.width = rect.right - rect.left;
 				event.height = rect.bottom - rect.top;
-				EventManager::Instance()->RaiseEvent<WindowResizeEvent>(event);
+				pWindow->mEventMgr->RaiseEvent(event);
 				break;
 			}
 			case WM_MOUSEWHEEL:
@@ -38,7 +33,7 @@ namespace Lightning
 				MouseWheelEvent event(pWindow);
 				event.is_vertical = true;
 				event.wheel_delta = GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA;
-				EventManager::Instance()->RaiseEvent<MouseWheelEvent>(event);
+				pWindow->mEventMgr->RaiseEvent(event);
 				break;
 			}
 			case WM_KEYDOWN:
@@ -76,7 +71,7 @@ namespace Lightning
 					code |= VK_SHIFTBUTTON;
 				}
 				event.code = static_cast<VirtualKeyCode>(code);
-				EventManager::Instance()->RaiseEvent<KeyEvent>(event);
+				pWindow->mEventMgr->RaiseEvent(event);
 				break;
 			}
 			case WM_RBUTTONDOWN:
@@ -94,7 +89,7 @@ namespace Lightning
 				if (wParam & MK_SHIFT)
 					pressedKey |= VK_SHIFTBUTTON;
 				event.pressedKey = static_cast<VirtualKeyCode>(pressedKey);
-				EventManager::Instance()->RaiseEvent<MouseDownEvent>(event);
+				pWindow->mEventMgr->RaiseEvent(event);
 				break;
 			}
 			case WM_MOUSEMOVE:
@@ -114,7 +109,7 @@ namespace Lightning
 				if (wParam & MK_SHIFT)
 					pressedKey |= VK_SHIFTBUTTON;
 				event.pressedKey = static_cast<VirtualKeyCode>(pressedKey);
-				EventManager::Instance()->RaiseEvent<MouseMoveEvent>(event);
+				pWindow->mEventMgr->RaiseEvent(event);
 				break;
 			}
 			case WM_CREATE:
@@ -210,7 +205,7 @@ namespace Lightning
 				{
 					WindowDestroyedEvent event(this);
 					event.exitCode = msg.wParam;
-					EventManager::Instance()->RaiseEvent<WindowDestroyedEvent>(event);
+					mEventMgr->RaiseEvent(event);
 				}
 			}
 			else

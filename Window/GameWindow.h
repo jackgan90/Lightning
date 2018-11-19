@@ -5,6 +5,7 @@
 #include "WindowEvents.h"
 #include "IWindow.h"
 #include "Logger.h"
+#include "ECS/IEventManager.h"
 
 namespace Lightning
 {
@@ -32,6 +33,7 @@ namespace Lightning
 			std::string mCaption;
 			std::uint32_t mWidth;
 			std::uint32_t mHeight;
+			Foundation::IEventManager* mEventMgr;
 		};
 	}
 }

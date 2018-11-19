@@ -1,11 +1,11 @@
 #include "Common.h"
 #include "WindowsApplication.h"
 #include "Logger.h"
-#include "ECS/EventManager.h"
 #include "TimeSystem.h"
 #include "IPluginMgr.h"
 #include "IRenderer.h"
 #include "ScenePlugin.h"
+#include "FoundationPlugin.h"
 #undef min
 #undef max
 
@@ -34,14 +34,21 @@ namespace Lightning
 		void WindowsApplication::RegisterWindowHandlers()
 		{
 			Application::RegisterWindowHandlers();
-			WINDOW_MSG_CLASS_HANDLER(MouseWheelEvent, OnMouseWheel);
-			WINDOW_MSG_CLASS_HANDLER(KeyEvent, OnKeyDown);
-			WINDOW_MSG_CLASS_HANDLER(MouseDownEvent, OnMouseDown);
-			WINDOW_MSG_CLASS_HANDLER(MouseMoveEvent, OnMouseMove);
+			auto foundationPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::FoundationPlugin>("Foundation");
+			auto eventMgr = foundationPlugin->GetEventManager();
+			auto id = WINDOW_MSG_CLASS_HANDLER(eventMgr, MOUSE_WHEEL_EVENT, OnMouseWheel);
+			mSubscriberIDs.insert(id);
+			id = WINDOW_MSG_CLASS_HANDLER(eventMgr, KEYBOARD_EVENT, OnKeyDown);
+			mSubscriberIDs.insert(id);
+			id = WINDOW_MSG_CLASS_HANDLER(eventMgr, MOUSE_DOWN_EVENT, OnMouseDown);
+			mSubscriberIDs.insert(id);
+			id = WINDOW_MSG_CLASS_HANDLER(eventMgr, MOUSE_MOVE_EVENT, OnMouseMove);
+			mSubscriberIDs.insert(id);
 		}
 
-		void WindowsApplication::OnKeyDown(const Window::KeyEvent& event)
+		void WindowsApplication::OnKeyDown(const Foundation::IEvent& evt)
 		{
+			const auto& event = static_cast<const Window::KeyEvent&>(evt);
 			auto scene = mSceneMgr->GetForegroundScene();
 			if (scene)
 			{
@@ -118,8 +125,9 @@ namespace Lightning
 
 		}
 
-		void WindowsApplication::OnMouseDown(const Window::MouseDownEvent& event)
+		void WindowsApplication::OnMouseDown(const Foundation::IEvent& evt)
 		{
+			const auto& event = static_cast<const Window::MouseDownEvent&>(evt);
 			if (event.pressedKey & VK_MOUSERBUTTON)
 			{
 				mousePosition.x = static_cast<int>(event.x);
@@ -127,8 +135,9 @@ namespace Lightning
 			}
 		}
 
-		void WindowsApplication::OnMouseMove(const Window::MouseMoveEvent& event)
+		void WindowsApplication::OnMouseMove(const Foundation::IEvent& evt)
 		{
+			const auto& event = static_cast<const Window::MouseMoveEvent&>(evt);
 			if (event.pressedKey & VK_MOUSERBUTTON)
 			{
 				auto scene = mSceneMgr->GetForegroundScene();
@@ -152,8 +161,9 @@ namespace Lightning
 		}
 
 
-		void WindowsApplication::OnMouseWheel(const MouseWheelEvent& event)
+		void WindowsApplication::OnMouseWheel(const Foundation::IEvent& evt)
 		{
+			const auto& event = static_cast<const MouseWheelEvent&>(evt);
 			auto scene = mSceneMgr->GetForegroundScene();
 			if (scene)
 			{
