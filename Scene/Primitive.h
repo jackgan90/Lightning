@@ -15,7 +15,7 @@ namespace Lightning
 			Primitive();
 			~Primitive()override;
 			void Draw(IRenderer& renderer, const SceneRenderData& sceneRenderData) override;
-			PrimitiveType GetPrimitiveType()const override{ return mRenderNode.geometry->primType; }
+			PrimitiveType GetPrimitiveType()const override{ return mRenderNode.geometry.primType; }
 			void SetWorldPosition(const Vector3f& pos) override{ mTransform.SetPosition(pos); }
 			Vector3f GetWorldPosition()const override{ return mTransform.GetPosition(); }
 			void SetWorldRotation(const Quaternionf& rot) override{ mTransform.SetRotation(rot); }

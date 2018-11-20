@@ -2,6 +2,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <algorithm>
+#include "Common.h"
 #include "Container.h"
 #include "Math/Vector.h"
 #include "Primitive.h"
@@ -33,6 +34,13 @@ namespace Lightning
 		{
 			if (mRenderNode.material)
 				mRenderNode.material->Release();
+			if (mRenderNode.geometry.ib)
+				mRenderNode.geometry.ib->Release();
+			for (auto i = 0; i < Foundation::ArraySize(mRenderNode.geometry.vbs);++i)
+			{
+				if(mRenderNode.geometry.vbs[i])
+					mRenderNode.geometry.vbs[i]->Release();
+			}
 		}
 
 		void Primitive::SetColor(const Color32& color)
@@ -114,26 +122,26 @@ namespace Lightning
 			compNormal.semanticItem = { Render::RenderSemantics::NORMAL, "NORMAL" };
 			descriptor.components.push_back(compNormal);
 
-			mRenderNode.geometry = std::make_shared<Render::Geometry>();
+			std::memset(mRenderNode.geometry.vbs, 0, sizeof(mRenderNode.geometry.vbs));
 			auto pDevice = renderer.GetDevice();
 			auto vbSize = GetVertexBufferSize();
 			auto ibSize = GetIndexBufferSize();
-			mRenderNode.geometry->vbs[0] = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(vbSize), descriptor);
-			mRenderNode.geometry->ib = pDevice->CreateIndexBuffer(static_cast<std::uint32_t>(ibSize), Render::IndexType::UINT16);
+			mRenderNode.geometry.vbs[0] = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(vbSize), descriptor);
+			mRenderNode.geometry.ib = pDevice->CreateIndexBuffer(static_cast<std::uint32_t>(ibSize), Render::IndexType::UINT16);
 			
 			
 			auto vertices = GetVertices();
 
 			auto indices = GetIndices();
 
-			auto mem = mRenderNode.geometry->vbs[0]->Lock(0, vbSize);
+			auto mem = mRenderNode.geometry.vbs[0]->Lock(0, vbSize);
 			std::memcpy(mem, vertices, vbSize);
-			mRenderNode.geometry->vbs[0]->Unlock(0, vbSize);
+			mRenderNode.geometry.vbs[0]->Unlock(0, vbSize);
 
-			mem = mRenderNode.geometry->ib->Lock(0, ibSize);
+			mem = mRenderNode.geometry.ib->Lock(0, ibSize);
 			std::memcpy(mem, indices, ibSize);
-			mRenderNode.geometry->ib->Unlock(0, ibSize);
-			mRenderNode.geometry->primType = Render::PrimitiveType::TRIANGLE_LIST;
+			mRenderNode.geometry.ib->Unlock(0, ibSize);
+			mRenderNode.geometry.primType = Render::PrimitiveType::TRIANGLE_LIST;
 			
 			mRenderNode.material = gRenderPlugin->CreateMaterial();
 			mRenderNode.material->RequireSemantic(Render::RenderSemantics::WVP);

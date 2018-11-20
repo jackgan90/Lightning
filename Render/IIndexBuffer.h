@@ -22,6 +22,5 @@ namespace Lightning
 		protected:
 			IndexType mType;
 		};
-		using SharedIndexBufferPtr = std::shared_ptr<IIndexBuffer>;
 	}
 }

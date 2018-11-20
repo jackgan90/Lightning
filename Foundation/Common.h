@@ -335,5 +335,11 @@ namespace Lightning
 			}
 		};
 		using Utility = UtilityImpl<std::uint32_t>;
+
+		template<typename T, std::size_t N>
+		constexpr std::size_t ArraySize(T (&arr)[N]) { return N; }
+
+		template<typename T, std::size_t N>
+		constexpr std::size_t ArraySize(const T (&arr)[N]) { return N; }
 	}
 }

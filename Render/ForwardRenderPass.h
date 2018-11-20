@@ -19,11 +19,11 @@ namespace Lightning
 			void OnFrameBegin()override;
 			void OnFrameUpdate()override;
 		protected:
-			void CommitBuffers(const SharedGeometryPtr& geometry);
+			void CommitBuffers(const Geometry& geometry);
 			void CommitPipelineStates(const RenderNode& item);
 			void CommitShaderArguments(const RenderNode& item);
-			void Draw(const SharedGeometryPtr& geometry);
-			void GetInputLayouts(const SharedGeometryPtr& geometry, VertexInputLayout** layouts, std::uint8_t& layoutCount);
+			void Draw(const Geometry& geometry);
+			void GetInputLayouts(const Geometry& geometry, VertexInputLayout** layouts, std::uint8_t& layoutCount);
 		};
 	}
 }

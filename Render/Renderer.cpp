@@ -93,8 +93,25 @@ namespace Lightning
 
 		void Renderer::AddRenderNode(const RenderNode& node)
 		{
-			if (node.material)
-				node.material->AddRef();
+			assert(node.material && "node must have a material!");
+			node.material->AddRef();
+			bool hasIB = false;
+			bool hasVB = false;
+			if (node.geometry.ib)
+			{
+				hasIB = true;
+				node.geometry.ib->AddRef();
+			}
+			for (auto i = 0;i < Foundation::ArraySize(node.geometry.vbs);++i)
+			{
+				if (node.geometry.vbs[i])
+				{
+					node.geometry.vbs[i]->AddRef();
+					hasVB = true;
+				}
+
+			}
+			assert((hasVB || hasIB) && "vb or ib can not both be empty!");
 			mFrameResources[mFrameResourceIndex].renderQueue.push_back(node);
 			for (auto& pass : mRenderPasses)
 			{

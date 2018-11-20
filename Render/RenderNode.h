@@ -13,7 +13,12 @@ namespace Lightning
 		using Foundation::Math::Transform;
 		struct RenderNode
 		{
-			SharedGeometryPtr geometry;	//vb ib 
+			RenderNode() :material(nullptr)
+			{
+				geometry.ib = nullptr;
+				std::memset(geometry.vbs, 0, sizeof(geometry.vbs));
+			}
+			Geometry geometry;	//vb ib 
 			IMaterial* material;	//shader material attributes
 			Transform transform;		//position rotation scale
 			Matrix4f viewMatrix;		//camera view matrix

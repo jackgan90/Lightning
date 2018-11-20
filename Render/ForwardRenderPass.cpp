@@ -68,7 +68,7 @@ namespace Lightning
 					}
 				}
 			}
-			state.primType = node.geometry->primType;
+			state.primType = node.geometry.primType;
 			//TODO : Apply other pipeline states(blend state, rasterizer state etc)
 			
 			GetInputLayouts(node.geometry, &state.inputLayouts, state.inputLayoutCount);
@@ -117,57 +117,57 @@ namespace Lightning
 			}
 		}
 
-		void ForwardRenderPass::GetInputLayouts(const SharedGeometryPtr& geometry, VertexInputLayout** layouts, std::uint8_t& layoutCount)
+		void ForwardRenderPass::GetInputLayouts(const Geometry& geometry, VertexInputLayout** layouts, std::uint8_t& layoutCount)
 		{
 			*layouts = nullptr;
 			layoutCount = 0;
-			for (std::size_t i = 0;i < MAX_GEOMETRY_BUFFER_COUNT;i++)
+			for (std::size_t i = 0;i < Foundation::ArraySize(geometry.vbs);i++)
 			{
-				if (!geometry->vbs[i])
+				if (!geometry.vbs[i])
 					continue;
 				if (*layouts == nullptr)
-					*layouts = g_RenderAllocator.Allocate<VertexInputLayout>(MAX_GEOMETRY_BUFFER_COUNT);
+					*layouts = g_RenderAllocator.Allocate<VertexInputLayout>(Foundation::ArraySize(geometry.vbs));
 				auto& layout = (*layouts)[layoutCount];
 				layout.slot = static_cast<std::uint8_t>(i);
-				layout.componentCount = static_cast<std::uint8_t>(geometry->vbs[i]->GetVertexComponentCount());
+				layout.componentCount = static_cast<std::uint8_t>(geometry.vbs[i]->GetVertexComponentCount());
 				layout.components = nullptr;
 				if (layout.componentCount > 0)
 				{
 					layout.components = g_RenderAllocator.Allocate<VertexComponent>(layout.componentCount);
 					for (std::size_t j = 0;j < layout.componentCount;++j)
 					{
-						layout.components[j] = geometry->vbs[i]->GetVertexComponent(j);
+						layout.components[j] = geometry.vbs[i]->GetVertexComponent(j);
 					}
 				}
 				++layoutCount;
 			}
 		}
 
-		void ForwardRenderPass::CommitBuffers(const SharedGeometryPtr& geometry)
+		void ForwardRenderPass::CommitBuffers(const Geometry& geometry)
 		{
 			auto renderer = Renderer::Instance();
-			for (std::uint8_t i = 0; i < MAX_GEOMETRY_BUFFER_COUNT; i++)
+			for (std::uint8_t i = 0; i < Foundation::ArraySize(geometry.vbs); i++)
 			{
-				if (!geometry->vbs[i])
+				if (!geometry.vbs[i])
 					continue;
-				geometry->vbs[i]->Commit();
-				renderer->BindGPUBuffer(i, geometry->vbs[i]);
+				geometry.vbs[i]->Commit();
+				renderer->BindGPUBuffer(i, geometry.vbs[i]);
 			}
-			if (geometry->ib)
+			if (geometry.ib)
 			{
-				geometry->ib->Commit();
-				renderer->BindGPUBuffer(0, geometry->ib);
+				geometry.ib->Commit();
+				renderer->BindGPUBuffer(0, geometry.ib);
 			}
 		}
 
-		void ForwardRenderPass::Draw(const SharedGeometryPtr& geometry)
+		void ForwardRenderPass::Draw(const Geometry& geometry)
 		{
 			auto renderer = Renderer::Instance();
-			if (geometry->ib)
+			if (geometry.ib)
 			{
 				DrawParam param{};
 				param.drawType = DrawType::Index;
-				param.indexCount = geometry->ib->GetIndexCount();
+				param.indexCount = geometry.ib->GetIndexCount();
 				param.instanceCount = 1;
 				renderer->Draw(param);
 			}

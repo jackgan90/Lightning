@@ -50,6 +50,5 @@ namespace Lightning
 			virtual std::uint32_t GetVertexSize()const = 0;
 			GPUBufferType GetType()const override { return GPUBufferType::VERTEX; }
 		};
-		using SharedVertexBufferPtr = std::shared_ptr<IVertexBuffer>;
 	}
 }

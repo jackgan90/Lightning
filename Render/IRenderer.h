@@ -87,7 +87,7 @@ namespace Lightning
 			virtual void ApplyRenderTargets(const Container::Vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer) = 0;
 			virtual void ApplyPipelineState(const PipelineState& state) = 0;
 			//bind pBuffer to a GPU slot(does not copy data,just binding), each invocation will override previous binding
-			virtual void BindGPUBuffer(std::uint8_t slot, const SharedGPUBufferPtr& buffer) = 0;
+			virtual void BindGPUBuffer(std::uint8_t slot, IGPUBuffer* buffer) = 0;
 			//issue underlying draw call
 			virtual void Draw(const DrawParam& param) = 0;
 			//register renderer event callback.The callback will be called on certain moment of rendering

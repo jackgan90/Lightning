@@ -24,8 +24,18 @@ namespace Lightning
 			{
 				for (auto& node : renderQueue)
 				{
-					if (node.material)
-						node.material->Release();
+					node.material->Release();
+					if (node.geometry.ib)
+					{
+						node.geometry.ib->Release();
+					}
+					for (auto i = 0;i < Foundation::ArraySize(node.geometry.vbs);++i)
+					{
+						if (node.geometry.vbs[i])
+						{
+							node.geometry.vbs[i]->Release();
+						}
+					}
 				}
 				renderQueue.clear();
 			}
@@ -40,8 +50,18 @@ namespace Lightning
 				defaultDepthStencilBuffer.reset();
 				for (auto& node : renderQueue)
 				{
-					if (node.material)
-						node.material->Release();
+					node.material->Release();
+					if (node.geometry.ib)
+					{
+						node.geometry.ib->Release();
+					}
+					for (auto i = 0;i < Foundation::ArraySize(node.geometry.vbs);++i)
+					{
+						if (node.geometry.vbs[i])
+						{
+							node.geometry.vbs[i]->Release();
+						}
+					}
 				}
 				renderQueue.clear();
 			}

@@ -11,10 +11,9 @@ namespace Lightning
 		//a wrapper class for vb/ib 
 		struct Geometry
 		{
-			SharedVertexBufferPtr vbs[MAX_GEOMETRY_BUFFER_COUNT];
-			SharedIndexBufferPtr ib;
+			IVertexBuffer* vbs[MAX_GEOMETRY_BUFFER_COUNT];
+			IIndexBuffer* ib;
 			PrimitiveType primType;
 		};
-		using SharedGeometryPtr = std::shared_ptr<Geometry>;
 	}
 }

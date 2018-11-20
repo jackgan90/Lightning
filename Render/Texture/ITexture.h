@@ -19,7 +19,7 @@ namespace Lightning
 			TEXTURE_TYPE type;
 		};
 
-		class ITexture : Plugins::RefCount
+		class ITexture : public Plugins::RefCount
 		{
 		public:
 			virtual ~ITexture(){}

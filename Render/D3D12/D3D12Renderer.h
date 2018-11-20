@@ -39,7 +39,7 @@ namespace Lightning
 			void ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr)override;
 			void ApplyRenderTargets(const Container::Vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)override;
 			void ApplyPipelineState(const PipelineState& state)override;
-			void BindGPUBuffer(std::uint8_t slot, const SharedGPUBufferPtr& buffer)override;
+			void BindGPUBuffer(std::uint8_t slot, IGPUBuffer* buffer)override;
 			void Draw(const DrawParam& param)override;
 			ID3D12CommandQueue* GetCommandQueue();
 			ID3D12GraphicsCommandList* GetGraphicsCommandList();

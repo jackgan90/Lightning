@@ -2,6 +2,7 @@
 #include <cstdint>
 #include <memory>
 #include "RenderConstants.h"
+#include "RefCount.h"
 
 namespace Lightning
 {
@@ -14,10 +15,9 @@ namespace Lightning
 		};
 		
 
-		class IGPUBuffer
+		class IGPUBuffer : public Plugins::RefCount
 		{
 		public:
-			virtual ~IGPUBuffer(){}
 			//get internal data
 			virtual std::uint8_t* Lock(std::size_t start, std::size_t size) = 0;
 			//set internal buffer,no copy
@@ -29,6 +29,5 @@ namespace Lightning
 			//get the buffer type
 			virtual GPUBufferType GetType()const = 0;
 		};
-		using SharedGPUBufferPtr = std::shared_ptr<IGPUBuffer>;
 	}
 }
