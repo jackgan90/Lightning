@@ -1,10 +1,15 @@
 #include "Loader.h"
 #include "Logger.h"
 #include "tbb/task.h"
-#include "Environment.h"
+#include "IPluginMgr.h"
+#include "FoundationPlugin.h"
 
 namespace Lightning
 {
+	namespace Plugins
+	{
+		extern IPluginMgr* gPluginMgr;
+	}
 	namespace Loading
 	{
 		DeserializeTask::DeserializeTask(const LoadTask& loadTask, Foundation::IFile* file, 
@@ -79,7 +84,8 @@ namespace Lightning
 		//happens in tbb threads.
 		void Loader::IOThread()
 		{
-			Foundation::Environment::LoaderIOThreadID = std::this_thread::get_id();
+			auto environment = Plugins::gPluginMgr->GetPlugin<Plugins::FoundationPlugin>("Foundation")->GetEnvironment();
+			environment->SetLoaderIOThreadID(std::this_thread::get_id());
 			auto mgr = Loader::Instance();
 			LOG_INFO("LoaderMgr IO Thread start!");
 			while (mgr->mRunning)

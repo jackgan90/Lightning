@@ -4,6 +4,7 @@
 #include "ECS/IEventManager.h"
 #include "IFileSystem.h"
 #include "IConfigManager.h"
+#include "IEnvironment.h"
 
 #define INIT_LOGGER(mgr, name)										\
 {																		\
@@ -25,6 +26,7 @@ namespace Lightning
 			virtual Foundation::IEventManager* GetEventManager() = 0;
 			virtual Foundation::IFileSystem* CreateFileSystem() = 0;
 			virtual Foundation::IConfigManager* GetConfigManager() = 0;
+			virtual Foundation::IEnvironment* GetEnvironment() = 0;
 		};
 	}
 }

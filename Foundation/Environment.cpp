@@ -4,11 +4,14 @@ namespace Lightning
 {
 	namespace Foundation
 	{
-		std::thread::id Environment::LoaderIOThreadID;
-
-		bool Environment::IsInLoaderIOThread()
+		void Environment::SetLoaderIOThreadID(std::thread::id id)
 		{
-			return std::this_thread::get_id() == LoaderIOThreadID;
+			mLoaderIOThreadID = id;
+		}
+
+		bool Environment::IsInLoaderIOThread()const
+		{
+			return std::this_thread::get_id() == mLoaderIOThreadID;
 		}
 	}
 }

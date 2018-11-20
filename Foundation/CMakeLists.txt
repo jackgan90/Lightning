@@ -53,6 +53,7 @@ set(HEADERS	Common.h
 			Container.h
 			EnumOperation.h
 			ThreadLocalSingleton.h
+			IEnvironment.h
 			Environment.h
 			SystemPriority.h
 			)

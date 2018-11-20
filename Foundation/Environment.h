@@ -1,16 +1,19 @@
 #pragma once
-#include <thread>
-#include "FoundationExportDef.h"
+#include "IEnvironment.h"
+#include "Singleton.h"
 
 namespace Lightning
 {
 	namespace Foundation
 	{
-		class LIGHTNING_FOUNDATION_API Environment
+		class Environment : public IEnvironment, public Singleton<Environment>
 		{
 		public:
-			static std::thread::id LoaderIOThreadID;
-			static bool IsInLoaderIOThread();
+			void SetLoaderIOThreadID(std::thread::id)override;
+			bool IsInLoaderIOThread()const override;
+		private:
+			friend class Singleton<Environment>;
+			std::thread::id mLoaderIOThreadID;
 		};
 	}
 }
