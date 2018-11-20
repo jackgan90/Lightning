@@ -12,6 +12,9 @@ namespace Lightning
 	int Engine::Run()
 	{
 		auto pluginMgr = GetPluginMgr();
+		//Load Foundation.dll,this is the fundamental module providing basic services for all other plugins
+		//such log, config ,file system etc.So it must be the first plugin to load and the last to free.
+		pluginMgr->Load("Foundation");
 		auto platformPlugin = pluginMgr->Load<PlatformPlugin>("Platform");
 		auto application = platformPlugin->CreateApplication();
 		application->Start();
@@ -25,6 +28,7 @@ namespace Lightning
 		pluginMgr->Unload("Window");
 		pluginMgr->Unload("Platform");
 		pluginMgr->UnloadAll();
+		pluginMgr->Unload("Foundation");
 		return exitCode;
 	}
 }

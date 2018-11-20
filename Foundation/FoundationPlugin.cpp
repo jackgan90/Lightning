@@ -3,6 +3,7 @@
 #include "ECS/EventManager.h"
 #include "FileSystemFactory.h"
 #include "IPluginMgr.h"
+#include "ConfigManager.h"
 
 namespace Lightning
 {
@@ -28,6 +29,7 @@ namespace Lightning
 			void InitLogger(const char* name, Foundation::Logger* logger)override;
 			Foundation::IEventManager* GetEventManager()override;
 			Foundation::IFileSystem* CreateFileSystem()override;
+			Foundation::IConfigManager* GetConfigManager()override;
 		private:
 			void InitLoggerImpl(const char* name, Foundation::Logger* logger);
 			std::shared_ptr<spdlog::sinks::basic_file_sink_mt> mFileSink;
@@ -59,6 +61,11 @@ namespace Lightning
 		Foundation::IFileSystem* FoundationPluginImpl::CreateFileSystem()
 		{
 			return Foundation::FileSystemFactory::Instance()->CreateFileSystem();
+		}
+
+		Foundation::IConfigManager* FoundationPluginImpl::GetConfigManager()
+		{
+			return Foundation::ConfigManager::Instance();
 		}
 	}
 }

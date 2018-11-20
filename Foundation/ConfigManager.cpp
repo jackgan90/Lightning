@@ -8,7 +8,6 @@ namespace Lightning
 	namespace Foundation
 	{
 		namespace pt = boost::property_tree;
-		const char* ConfigManager::CONFIG_FILE_NAME = "config.xml";
 
 		std::string ConfigManager::GetConfigString(const std::string& node_path)
 		{

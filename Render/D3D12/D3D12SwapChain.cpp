@@ -9,13 +9,18 @@
 #include "D3D12RenderTarget.h"
 #include "D3D12RenderTargetManager.h"
 #include "D3D12DescriptorHeapManager.h"
-#include "ConfigManager.h"
+#include "IPluginMgr.h"
+#include "FoundationPlugin.h"
 
 namespace Lightning
 {
+	namespace Plugins
+	{
+		extern IPluginMgr* gPluginMgr;
+	}
+
 	namespace Render
 	{
-		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
 		using Window::GameWindow;
 		using Window::WindowsGameWindow;
@@ -28,7 +33,8 @@ namespace Lightning
 
 		void D3D12SwapChain::CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, Window::IWindow* pWindow)
 		{
-			const EngineConfig& config = ConfigManager::Instance()->GetConfig();
+			auto foundationPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::FoundationPlugin>("Foundation");
+			const auto& config = foundationPlugin->GetConfigManager()->GetConfig();
 			UINT sampleCount = 1;
 			bool msaaEnabled = false;
 			UINT qualityLevels = 0;

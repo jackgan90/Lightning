@@ -2,31 +2,23 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 #include "Singleton.h"
-#include "FoundationExportDef.h"
+#include "IConfigManager.h"
 
 namespace Lightning
 {
 	namespace Foundation
 	{
-		struct EngineConfig
-		{
-			std::string ResourceRoot;		//the root directory of resources(shader,script,mesh etc)
-			bool MSAAEnabled;				//is msaa enabled?
-			unsigned MSAASampleCount;	// msaa sample count
-			unsigned ThreadCount;		// thread count used for the whole application(0 indicates determined by hardware)
-		};
-
-		class LIGHTNING_FOUNDATION_API ConfigManager : public Singleton<ConfigManager>
+		class ConfigManager : public IConfigManager, public Singleton<ConfigManager>
 		{
 		public:
-			friend class Singleton<ConfigManager>;
-			static const char* CONFIG_FILE_NAME;
-			std::string GetConfigString(const std::string& node_path);
-			const EngineConfig& GetConfig()const { return mConfig; }
+			std::string GetConfigString(const std::string& node_path)override;
+			const EngineConfig& GetConfig()const override{ return mConfig; }
 		private:
+			friend class Singleton<ConfigManager>;
 			ConfigManager();
 			EngineConfig mConfig;
 			boost::property_tree::ptree mTree;
+			static constexpr char* CONFIG_FILE_NAME = "config.xml";
 		};
 	}
 }

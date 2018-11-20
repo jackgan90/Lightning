@@ -40,6 +40,7 @@ set(HEADERS	Common.h
 			FileSystem.h
 			Logger.h
 			FileSystemFactory.h
+			IConfigManager.h
 			ConfigManager.h
 			FoundationExportDef.h
 			Singleton.h

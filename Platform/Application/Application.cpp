@@ -6,7 +6,6 @@
 //include primitives here just for simple scene construction
 #include "IPrimitive.h"
 #include "Transform.h"
-#include "ConfigManager.h"
 #include "Loader.h"
 #include "IPluginMgr.h"
 #include "FoundationPlugin.h"
@@ -117,7 +116,7 @@ namespace Lightning
 			renderPlugin = Plugins::gPluginMgr->Load<Plugins::RenderPlugin>("Render");
 			scenePlugin = Plugins::gPluginMgr->Load<Plugins::ScenePlugin>("Scene");
 			static tbb::task_scheduler_init init(tbb::task_scheduler_init::deferred);
-			auto threadCount = Foundation::ConfigManager::Instance()->GetConfig().ThreadCount;
+			auto threadCount = foundationPlugin->GetConfigManager()->GetConfig().ThreadCount;
 			if (threadCount == 0)
 			{
 				init.initialize();
