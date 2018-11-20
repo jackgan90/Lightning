@@ -218,6 +218,8 @@ namespace Lightning
 			RefCount():mRefCount(1)
 			{
 			}
+			RefCount(const RefCount&) = delete;
+			RefCount& operator=(const RefCount&) = delete;
 			//Although AddRef and Release are declared virtual,subclasses should not try to override them
 			//This is just a trick to make compiler generate late binding code.We have to invoke delete in the
 			//dll which creates the object.
