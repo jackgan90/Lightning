@@ -7,7 +7,7 @@ namespace Lightning
 {
 	namespace Foundation
 	{
-		class LIGHTNING_FOUNDATION_API FileSystemFactory : public Singleton<FileSystemFactory>
+		class FileSystemFactory : public Singleton<FileSystemFactory>
 		{
 		public:
 			IFileSystem* CreateFileSystem();

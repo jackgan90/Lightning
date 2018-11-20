@@ -1,5 +1,4 @@
 #include "Common.h"
-#include "FileSystemFactory.h"
 #include "Application.h"
 #include "Logger.h"
 #include "IRenderer.h"
@@ -35,7 +34,6 @@ namespace Lightning
 	namespace App
 	{
 		using namespace Window;
-		using Foundation::FileSystemFactory;
 		using Scene::ISceneManager;
 		using Foundation::Math::EulerAnglef;
 		using Foundation::Math::Quaternionf;
@@ -128,7 +126,7 @@ namespace Lightning
 			{
 				init.initialize(threadCount);
 			}
-			mFileSystem = FileSystemFactory::Instance()->CreateFileSystem();
+			mFileSystem = foundationPlugin->CreateFileSystem();
 			LOG_INFO("File system created!Current working directory:{0}", mFileSystem->GetRoot().c_str());
 			loaderPlugin->GetLoader()->SetFileSystem(mFileSystem);
 			mWindow = windowPlugin->NewWindow();

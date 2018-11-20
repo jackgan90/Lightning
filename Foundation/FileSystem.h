@@ -12,7 +12,7 @@ namespace Lightning
 	namespace Foundation
 	{
 
-		class LIGHTNING_FOUNDATION_API GeneralFileSystem : public IFileSystem
+		class GeneralFileSystem : public IFileSystem
 		{
 		public:
 			GeneralFileSystem();

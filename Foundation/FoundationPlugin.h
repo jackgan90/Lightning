@@ -2,6 +2,7 @@
 #include "Plugin.h"
 #include "Logger.h"
 #include "ECS/IEventManager.h"
+#include "IFileSystem.h"
 
 #define INIT_LOGGER(mgr, name)										\
 {																		\
@@ -21,6 +22,7 @@ namespace Lightning
 		public:
 			virtual void InitLogger(const char* name, Foundation::Logger* logger) = 0;
 			virtual Foundation::IEventManager* GetEventManager() = 0;
+			virtual Foundation::IFileSystem* CreateFileSystem() = 0;
 		};
 	}
 }
