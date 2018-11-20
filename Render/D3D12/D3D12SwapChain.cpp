@@ -102,6 +102,7 @@ namespace Lightning
 				auto statefulResource = std::make_shared<D3D12StatefulResource>(resources[i], D3D12_RESOURCE_STATE_PRESENT);
 				auto renderTarget = rtMgr->CreateSwapChainRenderTarget(statefulResource, this);
 				mRenderTargets[i] = renderTarget->GetID();
+				renderTarget->Release();
 			}
 		}
 
@@ -110,7 +111,7 @@ namespace Lightning
 			return mSwapChain->GetCurrentBackBufferIndex();
 		}
 
-		SharedRenderTargetPtr D3D12SwapChain::GetDefaultRenderTarget()
+		IRenderTarget* D3D12SwapChain::GetDefaultRenderTarget()
 		{
 			return D3D12RenderTargetManager::Instance()->GetRenderTarget(mRenderTargets[GetCurrentBackBufferIndex()]);
 		}

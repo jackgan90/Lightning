@@ -17,7 +17,7 @@ namespace Lightning
 		{
 			IRenderFence *fence{ nullptr };
 			std::uint64_t frame{ 0 };
-			SharedDepthStencilBufferPtr defaultDepthStencilBuffer;
+			IDepthStencilBuffer* defaultDepthStencilBuffer{ nullptr };
 			RenderQueue renderQueue;
 
 			void OnFrameBegin()
@@ -47,7 +47,8 @@ namespace Lightning
 					delete fence;
 					fence = nullptr;
 				}
-				defaultDepthStencilBuffer.reset();
+				if (defaultDepthStencilBuffer)
+					defaultDepthStencilBuffer->Release();
 				for (auto& node : renderQueue)
 				{
 					node.material->Release();
@@ -88,7 +89,7 @@ namespace Lightning
 			static IRenderer* Instance() { return sInstance; }
 			Window::IWindow* GetOutputWindow()override { return mOutputWindow; }
 			const RenderQueue& GetRenderQueue()override;
-			SharedDepthStencilBufferPtr GetDefaultDepthStencilBuffer()override;
+			IDepthStencilBuffer* GetDefaultDepthStencilBuffer()override;
 		protected:
 			Renderer(Window::IWindow* window);
 			void WaitForPreviousFrame(bool waitAll);

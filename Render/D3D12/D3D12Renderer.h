@@ -35,9 +35,9 @@ namespace Lightning
 			float GetNDCNearPlane()const override { return 0.0f; }
 			void ShutDown()override;
 			void Start()override;
-			void ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectIList* rects=nullptr)override;
-			void ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr)override;
-			void ApplyRenderTargets(const Container::Vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)override;
+			void ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, const RectIList* rects=nullptr)override;
+			void ClearDepthStencilBuffer(IDepthStencilBuffer* buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr)override;
+			void ApplyRenderTargets(const Container::Vector<IRenderTarget*>& renderTargets, IDepthStencilBuffer* dsBuffer)override;
 			void ApplyPipelineState(const PipelineState& state)override;
 			void BindGPUBuffer(std::uint8_t slot, IGPUBuffer* buffer)override;
 			void Draw(const DrawParam& param)override;

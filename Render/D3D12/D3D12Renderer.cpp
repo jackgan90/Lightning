@@ -126,9 +126,9 @@ namespace Lightning
 			return device;
 		}
 
-		void D3D12Renderer::ClearRenderTarget(const SharedRenderTargetPtr& rt, const ColorF& color, const RectIList* rects)
+		void D3D12Renderer::ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, const RectIList* rects)
 		{
-			D3D12RenderTarget *pTarget = static_cast<D3D12RenderTarget*>(rt.get());
+			D3D12RenderTarget *pTarget = static_cast<D3D12RenderTarget*>(renderTarget);
 			assert(pTarget);
 			//should check the type of the rt to transit it from previous state to render target state
 			//currently just check back buffer render target
@@ -158,7 +158,7 @@ namespace Lightning
 			}
 		}
 
-		void D3D12Renderer::ClearDepthStencilBuffer(const SharedDepthStencilBufferPtr& buffer, DepthStencilClearFlags flags, 
+		void D3D12Renderer::ClearDepthStencilBuffer(IDepthStencilBuffer* buffer, DepthStencilClearFlags flags, 
 			float depth, std::uint8_t stencil, const RectIList* rects)
 		{
 			D3D12_CLEAR_FLAGS clearFlags = D3D12_CLEAR_FLAG_DEPTH;
@@ -171,7 +171,7 @@ namespace Lightning
 				clearFlags |= D3D12_CLEAR_FLAG_STENCIL;
 			}
 			auto commandList = GetGraphicsCommandList();
-			auto d3d12DSBuffer = static_cast<D3D12DepthStencilBuffer*>(buffer.get());
+			auto d3d12DSBuffer = static_cast<D3D12DepthStencilBuffer*>(buffer);
 			d3d12DSBuffer->TransitToState(commandList, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 			auto dsvHandle = d3d12DSBuffer->GetCPUHandle();
 			if (rects && !rects->empty())
@@ -193,7 +193,7 @@ namespace Lightning
 			}
 		}
 
-		void D3D12Renderer::ApplyRenderTargets(const Container::Vector<SharedRenderTargetPtr>& renderTargets, const SharedDepthStencilBufferPtr& dsBuffer)
+		void D3D12Renderer::ApplyRenderTargets(const Container::Vector<IRenderTarget*>& renderTargets, IDepthStencilBuffer* dsBuffer)
 		{
 			assert(renderTargets.size() <= MAX_RENDER_TARGET_COUNT);
 			auto commandList = GetGraphicsCommandList();
@@ -202,10 +202,10 @@ namespace Lightning
 			auto rtvHandles = g_RenderAllocator.Allocate<D3D12_CPU_DESCRIPTOR_HANDLE>(renderTargetCount);
 			for (std::size_t i = 0; i < renderTargetCount;++i)
 			{
-				rtvHandles[i] = static_cast<const D3D12RenderTarget*>(renderTargets[i].get())->GetCPUHandle();
+				rtvHandles[i] = static_cast<const D3D12RenderTarget*>(renderTargets[i])->GetCPUHandle();
 				//TODO : Is it correct to use the first render target's sample description to set the pipeline desc?
 			}
-			auto dsHandle = static_cast<const D3D12DepthStencilBuffer*>(dsBuffer.get())->GetCPUHandle();
+			auto dsHandle = static_cast<const D3D12DepthStencilBuffer*>(dsBuffer)->GetCPUHandle();
 			commandList->OMSetRenderTargets(UINT(renderTargetCount), rtvHandles, FALSE, &dsHandle);
 		}
 
@@ -661,7 +661,7 @@ namespace Lightning
 
 		IDepthStencilBuffer* D3D12Renderer::CreateDepthStencilBuffer(std::uint32_t width, std::uint32_t height)
 		{
-			return new D3D12DepthStencilBuffer(width, height);
+			return NEW_REF_OBJ(D3D12DepthStencilBuffer, width, height);
 		}
 
 		RenderPass* D3D12Renderer::CreateRenderPass(RenderPassType type)
@@ -704,9 +704,9 @@ namespace Lightning
 			});
 			auto defaultRT = mSwapChain->GetDefaultRenderTarget();
 			auto commandList = GetGraphicsCommandList();
-			static_cast<D3D12RenderTarget*>(defaultRT.get())->TransitToPresentState(commandList);
+			static_cast<D3D12RenderTarget*>(defaultRT)->TransitToPresentState(commandList);
 			auto d3d12DSBuffer = static_cast<D3D12DepthStencilBuffer*>(
-				mFrameResources[mFrameResourceIndex].defaultDepthStencilBuffer.get());
+				mFrameResources[mFrameResourceIndex].defaultDepthStencilBuffer);
 			d3d12DSBuffer->TransitToState(commandList, D3D12_RESOURCE_STATE_COMMON);
 		}
 
@@ -718,7 +718,7 @@ namespace Lightning
 		void D3D12Renderer::OnFrameEnd()
 		{
 			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
-			auto renderTarget = static_cast<D3D12RenderTarget*>(defaultRenderTarget.get());
+			auto renderTarget = static_cast<D3D12RenderTarget*>(defaultRenderTarget);
 			Container::Vector<ID3D12CommandList*> commandLists;
 			mCmdEncoders[mFrameResourceIndex].for_each([&commandLists](D3D12CommandEncoder& encoder) {
 				commandLists.push_back(encoder.GetCommandList());

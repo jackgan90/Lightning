@@ -27,7 +27,7 @@ namespace Lightning
 			int GetSampleQuality()const override { return mDesc.SampleDesc.Quality; }
 			RenderFormat GetRenderFormat()const override{ return D3D12TypeMapper::MapRenderFormat(mDesc.BufferDesc.Format); }
 			std::uint32_t GetCurrentBackBufferIndex()const override;
-			SharedRenderTargetPtr GetDefaultRenderTarget()override;
+			IRenderTarget* GetDefaultRenderTarget()override;
 		private:
 			void BindRenderTargets();
 			void CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, Window::IWindow* pWindow);

@@ -18,8 +18,7 @@ namespace Lightning
 			virtual RenderFormat GetRenderFormat()const = 0;
 			virtual std::uint32_t GetCurrentBackBufferIndex()const = 0;
 			//get corresponding render target
-			virtual SharedRenderTargetPtr GetDefaultRenderTarget() = 0;
+			virtual IRenderTarget* GetDefaultRenderTarget() = 0;
 		};
-		using SharedSwapChainPtr = std::shared_ptr<ISwapChain>;
 	}
 }

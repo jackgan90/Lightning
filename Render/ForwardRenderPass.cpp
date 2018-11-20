@@ -50,7 +50,7 @@ namespace Lightning
 			state.renderTargetCount = static_cast<std::uint8_t>(node.renderTargets.size());
 			auto renderer = Renderer::Instance();
 			auto pSwapChain = renderer->GetSwapChain();
-			state.renderTargets[0] = pSwapChain->GetDefaultRenderTarget().get();
+			state.renderTargets[0] = pSwapChain->GetDefaultRenderTarget();
 			if (node.material)
 			{
 				auto material = static_cast<Material*>(node.material);

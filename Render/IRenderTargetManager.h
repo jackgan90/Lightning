@@ -12,9 +12,9 @@ namespace Lightning
 		{
 		public:
 			//create a render target
-			virtual SharedRenderTargetPtr CreateRenderTarget() = 0;
+			virtual IRenderTarget* CreateRenderTarget() = 0;
 			//obtain a render target by ID
-			virtual SharedRenderTargetPtr GetRenderTarget(const RenderTargetID rtID) = 0;
+			virtual IRenderTarget* GetRenderTarget(const RenderTargetID rtID) = 0;
 			//destroy the render target identified by rtID managed by the manager
 			virtual void DestroyRenderTarget(const RenderTargetID rtID) = 0;
 
@@ -22,7 +22,7 @@ namespace Lightning
 		};
 		using SharedRenderTargetManagerPtr = std::shared_ptr<IRenderTargetManager>;
 
-		using RenderTargetMap = Container::ConcurrentUnorderedMap<RenderTargetID, SharedRenderTargetPtr>;
+		using RenderTargetMap = Container::ConcurrentUnorderedMap<RenderTargetID, IRenderTarget*>;
 		template<typename Derived>
 		class RenderTargetManager : public IRenderTargetManager, public Foundation::Singleton<Derived>
 		{
@@ -36,26 +36,34 @@ namespace Lightning
 			{
 				for (auto it = mDestroyedTargetIDs.begin(); it != mDestroyedTargetIDs.end();++it)
 				{
-					mRenderTargets.unsafe_erase(*it);
+					auto renderTarget = mRenderTargets.find(*it);
+					if (renderTarget != mRenderTargets.end())
+					{
+						renderTarget->second->Release();
+						mRenderTargets.unsafe_erase(renderTarget);
+					}
 				}
 				mDestroyedTargetIDs.clear();
 			}
 			//Thread safe
-			SharedRenderTargetPtr GetRenderTarget(const RenderTargetID targetID) override
+			IRenderTarget* GetRenderTarget(const RenderTargetID targetID) override
 			{
-				static SharedRenderTargetPtr s_null_ptr;
 				if (mDestroyedTargetIDs.find(targetID) != mDestroyedTargetIDs.end())
-					return s_null_ptr;
+					return nullptr;
 
 				auto it = mRenderTargets.find(targetID);
 				if (it == mRenderTargets.end())
-					return s_null_ptr;
+					return nullptr;
 
 				return it->second;
 			}
 			//Thread unsafe
 			void Clear()
 			{
+				for (auto it = mRenderTargets.begin(); it != mRenderTargets.end();++it)
+				{
+					it->second->Release();
+				}
 				mRenderTargets.clear();
 			}
 
@@ -65,9 +73,10 @@ namespace Lightning
 			}
 		protected:
 			//Thread safe
-			void StoreRenderTarget(RenderTargetID rtID, const SharedRenderTargetPtr& ptr)
+			void StoreRenderTarget(RenderTargetID id, IRenderTarget* renderTarget)
 			{
-				mRenderTargets[rtID] = ptr;
+				renderTarget->AddRef();
+				mRenderTargets[id] = renderTarget;
 			}
 			RenderTargetMap mRenderTargets;
 			Container::ConcurrentUnorderedSet<RenderTargetID> mDestroyedTargetIDs;

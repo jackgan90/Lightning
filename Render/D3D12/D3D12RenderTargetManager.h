@@ -19,8 +19,8 @@ namespace Lightning
 		public:
 			D3D12RenderTargetManager();
 			~D3D12RenderTargetManager()override;
-			SharedRenderTargetPtr CreateRenderTarget()override;
-			SharedRenderTargetPtr CreateSwapChainRenderTarget(const D3D12StatefulResourcePtr& resource, D3D12SwapChain* pSwapChain);
+			IRenderTarget* CreateRenderTarget()override;
+			IRenderTarget* CreateSwapChainRenderTarget(const D3D12StatefulResourcePtr& resource, D3D12SwapChain* pSwapChain);
 		private:
 			std::atomic<RenderTargetID> mCurrentID;
 		};

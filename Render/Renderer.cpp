@@ -157,8 +157,8 @@ namespace Lightning
 			for (size_t i = 0; i < RENDER_FRAME_COUNT; i++)
 			{
 				mFrameResources[i].fence = CreateRenderFence();
-				mFrameResources[i].defaultDepthStencilBuffer.reset(
-					CreateDepthStencilBuffer( mOutputWindow->GetWidth(), mOutputWindow->GetHeight()));
+				mFrameResources[i].defaultDepthStencilBuffer = 
+					CreateDepthStencilBuffer( mOutputWindow->GetWidth(), mOutputWindow->GetHeight());
 			}
 			mFrameResourceIndex = mSwapChain->GetCurrentBackBufferIndex();
 			AddRenderPass(RenderPassType::FORWARD);
@@ -183,7 +183,7 @@ namespace Lightning
 			return mFrameResources[mFrameResourceIndex].renderQueue;
 		}
 
-		SharedDepthStencilBufferPtr Renderer::GetDefaultDepthStencilBuffer()
+		IDepthStencilBuffer* Renderer::GetDefaultDepthStencilBuffer()
 		{
 			return mFrameResources[mFrameResourceIndex].defaultDepthStencilBuffer;
 		}

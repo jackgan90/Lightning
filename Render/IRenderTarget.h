@@ -2,6 +2,7 @@
 #include <memory>
 #include "Container.h"
 #include "RenderConstants.h"
+#include "RefCount.h"
 
 namespace Lightning
 {
@@ -10,7 +11,7 @@ namespace Lightning
 		using Foundation::Container;
 
 		using RenderTargetID = int;
-		class IRenderTarget
+		class IRenderTarget : public Plugins::RefCount
 		{
 		public:
 			//get pixel sample count
@@ -23,7 +24,6 @@ namespace Lightning
 			virtual RenderTargetID GetID()const = 0;
 			virtual ~IRenderTarget() = default;
 		};
-		using SharedRenderTargetPtr = std::shared_ptr<IRenderTarget>;
 		using RenderTargetList = Container::Vector<IRenderTarget*>;
 	}
 }

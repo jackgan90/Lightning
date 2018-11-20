@@ -23,8 +23,8 @@ namespace Lightning
 			Transform transform;		//position rotation scale
 			Matrix4f viewMatrix;		//camera view matrix
 			Matrix4f projectionMatrix;//camera projection matrix
-			Container::Vector<SharedRenderTargetPtr> renderTargets;
-			SharedDepthStencilBufferPtr depthStencilBuffer;
+			Container::Vector<IRenderTarget*> renderTargets;
+			IDepthStencilBuffer* depthStencilBuffer;
 		};
 		//RenderQueue is a very important concept.Every drawable object will encode there data to a RenderNode struct.
 		//After enqueue,the nodes remain unchangeable.The responsibility for render pass
