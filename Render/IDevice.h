@@ -19,7 +19,7 @@ namespace Lightning
 	{
 		using Foundation::Container;
 		using ShaderLoadFinishHandler = std::function<void(IShader*)>;
-		using TextureLoadFinishHandler = std::function<void(const SharedTexturePtr&)>;
+		using TextureLoadFinishHandler = std::function<void(ITexture*)>;
 		class IDevice
 		{
 		public:
@@ -29,7 +29,7 @@ namespace Lightning
 			virtual IShader* CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap) = 0;
 			virtual void CreateShaderFromFile(ShaderType type, const std::string& path,
 				const ShaderDefine& defineMap, ShaderLoadFinishHandler handler) = 0;
-			virtual SharedTexturePtr CreateTexture(const TextureDescriptor& descriptor, char* buffer) = 0;
+			virtual ITexture* CreateTexture(const TextureDescriptor& descriptor, char* buffer) = 0;
 			virtual void CreateTextureFromFile(const TextureDescriptor& descriptor, const std::string& path,
 				TextureLoadFinishHandler handler) = 0;
 			virtual IShader* GetDefaultShader(ShaderType type) = 0;

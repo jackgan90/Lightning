@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include "RefCount.h"
 
 namespace Lightning
 {
@@ -18,12 +19,11 @@ namespace Lightning
 			TEXTURE_TYPE type;
 		};
 
-		class ITexture
+		class ITexture : Plugins::RefCount
 		{
 		public:
 			virtual ~ITexture(){}
 			virtual void Commit() = 0;
 		};
-		using SharedTexturePtr = std::shared_ptr<ITexture>;
 	}
 }

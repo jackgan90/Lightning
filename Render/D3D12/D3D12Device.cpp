@@ -140,9 +140,9 @@ namespace Lightning
 			return NEW_REF_OBJ(D3D12Shader, mDevice.Get(), type, shaderName, DEFAULT_SHADER_ENTRY, shaderSource);
 		}
 
-		SharedTexturePtr D3D12Device::CreateTexture(const TextureDescriptor& descriptor, char* buffer)
+		ITexture* D3D12Device::CreateTexture(const TextureDescriptor& descriptor, char* buffer)
 		{
-			return SharedTexturePtr();
+			return nullptr;
 		}
 
 		ID3D12GraphicsCommandList* D3D12Device::GetGraphicsCommandList()

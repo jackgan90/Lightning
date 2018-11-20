@@ -27,12 +27,11 @@ namespace Lightning
 			fif = FreeImage_GetFileTypeFromMemory(stream, 0);
 			if (fif == FIF_UNKNOWN)
 				fif = FreeImage_GetFIFFromFilename(file->GetPath().c_str());
-			static const SharedTexturePtr EmptyTexturePtr;
 			if (fif == FIF_UNKNOWN)
 			{
 				if (mFinishHandler)
 				{
-					mFinishHandler(EmptyTexturePtr);
+					mFinishHandler(nullptr);
 				}
 				FreeImage_CloseMemory(stream);
 				return;
