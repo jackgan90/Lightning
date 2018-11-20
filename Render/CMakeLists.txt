@@ -29,6 +29,7 @@ set(HEADERS IDevice.h
 			RenderPass.h
 			ForwardRenderPass.h
 			DeferedRenderPass.h
+			FrameMemoryAllocator.h
 			RenderNode.h)
 set(SOURCES Renderer.cpp
 			Device.cpp
@@ -41,6 +42,7 @@ set(SOURCES Renderer.cpp
 			Material.cpp
 			RenderPass.cpp
 			ForwardRenderPass.cpp
+			FrameMemoryAllocator.cpp
 			DeferedRenderPass.cpp)
 
 set(TYPES_HEADERS	Types/Color.h
@@ -168,7 +170,8 @@ if(MSVC)
 endif()
 target_link_libraries(${PROJECT_NAME} ${FREEIMAGE_LIBRARIES})
 add_dependencies(${PROJECT_NAME} Foundation Window Loader)
-target_link_libraries(${PROJECT_NAME} Foundation)
+target_link_libraries(${PROJECT_NAME} ${TBB_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
 if(LIGHTNING_USE_D3D12)
 	target_link_libraries(${PROJECT_NAME} dxgi.lib d3d12.lib d3dcompiler.lib)
 	target_link_libraries(${PROJECT_NAME} dxguid.lib)

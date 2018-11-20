@@ -3,15 +3,14 @@
 #include <cstdint>
 #include <thread>
 #include "Container.h"
-#include "FoundationExportDef.h"
 #include "ThreadLocalSingleton.h"
 
 namespace Lightning
 {
-	namespace Foundation
+	namespace Render
 	{
 		//threaded-safe ring allocator.Typycal use in allocation of frame's temp resources
-		class LIGHTNING_FOUNDATION_API FrameMemoryAllocator
+		class FrameMemoryAllocator
 		{
 		public:
 			FrameMemoryAllocator();
@@ -67,9 +66,9 @@ namespace Lightning
 				std::size_t mHead;
 				std::size_t mTail;
 				std::size_t mFrameSize;
-				Container::Deque<FrameMarker> mFrameMarkers;
+				Foundation::Container::Deque<FrameMarker> mFrameMarkers;
 			};
-			ThreadLocalSingleton<Container::Vector<RingBuffer>> mBuffers;
+			Foundation::ThreadLocalSingleton<Foundation::Container::Vector<RingBuffer>> mBuffers;
 		};
 	}
 }

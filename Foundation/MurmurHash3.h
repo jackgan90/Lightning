@@ -4,7 +4,6 @@
 
 #ifndef _MURMURHASH3_H_
 #define _MURMURHASH3_H_
-#include "FoundationExportDef.h"
 
 //-----------------------------------------------------------------------------
 // Platform-specific functions and macros

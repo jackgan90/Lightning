@@ -57,4 +57,4 @@ if(MSVC)
 endif()
 
 add_dependencies(${PROJECT_NAME} Foundation Render)
-target_link_libraries(${PROJECT_NAME} Foundation)
+target_link_libraries(${PROJECT_NAME} ${TBB_LIBRARIES})

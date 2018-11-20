@@ -8,7 +8,6 @@
 #ifdef _MSC_VER
 #include "spdlog/sinks/msvc_sink.h"
 #endif
-#include "FoundationExportDef.h"
 
 #define LOG_INFO(text, ...)\
 	Lightning::Foundation::Logger::Instance()->Log(Lightning::Foundation::LogLevel::Info, text, __VA_ARGS__)

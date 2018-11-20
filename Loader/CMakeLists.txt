@@ -35,7 +35,7 @@ include_directories(${CMAKE_SOURCE_DIR}/PluginSystem
 					${SPDLOG_INCLUDE_DIR})
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
 add_dependencies(${PROJECT_NAME} Foundation)
-target_link_libraries(${PROJECT_NAME} Foundation)
+target_link_libraries(${PROJECT_NAME} ${TBB_LIBRARIES})
 if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /wd4251 /wd4275 /EHsc /MDd")
 	set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_DEBUG} /wd4251 /wd4275 /EHsc /MD")

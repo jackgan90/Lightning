@@ -24,7 +24,6 @@ namespace Lightning
 	{
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
-		using Foundation::FrameMemoryAllocator;
 
 		extern FrameMemoryAllocator g_RenderAllocator;
 		const char* const DEFAULT_VS_SOURCE =

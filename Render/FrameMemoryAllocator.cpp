@@ -3,8 +3,9 @@
 
 namespace Lightning
 {
-	namespace Foundation
+	namespace Render
 	{
+		using Foundation::Container;
 		FrameMemoryAllocator::RingBuffer::RingBuffer(std::size_t size):
 			mMaxSize(size < MIN_BUFFER_SIZE ? MIN_BUFFER_SIZE : size), mUsedSize(0), mHead(0), mTail(0), mFrameSize(0)
 		{

@@ -14,7 +14,6 @@ namespace Lightning
 		using Foundation::FileSize;
 		using Foundation::FilePointerType;
 		using Foundation::FileAnchor;
-		using Foundation::FrameMemoryAllocator;
 
 		extern FrameMemoryAllocator g_RenderAllocator;
 

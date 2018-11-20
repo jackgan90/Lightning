@@ -1,7 +1,6 @@
 #pragma once
 #undef min
 #undef max
-#include "FoundationExportDef.h"
 #include "Math/Matrix.h"
 #include "Math/Vector.h"
 #include "Math/Quaternion.h"

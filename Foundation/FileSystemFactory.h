@@ -1,5 +1,4 @@
 #pragma once
-#include "FoundationExportDef.h"
 #include "IFileSystem.h"
 #include "Singleton.h"
 

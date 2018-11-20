@@ -8,12 +8,10 @@
 #include "Container.h"
 #include "StackAllocator.h"
 #include "PoolAllocator.h"
-#include "FrameMemoryAllocator.h"
 
 using Lightning::Foundation::IMemoryAllocator;
 using Lightning::Foundation::PoolAllocator;
 using Lightning::Foundation::StackAllocator;
-using Lightning::Foundation::FrameMemoryAllocator;
 
 namespace 
 {

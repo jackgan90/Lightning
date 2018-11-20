@@ -31,7 +31,7 @@ namespace Lightning
 		using Foundation::ConfigManager;
 		using Foundation::EngineConfig;
 		using Window::WindowsGameWindow;
-		extern Foundation::FrameMemoryAllocator g_RenderAllocator;
+		extern FrameMemoryAllocator g_RenderAllocator;
 
 
 		D3D12Renderer::~D3D12Renderer()

@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <chrono>
 #include "Container.h"
-#include "FoundationExportDef.h"
 
 namespace Lightning
 {

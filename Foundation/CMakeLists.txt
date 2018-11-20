@@ -4,10 +4,7 @@ message(STATUS "Configuring project Foundation")
 set(MEMORY_HEADERS	Memory/IMemoryAllocator.h
 					Memory/PoolAllocator.h
 					Memory/StackAllocator.h
-					Memory/FrameMemoryAllocator.h
 					Memory/MemoryPool.h)
-
-set(MEMORY_SOURCES	Memory/FrameMemoryAllocator.cpp)
 
 set(MATH_HEADERS	Math/Common.h
 					Math/Vector.h
@@ -42,7 +39,6 @@ set(HEADERS	Common.h
 			FileSystemFactory.h
 			IConfigManager.h
 			ConfigManager.h
-			FoundationExportDef.h
 			Singleton.h
 			Counter.h
 			PlainObject.h
@@ -68,9 +64,9 @@ set(SOURCES FileSystem.cpp
 
 
 list(APPEND HEADERS ${MEMORY_HEADERS} ${MATH_HEADERS} ${ECS_HEADERS} ${PLUGIN_HEADERS})
-list(APPEND SOURCES ${MEMORY_SOURCES} ${ECS_SOURCES} ${PLUGIN_SOURCES})
+list(APPEND SOURCES ${ECS_SOURCES} ${PLUGIN_SOURCES})
 
-source_group("Memory" FILES	${MEMORY_HEADERS} ${MEMORY_SOURCES})
+source_group("Memory" FILES	${MEMORY_HEADERS})
 source_group("Math" FILES ${MATH_HEADERS})
 source_group("ECS" FILES ${ECS_HEADERS} ${ECS_SOURCES})
 source_group("Plugin" FILES ${PLUGIN_HEADERS} ${PLUGIN_SOURCES})

@@ -3,7 +3,6 @@
 #include <memory>
 #include <boost/filesystem.hpp>
 #include "Container.h"
-#include "FoundationExportDef.h"
 #include "Singleton.h"
 #include "IFileSystem.h"
 

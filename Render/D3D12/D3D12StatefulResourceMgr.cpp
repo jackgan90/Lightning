@@ -15,7 +15,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		extern Foundation::FrameMemoryAllocator g_RenderAllocator;
+		extern FrameMemoryAllocator g_RenderAllocator;
 
 		D3D12StatefulResourceMgr::D3D12StatefulResourceMgr()
 		{

@@ -13,7 +13,7 @@ namespace Lightning
 	namespace Render
 	{
 		IRenderer* Renderer::sInstance{ nullptr };
-		Foundation::FrameMemoryAllocator g_RenderAllocator;
+		FrameMemoryAllocator g_RenderAllocator;
 		Renderer::Renderer(Window::IWindow* window) :
 			mOutputWindow(window),
 			mFrameCount(0), mFrameResourceIndex(0), mClearColor(0.5f, 0.5f, 0.5f, 1.0f)
