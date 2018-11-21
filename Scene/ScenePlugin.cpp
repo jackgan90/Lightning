@@ -26,6 +26,7 @@ namespace Lightning
 			IPrimitive* CreateCylinder(float height, float radius)override;
 			IPrimitive* CreateHemisphere(float radius)override;
 			IPrimitive* CreateSphere(float radius)override;
+			void Update()override;
 		private:
 			IPluginMgr* mPluginMgr;
 		};
@@ -42,6 +43,11 @@ namespace Lightning
 			LOG_INFO("Scene plugin unloaded.");
 			mPluginMgr->Unload("Render");
 			UNLOAD_FOUNDATION(mPluginMgr)
+		}
+
+		void ScenePluginImpl::Update()
+		{
+
 		}
 
 		ISceneManager* ScenePluginImpl::GetSceneManager()
@@ -71,4 +77,4 @@ namespace Lightning
 	}
 }
 
-LIGHTNING_PLUGIN_INTERFACE(ScenePluginImpl)
+LIGHTNING_PLUGIN_IMPL(ScenePluginImpl)

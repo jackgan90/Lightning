@@ -22,11 +22,12 @@ namespace Lightning
 			Plugin* GetPlugin(const std::string& pluginName)override;
 			bool Unload(const std::string& pluginName)override;
 			void UnloadAll()override;
+			void Update()override;
 		private:
 			friend class Engine;
 			struct PluginInfo
 			{
-				Plugin* pPlugin;
+				Plugin* plugin;
 #ifdef LIGHTNING_WIN32
 				HMODULE handle;
 #endif

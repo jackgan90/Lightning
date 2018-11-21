@@ -20,6 +20,7 @@ namespace Lightning
 			IRenderer* GetRenderer()override;
 			Render::IRenderer* CreateRenderer(Window::IWindow*)override;
 			void DestroyRenderer(Render::IRenderer*)override;
+			void Update()override;
 		private:
 			void DestroyRendererImpl(Render::IRenderer*);
 			IPluginMgr* mPluginMgr;
@@ -37,6 +38,11 @@ namespace Lightning
 			LOG_INFO("Render plugin unloaded.");
 			UNLOAD_FOUNDATION(mPluginMgr)
 			DestroyRendererImpl(mRenderer);
+		}
+
+		void RenderPluginImpl::Update()
+		{
+
 		}
 
 		IMaterial* RenderPluginImpl::CreateMaterial()
@@ -73,4 +79,4 @@ namespace Lightning
 	}
 }
 
-LIGHTNING_PLUGIN_INTERFACE(RenderPluginImpl)
+LIGHTNING_PLUGIN_IMPL(RenderPluginImpl)

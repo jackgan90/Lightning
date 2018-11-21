@@ -27,6 +27,7 @@ namespace Lightning
 				LOG_INFO("Foundation plugin unloaded.");
 				mFileSink->flush();
 			}
+			void Update()override;
 			void InitLogger(const char* name, Foundation::Logger* logger)override;
 			Foundation::IEventManager* GetEventManager()override;
 			Foundation::IFileSystem* CreateFileSystem()override;
@@ -40,6 +41,11 @@ namespace Lightning
 #endif
 			static constexpr char* LogFileName = "F:\\Lightning_dev\\log.txt";
 		};
+
+		void FoundationPluginImpl::Update()
+		{
+
+		}
 
 		void FoundationPluginImpl::InitLogger(const char* name, Foundation::Logger* logger)
 		{
@@ -77,4 +83,4 @@ namespace Lightning
 	}
 }
 
-LIGHTNING_PLUGIN_INTERFACE(FoundationPluginImpl)
+LIGHTNING_PLUGIN_IMPL(FoundationPluginImpl)

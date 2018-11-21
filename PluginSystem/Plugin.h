@@ -11,7 +11,7 @@
 #define LIGHTNING_PLUGIN_DLL_EXPORT
 #endif
 
-#define LIGHTNING_PLUGIN_INTERFACE(pluginImpl)\
+#define LIGHTNING_PLUGIN_IMPL(pluginImpl)\
 namespace Lightning\
 {\
 	namespace Plugins\
@@ -41,6 +41,8 @@ namespace Lightning
 			{
 				return mName + PluginExtension;
 			}
+			//Update is called by IPluginMgr and tick at a regular speed rate.
+			virtual void Update() = 0;
 		protected:
 			friend class PluginMgr;
 			Plugin() : mName("")

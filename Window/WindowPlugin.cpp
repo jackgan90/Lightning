@@ -16,6 +16,7 @@ namespace Lightning
 			WindowPluginImpl(IPluginMgr* mgr);
 			~WindowPluginImpl()override;
 			Window::IWindow* NewWindow()override;
+			void Update()override;
 		private:
 			IPluginMgr* mPluginMgr;
 		};
@@ -32,6 +33,11 @@ namespace Lightning
 			UNLOAD_FOUNDATION(mPluginMgr)
 		}
 
+		void WindowPluginImpl::Update()
+		{
+
+		}
+
 		Window::IWindow* WindowPluginImpl::NewWindow()
 		{
 #ifdef LIGHTNING_WIN32
@@ -39,8 +45,9 @@ namespace Lightning
 #endif
 			return nullptr;
 		}
+
 	}
 }
 
-LIGHTNING_PLUGIN_INTERFACE(WindowPluginImpl)
+LIGHTNING_PLUGIN_IMPL(WindowPluginImpl)
 

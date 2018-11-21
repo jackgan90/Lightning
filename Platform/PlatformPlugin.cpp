@@ -17,6 +17,7 @@ namespace Lightning
 			PlatformPluginImpl(IPluginMgr*);
 			~PlatformPluginImpl()override;
 			IApplication* CreateApplication()override;
+			void Update()override;
 		private:
 			std::unique_ptr<IApplication> mApp;
 			IPluginMgr* mPluginMgr;
@@ -34,6 +35,11 @@ namespace Lightning
 			UNLOAD_FOUNDATION(mPluginMgr)
 		}
 
+		void PlatformPluginImpl::Update()
+		{
+			
+		}
+
 		IApplication* PlatformPluginImpl::CreateApplication()
 		{
 			mApp = ApplicationFactory::CreateApplication();
@@ -42,4 +48,4 @@ namespace Lightning
 	}
 }
 
-LIGHTNING_PLUGIN_INTERFACE(PlatformPluginImpl)
+LIGHTNING_PLUGIN_IMPL(PlatformPluginImpl)

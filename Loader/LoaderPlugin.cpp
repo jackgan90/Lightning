@@ -15,6 +15,7 @@ namespace Lightning
 			LoaderPluginImpl(IPluginMgr*);
 			~LoaderPluginImpl()override;
 			ILoader* GetLoader()override;
+			void Update()override;
 		private:
 			IPluginMgr* mPluginMgr;
 		};
@@ -32,6 +33,11 @@ namespace Lightning
 			UNLOAD_FOUNDATION(mPluginMgr)
 		}
 
+		void LoaderPluginImpl::Update()
+		{
+
+		}
+
 		ILoader* LoaderPluginImpl::GetLoader()
 		{
 			return Loader::Instance();
@@ -39,4 +45,4 @@ namespace Lightning
 	}
 }
 
-LIGHTNING_PLUGIN_INTERFACE(LoaderPluginImpl)
+LIGHTNING_PLUGIN_IMPL(LoaderPluginImpl)
