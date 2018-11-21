@@ -2,7 +2,8 @@
 #include <string>
 #include <mutex>
 #include <unordered_map>
-#include <tuple>
+#include <atomic>
+#include <deque>
 #include "IPluginMgr.h"
 #ifdef LIGHTNING_WIN32
 #include <Windows.h>
@@ -31,10 +32,27 @@ namespace Lightning
 				HMODULE handle;
 #endif
 			};
+			enum class OperationType
+			{
+				Load,
+				Unload,
+			};
+			struct Operation
+			{
+				PluginInfo info;
+				OperationType type;
+				std::string name;
+			};
 			using PluginTable = std::unordered_map<std::string, PluginInfo>;
 			PluginMgr();
 			~PluginMgr();
+			bool Unload(PluginTable& table, const std::string& name);
+			Plugin* LookUpPlugin(PluginTable& table, const std::string& pluginName, bool addRef);
+			void SynchronizeTables();
 			PluginTable mPlugins;
+			PluginTable mPendingAddPlugins;
+			std::deque<Operation> mOperationQueue;
+			std::atomic<bool> mNeedSyncPlugins;
 			std::recursive_mutex mPluginsMutex;
 			static constexpr char* GET_PLUGIN_PROC = "GetPlugin";
 		};
