@@ -69,7 +69,6 @@ namespace Lightning
 				if (it->second.plugin->Release())
 				{
 #ifdef LIGHTNING_WIN32
-					//it->second.ReleaseProc(it->second.pPlugin);
 					::FreeLibrary(it->second.handle);
 #endif
 					mPlugins.erase(it);

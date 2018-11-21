@@ -6,7 +6,7 @@ namespace Lightning
 {
 	namespace Plugins
 	{
-		//Interface for plugin management.The methods of this class are all thread-safe.
+		//Interface for plugin management.
 		class IPluginMgr
 		{
 		public:
