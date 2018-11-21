@@ -39,7 +39,7 @@ namespace Lightning
 						mPlugins[operation.name] = mPendingAddPlugins[operation.name];
 						break;
 					case OperationType::Unload:
-						Unload(mPlugins, operation.name);
+						UnloadPlugin(mPlugins, operation.name);
 						break;
 					default:
 						break;
@@ -50,7 +50,7 @@ namespace Lightning
 			}
 		}
 
-		Plugin* PluginMgr::Load(const std::string& name)
+		Plugin* PluginMgr::LoadPlugin(const std::string& name)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mPluginsMutex);
 
@@ -119,7 +119,7 @@ namespace Lightning
 			return nullptr;
 		}
 
-		bool PluginMgr::Unload(PluginTable& table, const std::string& name)
+		bool PluginMgr::UnloadPlugin(PluginTable& table, const std::string& name)
 		{
 			auto it = table.find(name);
 			if (it != table.end())
@@ -136,10 +136,10 @@ namespace Lightning
 			return false;
 		}
 
-		bool PluginMgr::Unload(const std::string& name)
+		bool PluginMgr::UnloadPlugin(const std::string& name)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mPluginsMutex);
-			auto res = Unload(mPendingAddPlugins, name);
+			auto res = UnloadPlugin(mPendingAddPlugins, name);
 			if (res)
 				return true;
 

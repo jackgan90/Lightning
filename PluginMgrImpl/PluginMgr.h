@@ -19,9 +19,9 @@ namespace Lightning
 		class PluginMgr : public IPluginMgr
 		{
 		public:
-			Plugin* Load(const std::string& pluginName)override;
+			Plugin* LoadPlugin(const std::string& pluginName)override;
 			Plugin* GetPlugin(const std::string& pluginName)override;
-			bool Unload(const std::string& pluginName)override;
+			bool UnloadPlugin(const std::string& pluginName)override;
 			void Update()override;
 		private:
 			friend class Engine;
@@ -46,7 +46,7 @@ namespace Lightning
 			using PluginTable = std::unordered_map<std::string, PluginInfo>;
 			PluginMgr();
 			~PluginMgr();
-			bool Unload(PluginTable& table, const std::string& name);
+			bool UnloadPlugin(PluginTable& table, const std::string& name);
 			Plugin* LookUpPlugin(PluginTable& table, const std::string& pluginName, bool addRef);
 			void SynchronizeTables();
 			PluginTable mPlugins;

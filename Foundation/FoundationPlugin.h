@@ -8,11 +8,11 @@
 
 #define INIT_LOGGER(mgr, name)										\
 {																		\
-	mgr->Load<Lightning::Plugins::FoundationPlugin>("Foundation")		\
+	mgr->LoadPlugin<Lightning::Plugins::FoundationPlugin>("Foundation")		\
 	->InitLogger(#name, Foundation::Logger::Instance());				\
 }
 
-#define UNLOAD_FOUNDATION(mgr) mgr->Unload("Foundation");
+#define UNLOAD_FOUNDATION(mgr) mgr->UnloadPlugin("Foundation");
 
 
 namespace Lightning
