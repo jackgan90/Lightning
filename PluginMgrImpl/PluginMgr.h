@@ -21,7 +21,6 @@ namespace Lightning
 			Plugin* Load(const std::string& pluginName)override;
 			Plugin* GetPlugin(const std::string& pluginName)override;
 			bool Unload(const std::string& pluginName)override;
-			void UnloadAll()override;
 			void Update()override;
 		private:
 			friend class Engine;
@@ -33,8 +32,6 @@ namespace Lightning
 #endif
 			};
 			using PluginTable = std::unordered_map<std::string, PluginInfo>;
-			void UnloadAllImpl();
-			std::tuple<bool, PluginTable::iterator> UnloadImpl(const std::string& pluginName);
 			PluginMgr();
 			~PluginMgr();
 			PluginTable mPlugins;

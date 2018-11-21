@@ -14,7 +14,6 @@ namespace Lightning
 			virtual Plugin* Load(const std::string& pluginName) = 0;
 			virtual Plugin* GetPlugin(const std::string& pluginName) = 0;
 			virtual bool Unload(const std::string& pluginName) = 0;
-			virtual void UnloadAll() = 0;
 			virtual void Update() = 0;
 			template<typename T>
 			std::enable_if_t<std::is_base_of<Plugin, T>::value, T*> Load(const std::string& pluginName)
