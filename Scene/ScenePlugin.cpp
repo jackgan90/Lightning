@@ -34,14 +34,13 @@ namespace Lightning
 		ScenePluginImpl::ScenePluginImpl(IPluginMgr* mgr):mPluginMgr(mgr)
 		{
 			INIT_LOGGER(mgr, Scene)
-			Scene::gRenderPlugin = mgr->LoadPlugin<RenderPlugin>("Render");
+			Scene::gRenderPlugin = mgr->GetPlugin<RenderPlugin>("Render");
 			LOG_INFO("Scene plugin init.");
 		}
 
 		ScenePluginImpl::~ScenePluginImpl()
 		{
 			LOG_INFO("Scene plugin unloaded.");
-			mPluginMgr->UnloadPlugin("Render");
 			UNLOAD_FOUNDATION(mPluginMgr)
 		}
 

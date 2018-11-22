@@ -1,12 +1,20 @@
-<lightning_game_engine_configuration>
-	<general>
-		<threads>0</threads>
-	</general>
-	<resource>
-		<root>F:\Lightning_res</root>
-	</resource>
-	<render>
-		<msaa_enable>true</msaa_enable>
-		<msaa_sample_count>4</msaa_sample_count>
-	</render>
-</lightning_game_engine_configuration>
+<Lightning>
+	<General>
+		<Threads>0</Threads>
+	</General>
+	<Plugins>
+		<Plugin>Foundation</Plugin>
+		<Plugin>Platform</Plugin>
+		<Plugin>Loader</Plugin>
+		<Plugin>Window</Plugin>
+		<Plugin>Render</Plugin>
+		<Plugin>Scene</Plugin>
+	</Plugins>
+	<Resource>
+		<Root>F:\Lightning_res</Root>
+	</Resource>
+	<Render>
+		<MSAAEnable>true</MSAAEnable>
+		<MSAASampleCount>4</MSAASampleCount>
+	</Render>
+</Lightning>

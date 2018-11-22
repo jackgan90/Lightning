@@ -110,11 +110,11 @@ namespace Lightning
 		void Application::Start()
 		{
 			mRunning = true;
-			foundationPlugin = Plugins::gPluginMgr->LoadPlugin<Plugins::FoundationPlugin>("Foundation");
-			loaderPlugin = Plugins::gPluginMgr->LoadPlugin<Plugins::LoaderPlugin>("Loader");
-			windowPlugin = Plugins::gPluginMgr->LoadPlugin<Plugins::WindowPlugin>("Window");
-			renderPlugin = Plugins::gPluginMgr->LoadPlugin<Plugins::RenderPlugin>("Render");
-			scenePlugin = Plugins::gPluginMgr->LoadPlugin<Plugins::ScenePlugin>("Scene");
+			foundationPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::FoundationPlugin>("Foundation");
+			loaderPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::LoaderPlugin>("Loader");
+			windowPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::WindowPlugin>("Window");
+			renderPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::RenderPlugin>("Render");
+			scenePlugin = Plugins::gPluginMgr->GetPlugin<Plugins::ScenePlugin>("Scene");
 			static tbb::task_scheduler_init init(tbb::task_scheduler_init::deferred);
 			auto threadCount = foundationPlugin->GetConfigManager()->GetConfig().ThreadCount;
 			if (threadCount == 0)
@@ -164,12 +164,6 @@ namespace Lightning
 			{
 				eventMgr->Unsubscribe(subscriberID);
 			}
-			Plugins::gPluginMgr->UnloadPlugin("Scene");
-			Plugins::gPluginMgr->UnloadPlugin("Render");
-			//Don't unload window here, cuz OnQuit is called from WndProc,unload here will cause process crash
-			//Plugins::gPluginMgr->Unload("Window");
-			Plugins::gPluginMgr->UnloadPlugin("Loader");
-			Plugins::gPluginMgr->UnloadPlugin("Foundation");
 			LOG_INFO("Application quit.");
 		}
 

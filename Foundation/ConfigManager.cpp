@@ -20,10 +20,14 @@ namespace Lightning
 			try
 			{
 				pt::read_xml(CONFIG_FILE_NAME, mTree);
-				mConfig.ResourceRoot = mTree.get<std::string>("lightning_game_engine_configuration.resource.root");
-				mConfig.MSAAEnabled = mTree.get<bool>("lightning_game_engine_configuration.render.msaa_enable");
-				mConfig.MSAASampleCount = mTree.get<unsigned>("lightning_game_engine_configuration.render.msaa_sample_count");
-				mConfig.ThreadCount = mTree.get<unsigned>("lightning_game_engine_configuration.general.threads");
+				mConfig.ResourceRoot = mTree.get<std::string>("Lightning.Resource.Root");
+				mConfig.MSAAEnabled = mTree.get<bool>("Lightning.Render.MSAAEnable");
+				mConfig.MSAASampleCount = mTree.get<unsigned>("Lightning.Render.MSAASampleCount");
+				mConfig.ThreadCount = mTree.get<unsigned>("Lightning.General.Threads");
+				for (auto& value : mTree.get_child("Lightning.Plugins"))
+				{
+					mConfig.Plugins.push_back(value.second.data());
+				}
 			}
 			catch (pt::xml_parser_error e)
 			{

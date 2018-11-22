@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "Container.h"
 
 namespace Lightning
 {
@@ -11,6 +12,7 @@ namespace Lightning
 			bool MSAAEnabled;				//is msaa enabled?
 			unsigned MSAASampleCount;	// msaa sample count
 			unsigned ThreadCount;		// thread count used for the whole application(0 indicates determined by hardware)
+			Container::Vector<std::string> Plugins;	//engine plugins loaded on app start.
 		};
 
 		class IConfigManager
