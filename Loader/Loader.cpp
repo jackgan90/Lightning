@@ -43,6 +43,7 @@ namespace Lightning
 		Loader::~Loader()
 		{
 			mRunning = false;
+			mCondVar.notify_one();
 			mLoaderIOThread.join();
 		}
 
