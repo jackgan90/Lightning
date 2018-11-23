@@ -94,6 +94,8 @@ namespace Lightning
 
 		Plugin* PluginMgr::LookUpPlugin(PluginTable& table, const std::string& name, bool addRef)
 		{
+			if (table.empty())
+				return nullptr;
 			auto it = table.find(name);
 			if (it != table.end())
 			{
