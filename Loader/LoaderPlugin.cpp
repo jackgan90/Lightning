@@ -30,7 +30,7 @@ namespace Lightning
 		{
 			LOG_INFO("Loader plugin unloaded!");
 			Loader::Instance()->Finalize();
-			UNLOAD_FOUNDATION(mPluginMgr)
+			FINALIZE_LOGGER(mPluginMgr)
 		}
 
 		void LoaderPluginImpl::Update()

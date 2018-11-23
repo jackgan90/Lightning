@@ -37,7 +37,6 @@ namespace Lightning
 		{
 		public:
 			void Finalize()override;
-			void SetFileSystem(Foundation::IFileSystem* fs)override;
 			void Load(const std::string& path, ISerializer* ser)override;
 			~Loader()override;
 		private:

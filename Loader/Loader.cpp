@@ -36,31 +36,21 @@ namespace Lightning
 			return nullptr;
 		}
 
-		Loader::Loader() : mRunning(true), mFileSystem(nullptr)
+		Loader::Loader() : mRunning(true)
 		{
+			mFileSystem = Plugins::gPluginMgr->GetPlugin<Plugins::FoundationPlugin>("Foundation")->GetFileSystem();
 			std::thread t(IOThread);
 			t.detach();
 		}
 
 		Loader::~Loader()
 		{
-			if (mFileSystem)
-				mFileSystem->Release();
 		}
 
 		void Loader::Finalize()
 		{
 			mRunning = false;
 			mCondVar.notify_one();
-		}
-
-		void Loader::SetFileSystem(Foundation::IFileSystem* fs)
-		{
-			if (mFileSystem)
-				mFileSystem->Release();
-			mFileSystem = fs;
-			if (mFileSystem)
-				mFileSystem->AddRef();
 		}
 
 		void Loader::Load(const std::string& path, ISerializer* ser)
@@ -84,7 +74,11 @@ namespace Lightning
 		//happens in tbb threads.
 		void Loader::IOThread()
 		{
-			auto environment = Plugins::gPluginMgr->GetPlugin<Plugins::FoundationPlugin>("Foundation")->GetEnvironment();
+			auto foundation = Plugins::gPluginMgr->GetPlugin<Plugins::FoundationPlugin>("Foundation");
+			//If Users has exited app,foundation will be null
+			if (!foundation)
+				return;
+			auto environment = foundation->GetEnvironment();
 			environment->SetLoaderIOThreadID(std::this_thread::get_id());
 			auto mgr = Loader::Instance();
 			LOG_INFO("LoaderMgr IO Thread start!");

@@ -32,7 +32,7 @@ namespace Lightning
 		PlatformPluginImpl::~PlatformPluginImpl()
 		{
 			LOG_INFO("Platform plugin unloaded.");
-			UNLOAD_FOUNDATION(mPluginMgr)
+			FINALIZE_LOGGER(mPluginMgr)
 		}
 
 		void PlatformPluginImpl::Update()

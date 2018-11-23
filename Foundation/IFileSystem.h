@@ -41,9 +41,10 @@ namespace Lightning
 			virtual const std::string GetName()const = 0;
 		};
 
-		class IFileSystem : public Plugins::RefCount
+		class IFileSystem
 		{
 		public:
+			virtual ~IFileSystem() = default;
 			//Thread unsafe.Application must call this method from loader IO thread
 			virtual IFile* FindFile(const std::string& filename, FileAccess bitmask) = 0;
 			virtual bool SetRoot(std::string root_path) = 0;

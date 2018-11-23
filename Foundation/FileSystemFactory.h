@@ -10,6 +10,7 @@ namespace Lightning
 		{
 		public:
 			IFileSystem* CreateFileSystem();
+			void DestroyFileSystem(IFileSystem* fs);
 		};
 	}
 }

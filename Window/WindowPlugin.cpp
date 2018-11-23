@@ -30,7 +30,7 @@ namespace Lightning
 		WindowPluginImpl::~WindowPluginImpl()
 		{
 			LOG_INFO("Window plugin unloaded.");
-			UNLOAD_FOUNDATION(mPluginMgr)
+			FINALIZE_LOGGER(mPluginMgr)
 		}
 
 		void WindowPluginImpl::Update()

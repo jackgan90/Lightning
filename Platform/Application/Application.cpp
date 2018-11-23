@@ -17,7 +17,6 @@
 
 namespace
 {
-	Lightning::Plugins::FoundationPlugin* foundationPlugin = nullptr;
 	Lightning::Plugins::LoaderPlugin* loaderPlugin = nullptr;
 	Lightning::Plugins::WindowPlugin* windowPlugin = nullptr;
 	Lightning::Plugins::RenderPlugin* renderPlugin = nullptr;
@@ -89,7 +88,6 @@ namespace Lightning
 		Application::Application() 
 		: mExitCode(0)
 		, mRunning(false)
-		, mFileSystem(nullptr)
 		, mWindow(nullptr)
 		, mRenderer(nullptr)
 		{
@@ -110,11 +108,12 @@ namespace Lightning
 		void Application::Start()
 		{
 			mRunning = true;
-			foundationPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::FoundationPlugin>("Foundation");
+			auto foundationPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::FoundationPlugin>("Foundation");
 			loaderPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::LoaderPlugin>("Loader");
 			windowPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::WindowPlugin>("Window");
 			renderPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::RenderPlugin>("Render");
 			scenePlugin = Plugins::gPluginMgr->GetPlugin<Plugins::ScenePlugin>("Scene");
+			mEventMgr = foundationPlugin->GetEventManager();
 			static tbb::task_scheduler_init init(tbb::task_scheduler_init::deferred);
 			auto threadCount = foundationPlugin->GetConfigManager()->GetConfig().ThreadCount;
 			if (threadCount == 0)
@@ -125,9 +124,6 @@ namespace Lightning
 			{
 				init.initialize(threadCount);
 			}
-			mFileSystem = foundationPlugin->CreateFileSystem();
-			LOG_INFO("File system created!Current working directory:{0}", mFileSystem->GetRoot().c_str());
-			loaderPlugin->GetLoader()->SetFileSystem(mFileSystem);
 			mWindow = windowPlugin->NewWindow();
 			mRenderer = renderPlugin->CreateRenderer(mWindow);
 			mRenderer->Start();
@@ -155,14 +151,11 @@ namespace Lightning
 			auto sceneMgr = Plugins::gPluginMgr->GetPlugin<Plugins::ScenePlugin>("Scene")->GetSceneManager();
 			sceneMgr->DestroyAllScenes();
 			mRenderer->ShutDown();
-			if (mFileSystem)
-				mFileSystem->Release();
 			if (mWindow)
 				mWindow->Release();
-			auto eventMgr = foundationPlugin->GetEventManager();
 			for (auto subscriberID : mSubscriberIDs)
 			{
-				eventMgr->Unsubscribe(subscriberID);
+				mEventMgr->Unsubscribe(subscriberID);
 			}
 			LOG_INFO("Application quit.");
 		}
@@ -170,10 +163,9 @@ namespace Lightning
 
 		void Application::RegisterWindowHandlers()
 		{
-			auto eventMgr = foundationPlugin->GetEventManager();
-			auto subscriberId = WINDOW_MSG_CLASS_HANDLER(eventMgr, WINDOW_IDLE_EVENT, OnWindowIdle);
+			auto subscriberId = WINDOW_MSG_CLASS_HANDLER(mEventMgr, WINDOW_IDLE_EVENT, OnWindowIdle);
 			mSubscriberIDs.insert(subscriberId);
-			subscriberId = foundationPlugin->GetEventManager()->Subscribe(WINDOW_DESTROYED_EVENT, [this](const Foundation::IEvent& event) {
+			subscriberId = mEventMgr->Subscribe(WINDOW_DESTROYED_EVENT, [this](const Foundation::IEvent& event) {
 				OnQuit(int(static_cast<const WindowDestroyedEvent&>(event).exitCode));
 			});
 			mSubscriberIDs.insert(subscriberId);

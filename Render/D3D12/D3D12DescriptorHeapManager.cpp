@@ -35,7 +35,7 @@ namespace Lightning
 
 		D3D12DescriptorHeapManager::~D3D12DescriptorHeapManager()
 		{
-			LOG_INFO("Descriptor heap manager destruct!");
+
 		}
 
 		void D3D12DescriptorHeapManager::ReserveFrameDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count)

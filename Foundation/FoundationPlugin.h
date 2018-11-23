@@ -12,7 +12,10 @@
 	->InitLogger(#name, Foundation::Logger::Instance());				\
 }
 
-#define UNLOAD_FOUNDATION(mgr) mgr->UnloadPlugin("Foundation");
+#define FINALIZE_LOGGER(mgr) \
+mgr->GetPlugin<Lightning::Plugins::FoundationPlugin>("Foundation")		\
+->FinalizeLogger(Foundation::Logger::Instance());				\
+mgr->UnloadPlugin("Foundation");
 
 
 namespace Lightning
@@ -23,8 +26,9 @@ namespace Lightning
 		{
 		public:
 			virtual void InitLogger(const char* name, Foundation::Logger* logger) = 0;
+			virtual void FinalizeLogger(Foundation::Logger* logger) = 0;
 			virtual Foundation::IEventManager* GetEventManager() = 0;
-			virtual Foundation::IFileSystem* CreateFileSystem() = 0;
+			virtual Foundation::IFileSystem* GetFileSystem() = 0;
 			virtual Foundation::IConfigManager* GetConfigManager() = 0;
 			virtual Foundation::IEnvironment* GetEnvironment() = 0;
 		};

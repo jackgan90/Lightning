@@ -41,7 +41,7 @@ namespace Lightning
 		ScenePluginImpl::~ScenePluginImpl()
 		{
 			LOG_INFO("Scene plugin unloaded.");
-			UNLOAD_FOUNDATION(mPluginMgr)
+			FINALIZE_LOGGER(mPluginMgr)
 		}
 
 		void ScenePluginImpl::Update()

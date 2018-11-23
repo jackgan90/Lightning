@@ -21,25 +21,30 @@ namespace Lightning
 #endif
 				InitLoggerImpl("Foundation", Foundation::Logger::Instance());
 				LOG_INFO("Foundation plugin init.");
+				mFileSystem = Foundation::FileSystemFactory::Instance()->CreateFileSystem();
+				LOG_INFO("File system created!Current working directory:{0}", mFileSystem->GetRoot().c_str());
 			}
 			~FoundationPluginImpl()override
 			{
+				Foundation::FileSystemFactory::Instance()->DestroyFileSystem(mFileSystem);
 				LOG_INFO("Foundation plugin unloaded.");
 				mFileSink->flush();
 			}
 			void Update()override;
 			void InitLogger(const char* name, Foundation::Logger* logger)override;
+			void FinalizeLogger(Foundation::Logger* logger)override;
 			Foundation::IEventManager* GetEventManager()override;
-			Foundation::IFileSystem* CreateFileSystem()override;
+			Foundation::IFileSystem* GetFileSystem()override;
 			Foundation::IConfigManager* GetConfigManager()override;
 			Foundation::IEnvironment* GetEnvironment()override;
 		private:
 			void InitLoggerImpl(const char* name, Foundation::Logger* logger);
 			std::shared_ptr<spdlog::sinks::basic_file_sink_mt> mFileSink;
+			Foundation::IFileSystem* mFileSystem;
 #ifdef _MSC_VER
 			std::shared_ptr<spdlog::sinks::msvc_sink_mt> mMsvcSink;
 #endif
-			static constexpr char* LogFileName = "F:\\Lightning_dev\\log.txt";
+			static constexpr char* LogFileName = "log.txt";
 		};
 
 		void FoundationPluginImpl::Update()
@@ -50,6 +55,11 @@ namespace Lightning
 		void FoundationPluginImpl::InitLogger(const char* name, Foundation::Logger* logger)
 		{
 			InitLoggerImpl(name, logger);
+		}
+
+		void FoundationPluginImpl::FinalizeLogger(Foundation::Logger* logger)
+		{
+			logger->Finalize();
 		}
 
 		void FoundationPluginImpl::InitLoggerImpl(const char* name, Foundation::Logger* logger)
@@ -66,9 +76,9 @@ namespace Lightning
 			return Foundation::EventManager::Instance();
 		}
 
-		Foundation::IFileSystem* FoundationPluginImpl::CreateFileSystem()
+		Foundation::IFileSystem* FoundationPluginImpl::GetFileSystem()
 		{
-			return Foundation::FileSystemFactory::Instance()->CreateFileSystem();
+			return mFileSystem;
 		}
 
 		Foundation::IConfigManager* FoundationPluginImpl::GetConfigManager()

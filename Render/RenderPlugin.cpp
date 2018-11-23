@@ -36,7 +36,7 @@ namespace Lightning
 		RenderPluginImpl::~RenderPluginImpl()
 		{
 			LOG_INFO("Render plugin unloaded.");
-			UNLOAD_FOUNDATION(mPluginMgr)
+			FINALIZE_LOGGER(mPluginMgr)
 			DestroyRendererImpl(mRenderer);
 		}
 

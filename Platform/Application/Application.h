@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include "WindowEvents.h"
-#include "IFileSystem.h"
 #include "IWindow.h"
 #include "IApplication.h"
 #include "IRenderer.h"
@@ -13,7 +12,6 @@ namespace Lightning
 	namespace App
 	{
 		using Render::IRenderer;
-		using Foundation::IFileSystem;
 		using Window::IWindow;
 		
 		class Application : public IApplication
@@ -30,9 +28,9 @@ namespace Lightning
 			virtual void RegisterWindowHandlers();
 			virtual void OnQuit(int exitCode);
 
-			IFileSystem* mFileSystem;
 			IRenderer* mRenderer;
 			IWindow* mWindow;
+			Foundation::IEventManager* mEventMgr;
 			int mExitCode;
 			bool mRunning;
 			Foundation::Container::UnorderedSet<Foundation::EventSubscriberID> mSubscriberIDs;

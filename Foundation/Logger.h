@@ -2,7 +2,6 @@
 #include <string>
 #include <fstream>
 #include "Singleton.h"
-#include "TimeSystem.h"
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/basic_file_sink.h"
 #ifdef _MSC_VER
@@ -74,6 +73,10 @@ namespace Lightning
 				mLogger = std::unique_ptr<spdlog::logger>(new spdlog::logger(name, {fileSink}));
 #endif
 				mLogger->set_level(spdlog::level::debug);
+			}
+			void Finalize()
+			{
+				mLogger.reset();
 			}
 		private:
 			friend class Singleton<Logger>;
