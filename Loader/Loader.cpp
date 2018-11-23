@@ -42,15 +42,13 @@ namespace Lightning
 
 		Loader::~Loader()
 		{
-			mRunning = false;
-			mCondVar.notify_one();
-			mLoaderIOThread.join();
 		}
 
 		void Loader::Finalize()
 		{
 			mRunning = false;
 			mCondVar.notify_one();
+			mLoaderIOThread.join();
 		}
 
 		void Loader::Load(const std::string& path, ISerializer* ser)

@@ -24,6 +24,8 @@ namespace Lightning
 		{
 			INIT_LOGGER(mgr, Loader);
 			LOG_INFO("Loader plugin init.");
+			//Just to create the loader object.
+			Loader::Instance();
 		}
 
 		LoaderPluginImpl::~LoaderPluginImpl()
