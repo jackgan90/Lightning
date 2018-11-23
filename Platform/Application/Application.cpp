@@ -88,7 +88,6 @@ namespace Lightning
 		Application::Application() 
 		: mExitCode(0)
 		, mRunning(false)
-		, mWindow(nullptr)
 		, mRenderer(nullptr)
 		{
 		}
@@ -99,8 +98,6 @@ namespace Lightning
 
 		void Application::Update()
 		{
-			if (mRunning && mWindow)
-				mWindow->Update();
 			if (mRunning && mRenderer)
 				mRenderer->Render();
 		}
@@ -124,8 +121,8 @@ namespace Lightning
 			{
 				init.initialize(threadCount);
 			}
-			mWindow = windowPlugin->NewWindow();
-			mRenderer = renderPlugin->CreateRenderer(mWindow);
+			auto window = windowPlugin->NewWindow();
+			mRenderer = renderPlugin->CreateRenderer(window);
 			mRenderer->Start();
 			//Create a simple scene here just for test
 			auto sceneMgr = scenePlugin->GetSceneManager();
@@ -140,7 +137,8 @@ namespace Lightning
 
 			//End of scene creation
 			RegisterWindowHandlers();
-			mWindow->Show(true);
+			window->Show(true);
+			window->Release();
 			LOG_INFO("Application start successfully!");
 		}
 
@@ -151,8 +149,6 @@ namespace Lightning
 			auto sceneMgr = Plugins::gPluginMgr->GetPlugin<Plugins::ScenePlugin>("Scene")->GetSceneManager();
 			sceneMgr->DestroyAllScenes();
 			mRenderer->ShutDown();
-			if (mWindow)
-				mWindow->Release();
 			for (auto subscriberID : mSubscriberIDs)
 			{
 				mEventMgr->Unsubscribe(subscriberID);

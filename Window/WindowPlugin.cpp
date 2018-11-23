@@ -2,6 +2,7 @@
 #include "IPluginMgr.h"
 #include "FoundationPlugin.h"
 #include "Logger.h"
+#include "Container.h"
 #ifdef LIGHTNING_WIN32
 #include "WindowsGameWindow.h"
 #endif
@@ -10,6 +11,7 @@ namespace Lightning
 {
 	namespace Plugins
 	{
+		using namespace Foundation;
 		class WindowPluginImpl : public WindowPlugin
 		{
 		public:
@@ -19,6 +21,7 @@ namespace Lightning
 			void Update()override;
 		private:
 			IPluginMgr* mPluginMgr;
+			Container::Vector<Window::IWindow*> mWindows;
 		};
 
 		WindowPluginImpl::WindowPluginImpl(IPluginMgr* mgr):mPluginMgr(mgr)
@@ -29,19 +32,29 @@ namespace Lightning
 
 		WindowPluginImpl::~WindowPluginImpl()
 		{
+			for (auto window : mWindows)
+			{
+				window->Release();
+			}
 			LOG_INFO("Window plugin unloaded.");
 			FINALIZE_LOGGER(mPluginMgr)
 		}
 
 		void WindowPluginImpl::Update()
 		{
-
+			for (auto window : mWindows)
+			{
+				window->Update();
+			}
 		}
 
 		Window::IWindow* WindowPluginImpl::NewWindow()
 		{
 #ifdef LIGHTNING_WIN32
-			return NEW_REF_OBJ(Window::WindowsGameWindow);
+			auto window = NEW_REF_OBJ(Window::WindowsGameWindow);
+			window->AddRef();
+			mWindows.push_back(window);
+			return window;
 #endif
 			return nullptr;
 		}

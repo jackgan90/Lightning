@@ -37,7 +37,8 @@ namespace Lightning
 
 		void PlatformPluginImpl::Update()
 		{
-			
+			if (mApp)
+				mApp->Update();
 		}
 
 		IApplication* PlatformPluginImpl::CreateApplication()

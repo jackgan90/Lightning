@@ -30,7 +30,6 @@ namespace Lightning
 
 		while (application->IsRunning())
 		{
-			application->Update();
 			pluginMgr->Update();
 		}
 

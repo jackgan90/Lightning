@@ -12,7 +12,6 @@ namespace Lightning
 	namespace App
 	{
 		using Render::IRenderer;
-		using Window::IWindow;
 		
 		class Application : public IApplication
 		{
@@ -29,7 +28,6 @@ namespace Lightning
 			virtual void OnQuit(int exitCode);
 
 			IRenderer* mRenderer;
-			IWindow* mWindow;
 			Foundation::IEventManager* mEventMgr;
 			int mExitCode;
 			bool mRunning;
