@@ -14,6 +14,50 @@ namespace Lightning
 	{
 		IRenderer* Renderer::sInstance{ nullptr };
 		FrameMemoryAllocator g_RenderAllocator;
+		
+		void FrameResource::ReleaseRenderQueue()
+		{
+			for (auto& node : renderQueue)
+			{
+				node.material->Release();
+				if (node.geometry.ib)
+				{
+					node.geometry.ib->Release();
+				}
+				for (auto i = 0;i < Foundation::ArraySize(node.geometry.vbs);++i)
+				{
+					if (node.geometry.vbs[i])
+					{
+						node.geometry.vbs[i]->Release();
+					}
+				}
+				if (node.depthStencilBuffer)
+					node.depthStencilBuffer->Release();
+				for (auto renderTarget : node.renderTargets)
+				{
+					renderTarget->Release();
+				}
+			}
+			renderQueue.clear();
+		}
+
+		void FrameResource::OnFrameBegin()
+		{
+			ReleaseRenderQueue();
+		}
+
+		void FrameResource::Release()
+		{
+			if (fence)
+			{
+				delete fence;
+				fence = nullptr;
+			}
+			if (defaultDepthStencilBuffer)
+				defaultDepthStencilBuffer->Release();
+			ReleaseRenderQueue();
+		}
+
 		Renderer::Renderer(Window::IWindow* window) :
 			mOutputWindow(window),
 			mFrameCount(0), mFrameResourceIndex(0), mClearColor(0.5f, 0.5f, 0.5f, 1.0f)
@@ -112,6 +156,13 @@ namespace Lightning
 
 			}
 			assert((hasVB || hasIB) && "vb or ib can not both be empty!");
+			if (node.depthStencilBuffer)
+				node.depthStencilBuffer->AddRef();
+			for (auto renderTarget : node.renderTargets)
+			{
+				assert(renderTarget && "renderTarget cannot be null!");
+				renderTarget->AddRef();
+			}
 			mFrameResources[mFrameResourceIndex].renderQueue.push_back(node);
 			for (auto& pass : mRenderPasses)
 			{

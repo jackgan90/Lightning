@@ -20,52 +20,9 @@ namespace Lightning
 			IDepthStencilBuffer* defaultDepthStencilBuffer{ nullptr };
 			RenderQueue renderQueue;
 
-			void OnFrameBegin()
-			{
-				for (auto& node : renderQueue)
-				{
-					node.material->Release();
-					if (node.geometry.ib)
-					{
-						node.geometry.ib->Release();
-					}
-					for (auto i = 0;i < Foundation::ArraySize(node.geometry.vbs);++i)
-					{
-						if (node.geometry.vbs[i])
-						{
-							node.geometry.vbs[i]->Release();
-						}
-					}
-				}
-				renderQueue.clear();
-			}
-
-			void Release()
-			{
-				if (fence)
-				{
-					delete fence;
-					fence = nullptr;
-				}
-				if (defaultDepthStencilBuffer)
-					defaultDepthStencilBuffer->Release();
-				for (auto& node : renderQueue)
-				{
-					node.material->Release();
-					if (node.geometry.ib)
-					{
-						node.geometry.ib->Release();
-					}
-					for (auto i = 0;i < Foundation::ArraySize(node.geometry.vbs);++i)
-					{
-						if (node.geometry.vbs[i])
-						{
-							node.geometry.vbs[i]->Release();
-						}
-					}
-				}
-				renderQueue.clear();
-			}
+			void ReleaseRenderQueue();
+			void OnFrameBegin();
+			void Release();
 		};
 
 		class Renderer : public IRenderer
@@ -114,6 +71,7 @@ namespace Lightning
 			ColorF mClearColor;
 			Container::UnorderedMap<RendererEvent, Container::Vector<RendererCallback>> mCallbacks;
 			FrameResource mFrameResources[RENDER_FRAME_COUNT];
+			RenderQueue mCurrentFrameRenderQueue;
 			Window::IWindow* mOutputWindow;
 		};
 	}

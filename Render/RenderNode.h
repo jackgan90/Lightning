@@ -13,7 +13,7 @@ namespace Lightning
 		using Foundation::Math::Transform;
 		struct RenderNode
 		{
-			RenderNode() :material(nullptr)
+			RenderNode() :material(nullptr), depthStencilBuffer(nullptr)
 			{
 				geometry.ib = nullptr;
 				std::memset(geometry.vbs, 0, sizeof(geometry.vbs));
