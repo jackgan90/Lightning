@@ -36,15 +36,14 @@ namespace Lightning
 			return nullptr;
 		}
 
-		Loader::Loader() : mRunning(true)
+		Loader::Loader() : mRunning(true), mLoaderIOThread(IOThread)
 		{
-			mFileSystem = Plugins::gPluginMgr->GetPlugin<Plugins::FoundationPlugin>("Foundation")->GetFileSystem();
-			std::thread t(IOThread);
-			t.detach();
 		}
 
 		Loader::~Loader()
 		{
+			mRunning = false;
+			mLoaderIOThread.join();
 		}
 
 		void Loader::Finalize()
@@ -78,9 +77,10 @@ namespace Lightning
 			//If Users has exited app,foundation will be null
 			if (!foundation)
 				return;
+			auto mgr = Loader::Instance();
+			auto fileSystem = foundation->GetFileSystem();
 			auto environment = foundation->GetEnvironment();
 			environment->SetLoaderIOThreadID(std::this_thread::get_id());
-			auto mgr = Loader::Instance();
 			LOG_INFO("LoaderMgr IO Thread start!");
 			while (mgr->mRunning)
 			{
@@ -93,7 +93,7 @@ namespace Lightning
 				if (mgr->mTasks.try_pop(task))
 				{
 					LOG_INFO("Start to load file : {0}", task.path);
-					auto file = mgr->mFileSystem->FindFile(task.path, Foundation::FileAccess::READ);
+					auto file = fileSystem->FindFile(task.path, Foundation::FileAccess::READ);
 					if (!file)
 					{
 						LOG_ERROR("Can't find file : {0}", task.path.c_str());

@@ -51,7 +51,7 @@ namespace Lightning
 			Container::UnorderedMap<std::string, std::shared_ptr<char>> mBuffers;
 			std::mutex mTaskQueueMutex;
 			std::condition_variable mCondVar;
-			Foundation::IFileSystem* mFileSystem;
+			std::thread mLoaderIOThread;
 		};
 	}
 }
