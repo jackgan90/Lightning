@@ -9,7 +9,6 @@
 #include "Loader.h"
 #include "IPluginMgr.h"
 #include "FoundationPlugin.h"
-#include "LoaderPlugin.h"
 #include "ScenePlugin.h"
 #include "RenderPlugin.h"
 #include "WindowPlugin.h"
@@ -17,7 +16,6 @@
 
 namespace
 {
-	Lightning::Plugins::LoaderPlugin* loaderPlugin = nullptr;
 	Lightning::Plugins::WindowPlugin* windowPlugin = nullptr;
 	Lightning::Plugins::RenderPlugin* renderPlugin = nullptr;
 	Lightning::Plugins::ScenePlugin* scenePlugin = nullptr;
@@ -104,7 +102,6 @@ namespace Lightning
 		{
 			mRunning = true;
 			auto foundationPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::FoundationPlugin>("Foundation");
-			loaderPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::LoaderPlugin>("Loader");
 			windowPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::WindowPlugin>("Window");
 			renderPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::RenderPlugin>("Render");
 			scenePlugin = Plugins::gPluginMgr->GetPlugin<Plugins::ScenePlugin>("Scene");
