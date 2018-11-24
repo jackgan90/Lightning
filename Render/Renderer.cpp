@@ -75,6 +75,14 @@ namespace Lightning
 			mSwapChain.reset();
 		}
 
+		void Renderer::ApplyRenderPasses()
+		{
+			for (auto& pass : mRenderPasses)
+			{
+				pass->Apply(mFrameResources[mFrameResourceIndex].renderQueue);
+			}
+		}
+
 		void Renderer::Render()
 		{
 			WaitForPreviousFrame(false);
@@ -90,7 +98,7 @@ namespace Lightning
 				depthStencilBuffer->GetDepthClearValue(), depthStencilBuffer->GetStencilClearValue(), nullptr);
 			OnFrameUpdate();
 			InvokeEventCallback(RendererEvent::FRAME_UPDATE);
-			InvokeEventCallback(RendererEvent::FRAME_POST_UPDATE);
+			ApplyRenderPasses();
 			OnFrameEnd();
 			InvokeEventCallback(RendererEvent::FRAME_END);
 			auto fence = mFrameResources[mFrameResourceIndex].fence;
@@ -135,7 +143,7 @@ namespace Lightning
 		}
 
 
-		void Renderer::AddRenderNode(const RenderNode& node)
+		void Renderer::CommitRenderNode(const RenderNode& node)
 		{
 			assert(node.material && "node must have a material!");
 			node.material->AddRef();
@@ -227,11 +235,6 @@ namespace Lightning
 			mSwapChain.reset();
 			mRenderPasses.clear();
 			mCallbacks.clear();
-		}
-
-		const RenderQueue& Renderer::GetRenderQueue()
-		{
-			return mFrameResources[mFrameResourceIndex].renderQueue;
 		}
 
 		IDepthStencilBuffer* Renderer::GetDefaultDepthStencilBuffer()

@@ -80,7 +80,8 @@ namespace Lightning
 			virtual std::uint64_t GetCurrentFrameCount()const = 0;
 			virtual std::size_t GetFrameResourceIndex()const = 0;
 			virtual void AddRenderPass(RenderPassType type) = 0;
-			virtual void AddRenderNode(const RenderNode& item) = 0;
+			//Commit a render node for rendering
+			virtual void CommitRenderNode(const RenderNode& node) = 0;
 			//clear a specified render target,possibly parts of it defined by an array of rects
 			virtual void ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, const RectIList* rects=nullptr) = 0;
 			virtual void ClearDepthStencilBuffer(IDepthStencilBuffer* buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr) = 0;
@@ -101,8 +102,6 @@ namespace Lightning
 			virtual void Start() = 0;
 			//Shut down the renderer
 			virtual void ShutDown() = 0;
-			//get render queue of current frame
-			virtual const RenderQueue& GetRenderQueue() = 0;
 			//get default depth stencil buffer
 			virtual IDepthStencilBuffer* GetDefaultDepthStencilBuffer() = 0;
 		};

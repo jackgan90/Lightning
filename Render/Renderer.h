@@ -36,7 +36,7 @@ namespace Lightning
 			//return the current frame index
 			std::uint64_t GetCurrentFrameCount()const override;
 			void SetClearColor(const ColorF& color)override;
-			void AddRenderNode(const RenderNode& item)override;
+			void CommitRenderNode(const RenderNode& item)override;
 			//TODO there can be multiple render passes in effect simultaneously,should change it
 			void AddRenderPass(RenderPassType type)override;
 			std::size_t GetFrameResourceIndex()const override;
@@ -45,7 +45,6 @@ namespace Lightning
 			void RegisterCallback(RendererEvent evt, RendererCallback cb)override;
 			static IRenderer* Instance() { return sInstance; }
 			Window::IWindow* GetOutputWindow()override { return mOutputWindow; }
-			const RenderQueue& GetRenderQueue()override;
 			IDepthStencilBuffer* GetDefaultDepthStencilBuffer()override;
 		protected:
 			Renderer(Window::IWindow* window);
@@ -62,6 +61,7 @@ namespace Lightning
 			virtual ISwapChain* CreateSwapChain() = 0;
 			virtual IDepthStencilBuffer* CreateDepthStencilBuffer(std::uint32_t width, std::uint32_t height) = 0;
 			virtual RenderPass* CreateRenderPass(RenderPassType type);
+			void ApplyRenderPasses();
 			static IRenderer* sInstance;
 			std::uint64_t mFrameCount;
 			std::unique_ptr<IDevice> mDevice;

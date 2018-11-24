@@ -13,9 +13,8 @@ namespace Lightning
 	{
 		extern FrameMemoryAllocator g_RenderAllocator;
 		//Apply is called by renderer once per frame.Subclasses should commit render resources to device in this method.
-		void ForwardRenderPass::Apply()
+		void ForwardRenderPass::Apply(RenderQueue& renderQueue)
 		{
-			const auto& renderQueue = Renderer::Instance()->GetRenderQueue();
 			tbb::parallel_for(tbb::blocked_range<std::size_t>(0, renderQueue.size()), 
 				[&renderQueue, this](const tbb::blocked_range<std::size_t>& range) {
 				for (std::size_t i = range.begin(); i != range.end();++i)
@@ -36,11 +35,6 @@ namespace Lightning
 
 		void ForwardRenderPass::OnFrameBegin()
 		{
-		}
-
-		void ForwardRenderPass::OnFrameUpdate()
-		{
-			Apply();
 		}
 
 		void ForwardRenderPass::CommitPipelineStates(const RenderNode& node)

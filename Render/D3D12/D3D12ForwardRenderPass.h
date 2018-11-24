@@ -9,7 +9,7 @@ namespace Lightning
 		{
 		public:
 			D3D12ForwardRenderPass();
-			void Apply()override;
+			void Apply(RenderQueue&)override;
 			void OnAddRenderNode(const RenderNode& node)override;
 			void OnFrameBegin()override;
 		private:

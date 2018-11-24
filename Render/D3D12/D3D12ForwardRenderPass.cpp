@@ -15,7 +15,7 @@ namespace Lightning
 		{
 		}
 
-		void D3D12ForwardRenderPass::Apply()
+		void D3D12ForwardRenderPass::Apply(RenderQueue& renderQueue)
 		{
 			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			if(mTotalConstantBufferSize > 0)
@@ -23,7 +23,7 @@ namespace Lightning
 			if(mTotalConstantBuffers)
 				D3D12DescriptorHeapManager::Instance()->ReserveFrameDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 					true, mTotalConstantBuffers);
-			ForwardRenderPass::Apply();
+			ForwardRenderPass::Apply(renderQueue);
 		}
 
 		void D3D12ForwardRenderPass::OnAddRenderNode(const RenderNode& node)
