@@ -20,7 +20,6 @@ namespace Lightning
 			void Update()override;
 			void DestroyScene(const std::uint32_t sceneId)override;
 			void DestroyAllScenes()override;
-			void OnFrameUpdate()override;
 		protected:
 			void DestroyAllScenesImpl();
 			std::uint32_t mCurrentSceneID;

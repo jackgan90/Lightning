@@ -33,7 +33,7 @@ namespace Lightning
 
 		}
 
-		void ForwardRenderPass::OnFrameBegin()
+		void ForwardRenderPass::OnFrameEnd()
 		{
 		}
 

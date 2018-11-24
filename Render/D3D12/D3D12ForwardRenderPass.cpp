@@ -11,7 +11,7 @@ namespace Lightning
 	namespace Render
 	{
 		D3D12ForwardRenderPass::D3D12ForwardRenderPass():
-			mTotalConstantBufferSize(0)
+			mTotalConstantBufferSize(0), mTotalConstantBuffers(0)
 		{
 		}
 
@@ -40,7 +40,7 @@ namespace Lightning
 			});
 		}
 
-		void D3D12ForwardRenderPass::OnFrameBegin()
+		void D3D12ForwardRenderPass::OnFrameEnd()
 		{
 			mTotalConstantBufferSize = 0;
 			mTotalConstantBuffers = 0;

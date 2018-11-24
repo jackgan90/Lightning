@@ -98,8 +98,6 @@ namespace Lightning
 
 		void Application::Update()
 		{
-			if (mRunning && mRenderer)
-				mRenderer->Render();
 		}
 
 		void Application::Start()

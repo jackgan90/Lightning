@@ -42,7 +42,7 @@ namespace Lightning
 
 		void RenderPluginImpl::Update()
 		{
-
+			mRenderer->Render();
 		}
 
 		IMaterial* RenderPluginImpl::CreateMaterial()

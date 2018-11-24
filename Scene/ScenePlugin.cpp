@@ -46,7 +46,7 @@ namespace Lightning
 
 		void ScenePluginImpl::Update()
 		{
-
+			SceneManager::Instance()->Update();
 		}
 
 		ISceneManager* ScenePluginImpl::GetSceneManager()

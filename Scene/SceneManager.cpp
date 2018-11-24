@@ -28,7 +28,7 @@ namespace Lightning
 
 		SceneManager::SceneManager():mForegroundScene(nullptr)
 		{
-			gRenderPlugin->GetRenderer()->RegisterCallback(Render::RendererEvent::FRAME_UPDATE, [this]() {OnFrameUpdate(); });
+
 		}
 
 		SceneManager::~SceneManager()
@@ -68,11 +68,6 @@ namespace Lightning
 		void SceneManager::SetForegroundScene(IScene* scene)
 		{
 			mForegroundScene = scene;
-		}
-		
-		void SceneManager::OnFrameUpdate()
-		{
-			Update();
 		}
 	}
 }

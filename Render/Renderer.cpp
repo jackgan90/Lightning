@@ -17,28 +17,31 @@ namespace Lightning
 		
 		void FrameResource::ReleaseRenderQueue()
 		{
-			for (auto& node : renderQueue)
+			if (renderQueue)
 			{
-				node.material->Release();
-				if (node.geometry.ib)
+				for (auto& node : *renderQueue)
 				{
-					node.geometry.ib->Release();
-				}
-				for (auto i = 0;i < Foundation::ArraySize(node.geometry.vbs);++i)
-				{
-					if (node.geometry.vbs[i])
+					node.material->Release();
+					if (node.geometry.ib)
 					{
-						node.geometry.vbs[i]->Release();
+						node.geometry.ib->Release();
+					}
+					for (auto i = 0;i < Foundation::ArraySize(node.geometry.vbs);++i)
+					{
+						if (node.geometry.vbs[i])
+						{
+							node.geometry.vbs[i]->Release();
+						}
+					}
+					if (node.depthStencilBuffer)
+						node.depthStencilBuffer->Release();
+					for (auto renderTarget : node.renderTargets)
+					{
+						renderTarget->Release();
 					}
 				}
-				if (node.depthStencilBuffer)
-					node.depthStencilBuffer->Release();
-				for (auto renderTarget : node.renderTargets)
-				{
-					renderTarget->Release();
-				}
+				renderQueue->clear();
 			}
-			renderQueue.clear();
 		}
 
 		void FrameResource::OnFrameBegin()
@@ -58,9 +61,13 @@ namespace Lightning
 			ReleaseRenderQueue();
 		}
 
-		Renderer::Renderer(Window::IWindow* window) :
-			mOutputWindow(window),
-			mFrameCount(0), mFrameResourceIndex(0), mClearColor(0.5f, 0.5f, 0.5f, 1.0f)
+		Renderer::Renderer(Window::IWindow* window)
+			: mOutputWindow(window)
+			, mFrameCount(0)
+			, mFrameResourceIndex(0)
+			, mClearColor(0.5f, 0.5f, 0.5f, 1.0f)
+			, mRenderQueueIndex(RENDER_FRAME_COUNT)
+			, mCurrentFrameRenderQueue(&mRenderQueues[RENDER_FRAME_COUNT])
 		{
 			assert(!sInstance);
 			mOutputWindow->AddRef();
@@ -79,7 +86,7 @@ namespace Lightning
 		{
 			for (auto& pass : mRenderPasses)
 			{
-				pass->Apply(mFrameResources[mFrameResourceIndex].renderQueue);
+				pass->Apply(*mFrameResources[mFrameResourceIndex].renderQueue);
 			}
 		}
 
@@ -89,6 +96,17 @@ namespace Lightning
 			mFrameCount++;
 			mFrameResourceIndex = mSwapChain->GetCurrentBackBufferIndex();
 			mFrameResources[mFrameResourceIndex].OnFrameBegin();
+			mFrameResources[mFrameResourceIndex].renderQueue = mCurrentFrameRenderQueue;
+			if (mRenderQueueIndex == RENDER_FRAME_COUNT)
+			{
+				mRenderQueueIndex = 0;
+			}
+			else
+			{
+				++mRenderQueueIndex;
+			}
+
+			mCurrentFrameRenderQueue = &mRenderQueues[mRenderQueueIndex];
 			OnFrameBegin();
 			InvokeEventCallback(RendererEvent::FRAME_BEGIN);
 			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
@@ -171,7 +189,7 @@ namespace Lightning
 				assert(renderTarget && "renderTarget cannot be null!");
 				renderTarget->AddRef();
 			}
-			mFrameResources[mFrameResourceIndex].renderQueue.push_back(node);
+			mCurrentFrameRenderQueue->push_back(node);
 			for (auto& pass : mRenderPasses)
 			{
 				pass->OnAddRenderNode(node);

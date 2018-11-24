@@ -11,7 +11,7 @@ namespace Lightning
 			D3D12ForwardRenderPass();
 			void Apply(RenderQueue&)override;
 			void OnAddRenderNode(const RenderNode& node)override;
-			void OnFrameBegin()override;
+			void OnFrameEnd()override;
 		private:
 			std::size_t mTotalConstantBufferSize;
 			std::uint32_t mTotalConstantBuffers;

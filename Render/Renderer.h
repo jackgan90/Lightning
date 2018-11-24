@@ -18,7 +18,7 @@ namespace Lightning
 			IRenderFence *fence{ nullptr };
 			std::uint64_t frame{ 0 };
 			IDepthStencilBuffer* defaultDepthStencilBuffer{ nullptr };
-			RenderQueue renderQueue;
+			RenderQueue* renderQueue{ nullptr };
 
 			void ReleaseRenderQueue();
 			void OnFrameBegin();
@@ -71,7 +71,9 @@ namespace Lightning
 			ColorF mClearColor;
 			Container::UnorderedMap<RendererEvent, Container::Vector<RendererCallback>> mCallbacks;
 			FrameResource mFrameResources[RENDER_FRAME_COUNT];
-			RenderQueue mCurrentFrameRenderQueue;
+			std::size_t mRenderQueueIndex;
+			RenderQueue mRenderQueues[RENDER_FRAME_COUNT + 1];
+			RenderQueue* mCurrentFrameRenderQueue;
 			Window::IWindow* mOutputWindow;
 		};
 	}

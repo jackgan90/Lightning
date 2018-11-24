@@ -15,7 +15,6 @@ namespace Lightning
 			virtual void Update() = 0;
 			virtual void DestroyScene(const std::uint32_t sceneId) = 0;
 			virtual void DestroyAllScenes() = 0;
-			virtual void OnFrameUpdate() = 0;
 		};
 	}
 }
