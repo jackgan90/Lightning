@@ -19,7 +19,6 @@ namespace Lightning
 		class ScenePluginImpl : public ScenePlugin
 		{
 		public:
-			ScenePluginImpl(IPluginMgr* mgr);
 			~ScenePluginImpl()override;
 			ISceneManager* GetSceneManager()override;
 			IPrimitive* CreateCube(float width, float height, float thickness)override;
@@ -27,14 +26,18 @@ namespace Lightning
 			IPrimitive* CreateHemisphere(float radius)override;
 			IPrimitive* CreateSphere(float radius)override;
 			void Update()override;
+		protected:
+			void OnCreated(IPluginMgr*)override;
 		private:
 			IPluginMgr* mPluginMgr;
 		};
 
-		ScenePluginImpl::ScenePluginImpl(IPluginMgr* mgr):mPluginMgr(mgr)
+		void ScenePluginImpl::OnCreated(IPluginMgr* mgr)
 		{
+			mPluginMgr = mgr;
 			INIT_LOGGER(mgr, Scene)
 			Scene::gRenderPlugin = mgr->GetPlugin<RenderPlugin>("Render");
+			mgr->MakePlugin1UpdateBeforePlugin2(this, Scene::gRenderPlugin);
 			LOG_INFO("Scene plugin init.");
 		}
 

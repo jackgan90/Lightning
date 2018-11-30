@@ -24,7 +24,7 @@ extern "C"\
 	LIGHTNING_PLUGIN_DLL_EXPORT Lightning::Plugins::Plugin* GetPlugin(Lightning::Plugins::IPluginMgr* mgr)\
 	{\
 		Lightning::Plugins::gPluginMgr = mgr;\
-		return NEW_REF_OBJ(Lightning::Plugins::##pluginImpl, mgr);\
+		return NEW_REF_OBJ(Lightning::Plugins::##pluginImpl);\
 	}\
 }\
 
@@ -50,13 +50,20 @@ namespace Lightning
 			}
 			Plugin(const Plugin&) = delete;
 			Plugin& operator=(const Plugin&) = delete;
+			virtual void OnCreated(class IPluginMgr*) = 0;
 			//Load and Unload is only called by PluginMgr
-			std::string mName;
 		private:
 			void SetName(const std::string& name)
 			{
 				mName = name;
 			}
+			void SetUpdateOrder(int updateOrder)
+			{
+				mUpdateOrder = updateOrder;
+			}
+			int GetUpdateOrder()const { return mUpdateOrder; }
+			std::string mName;
+			int mUpdateOrder;
 #ifdef LIGHTNING_WIN32
 			static constexpr char* PluginExtension = ".dll";
 #endif

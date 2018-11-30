@@ -14,21 +14,28 @@ namespace Lightning
 		class RenderPluginImpl : public RenderPlugin
 		{
 		public:
-			RenderPluginImpl(IPluginMgr*);
+			RenderPluginImpl();
 			~RenderPluginImpl()override;
 			IMaterial* CreateMaterial()override;
 			IRenderer* GetRenderer()override;
 			Render::IRenderer* CreateRenderer(Window::IWindow*)override;
 			void DestroyRenderer(Render::IRenderer*)override;
 			void Update()override;
+		protected:
+			void OnCreated(IPluginMgr*)override;
 		private:
 			void DestroyRendererImpl(Render::IRenderer*);
 			IPluginMgr* mPluginMgr;
 			IRenderer* mRenderer;
 		};
 
-		RenderPluginImpl::RenderPluginImpl(IPluginMgr* mgr):mRenderer(nullptr), mPluginMgr(mgr)
+		RenderPluginImpl::RenderPluginImpl():mRenderer(nullptr)
 		{
+		}
+
+		void RenderPluginImpl::OnCreated(IPluginMgr* mgr)
+		{
+			mPluginMgr = mgr;
 			INIT_LOGGER(mgr, Render)
 			LOG_INFO("Render plugin init.");
 		}

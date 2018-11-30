@@ -75,6 +75,7 @@ namespace Lightning
 			RenderQueue mRenderQueues[RENDER_FRAME_COUNT + 1];
 			RenderQueue* mCurrentFrameRenderQueue;
 			Window::IWindow* mOutputWindow;
+			bool mStarted;
 		};
 	}
 }

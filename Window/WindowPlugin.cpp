@@ -15,17 +15,19 @@ namespace Lightning
 		class WindowPluginImpl : public WindowPlugin
 		{
 		public:
-			WindowPluginImpl(IPluginMgr* mgr);
 			~WindowPluginImpl()override;
 			Window::IWindow* NewWindow()override;
 			void Update()override;
+		protected:
+			void OnCreated(IPluginMgr*)override;
 		private:
 			IPluginMgr* mPluginMgr;
 			Container::Vector<Window::IWindow*> mWindows;
 		};
 
-		WindowPluginImpl::WindowPluginImpl(IPluginMgr* mgr):mPluginMgr(mgr)
+		void WindowPluginImpl::OnCreated(IPluginMgr* mgr)
 		{
+			mPluginMgr = mgr;
 			INIT_LOGGER(mgr, Window)
 			LOG_INFO("Window plugin init.");
 		}

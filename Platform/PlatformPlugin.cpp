@@ -14,17 +14,19 @@ namespace Lightning
 		class PlatformPluginImpl : public PlatformPlugin
 		{
 		public:
-			PlatformPluginImpl(IPluginMgr*);
 			~PlatformPluginImpl()override;
 			IApplication* CreateApplication()override;
 			void Update()override;
+		protected:
+			void OnCreated(IPluginMgr*)override;
 		private:
 			std::unique_ptr<IApplication> mApp;
 			IPluginMgr* mPluginMgr;
 		};
 
-		PlatformPluginImpl::PlatformPluginImpl(IPluginMgr* mgr):mPluginMgr(mgr)
+		void PlatformPluginImpl::OnCreated(IPluginMgr* mgr)
 		{
+			mPluginMgr = mgr;
 			INIT_LOGGER(mgr, Platform)
 			LOG_INFO("Platform plugin init.");
 		}

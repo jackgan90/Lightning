@@ -68,6 +68,7 @@ namespace Lightning
 			, mClearColor(0.5f, 0.5f, 0.5f, 1.0f)
 			, mRenderQueueIndex(RENDER_FRAME_COUNT)
 			, mCurrentFrameRenderQueue(&mRenderQueues[RENDER_FRAME_COUNT])
+			, mStarted(false)
 		{
 			assert(!sInstance);
 			mOutputWindow->AddRef();
@@ -78,8 +79,6 @@ namespace Lightning
 		{
 			assert(sInstance == this);
 			sInstance = nullptr;
-			mDevice.reset();
-			mSwapChain.reset();
 		}
 
 		void Renderer::ApplyRenderPasses()
@@ -92,6 +91,8 @@ namespace Lightning
 
 		void Renderer::Render()
 		{
+			if (!mStarted)
+				return;
 			WaitForPreviousFrame(false);
 			mFrameCount++;
 			mFrameResourceIndex = mSwapChain->GetCurrentBackBufferIndex();
@@ -163,6 +164,7 @@ namespace Lightning
 
 		void Renderer::CommitRenderNode(const RenderNode& node)
 		{
+			assert(mStarted && "Renderer must be started first.");
 			assert(node.material && "node must have a material!");
 			node.material->AddRef();
 			bool hasIB = false;
@@ -229,6 +231,8 @@ namespace Lightning
 
 		void Renderer::Start()
 		{
+			if (mStarted)
+				return;
 			mDevice.reset(CreateDevice());
 			mSwapChain.reset(CreateSwapChain());
 			for (size_t i = 0; i < RENDER_FRAME_COUNT; i++)
@@ -239,20 +243,26 @@ namespace Lightning
 			}
 			mFrameResourceIndex = mSwapChain->GetCurrentBackBufferIndex();
 			AddRenderPass(RenderPassType::FORWARD);
+			mStarted = true;
 		}
 
 		void Renderer::ShutDown()
 		{
+			if (!mStarted)
+				return;
 			WaitForPreviousFrame(true);
 			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
 				mFrameResources[i].Release();
 			}
+			mFrameResources[0].renderQueue = mCurrentFrameRenderQueue;
+			mFrameResources[0].ReleaseRenderQueue();
 			mOutputWindow->Release();
 			mDevice.reset();
 			mSwapChain.reset();
 			mRenderPasses.clear();
 			mCallbacks.clear();
+			mStarted = false;
 		}
 
 		IDepthStencilBuffer* Renderer::GetDefaultDepthStencilBuffer()

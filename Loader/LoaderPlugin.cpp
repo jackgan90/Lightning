@@ -12,16 +12,18 @@ namespace Lightning
 		class LoaderPluginImpl : public LoaderPlugin
 		{
 		public:
-			LoaderPluginImpl(IPluginMgr*);
 			~LoaderPluginImpl()override;
 			ILoader* GetLoader()override;
 			void Update()override;
+		protected:
+			void OnCreated(IPluginMgr*)override;
 		private:
 			IPluginMgr* mPluginMgr;
 		};
 
-		LoaderPluginImpl::LoaderPluginImpl(IPluginMgr* mgr) : mPluginMgr(mgr)
+		void LoaderPluginImpl::OnCreated(IPluginMgr* mgr)
 		{
+			mPluginMgr = mgr;
 			INIT_LOGGER(mgr, Loader);
 			LOG_INFO("Loader plugin init.");
 			//Just to create the loader object.

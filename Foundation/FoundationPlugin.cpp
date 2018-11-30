@@ -13,7 +13,7 @@ namespace Lightning
 		class FoundationPluginImpl : public FoundationPlugin
 		{
 		public:
-			FoundationPluginImpl(IPluginMgr* mgr)
+			FoundationPluginImpl()
 			{
 				mFileSink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(LogFileName, true);
 #ifdef _MSC_VER
@@ -37,6 +37,8 @@ namespace Lightning
 			Foundation::IFileSystem* GetFileSystem()override;
 			Foundation::IConfigManager* GetConfigManager()override;
 			Foundation::IEnvironment* GetEnvironment()override;
+		protected:
+			void OnCreated(IPluginMgr*)override;
 		private:
 			void InitLoggerImpl(const char* name, Foundation::Logger* logger);
 			std::shared_ptr<spdlog::sinks::basic_file_sink_mt> mFileSink;
@@ -46,6 +48,11 @@ namespace Lightning
 #endif
 			static constexpr char* LogFileName = "log.txt";
 		};
+
+		void FoundationPluginImpl::OnCreated(IPluginMgr* mgr)
+		{
+
+		}
 
 		void FoundationPluginImpl::Update()
 		{
