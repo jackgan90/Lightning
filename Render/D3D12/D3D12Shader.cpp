@@ -144,18 +144,18 @@ namespace Lightning
 			return mDesc.BoundResources;
 		}
 
-		bool D3D12Shader::SetParameter(const ShaderParameter& arg)
+		bool D3D12Shader::SetParameter(const ShaderParameter& parameter)
 		{
-			if (arg.type == ShaderParameterType::UNKNOWN)
+			if (parameter.type == ShaderParameterType::UNKNOWN)
 			{
 				LOG_WARNING("Unknown shader parameter type when set shader {0}", mName.c_str());
 				return false;
 			}
-			auto it = mParameters.find(arg.name);
+			auto it = mParameters.find(parameter.name);
 			assert(it != mParameters.end());
 			const auto& bindingInfo = it->second;
 			std::size_t size{ 0 };
-			auto data = arg.Buffer(size);
+			auto data = parameter.Buffer(size);
 			if (data)
 			{
 				std::uint8_t *p = mResourceProxy->GetConstantBuffer(mTotalConstantBufferSize);
