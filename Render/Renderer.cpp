@@ -95,7 +95,6 @@ namespace Lightning
 				return;
 			WaitForPreviousFrame(false);
 			mFrameCount++;
-			mFrameResourceIndex = mSwapChain->GetCurrentBackBufferIndex();
 			mFrameResources[mFrameResourceIndex].OnFrameBegin();
 			mFrameResources[mFrameResourceIndex].renderQueue = mCurrentFrameRenderQueue;
 			if (mRenderQueueIndex == RENDER_FRAME_COUNT)
@@ -124,6 +123,7 @@ namespace Lightning
 			mFrameResources[mFrameResourceIndex].frame = mFrameCount;
 			fence->SetTargetValue(mFrameCount);
 			mSwapChain->Present();
+			mFrameResourceIndex = mSwapChain->GetCurrentBackBufferIndex();
 			g_RenderAllocator.FinishFrame(mFrameCount);
 		}
 
