@@ -20,7 +20,7 @@ namespace Lightning
 				for (std::size_t i = range.begin(); i != range.end();++i)
 				{
 					const auto& node = renderQueue[i];
-					CommitShaderArguments(node);
+					CommitShaderParameters(node);
 					CommitPipelineStates(node);
 					CommitBuffers(node.geometry);
 					Draw(node.geometry);
@@ -75,7 +75,7 @@ namespace Lightning
 			renderer->ApplyPipelineState(state);
 		}
 
-		void ForwardRenderPass::CommitShaderArguments(const RenderNode& node)
+		void ForwardRenderPass::CommitShaderParameters(const RenderNode& node)
 		{
 			if (!node.material)
 				return;
@@ -83,9 +83,9 @@ namespace Lightning
 			const auto& shaderMap = material->GetMaterialShaderMap();
 			for (const auto& shaderAndArgs : shaderMap)
 			{
-				for (const auto& arg : shaderAndArgs.second.arguments)
+				for (const auto& arg : shaderAndArgs.second.parameters)
 				{
-					shaderAndArgs.second.shader->SetArgument(arg);
+					shaderAndArgs.second.shader->SetParameter(arg);
 				}
 			}
 			auto semantics = material->GetSemanticRequirements();
@@ -101,7 +101,7 @@ namespace Lightning
 						//We know that transform.ToMatrix4 may change it's internal matrix
 						auto worldMatrix = const_cast<RenderNode&>(node).transform.LocalToGlobalMatrix4();
 						auto wvp = node.projectionMatrix * node.viewMatrix * worldMatrix;
-						vs->SetArgument(ShaderArgument("wvp", wvp));
+						vs->SetParameter(ShaderParameter("wvp", wvp));
 					}
 					break;
 				}

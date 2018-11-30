@@ -21,7 +21,7 @@ namespace Lightning
 		using Foundation::Math::Vector4f;
 		using Foundation::Math::DegreesToRadians;
 		using Foundation::Container;
-		using Render::ShaderArgument;
+		using Render::ShaderParameter;
 		extern Plugins::RenderPlugin* gRenderPlugin;
 
 		Primitive::Primitive():mFirstDraw(true)
@@ -150,8 +150,8 @@ namespace Lightning
 			mRenderNode.material->SetShader(device->GetDefaultShader(Render::ShaderType::FRAGMENT));
 			float a, r, g, b;
 			GetColor(a, r, g, b);
-			mRenderNode.material->SetArgument(Render::ShaderType::FRAGMENT, ShaderArgument("color", Vector4f(r, g, b, a)));
-			mRenderNode.material->SetArgument(Render::ShaderType::FRAGMENT, ShaderArgument("light", Vector3f(3, 3, 3)));
+			mRenderNode.material->SetParameter(Render::ShaderType::FRAGMENT, ShaderParameter("color", Vector4f(r, g, b, a)));
+			mRenderNode.material->SetParameter(Render::ShaderType::FRAGMENT, ShaderParameter("light", Vector3f(3, 3, 3)));
 
 			mRenderNode.material->EnableBlend(mColor.a != 0xff);
 			mTransform.SetScale(GetScale());

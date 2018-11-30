@@ -35,7 +35,7 @@ namespace Lightning
 			TESSELATION_EVALUATION	//domain shader
 		};
 
-		enum class ShaderArgumentType
+		enum class ShaderParameterType
 		{
 			UNKNOWN,
 			FLOAT,
@@ -50,14 +50,14 @@ namespace Lightning
 			SAMPLER2D,
 			SAMPLER3D
 		};
-		using ShaderArgumentRegister = std::uint8_t;
-		using ShaderArgumentSpace = std::uint8_t;
+		using ShaderParameterRegister = std::uint8_t;
+		using ShaderParameterSpace = std::uint8_t;
 
-		struct ShaderArgument
+		struct ShaderParameter
 		{
-			ShaderArgumentType type;
-			ShaderArgumentRegister registerIndex;
-			ShaderArgumentSpace registerSpace;
+			ShaderParameterType type;
+			ShaderParameterRegister registerIndex;
+			ShaderParameterSpace registerSpace;
 			std::string name;
 			union
 			{
@@ -69,47 +69,47 @@ namespace Lightning
 				Matrix4f m4;
 				//TODO : add texture and sampler
 			};
-			ShaderArgument():type(ShaderArgumentType::UNKNOWN){}
-			ShaderArgument(const std::string& n, const float _f):name(n), type(ShaderArgumentType::FLOAT), f(_f){}
-			ShaderArgument(const std::string& n, const Vector2f& _v2) :name(n), type(ShaderArgumentType::FLOAT2) { new (&v2)Vector2f(_v2); }
-			ShaderArgument(const std::string& n, const Vector3f& _v3) :name(n), type(ShaderArgumentType::FLOAT3) { new (&v3)Vector3f(_v3); }
-			ShaderArgument(const std::string& n, const Vector4f& _v4) :name(n), type(ShaderArgumentType::FLOAT4) { new (&v4)Vector4f(_v4); }
-			ShaderArgument(const std::string& n, const Matrix3f& _m3) :name(n), type(ShaderArgumentType::MATRIX3) { new (&m3)Matrix3f(_m3); }
-			ShaderArgument(const std::string& n, const Matrix4f& _m4) :name(n), type(ShaderArgumentType::MATRIX4) { new (&m4)Matrix4f(_m4); }
+			ShaderParameter():type(ShaderParameterType::UNKNOWN){}
+			ShaderParameter(const std::string& n, const float _f):name(n), type(ShaderParameterType::FLOAT), f(_f){}
+			ShaderParameter(const std::string& n, const Vector2f& _v2) :name(n), type(ShaderParameterType::FLOAT2) { new (&v2)Vector2f(_v2); }
+			ShaderParameter(const std::string& n, const Vector3f& _v3) :name(n), type(ShaderParameterType::FLOAT3) { new (&v3)Vector3f(_v3); }
+			ShaderParameter(const std::string& n, const Vector4f& _v4) :name(n), type(ShaderParameterType::FLOAT4) { new (&v4)Vector4f(_v4); }
+			ShaderParameter(const std::string& n, const Matrix3f& _m3) :name(n), type(ShaderParameterType::MATRIX3) { new (&m3)Matrix3f(_m3); }
+			ShaderParameter(const std::string& n, const Matrix4f& _m4) :name(n), type(ShaderParameterType::MATRIX4) { new (&m4)Matrix4f(_m4); }
 			const std::uint8_t* Buffer(std::size_t& size)const
 			{
 				size = 0;
 				switch (type)
 				{
-				case ShaderArgumentType::UNKNOWN:
+				case ShaderParameterType::UNKNOWN:
 					break;
-				case ShaderArgumentType::FLOAT:
+				case ShaderParameterType::FLOAT:
 					size = sizeof(f);
 					return reinterpret_cast<const std::uint8_t*>(&f);
-				case ShaderArgumentType::FLOAT2:
+				case ShaderParameterType::FLOAT2:
 					size = sizeof(v2);
 					return reinterpret_cast<const std::uint8_t*>(&v2);
-				case ShaderArgumentType::FLOAT3:
+				case ShaderParameterType::FLOAT3:
 					size = sizeof(v3);
 					return reinterpret_cast<const std::uint8_t*>(&v3);
-				case ShaderArgumentType::FLOAT4:
+				case ShaderParameterType::FLOAT4:
 					size = sizeof(v4);
 					return reinterpret_cast<const std::uint8_t*>(&v4);
-				case ShaderArgumentType::MATRIX2:
+				case ShaderParameterType::MATRIX2:
 					break;
-				case ShaderArgumentType::MATRIX3:
+				case ShaderParameterType::MATRIX3:
 					size = sizeof(m3);
 					return reinterpret_cast<const std::uint8_t*>(&m3);
-				case ShaderArgumentType::MATRIX4:
+				case ShaderParameterType::MATRIX4:
 					size = sizeof(m4);
 					return reinterpret_cast<const std::uint8_t*>(&m4);
-				case ShaderArgumentType::TEXTURE2D:
+				case ShaderParameterType::TEXTURE2D:
 					break;
-				case ShaderArgumentType::TEXTURE3D:
+				case ShaderParameterType::TEXTURE3D:
 					break;
-				case ShaderArgumentType::SAMPLER2D:
+				case ShaderParameterType::SAMPLER2D:
 					break;
-				case ShaderArgumentType::SAMPLER3D:
+				case ShaderParameterType::SAMPLER3D:
 					break;
 				default:
 					break;
@@ -126,10 +126,10 @@ namespace Lightning
 			virtual ShaderType GetType()const = 0;
 			virtual void DefineMacros(const ShaderDefine& define) = 0;
 			virtual const ShaderDefine GetMacros()const = 0;
-			virtual std::size_t GetArgumentCount()const = 0;
+			virtual std::size_t GetParameterCount()const = 0;
 			virtual void Compile() = 0;
 			virtual std::string GetName()const = 0;
-			virtual bool SetArgument(const ShaderArgument& argument) = 0;
+			virtual bool SetParameter(const ShaderParameter& parameter) = 0;
 			virtual const char* const GetSource()const = 0;
 			virtual void GetShaderModelVersion(int& major, int& minor) = 0;
 		};

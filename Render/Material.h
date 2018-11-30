@@ -11,20 +11,20 @@ namespace Lightning
 	{
 		using Foundation::Container;
 		using SemanticSet = Container::UnorderedSet<RenderSemantics>;
-		using ShaderArgumentList = Container::Vector<ShaderArgument>;
-		struct ShaderAndArgument
+		using ShaderParameterList = Container::Vector<ShaderParameter>;
+		struct ShaderAndParameter
 		{
 			IShader* shader;
-			ShaderArgumentList arguments;
+			ShaderParameterList parameters;
 		};
-		using MaterialShaderMap = Container::UnorderedMap<ShaderType, ShaderAndArgument>;
+		using MaterialShaderMap = Container::UnorderedMap<ShaderType, ShaderAndParameter>;
 		class Material : public IMaterial
 		{
 		public:
 			~Material()override;
 			void RequireSemantic(RenderSemantics semantic) override{ mSemantics.emplace(semantic); }
 			void SetShader(IShader* shader)override;
-			void SetArgument(ShaderType type, const ShaderArgument& arg)override;
+			void SetParameter(ShaderType type, const ShaderParameter& arg)override;
 			void EnableBlend(bool enable)override;
 			const SemanticSet& GetSemanticRequirements()const { return mSemantics; }
 			IShader* GetShader(ShaderType type);

@@ -57,12 +57,12 @@ namespace Lightning
 			}
 		}
 
-		void Material::SetArgument(ShaderType type, const ShaderArgument& arg)
+		void Material::SetParameter(ShaderType type, const ShaderParameter& arg)
 		{
 			auto it = mShaders.find(type);
 			if (it != mShaders.end())
 			{
-				it->second.arguments.push_back(arg);
+				it->second.parameters.push_back(arg);
 			}
 		}
 

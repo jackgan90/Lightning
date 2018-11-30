@@ -54,10 +54,10 @@ namespace Lightning
 						ID3D12ShaderReflectionVariable* variableRefl = constantBufferRefl->GetVariableByIndex(j);
 						D3D12_SHADER_VARIABLE_DESC shaderVarDesc;
 						variableRefl->GetDesc(&shaderVarDesc);
-						ArgumentInfo info;
+						ParameterInfo info;
 						info.bufferIndex = i;
 						info.offsetInBuffer = shaderVarDesc.StartOffset;
-						mArguments[shaderVarDesc.Name] = info;
+						mParameters[shaderVarDesc.Name] = info;
 					}
 					D3D12_SHADER_INPUT_BIND_DESC& bindDesc = inputBindDescs[bufferDesc.Name];
 					mDescriptorRanges[i].BaseShaderRegister = bindDesc.BindPoint;
@@ -83,7 +83,7 @@ namespace Lightning
 			{
 				delete[] mDescriptorRanges;
 			}
-			mArguments.clear();
+			mParameters.clear();
 			mByteCode.Reset();
 		}
 
@@ -139,20 +139,20 @@ namespace Lightning
 			return 0;
 		}
 
-		std::size_t D3D12Shader::GetArgumentCount()const
+		std::size_t D3D12Shader::GetParameterCount()const
 		{
 			return mDesc.BoundResources;
 		}
 
-		bool D3D12Shader::SetArgument(const ShaderArgument& arg)
+		bool D3D12Shader::SetParameter(const ShaderParameter& arg)
 		{
-			if (arg.type == ShaderArgumentType::UNKNOWN)
+			if (arg.type == ShaderParameterType::UNKNOWN)
 			{
-				LOG_WARNING("Unknown shader argument type when set shader {0}", mName.c_str());
+				LOG_WARNING("Unknown shader parameter type when set shader {0}", mName.c_str());
 				return false;
 			}
-			auto it = mArguments.find(arg.name);
-			assert(it != mArguments.end());
+			auto it = mParameters.find(arg.name);
+			assert(it != mParameters.end());
 			const auto& bindingInfo = it->second;
 			std::size_t size{ 0 };
 			auto data = arg.Buffer(size);
