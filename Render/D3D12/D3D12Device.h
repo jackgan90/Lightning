@@ -28,7 +28,6 @@ namespace Lightning
 			~D3D12Device()override;
 			IVertexBuffer* CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor)override;
 			IIndexBuffer* CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;
-			ID3D12GraphicsCommandList* GetGraphicsCommandList();
 			IShader* CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)override;
 			ITexture* CreateTexture(const TextureDescriptor& descriptor, char* buffer)override;
 			//native device method wrapper start
@@ -69,6 +68,7 @@ namespace Lightning
 		private:
 			//if parameter pState is nullptr,this method will create a default pipeline state
 			void CreateNativeDevice(IDXGIFactory4* factory);
+			ID3D12GraphicsCommandList* GetGraphicsCommandList();
 			ComPtr<ID3D12Device> mDevice;
 		};
 	}

@@ -24,7 +24,6 @@ namespace Lightning
 			D3D12StatefulResourcePtr mResource;
 			D3D12_RANGE mDirtyRange;
 			GPUBufferType mBufferType;
-			D3D12Device* mDevice;
 			void *mLockedPtr;
 			std::uint32_t mSize;
 		};

@@ -1,12 +1,13 @@
 #include <d3dx12.h>
 #include "D3D12BufferResource.h"
+#include "D3D12Renderer.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
 		D3D12BufferResource::D3D12BufferResource(D3D12Device* device, uint32_t bufferSize, GPUBufferType bufferType)
-			: mSize(bufferSize), mLockedPtr(nullptr), mDevice(device), mBufferType(bufferType)
+			: mSize(bufferSize), mLockedPtr(nullptr), mBufferType(bufferType)
 		{
 			auto initState = D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER;
 			if(bufferType == GPUBufferType::INDEX)
@@ -53,7 +54,7 @@ namespace Lightning
 			if(mBufferType == GPUBufferType::INDEX)
 				bufferState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
 
-			auto commandList = mDevice->GetGraphicsCommandList();
+			auto commandList = static_cast<D3D12Renderer*>(Renderer::Instance())->GetGraphicsCommandList();
 			mResource->TransitTo(commandList, D3D12_RESOURCE_STATE_COPY_DEST);
 			
 			commandList->CopyBufferRegion(
