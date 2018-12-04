@@ -2,6 +2,7 @@
 #include <d3d12.h>
 #include "PipelineState.h"
 #include "IndexBuffer.h"
+#include "ITexture.h"
 
 namespace Lightning
 {
@@ -199,6 +200,25 @@ namespace Lightning
 					return D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 				default:
 					return D3D12_PRIMITIVE_TOPOLOGY_TYPE_UNDEFINED;
+				}
+			}
+
+			static D3D12_RESOURCE_DIMENSION MapTextureType(TEXTURE_TYPE type)
+			{
+				switch (type)
+				{
+				case TEXTURE_TYPE_1D:
+					return D3D12_RESOURCE_DIMENSION_TEXTURE1D;
+				case TEXTURE_TYPE_1D_ARRAY:
+					return D3D12_RESOURCE_DIMENSION_TEXTURE1D;
+				case TEXTURE_TYPE_2D:
+					return D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+				case TEXTURE_TYPE_2D_ARRAY:
+					return D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+				case TEXTURE_TYPE_3D:
+					return D3D12_RESOURCE_DIMENSION_TEXTURE3D;
+				default:
+					return D3D12_RESOURCE_DIMENSION_UNKNOWN;
 				}
 			}
 		};

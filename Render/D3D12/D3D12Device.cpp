@@ -142,6 +142,25 @@ namespace Lightning
 
 		ITexture* D3D12Device::CreateTexture(const TextureDescriptor& descriptor, char* buffer)
 		{
+			D3D12_RESOURCE_DESC desc{};
+			desc.Alignment = 0;
+			if (descriptor.type == TEXTURE_TYPE_1D_ARRAY || descriptor.type == TEXTURE_TYPE_2D_ARRAY)
+			{
+				desc.DepthOrArraySize = descriptor.arraySize;
+			}
+			else
+			{
+				desc.DepthOrArraySize = descriptor.depth;
+			}
+			desc.Dimension = D3D12TypeMapper::MapTextureType(descriptor.type);
+			desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+			desc.Format = D3D12TypeMapper::MapRenderFormat(descriptor.format);
+			desc.Height = descriptor.height;
+			desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+			desc.MipLevels = descriptor.numberOfMipmaps;
+			desc.SampleDesc.Count = descriptor.multiSampleCount;
+			desc.SampleDesc.Quality = descriptor.multiSampleQuality;
+			desc.Width = descriptor.width;
 			return nullptr;
 		}
 
