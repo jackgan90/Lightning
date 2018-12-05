@@ -36,6 +36,7 @@ endif()
 define_dll_export_macro(SCENE)
 include_directories(${CMAKE_SOURCE_DIR}/PluginSystem
 					${CMAKE_SOURCE_DIR}/Render
+					${CMAKE_SOURCE_DIR}/Loader
 					${CMAKE_SOURCE_DIR}/Render/Types
 					${CMAKE_SOURCE_DIR}/Render/Shader
 					${CMAKE_SOURCE_DIR}/Window

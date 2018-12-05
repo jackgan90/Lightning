@@ -29,7 +29,7 @@ namespace Lightning
 			IVertexBuffer* CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor)override;
 			IIndexBuffer* CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;
 			IShader* CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderDefine& defineMap)override;
-			ITexture* CreateTexture(const TextureDescriptor& descriptor, char* buffer)override;
+			ITexture* CreateTexture(const TextureDescriptor& descriptor, ISerializeBuffer* buffer)override;
 			//native device method wrapper start
 			D3D12StatefulResourcePtr CreateCommittedResource(
 				const D3D12_HEAP_PROPERTIES *pHeapProperties,
