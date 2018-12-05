@@ -38,12 +38,11 @@ namespace Lightning
 					mStream = nullptr;
 					return false;
 				}
-				mBitmap = FreeImage_LoadFromMemory(fif, mStream);
-				if (mBitmap)
-				{
-					return true;
-				}
-				return false;
+				auto bitmap = FreeImage_LoadFromMemory(fif, mStream);
+				if (!bitmap)
+					return false;
+				auto imageType = FreeImage_GetImageType(bitmap);
+				return mBitmap != nullptr;
 			}
 
 			~FreeImageBuffer()
