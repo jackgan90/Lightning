@@ -275,6 +275,20 @@ namespace Lightning
 			return rootSignature;
 		}
 
+		void D3D12Device::GetCopyableFootprints(
+			const D3D12_RESOURCE_DESC *pResourceDesc,
+			UINT FirstSubresource,
+			UINT NumSubresources,
+			UINT64 BaseOffset,
+			D3D12_PLACED_SUBRESOURCE_FOOTPRINT *pLayouts,
+			UINT *pNumRows,
+			UINT64 *pRowSizeInBytes,
+			UINT64 *pTotalBytes)
+		{
+			mDevice->GetCopyableFootprints(pResourceDesc, FirstSubresource, NumSubresources,
+				BaseOffset, pLayouts, pNumRows, pRowSizeInBytes, pTotalBytes);
+		}
+
 		//native device method wrappers end
 	}
 }

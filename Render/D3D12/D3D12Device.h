@@ -64,6 +64,15 @@ namespace Lightning
 				UINT nodeMask,
 				const void *pBlobWithRootSignature,
 				SIZE_T blobLengthInBytes);
+			void GetCopyableFootprints( 
+				const D3D12_RESOURCE_DESC *pResourceDesc,
+				UINT FirstSubresource,
+				UINT NumSubresources,
+				UINT64 BaseOffset,
+				D3D12_PLACED_SUBRESOURCE_FOOTPRINT *pLayouts,
+				UINT *pNumRows,
+				UINT64 *pRowSizeInBytes,
+				UINT64 *pTotalBytes);
 			//native device method wrapper end
 		private:
 			//if parameter pState is nullptr,this method will create a default pipeline state

@@ -20,7 +20,7 @@ namespace Lightning
 				return (*mResource)->GetGPUVirtualAddress();
 			}
 		private:
-			D3D12StatefulResourcePtr mIntermediateRes;
+			D3D12StatefulResourcePtr mIntermediateResource;
 			D3D12StatefulResourcePtr mResource;
 			D3D12_RANGE mDirtyRange;
 			GPUBufferType mBufferType;

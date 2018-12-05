@@ -30,7 +30,7 @@ namespace Lightning
 			LoadTask mLoadTask;
 			Foundation::IFile* mFile;
 			std::shared_ptr<char> mBuffer;
-			bool mOwnBuffer;
+			bool mOwnFile;
 		};
 
 		class Loader : public ILoader, public Foundation::Singleton<Loader>
@@ -43,7 +43,7 @@ namespace Lightning
 			friend class Foundation::Singleton<Loader>;
 			friend class DeserializeTask;
 			Loader();
-			void DisposeFileAndBuffer(const std::string& path, Foundation::IFile* file);
+			void DisposeFile(const std::string& path, Foundation::IFile* file);
 			static void IOThread();
 			bool mRunning;
 			Container::ConcurrentQueue<LoadTask> mTasks;

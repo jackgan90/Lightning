@@ -17,7 +17,7 @@ namespace Lightning
 			mResource = device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
 				D3D12_HEAP_FLAG_NONE, &CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
 				initState, nullptr);
-			mIntermediateRes = device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+			mIntermediateResource = device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
 				D3D12_HEAP_FLAG_NONE, &CD3DX12_RESOURCE_DESC::Buffer(bufferSize),
 				D3D12_RESOURCE_STATE_GENERIC_READ, nullptr);
 		}
@@ -28,7 +28,7 @@ namespace Lightning
 			if (mLockedPtr)
 				return nullptr;
 			static const D3D12_RANGE readRange{0, 0};
-			(*mIntermediateRes)->Map(0, &readRange, &mLockedPtr);
+			(*mIntermediateResource)->Map(0, &readRange, &mLockedPtr);
 			return reinterpret_cast<std::uint8_t*>(mLockedPtr) + start;
 		}
 
@@ -42,7 +42,7 @@ namespace Lightning
 			if (end > mDirtyRange.End)
 				mDirtyRange.End = end;
 			D3D12_RANGE dirtyRange{start, start + size};
-			(*mIntermediateRes)->Unmap(0, &dirtyRange);
+			(*mIntermediateResource)->Unmap(0, &dirtyRange);
 			mLockedPtr = nullptr;
 		}
 
@@ -58,7 +58,7 @@ namespace Lightning
 			mResource->TransitTo(commandList, D3D12_RESOURCE_STATE_COPY_DEST);
 			
 			commandList->CopyBufferRegion(
-				(*mResource), mDirtyRange.Begin, (*mIntermediateRes), mDirtyRange.Begin, mDirtyRange.End - mDirtyRange.Begin);
+				(*mResource), mDirtyRange.Begin, (*mIntermediateResource), mDirtyRange.Begin, mDirtyRange.End - mDirtyRange.Begin);
 
 			mResource->TransitTo(commandList, bufferState);
 			mDirtyRange.Begin = mDirtyRange.End = 0;

@@ -14,7 +14,7 @@ namespace Lightning
 	{
 		DeserializeTask::DeserializeTask(const LoadTask& loadTask, Foundation::IFile* file, 
 			const std::shared_ptr<char>& buffer, bool ownBuffer)
-			:mLoadTask(loadTask), mFile(file), mBuffer(buffer), mOwnBuffer(ownBuffer)
+			:mLoadTask(loadTask), mFile(file), mBuffer(buffer), mOwnFile(ownBuffer)
 		{
 			mFile->AddRef();
 		}
@@ -29,9 +29,9 @@ namespace Lightning
 		{
 			mLoadTask.serializer->Deserialize(mFile, mBuffer.get());
 			mLoadTask.serializer->Dispose();
-			if (mOwnBuffer)
+			if (mOwnFile)
 			{
-				Loader::Instance()->DisposeFileAndBuffer(mLoadTask.path, mFile);
+				Loader::Instance()->DisposeFile(mLoadTask.path, mFile);
 			}
 			return nullptr;
 		}
@@ -60,7 +60,7 @@ namespace Lightning
 			mCondVar.notify_one();
 		}
 
-		void Loader::DisposeFileAndBuffer(const std::string& path, Foundation::IFile* file)
+		void Loader::DisposeFile(const std::string& path, Foundation::IFile* file)
 		{
 			mDisposedPathes.push(path);
 			file->Close();
