@@ -3,6 +3,7 @@
 #include "tbb/task.h"
 #include "IPluginMgr.h"
 #include "FoundationPlugin.h"
+#include "SerializeBuffer.h"
 
 namespace Lightning
 {
@@ -13,21 +14,23 @@ namespace Lightning
 	namespace Loading
 	{
 		DeserializeTask::DeserializeTask(const LoadTask& loadTask, Foundation::IFile* file, 
-			const std::shared_ptr<char>& buffer, bool ownBuffer)
+			ISerializeBuffer* buffer, bool ownBuffer)
 			:mLoadTask(loadTask), mFile(file), mBuffer(buffer), mOwnFile(ownBuffer)
 		{
 			mFile->AddRef();
+			mBuffer->AddRef();
 		}
 
 		DeserializeTask::~DeserializeTask()
 		{
+			mBuffer->Release();
 			mFile->Release();
 		}
 
 
 		tbb::task* DeserializeTask::execute()
 		{
-			mLoadTask.serializer->Deserialize(mFile, mBuffer.get());
+			mLoadTask.serializer->Deserialize(mFile, mBuffer);
 			mLoadTask.serializer->Dispose();
 			if (mOwnFile)
 			{
@@ -86,7 +89,12 @@ namespace Lightning
 				std::string path;
 				while (mgr->mDisposedPathes.try_pop(path))
 				{
-					mgr->mBuffers.erase(path);
+					auto it = mgr->mBuffers.find(path);
+					if (it != mgr->mBuffers.end())
+					{
+						it->second->Release();
+						mgr->mBuffers.erase(it);
+					}
 				}
 				LoadTask task;
 				if (mgr->mTasks.try_pop(task))
@@ -112,15 +120,16 @@ namespace Lightning
 						continue;
 					}
 					file->SetFilePointer(Foundation::FilePointerType::Read, Foundation::FileAnchor::Begin, 0);
-					auto sharedBuffer = std::shared_ptr<char>(new char[std::size_t(size + 1)], std::default_delete<char[]>());
-					char* buffer = sharedBuffer.get();
+					//auto sharedBuffer = std::shared_ptr<char>(new char[std::size_t(size + 1)], std::default_delete<char[]>());
+					auto sharedBuffer = NEW_REF_OBJ(SerializeBuffer, size);
+					auto buffer = sharedBuffer->GetBuffer();
 					buffer[size] = 0;
 					auto readSize = file->Read(buffer, size);
 					if (readSize < size)
 					{
 						LOG_ERROR("Unable to read whole file : {0}", file->GetPath());
 						file->Close();
-						sharedBuffer.reset();
+						sharedBuffer->Release();
 						continue;
 					}
 					mgr->mBuffers[task.path] = sharedBuffer;

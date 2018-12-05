@@ -17,6 +17,7 @@ namespace Lightning
 			if (!mResource)
 			{
 				LOG_ERROR("Failed to create texture.");
+				return;
 			}
 			UINT64 uploadBufferSize{ 0 };
 			device->GetCopyableFootprints(&desc, 0, 1, 0, nullptr, nullptr, nullptr, &uploadBufferSize);
@@ -48,6 +49,7 @@ namespace Lightning
 			if (!mResource)
 			{
 				LOG_ERROR("Failed to create texture.");
+				return;
 			}
 
 			UINT64 uploadBufferSize{ 0 };

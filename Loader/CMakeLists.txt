@@ -11,8 +11,11 @@ set(PLUGIN_SOURCES	LoaderPlugin.cpp)
 
 set(HEADERS ISerializer.h
 			ILoader.h
+			ISerializeBuffer.h
+			SerializeBuffer.h
 			Loader.h)
-set(SOURCES Loader.cpp)
+set(SOURCES Loader.cpp
+			SerializeBuffer.cpp)
 
 list(APPEND HEADERS ${PLUGIN_HEADERS})
 list(APPEND SOURCES ${PLUGIN_SOURCES})

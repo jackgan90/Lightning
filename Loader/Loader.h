@@ -5,6 +5,7 @@
 #include "ILoader.h"
 #include "Singleton.h"
 #include "Container.h"
+#include "ISerializeBuffer.h"
 #include "tbb/task.h"
 
 namespace Lightning
@@ -23,13 +24,13 @@ namespace Lightning
 		{
 		public:
 			DeserializeTask(const LoadTask& loaderTask, Foundation::IFile* file, 
-				const std::shared_ptr<char>& buffer, bool ownBuffer);
+				ISerializeBuffer* buffer, bool ownFile);
 			~DeserializeTask()override;
 			tbb::task* execute()override;
 		private:
 			LoadTask mLoadTask;
 			Foundation::IFile* mFile;
-			std::shared_ptr<char> mBuffer;
+			ISerializeBuffer* mBuffer;
 			bool mOwnFile;
 		};
 
@@ -48,7 +49,7 @@ namespace Lightning
 			bool mRunning;
 			Container::ConcurrentQueue<LoadTask> mTasks;
 			Container::ConcurrentQueue<std::string> mDisposedPathes;
-			Container::UnorderedMap<std::string, std::shared_ptr<char>> mBuffers;
+			Container::UnorderedMap<std::string, ISerializeBuffer*> mBuffers;
 			std::mutex mTaskQueueMutex;
 			std::condition_variable mCondVar;
 			std::thread mLoaderIOThread;

@@ -18,10 +18,10 @@ namespace Lightning
 
 		}
 
-		void TextureSerializer::Deserialize(Foundation::IFile* file, char* buffer)
+		void TextureSerializer::Deserialize(Foundation::IFile* file, Loading::ISerializeBuffer* buffer)
 		{
 			FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
-			BYTE* data = reinterpret_cast<BYTE*>(buffer);
+			BYTE* data = reinterpret_cast<BYTE*>(buffer->GetBuffer());
 			auto bufferSize = file->GetSize();
 			auto stream = FreeImage_OpenMemory(data, (DWORD)bufferSize);
 			fif = FreeImage_GetFileTypeFromMemory(stream, 0);

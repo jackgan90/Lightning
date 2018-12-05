@@ -12,7 +12,7 @@ namespace Lightning
 			TextureSerializer(const TextureDescriptor& descriptor, const std::string path,
 				TextureLoadFinishHandler finishHandler);
 			void Serialize(char** buffer)override;
-			void Deserialize(Foundation::IFile* file, char* buffer)override;
+			void Deserialize(Foundation::IFile* file, Loading::ISerializeBuffer* buffer)override;
 			void Dispose()override;
 		private:
 			TextureDescriptor mDescriptor;

@@ -18,10 +18,10 @@ namespace Lightning
 
 		}
 
-		void ShaderSerializer::Deserialize(Foundation::IFile* file, char* buffer)
+		void ShaderSerializer::Deserialize(Foundation::IFile* file, Loading::ISerializeBuffer* buffer)
 		{
 			auto device = Renderer::Instance()->GetDevice();
-			auto shader = device->CreateShader(mType, mPath, buffer, mDefineMap);
+			auto shader = device->CreateShader(mType, mPath, buffer->GetBuffer(), mDefineMap);
 			if (mFinishHandler)
 			{
 				mFinishHandler(shader);
