@@ -710,11 +710,6 @@ namespace Lightning
 			d3d12DSBuffer->TransitToState(commandList, D3D12_RESOURCE_STATE_COMMON);
 		}
 
-		void D3D12Renderer::OnFrameUpdate()
-		{
-
-		}
-
 		void D3D12Renderer::OnFrameEnd()
 		{
 			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();

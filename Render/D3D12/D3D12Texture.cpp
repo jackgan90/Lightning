@@ -9,7 +9,7 @@ namespace Lightning
 	{
 		using Loading::ISerializeBuffer;
 		D3D12Texture::D3D12Texture(const D3D12_RESOURCE_DESC& desc, D3D12Device* device, ISerializeBuffer* buffer)
-			:mDesc(mDesc), mBuffer(buffer)
+			:mDesc(mDesc), mBuffer(buffer), mCommitted(false)
 		{
 			if (mBuffer)
 				mBuffer->AddRef();
@@ -39,7 +39,7 @@ namespace Lightning
 		}
 
 		D3D12Texture::D3D12Texture(const D3D12_RESOURCE_DESC& desc, D3D12Device* device, ISerializeBuffer* buffer, float depth, std::uint8_t stencil)
-			:mDesc(desc), mBuffer(buffer)
+			:mDesc(desc), mBuffer(buffer), mCommitted(false)
 		{
 			if (mBuffer)
 				mBuffer->AddRef();

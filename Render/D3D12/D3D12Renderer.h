@@ -45,7 +45,6 @@ namespace Lightning
 			ID3D12GraphicsCommandList* GetGraphicsCommandList();
 		protected:
 			void OnFrameBegin()override;
-			void OnFrameUpdate()override;
 			void OnFrameEnd()override;
 			IRenderFence* CreateRenderFence()override;
 			IDevice* CreateDevice()override;

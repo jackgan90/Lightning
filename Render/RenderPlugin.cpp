@@ -5,8 +5,6 @@
 #include "IPluginMgr.h"
 #include "Logger.h"
 #include "FoundationPlugin.h"
-//#include "LoaderPlugin.h"
-//#include "Serializers/TextureSerializer.h"
 
 namespace Lightning
 {
@@ -52,14 +50,7 @@ namespace Lightning
 		void RenderPluginImpl::Update()
 		{
 			mRenderer->Render();
-			/*
-			static bool textureLoaded{ false };
-			if (!textureLoaded)
-			{
-				textureLoaded = true;
-				auto loader = mPluginMgr->GetPlugin<LoaderPlugin>("Loader")->GetLoader();
-				//auto ser = new TextureSerializer()
-			}*/
+			
 		}
 
 		IMaterial* RenderPluginImpl::CreateMaterial()

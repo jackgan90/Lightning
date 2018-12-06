@@ -9,6 +9,7 @@
 #include "D3D12TypeMapper.h"
 #include "D3D12VertexBuffer.h"
 #include "D3D12IndexBuffer.h"
+#include "D3D12Texture.h"
 #include "RenderConstants.h"
 #include "Semantics.h"
 #include "Logger.h"
@@ -161,7 +162,7 @@ namespace Lightning
 			desc.SampleDesc.Count = descriptor.multiSampleCount;
 			desc.SampleDesc.Quality = descriptor.multiSampleQuality;
 			desc.Width = descriptor.width;
-			return nullptr;
+			return NEW_REF_OBJ(D3D12Texture, desc, this, buffer);
 		}
 
 		ID3D12GraphicsCommandList* D3D12Device::GetGraphicsCommandList()

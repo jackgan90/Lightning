@@ -11,8 +11,8 @@ namespace Lightning
 		class FreeImageBuffer : public ISerializeBuffer
 		{
 		public:
-			FreeImageBuffer(ISerializeBuffer* rawBuffer, const std::string& path)
-				:mRawBuffer(rawBuffer), mBitmap(nullptr), mStream(nullptr), mPath(path)
+			FreeImageBuffer(ISerializeBuffer* rawBuffer, const std::string& path, RenderFormat targetFormat)
+				:mRawBuffer(rawBuffer), mBitmap(nullptr), mStream(nullptr), mPath(path), mTargetFormat(targetFormat)
 			{
 				assert(rawBuffer && "raw buffer must not be nullptr!");
 				mRawBuffer->AddRef();
@@ -41,8 +41,32 @@ namespace Lightning
 				auto bitmap = FreeImage_LoadFromMemory(fif, mStream);
 				if (!bitmap)
 					return false;
-				auto imageType = FreeImage_GetImageType(bitmap);
-				return mBitmap != nullptr;
+				//If target format is specified,caller already knows the format of this texture
+				//if the real texture format doesn't match the specified format,a conversion must be performed.
+				auto bpp = FreeImage_GetBPP(bitmap);
+				if (mTargetFormat != RenderFormat::UNDEFINED)
+				{
+					//TODO : convert to target format
+					mBitmap = bitmap;
+				}
+				else
+				{
+					//TODO : optimize performance
+					if (bpp == 32)		//already 32 bit,ignore conversion
+					{
+						mBitmap = bitmap;
+					}
+					else
+					{
+						mBitmap = FreeImage_ConvertTo32Bits(bitmap);
+						if (mBitmap)
+						{
+							FreeImage_Unload(bitmap);
+						}
+					}
+					mTargetFormat = RenderFormat::R8G8B8A8_UNORM;
+				}
+				return true;
 			}
 
 			~FreeImageBuffer()
@@ -63,18 +87,36 @@ namespace Lightning
 
 			char* GetBuffer()override
 			{
-				return reinterpret_cast<char*>(mBitmap->data);
+				return reinterpret_cast<char*>(FreeImage_GetBits(mBitmap));
 			}
 
 			std::size_t GetBufferSize()const
 			{
-				return 0;
+				return FreeImage_GetMemorySize(mBitmap);
+			}
+
+			FIBITMAP* GetBitmap() { return mBitmap; }
+
+			RenderFormat GetRenderFormat()
+			{
+				return mTargetFormat;
+			}
+
+			std::uint16_t GetWidth()
+			{
+				return FreeImage_GetWidth(mBitmap);
+			}
+
+			std::uint16_t GetHeight()
+			{
+				return FreeImage_GetHeight(mBitmap);
 			}
 		private:
 			ISerializeBuffer* mRawBuffer;
 			FIBITMAP* mBitmap;
 			FIMEMORY* mStream;
 			std::string mPath;
+			RenderFormat mTargetFormat;
 		};
 
 		TextureSerializer::TextureSerializer(const TextureDescriptor& descriptor, const std::string path,
@@ -92,15 +134,19 @@ namespace Lightning
 
 		void TextureSerializer::Deserialize(Foundation::IFile* file, ISerializeBuffer* buffer)
 		{
-			auto fiBuffer = NEW_REF_OBJ(FreeImageBuffer, buffer, file->GetPath().c_str());
+			auto fiBuffer = NEW_REF_OBJ(FreeImageBuffer, buffer, file->GetPath().c_str(), mDescriptor.format);
 			if (fiBuffer->Init())
 			{
+				mDescriptor.width = fiBuffer->GetWidth();
+				mDescriptor.height = fiBuffer->GetHeight();
+				mDescriptor.format = fiBuffer->GetRenderFormat();
 				auto device = Renderer::Instance()->GetDevice();
 				auto texture = device->CreateTexture(mDescriptor, fiBuffer);
 				if (mFinishHandler)
 				{
 					mFinishHandler(texture);
 				}
+				fiBuffer->Release();
 			}
 			else
 			{

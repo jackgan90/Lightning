@@ -20,18 +20,18 @@ namespace Lightning
 
 		struct TextureDescriptor
 		{
-			TEXTURE_TYPE type;
-			std::uint16_t width;
-			std::uint16_t height;
+			TEXTURE_TYPE type{TEXTURE_TYPE_2D};
+			std::uint16_t width{ 0 };
+			std::uint16_t height{ 0 };
 			union 
 			{
-				std::uint16_t depth;
+				std::uint16_t depth{ 1 };
 				std::uint16_t arraySize;
 			};
-			std::uint16_t numberOfMipmaps;
-			RenderFormat format;
-			std::uint16_t multiSampleCount;
-			std::uint16_t multiSampleQuality;
+			std::uint16_t numberOfMipmaps{ 1 };
+			RenderFormat format{ RenderFormat::UNDEFINED };
+			std::uint16_t multiSampleCount{ 1 };
+			std::uint16_t multiSampleQuality{ 1 };
 		};
 
 		class ITexture : public Plugins::RefCount

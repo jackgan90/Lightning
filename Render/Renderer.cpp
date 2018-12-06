@@ -7,9 +7,19 @@
 #include "Serializers/ShaderSerializer.h"
 #include "Serializers/TextureSerializer.h"
 #include "Loader.h"
+//for test only
+//#include "LoaderPlugin.h"
+//#include "Serializers/TextureSerializer.h"
+//#include "IPluginMgr.h"
+//end test
 
 namespace Lightning
 {
+	/*
+	namespace Plugins
+	{
+		extern IPluginMgr* gPluginMgr;
+	}*/
 	namespace Render
 	{
 		IRenderer* Renderer::sInstance{ nullptr };
@@ -131,8 +141,28 @@ namespace Lightning
 		{
 		}
 
+		//ITexture* testTex{ nullptr };
 		void Renderer::OnFrameUpdate()
 		{
+			/*
+			if (testTex)
+				testTex->Commit();
+			static bool textureLoaded{ false };
+			if (!textureLoaded)
+			{
+				textureLoaded = true;
+				auto loader = Plugins::gPluginMgr->GetPlugin<Plugins::LoaderPlugin>("Loader")->GetLoader();
+				TextureDescriptor descriptor;
+				auto ser = new TextureSerializer(descriptor, "Purged_One_Human_Jumper.jpg", [this](ITexture* texture) {
+					if (texture)
+					{
+						//texture->Commit();
+						testTex = texture;
+					}
+				});
+				loader->Load("Purged_One_Human_Jumper.jpg", ser);
+			}
+			*/
 		}
 
 		void Renderer::OnFrameEnd()
