@@ -10,6 +10,7 @@
 #include "IIndexBuffer.h"
 #include "IShader.h"
 #include "Texture/Itexture.h"
+#include "Texture/ISampler.h"
 #include "ISerializeBuffer.h"
 #include "Rect.h"
 #include "Color.h"
@@ -36,6 +37,5 @@ namespace Lightning
 				TextureLoadFinishHandler handler) = 0;
 			virtual IShader* GetDefaultShader(ShaderType type) = 0;
 		};
-		using SharedDevicePtr = std::shared_ptr<IDevice>;
 	}
 }
