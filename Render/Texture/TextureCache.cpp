@@ -33,7 +33,7 @@ namespace Lightning
 			return nullptr;
 		}
 
-		bool TextureCache::CacheTexture(const std::string& name, ITexture* texture)
+		bool TextureCache::AddTexture(const std::string& name, ITexture* texture)
 		{
 			assert(texture != nullptr && "Try to cache a null texture!");
 			std::lock_guard<std::mutex> lock(TextureCacheMutex);

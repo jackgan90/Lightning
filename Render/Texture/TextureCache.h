@@ -14,7 +14,7 @@ namespace Lightning
 		public:
 			~TextureCache();
 			ITexture* GetTexture(const std::string& name);
-			bool CacheTexture(const std::string& name, ITexture* texture);
+			bool AddTexture(const std::string& name, ITexture* texture);
 			bool RemoveTexture(const std::string& name);
 		private:
 			friend class Foundation::Singleton<TextureCache>;
