@@ -152,8 +152,7 @@ namespace Lightning
 			{
 				textureLoaded = true;
 				auto loader = Plugins::gPluginMgr->GetPlugin<Plugins::LoaderPlugin>("Loader")->GetLoader();
-				TextureDescriptor descriptor;
-				auto ser = new TextureSerializer(descriptor, "Purged_One_Human_Jumper.jpg", [this](ITexture* texture) {
+				auto ser = new TextureSerializer("Purged_One_Human_Jumper.jpg", [this](ITexture* texture) {
 					if (texture)
 					{
 						//texture->Commit();
@@ -161,8 +160,8 @@ namespace Lightning
 					}
 				});
 				loader->Load("Purged_One_Human_Jumper.jpg", ser);
-			}*/
-			
+			}
+			*/
 		}
 
 		void Renderer::OnFrameEnd()

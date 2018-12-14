@@ -11,11 +11,24 @@ namespace Lightning
 		class FreeImageBuffer : public ISerializeBuffer
 		{
 		public:
-			FreeImageBuffer(ISerializeBuffer* rawBuffer, const std::string& path, RenderFormat targetFormat)
-				:mRawBuffer(rawBuffer), mBitmap(nullptr), mPath(path), mTargetFormat(targetFormat)
+			FreeImageBuffer(ISerializeBuffer* rawBuffer, const std::string& path) 
+				:mRawBuffer(rawBuffer), mBitmap(nullptr), mPath(path)
 			{
 				assert(rawBuffer && "raw buffer must not be nullptr!");
 				mRawBuffer->AddRef();
+			}
+
+			void GetTextureDescriptor(TextureDescriptor& descriptor)
+			{
+				descriptor.format = RenderFormat::R8G8B8A8_UNORM;
+				descriptor.arraySize = 1;
+				descriptor.depth = 1;
+				descriptor.height = FreeImage_GetHeight(mBitmap);
+				descriptor.multiSampleCount = 1;
+				descriptor.multiSampleQuality = 1;
+				descriptor.numberOfMipmaps = 1;
+				descriptor.type = TEXTURE_TYPE_2D;
+				descriptor.width = FreeImage_GetWidth(mBitmap);
 			}
 
 			bool Init()
@@ -43,12 +56,6 @@ namespace Lightning
 				//If target format is specified,caller already knows the format of this texture
 				//if the real texture format doesn't match the specified format,a conversion must be performed.
 				auto bpp = FreeImage_GetBPP(bitmap);
-				if (mTargetFormat != RenderFormat::UNDEFINED)
-				{
-					//TODO : convert to target format
-					mBitmap = bitmap;
-				}
-				else
 				{
 					//TODO : optimize performance
 					if (bpp == 32)		//already 32 bit,ignore conversion
@@ -58,12 +65,8 @@ namespace Lightning
 					else
 					{
 						mBitmap = FreeImage_ConvertTo32Bits(bitmap);
-						if (mBitmap)
-						{
-							FreeImage_Unload(bitmap);
-						}
+						FreeImage_Unload(bitmap);
 					}
-					mTargetFormat = RenderFormat::R8G8B8A8_UNORM;
 				}
 				return true;
 			}
@@ -89,33 +92,14 @@ namespace Lightning
 			{
 				return FreeImage_GetMemorySize(mBitmap);
 			}
-
-			FIBITMAP* GetBitmap() { return mBitmap; }
-
-			RenderFormat GetRenderFormat()
-			{
-				return mTargetFormat;
-			}
-
-			std::uint16_t GetWidth()
-			{
-				return FreeImage_GetWidth(mBitmap);
-			}
-
-			std::uint16_t GetHeight()
-			{
-				return FreeImage_GetHeight(mBitmap);
-			}
 		private:
 			ISerializeBuffer* mRawBuffer;
 			FIBITMAP* mBitmap;
 			std::string mPath;
-			RenderFormat mTargetFormat;
 		};
 
-		TextureSerializer::TextureSerializer(const TextureDescriptor& descriptor, const std::string path,
-			TextureLoadFinishHandler finishHandler):
-			mDescriptor(descriptor), mPath(path), mFinishHandler(finishHandler)
+		TextureSerializer::TextureSerializer(const std::string path, TextureLoadFinishHandler finishHandler):
+			mPath(path), mFinishHandler(finishHandler)
 		{
 
 		}
@@ -128,14 +112,13 @@ namespace Lightning
 
 		void TextureSerializer::Deserialize(Foundation::IFile* file, ISerializeBuffer* buffer)
 		{
-			auto fiBuffer = NEW_REF_OBJ(FreeImageBuffer, buffer, file->GetPath().c_str(), mDescriptor.format);
+			auto fiBuffer = NEW_REF_OBJ(FreeImageBuffer, buffer, file->GetPath().c_str());
 			if (fiBuffer->Init())
 			{
-				mDescriptor.width = fiBuffer->GetWidth();
-				mDescriptor.height = fiBuffer->GetHeight();
-				mDescriptor.format = fiBuffer->GetRenderFormat();
+				TextureDescriptor descriptor;
+				fiBuffer->GetTextureDescriptor(descriptor);
 				auto device = Renderer::Instance()->GetDevice();
-				auto texture = device->CreateTexture(mDescriptor, fiBuffer);
+				auto texture = device->CreateTexture(descriptor, fiBuffer);
 				if (mFinishHandler)
 				{
 					mFinishHandler(texture);
