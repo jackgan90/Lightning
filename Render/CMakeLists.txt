@@ -54,7 +54,10 @@ set(SHADER_SOURCES	Shader/ShaderDefine.cpp
 					Shader/Shader.cpp)
 
 set(TEXTURE_HEADERS	Texture/ITexture.h
+					Texture/TextureManager.h
 					Texture/ISampler.h)
+
+set(TEXTURE_SOURCES Texture/TextureManager.cpp)
 
 set(SERIALIZERS_HEADERS	Serializers/ShaderSerializer.h
 						Serializers/TextureSerializer.h)
@@ -69,13 +72,13 @@ set(PLUGIN_HEADERS	RenderPlugin.h)
 set(PLUGIN_SOURCES	RenderPlugin.cpp)
 
 list(APPEND HEADERS ${TYPES_HEADERS} ${SHADER_HEADERS} ${UTILITY_HEADERS} ${SERIALIZERS_HEADERS} ${TEXTURE_HEADERS} ${PLUGIN_HEADERS})
-list(APPEND SOURCES ${SHADER_SOURCES} ${UTILITY_SOURCES} ${SERIALIZERS_SOURCES} ${PLUGIN_SOURCES})
+list(APPEND SOURCES ${SHADER_SOURCES} ${UTILITY_SOURCES} ${SERIALIZERS_SOURCES} ${PLUGIN_SOURCES} ${TEXTURE_SOURCES})
 
 source_group("Types" FILES ${TYPES_HEADERS})
 source_group("Shader" FILES ${SHADER_HEADERS}
 							${SHADER_SOURCES})
 
-source_group("Texture" FILES ${TEXTURE_HEADERS})
+source_group("Texture" FILES ${TEXTURE_HEADERS} ${TEXTURE_SOURCES})
 
 source_group("Utility" FILES ${UTILITY_HEADERS} ${UTILITY_SOURCES})
 
@@ -108,7 +111,7 @@ if(LIGHTNING_USE_D3D12)
 						D3D12/D3D12ConstantBufferManager.h
 						D3D12/D3D12CommandEncoder.h
 						D3D12/D3D12StatefulResource.h
-						D3D12/D3D12StatefulResourceMgr.h
+						D3D12/D3D12StatefulResourceManager.h
 						D3D12/D3D12ForwardRenderPass.h
 						D3D12/D3D12Texture.h)
 	set(D3D12_SOURCES	D3D12/D3D12Device.cpp
@@ -126,7 +129,7 @@ if(LIGHTNING_USE_D3D12)
 						D3D12/D3D12ConstantBufferManager.cpp
 						D3D12/D3D12CommandEncoder.cpp
 						D3D12/D3D12StatefulResource.cpp
-						D3D12/D3D12StatefulResourceMgr.cpp
+						D3D12/D3D12StatefulResourceManager.cpp
 						D3D12/D3D12ForwardRenderPass.cpp
 						D3D12/D3D12Texture.cpp)
 	list(APPEND HEADERS ${D3D12_HEADERS})

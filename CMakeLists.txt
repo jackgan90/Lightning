@@ -61,11 +61,11 @@ if(LIGHTNING_USE_D3D12)
 endif()
 
 set(LIBRARY_HEADERS	PluginSystem/Plugin.h
-					PluginSystem/IPluginMgr.h
+					PluginSystem/IPluginManager.h
 					PluginSystem/RefCount.h
-					PluginMgrImpl/PluginMgr.h)
+					PluginMgrImpl/PluginManager.h)
 
-set(LIBRARY_SOURCES	PluginMgrImpl/PluginMgr.cpp)
+set(LIBRARY_SOURCES	PluginMgrImpl/PluginManager.cpp)
 
 set(HEADER_FILES	Engine.h)
 set(SOURCE_FILES	Engine.cpp
