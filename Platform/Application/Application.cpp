@@ -7,7 +7,7 @@
 #include "IPrimitive.h"
 #include "Transform.h"
 #include "Loader.h"
-#include "IPluginMgr.h"
+#include "IPluginManager.h"
 #include "FoundationPlugin.h"
 #include "ScenePlugin.h"
 #include "RenderPlugin.h"
@@ -25,7 +25,7 @@ namespace Lightning
 {
 	namespace Plugins
 	{
-		extern IPluginMgr* gPluginMgr;
+		extern IPluginManager* gPluginMgr;
 	}
 	namespace App
 	{

@@ -12,7 +12,7 @@ namespace Lightning
 		{
 		public:
 			FreeImageBuffer(ISerializeBuffer* rawBuffer, const std::string& path, RenderFormat targetFormat)
-				:mRawBuffer(rawBuffer), mBitmap(nullptr), mStream(nullptr), mPath(path), mTargetFormat(targetFormat)
+				:mRawBuffer(rawBuffer), mBitmap(nullptr), mPath(path), mTargetFormat(targetFormat)
 			{
 				assert(rawBuffer && "raw buffer must not be nullptr!");
 				mRawBuffer->AddRef();
@@ -20,27 +20,26 @@ namespace Lightning
 
 			bool Init()
 			{
-				assert(mStream == nullptr && "Already init!");
 				assert(mBitmap == nullptr && "Already init!");
 
 				FREE_IMAGE_FORMAT fif = FIF_UNKNOWN;
 				BYTE* data = reinterpret_cast<BYTE*>(mRawBuffer->GetBuffer());
 				auto bufferSize = mRawBuffer->GetBufferSize();
-				mStream = FreeImage_OpenMemory(data, (DWORD)bufferSize);
-				if (!mStream)
+				auto stream = FreeImage_OpenMemory(data, (DWORD)bufferSize);
+				if (!stream)
 					return false;
-				fif = FreeImage_GetFileTypeFromMemory(mStream, 0);
+				fif = FreeImage_GetFileTypeFromMemory(stream, 0);
 				if (fif == FIF_UNKNOWN)
 					fif = FreeImage_GetFIFFromFilename(mPath.c_str());
 				if (fif == FIF_UNKNOWN)
 				{
-					FreeImage_CloseMemory(mStream);
-					mStream = nullptr;
+					FreeImage_CloseMemory(stream);
 					return false;
 				}
-				auto bitmap = FreeImage_LoadFromMemory(fif, mStream);
+				auto bitmap = FreeImage_LoadFromMemory(fif, stream);
 				if (!bitmap)
 					return false;
+				FreeImage_CloseMemory(stream);
 				//If target format is specified,caller already knows the format of this texture
 				//if the real texture format doesn't match the specified format,a conversion must be performed.
 				auto bpp = FreeImage_GetBPP(bitmap);
@@ -74,10 +73,6 @@ namespace Lightning
 				if (mBitmap)
 				{
 					FreeImage_Unload(mBitmap);
-				}
-				if (mStream)
-				{
-					FreeImage_CloseMemory(mStream);
 				}
 				if (mRawBuffer)
 				{
@@ -114,7 +109,6 @@ namespace Lightning
 		private:
 			ISerializeBuffer* mRawBuffer;
 			FIBITMAP* mBitmap;
-			FIMEMORY* mStream;
 			std::string mPath;
 			RenderFormat mTargetFormat;
 		};

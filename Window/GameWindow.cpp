@@ -1,13 +1,13 @@
 #include "GameWindow.h"
 #include "ECS/EventManager.h"
-#include "IPluginMgr.h"
+#include "IPluginManager.h"
 #include "FoundationPlugin.h"
 
 namespace Lightning
 {
 	namespace Plugins
 	{
-		extern IPluginMgr* gPluginMgr;
+		extern IPluginManager* gPluginMgr;
 	}
 	namespace Window
 	{

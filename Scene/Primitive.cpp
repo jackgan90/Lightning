@@ -6,14 +6,14 @@
 #include "Container.h"
 #include "Math/Vector.h"
 #include "Primitive.h"
-#include "IPluginMgr.h"
+#include "IPluginManager.h"
 #include "RenderPlugin.h"
 
 namespace Lightning
 {
 	namespace Plugins
 	{
-		extern IPluginMgr* gPluginMgr;
+		extern IPluginManager* gPluginMgr;
 	}
 	namespace Scene
 	{

@@ -2,7 +2,7 @@
 #include "Material.h"
 #include "Renderer.h"
 #include "RendererFactory.h"
-#include "IPluginMgr.h"
+#include "IPluginManager.h"
 #include "Logger.h"
 #include "FoundationPlugin.h"
 
@@ -22,10 +22,10 @@ namespace Lightning
 			void DestroyRenderer(Render::IRenderer*)override;
 			void Update()override;
 		protected:
-			void OnCreated(IPluginMgr*)override;
+			void OnCreated(IPluginManager*)override;
 		private:
 			void DestroyRendererImpl(Render::IRenderer*);
-			IPluginMgr* mPluginMgr;
+			IPluginManager* mPluginMgr;
 			IRenderer* mRenderer;
 		};
 
@@ -33,7 +33,7 @@ namespace Lightning
 		{
 		}
 
-		void RenderPluginImpl::OnCreated(IPluginMgr* mgr)
+		void RenderPluginImpl::OnCreated(IPluginManager* mgr)
 		{
 			mPluginMgr = mgr;
 			INIT_LOGGER(mgr, Render)

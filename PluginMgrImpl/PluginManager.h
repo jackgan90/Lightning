@@ -5,7 +5,7 @@
 #include <vector>
 #include <atomic>
 #include <deque>
-#include "IPluginMgr.h"
+#include "IPluginManager.h"
 #ifdef LIGHTNING_WIN32
 #include <Windows.h>
 #endif
@@ -17,7 +17,7 @@ namespace Lightning
 	namespace Plugins
 	{
 		//An instance of a PluginMgr can only be created by Engine.
-		class PluginMgr : public IPluginMgr
+		class PluginManager : public IPluginManager
 		{
 		public:
 			Plugin* LoadPlugin(const std::string& pluginName)override;
@@ -47,8 +47,8 @@ namespace Lightning
 			};
 			using PluginTable = std::unordered_map<std::string, PluginInfo>;
 			using PluginList = std::vector<PluginInfo>;
-			PluginMgr();
-			~PluginMgr();
+			PluginManager();
+			~PluginManager();
 			bool UnloadPlugin(PluginTable& table, const std::string& name);
 			Plugin* LookUpPlugin(PluginTable& table, const std::string& pluginName, bool addRef);
 			void SynchronizeTables();

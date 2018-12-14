@@ -1,7 +1,7 @@
 #include "Loader.h"
 #include "Logger.h"
 #include "tbb/task.h"
-#include "IPluginMgr.h"
+#include "IPluginManager.h"
 #include "FoundationPlugin.h"
 #include "SerializeBuffer.h"
 
@@ -9,7 +9,7 @@ namespace Lightning
 {
 	namespace Plugins
 	{
-		extern IPluginMgr* gPluginMgr;
+		extern IPluginManager* gPluginMgr;
 	}
 	namespace Loading
 	{

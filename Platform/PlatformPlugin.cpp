@@ -1,7 +1,7 @@
 #include <memory>
 #include "PlatformPlugin.h"
 #include "Application/ApplicationFactory.h"
-#include "IPluginMgr.h"
+#include "IPluginManager.h"
 #include "FoundationPlugin.h"
 #include "Logger.h"
 
@@ -18,13 +18,13 @@ namespace Lightning
 			IApplication* CreateApplication()override;
 			void Update()override;
 		protected:
-			void OnCreated(IPluginMgr*)override;
+			void OnCreated(IPluginManager*)override;
 		private:
 			std::unique_ptr<IApplication> mApp;
-			IPluginMgr* mPluginMgr;
+			IPluginManager* mPluginMgr;
 		};
 
-		void PlatformPluginImpl::OnCreated(IPluginMgr* mgr)
+		void PlatformPluginImpl::OnCreated(IPluginManager* mgr)
 		{
 			mPluginMgr = mgr;
 			INIT_LOGGER(mgr, Platform)

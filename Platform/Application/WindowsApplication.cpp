@@ -2,7 +2,7 @@
 #include "WindowsApplication.h"
 #include "Logger.h"
 #include "TimeSystem.h"
-#include "IPluginMgr.h"
+#include "IPluginManager.h"
 #include "IRenderer.h"
 #include "ScenePlugin.h"
 #include "FoundationPlugin.h"
@@ -13,7 +13,7 @@ namespace Lightning
 {
 	namespace Plugins
 	{
-		extern IPluginMgr* gPluginMgr;
+		extern IPluginManager* gPluginMgr;
 	}
 	namespace App
 	{

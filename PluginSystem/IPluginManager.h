@@ -7,10 +7,10 @@ namespace Lightning
 	namespace Plugins
 	{
 		//Interface for plugin management.
-		class IPluginMgr
+		class IPluginManager
 		{
 		public:
-			virtual ~IPluginMgr(){}
+			virtual ~IPluginManager(){}
 			virtual Plugin* LoadPlugin(const std::string& pluginName) = 0;
 			virtual Plugin* GetPlugin(const std::string& pluginName) = 0;
 			virtual bool UnloadPlugin(const std::string& pluginName) = 0;

@@ -1,6 +1,6 @@
 #include <d3dx12.h>
 #include "D3D12StatefulResource.h"
-#include "D3D12StatefulResourceMgr.h"
+#include "D3D12StatefulResourceManager.h"
 #include "Renderer.h"
 
 namespace Lightning
@@ -28,7 +28,7 @@ namespace Lightning
 				//record first state after initial transition
 				//we will fix the state before the execution of this command list
 				pLocalState->firstState = newState;
-				D3D12StatefulResourceMgr::Instance()->Notify(commandList, this);
+				D3D12StatefulResourceManager::Instance()->Notify(commandList, this);
 			}
 			else
 			{

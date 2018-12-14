@@ -2,7 +2,7 @@
 #include "FoundationPlugin.h"
 #include "ECS/EventManager.h"
 #include "FileSystemFactory.h"
-#include "IPluginMgr.h"
+#include "IPluginManager.h"
 #include "ConfigManager.h"
 #include "Environment.h"
 
@@ -38,7 +38,7 @@ namespace Lightning
 			Foundation::IConfigManager* GetConfigManager()override;
 			Foundation::IEnvironment* GetEnvironment()override;
 		protected:
-			void OnCreated(IPluginMgr*)override;
+			void OnCreated(IPluginManager*)override;
 		private:
 			void InitLoggerImpl(const char* name, Foundation::Logger* logger);
 			std::shared_ptr<spdlog::sinks::basic_file_sink_mt> mFileSink;
@@ -49,7 +49,7 @@ namespace Lightning
 			static constexpr char* LogFileName = "log.txt";
 		};
 
-		void FoundationPluginImpl::OnCreated(IPluginMgr* mgr)
+		void FoundationPluginImpl::OnCreated(IPluginManager* mgr)
 		{
 
 		}

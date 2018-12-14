@@ -1,7 +1,7 @@
 #include "LoaderPlugin.h"
 #include "Loader.h"
 #include "Logger.h"
-#include "IPluginMgr.h"
+#include "IPluginManager.h"
 #include "FoundationPlugin.h"
 
 namespace Lightning
@@ -16,12 +16,12 @@ namespace Lightning
 			ILoader* GetLoader()override;
 			void Update()override;
 		protected:
-			void OnCreated(IPluginMgr*)override;
+			void OnCreated(IPluginManager*)override;
 		private:
-			IPluginMgr* mPluginMgr;
+			IPluginManager* mPluginMgr;
 		};
 
-		void LoaderPluginImpl::OnCreated(IPluginMgr* mgr)
+		void LoaderPluginImpl::OnCreated(IPluginManager* mgr)
 		{
 			mPluginMgr = mgr;
 			INIT_LOGGER(mgr, Loader);

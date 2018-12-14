@@ -33,8 +33,7 @@ namespace Lightning
 			virtual void CreateShaderFromFile(ShaderType type, const std::string& path,
 				const ShaderDefine& defineMap, ShaderLoadFinishHandler handler) = 0;
 			virtual ITexture* CreateTexture(const TextureDescriptor& descriptor, ISerializeBuffer* buffer) = 0;
-			virtual void CreateTextureFromFile(const TextureDescriptor& descriptor, const std::string& path,
-				TextureLoadFinishHandler handler) = 0;
+			virtual void CreateTextureFromFile(const std::string& path, TextureLoadFinishHandler handler) = 0;
 			virtual IShader* GetDefaultShader(ShaderType type) = 0;
 		};
 	}

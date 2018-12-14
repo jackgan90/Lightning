@@ -1,4 +1,4 @@
-#include "D3D12StatefulResourceMgr.h"
+#include "D3D12StatefulResourceManager.h"
 #include "tbb/spin_mutex.h"
 #include "Renderer.h"
 #include "D3D12Device.h"
@@ -17,18 +17,18 @@ namespace Lightning
 	{
 		extern FrameMemoryAllocator g_RenderAllocator;
 
-		D3D12StatefulResourceMgr::D3D12StatefulResourceMgr()
+		D3D12StatefulResourceManager::D3D12StatefulResourceManager()
 		{
 			std::memset(mEncoders, 0, sizeof(mEncoders));
 		}
 
-		void D3D12StatefulResourceMgr::Notify(ID3D12GraphicsCommandList* cmdList, D3D12StatefulResource* resource)
+		void D3D12StatefulResourceManager::Notify(ID3D12GraphicsCommandList* cmdList, D3D12StatefulResource* resource)
 		{
 			MutexLock lock(mtxResources);
 			mCmdListResources[cmdList].insert(resource);
 		}
 
-		void D3D12StatefulResourceMgr::FixResourceStates(Container::Vector<ID3D12CommandList*>& commandLists)
+		void D3D12StatefulResourceManager::FixResourceStates(Container::Vector<ID3D12CommandList*>& commandLists)
 		{
 			MutexLock lock(mtxResources);
 			std::size_t i{ 0 };
@@ -79,7 +79,7 @@ namespace Lightning
 			}
 		}
 
-		ID3D12GraphicsCommandList* D3D12StatefulResourceMgr::GetCommandList()
+		ID3D12GraphicsCommandList* D3D12StatefulResourceManager::GetCommandList()
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			if (mEncoders[resourceIndex])
@@ -94,7 +94,7 @@ namespace Lightning
 			}
 		}
 
-		void D3D12StatefulResourceMgr::Clear()
+		void D3D12StatefulResourceManager::Clear()
 		{
 			for (auto pEncoder : mEncoders)
 			{

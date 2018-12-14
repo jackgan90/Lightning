@@ -16,12 +16,12 @@ namespace Lightning\
 {\
 	namespace Plugins\
 	{\
-		IPluginMgr* gPluginMgr;\
+		IPluginManager* gPluginMgr;\
 	}\
 }\
 extern "C"\
 {\
-	LIGHTNING_PLUGIN_DLL_EXPORT Lightning::Plugins::Plugin* GetPlugin(Lightning::Plugins::IPluginMgr* mgr)\
+	LIGHTNING_PLUGIN_DLL_EXPORT Lightning::Plugins::Plugin* GetPlugin(Lightning::Plugins::IPluginManager* mgr)\
 	{\
 		Lightning::Plugins::gPluginMgr = mgr;\
 		return NEW_REF_OBJ(Lightning::Plugins::##pluginImpl);\
@@ -44,13 +44,13 @@ namespace Lightning
 			//Update is called by IPluginMgr and tick at a regular speed rate.
 			virtual void Update() = 0;
 		protected:
-			friend class PluginMgr;
+			friend class PluginManager;
 			Plugin() : mName("")
 			{
 			}
 			Plugin(const Plugin&) = delete;
 			Plugin& operator=(const Plugin&) = delete;
-			virtual void OnCreated(class IPluginMgr*) = 0;
+			virtual void OnCreated(class IPluginManager*) = 0;
 			//Load and Unload is only called by PluginMgr
 		private:
 			void SetName(const std::string& name)
@@ -68,6 +68,6 @@ namespace Lightning
 			static constexpr char* PluginExtension = ".dll";
 #endif
 		};
-		typedef Plugin* (*GetPluginProc)(class IPluginMgr*);
+		typedef Plugin* (*GetPluginProc)(class IPluginManager*);
 	}
 }

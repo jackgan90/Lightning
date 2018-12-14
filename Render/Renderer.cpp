@@ -10,7 +10,7 @@
 //for test only
 //#include "LoaderPlugin.h"
 //#include "Serializers/TextureSerializer.h"
-//#include "IPluginMgr.h"
+//#include "IPluginManager.h"
 //end test
 
 namespace Lightning
@@ -18,7 +18,7 @@ namespace Lightning
 	/*
 	namespace Plugins
 	{
-		extern IPluginMgr* gPluginMgr;
+		extern IPluginManager* gPluginMgr;
 	}*/
 	namespace Render
 	{
@@ -161,8 +161,8 @@ namespace Lightning
 					}
 				});
 				loader->Load("Purged_One_Human_Jumper.jpg", ser);
-			}
-			*/
+			}*/
+			
 		}
 
 		void Renderer::OnFrameEnd()

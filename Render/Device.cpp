@@ -24,8 +24,7 @@ namespace Lightning
 			//Loader::Instance()->Load(path, ser);
 		}
 
-		void Device::CreateTextureFromFile(const TextureDescriptor& descriptor, const std::string& path,
-			TextureLoadFinishHandler handler)
+		void Device::CreateTextureFromFile(const std::string& path, TextureLoadFinishHandler handler)
 		{
 			//auto ser = new TextureSerializer(descriptor, path, handler);
 			//Loader::Instance()->Load(path, ser);

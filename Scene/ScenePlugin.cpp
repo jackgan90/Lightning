@@ -1,7 +1,7 @@
 #include "ScenePlugin.h"
 #include "SceneManager.h"
 #include "Primitive.h"
-#include "IPluginMgr.h"
+#include "IPluginManager.h"
 #include "RenderPlugin.h"
 #include "Logger.h"
 #include "FoundationPlugin.h"
@@ -27,12 +27,12 @@ namespace Lightning
 			IPrimitive* CreateSphere(float radius)override;
 			void Update()override;
 		protected:
-			void OnCreated(IPluginMgr*)override;
+			void OnCreated(IPluginManager*)override;
 		private:
-			IPluginMgr* mPluginMgr;
+			IPluginManager* mPluginMgr;
 		};
 
-		void ScenePluginImpl::OnCreated(IPluginMgr* mgr)
+		void ScenePluginImpl::OnCreated(IPluginManager* mgr)
 		{
 			mPluginMgr = mgr;
 			INIT_LOGGER(mgr, Scene)

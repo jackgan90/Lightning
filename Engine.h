@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "PluginMgrImpl/PluginMgr.h"
+#include "PluginMgrImpl/PluginManager.h"
 
 namespace Lightning
 {
@@ -13,11 +13,11 @@ namespace Lightning
 			static Engine sInstance;
 			return &sInstance;
 		}
-		Plugins::IPluginMgr* CreatePluginMgr()const
+		Plugins::IPluginManager* CreatePluginMgr()const
 		{
-			return new Plugins::PluginMgr();
+			return new Plugins::PluginManager();
 		}
-		void DestroyPluginMgr(Plugins::IPluginMgr* pluginMgr)
+		void DestroyPluginMgr(Plugins::IPluginManager* pluginMgr)
 		{
 			delete pluginMgr;
 		}

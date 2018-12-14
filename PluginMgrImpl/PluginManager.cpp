@@ -1,21 +1,21 @@
 #include <algorithm>
-#include "PluginMgr.h"
+#include "PluginManager.h"
 
 namespace Lightning
 {
 	namespace Plugins
 	{
-		PluginMgr::PluginMgr():mNeedSyncPlugins(false), mPluginUpdatePriority(1024)
+		PluginManager::PluginManager():mNeedSyncPlugins(false), mPluginUpdatePriority(1024)
 		{
 
 		}
 
-		PluginMgr::~PluginMgr()
+		PluginManager::~PluginManager()
 		{
 			SynchronizeTables();
 		}
 
-		void PluginMgr::MakePlugin1UpdateBeforePlugin2(Plugin* plugin1, Plugin* plugin2)
+		void PluginManager::MakePlugin1UpdateBeforePlugin2(Plugin* plugin1, Plugin* plugin2)
 		{
 			assert(plugin1 && plugin2 && "Both plugin1 and plugin2 must be valid!");
 			std::lock_guard<std::recursive_mutex> lock(mPluginsMutex);
@@ -23,7 +23,7 @@ namespace Lightning
 			mNeedSyncPlugins = true;
 		}
 
-		void PluginMgr::Update()
+		void PluginManager::Update()
 		{
 			for (auto& pluginInfo : mPluginsToUpdate)
 			{
@@ -33,7 +33,7 @@ namespace Lightning
 			SynchronizeTables();
 		}
 
-		void PluginMgr::SynchronizeTables()
+		void PluginManager::SynchronizeTables()
 		{
 			if (mNeedSyncPlugins)
 			{
@@ -68,12 +68,12 @@ namespace Lightning
 			}
 		}
 
-		bool PluginMgr::ComparePluginUpdateOrder(const PluginInfo& info1, const PluginInfo& info2)
+		bool PluginManager::ComparePluginUpdateOrder(const PluginInfo& info1, const PluginInfo& info2)
 		{
 			return info1.plugin->GetUpdateOrder() < info2.plugin->GetUpdateOrder();
 		}
 
-		Plugin* PluginMgr::LoadPlugin(const std::string& name)
+		Plugin* PluginManager::LoadPlugin(const std::string& name)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mPluginsMutex);
 
@@ -117,7 +117,7 @@ namespace Lightning
 			return nullptr;
 		}
 
-		Plugin* PluginMgr::LookUpPlugin(PluginTable& table, const std::string& name, bool addRef)
+		Plugin* PluginManager::LookUpPlugin(PluginTable& table, const std::string& name, bool addRef)
 		{
 			if (table.empty())
 				return nullptr;
@@ -131,7 +131,7 @@ namespace Lightning
 			return nullptr;
 		}
 
-		Plugin* PluginMgr::GetPlugin(const std::string& name)
+		Plugin* PluginManager::GetPlugin(const std::string& name)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mPluginsMutex);
 
@@ -146,7 +146,7 @@ namespace Lightning
 			return nullptr;
 		}
 
-		bool PluginMgr::UnloadPlugin(PluginTable& table, const std::string& name)
+		bool PluginManager::UnloadPlugin(PluginTable& table, const std::string& name)
 		{
 			auto it = table.find(name);
 			if (it != table.end())
@@ -163,7 +163,7 @@ namespace Lightning
 			return false;
 		}
 
-		bool PluginMgr::UnloadPlugin(const std::string& name)
+		bool PluginManager::UnloadPlugin(const std::string& name)
 		{
 			std::lock_guard<std::recursive_mutex> lock(mPluginsMutex);
 			auto res = UnloadPlugin(mPendingAddPlugins, name);

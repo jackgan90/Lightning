@@ -9,14 +9,14 @@
 #include "D3D12RenderTarget.h"
 #include "D3D12RenderTargetManager.h"
 #include "D3D12DescriptorHeapManager.h"
-#include "IPluginMgr.h"
+#include "IPluginManager.h"
 #include "FoundationPlugin.h"
 
 namespace Lightning
 {
 	namespace Plugins
 	{
-		extern IPluginMgr* gPluginMgr;
+		extern IPluginManager* gPluginMgr;
 	}
 
 	namespace Render

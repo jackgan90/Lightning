@@ -10,7 +10,7 @@
 #include "Logger.h"
 #include "Common.h"
 #include "FrameMemoryAllocator.h"
-#include "D3D12StatefulResourceMgr.h"
+#include "D3D12StatefulResourceManager.h"
 #include "D3D12VertexBuffer.h"
 #include "D3D12IndexBuffer.h"
 #include "D3D12ForwardRenderPass.h"
@@ -88,7 +88,7 @@ namespace Lightning
 			D3D12RenderTargetManager::Instance()->Clear();
 			D3D12DescriptorHeapManager::Instance()->Clear();
 			D3D12ConstantBufferManager::Instance()->Clear();
-			D3D12StatefulResourceMgr::Instance()->Clear();
+			D3D12StatefulResourceManager::Instance()->Clear();
 			mCommandQueue.Reset();
 			mDXGIFactory.Reset();
 			mPipelineCache.clear();
@@ -723,7 +723,7 @@ namespace Lightning
 			renderTarget->TransitToPresentState(lastCmdList);
 
 			D3D12RenderTargetManager::Instance()->Synchronize();
-			D3D12StatefulResourceMgr::Instance()->FixResourceStates(commandLists);
+			D3D12StatefulResourceManager::Instance()->FixResourceStates(commandLists);
 
 			for (auto cmdList : commandLists)
 			{

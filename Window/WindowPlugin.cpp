@@ -1,5 +1,5 @@
 #include "WindowPlugin.h"
-#include "IPluginMgr.h"
+#include "IPluginManager.h"
 #include "FoundationPlugin.h"
 #include "Logger.h"
 #include "Container.h"
@@ -19,13 +19,13 @@ namespace Lightning
 			Window::IWindow* NewWindow()override;
 			void Update()override;
 		protected:
-			void OnCreated(IPluginMgr*)override;
+			void OnCreated(IPluginManager*)override;
 		private:
-			IPluginMgr* mPluginMgr;
+			IPluginManager* mPluginMgr;
 			Container::Vector<Window::IWindow*> mWindows;
 		};
 
-		void WindowPluginImpl::OnCreated(IPluginMgr* mgr)
+		void WindowPluginImpl::OnCreated(IPluginManager* mgr)
 		{
 			mPluginMgr = mgr;
 			INIT_LOGGER(mgr, Window)
