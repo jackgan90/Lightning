@@ -9,16 +9,16 @@ namespace Lightning
 	namespace Render
 	{
 		using Foundation::Container;
-		class TextureManager : public Foundation::Singleton<TextureManager>
+		class TextureCache : public Foundation::Singleton<TextureCache>
 		{
 		public:
-			~TextureManager();
+			~TextureCache();
 			ITexture* GetTexture(const std::string& name);
 			bool CacheTexture(const std::string& name, ITexture* texture);
 			bool RemoveTexture(const std::string& name);
 		private:
-			friend class Foundation::Singleton<TextureManager>;
-			TextureManager();
+			friend class Foundation::Singleton<TextureCache>;
+			TextureCache();
 			Container::UnorderedMap<std::string, ITexture*> mTextures;
 		};
 	}

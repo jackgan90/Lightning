@@ -1,7 +1,7 @@
 #include <cassert>
 #include "Device.h"
 #include "Loader.h"
-#include "Texture/TextureManager.h"
+#include "Texture/TextureCache.h"
 #include "Serializers/ShaderSerializer.h"
 #include "Serializers/TextureSerializer.h"
 
@@ -27,7 +27,7 @@ namespace Lightning
 
 		void Device::CreateTextureFromFile(const std::string& path, TextureLoadFinishHandler handler)
 		{
-			auto texture = TextureManager::Instance()->GetTexture(path);
+			auto texture = TextureCache::Instance()->GetTexture(path);
 			if (texture)
 			{
 				if (handler)

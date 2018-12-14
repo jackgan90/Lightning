@@ -54,10 +54,10 @@ set(SHADER_SOURCES	Shader/ShaderDefine.cpp
 					Shader/Shader.cpp)
 
 set(TEXTURE_HEADERS	Texture/ITexture.h
-					Texture/TextureManager.h
+					Texture/TextureCache.h
 					Texture/ISampler.h)
 
-set(TEXTURE_SOURCES Texture/TextureManager.cpp)
+set(TEXTURE_SOURCES Texture/TextureCache.cpp)
 
 set(SERIALIZERS_HEADERS	Serializers/ShaderSerializer.h
 						Serializers/TextureSerializer.h)
