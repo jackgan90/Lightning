@@ -17,6 +17,7 @@ namespace Lightning
 	}
 	namespace Scene
 	{
+		using Foundation::Math::Vector2f;
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Vector4f;
 		using Foundation::Math::DegreesToRadians;
@@ -24,8 +25,8 @@ namespace Lightning
 		using Render::ShaderParameter;
 		extern Plugins::RenderPlugin* gRenderPlugin;
 
-		Primitive::Primitive():mFirstDraw(true)
-			,mColor(0, 0, 0, 255)
+		Primitive::Primitive():mShouldUpdateRenderNode(true)
+			,mColor(0, 0, 0, 255), mTexture(nullptr)
 		{
 			mRenderNode.material = nullptr;
 		}
@@ -34,6 +35,8 @@ namespace Lightning
 		{
 			if (mRenderNode.material)
 				mRenderNode.material->Release();
+			if (mTexture)
+				mTexture->Release();
 			if (mRenderNode.geometry.ib)
 				mRenderNode.geometry.ib->Release();
 			for (auto i = 0; i < Foundation::ArraySize(mRenderNode.geometry.vbs);++i)
@@ -82,12 +85,23 @@ namespace Lightning
 			mColor.a = static_cast<std::uint8_t>(255 * transparency);
 		}
 
+		void Primitive::SetTexture(ITexture* texture)
+		{
+			if (texture != mTexture)
+			{
+				if (texture)
+					texture->AddRef();
+				mTexture = texture;
+				mShouldUpdateRenderNode = true;
+			}
+		}
+
 		void Primitive::Draw(IRenderer& renderer, const SceneRenderData& sceneRenderData)
 		{
-			if (mFirstDraw)
+			if (mShouldUpdateRenderNode)
 			{
-				mFirstDraw = false;
-				GenerateRenderNode(renderer);
+				UpdateRenderNode(renderer);
+				mShouldUpdateRenderNode = false;
 			}
 			mRenderNode.renderTargets.clear();
 			auto swapChain = renderer.GetSwapChain();
@@ -102,12 +116,12 @@ namespace Lightning
 			renderer.CommitRenderNode(mRenderNode);
 		}
 
-		void Primitive::GenerateRenderNode(IRenderer& renderer)
+		void Primitive::UpdateRenderNode(IRenderer& renderer)
 		{
 			Render::VertexDescriptor descriptor;
 			Render::VertexComponent compPosition;
 			compPosition.format = Render::RenderFormat::R32G32B32_FLOAT;
-			compPosition.instanceStepRate = 1;
+			compPosition.instanceStepRate = 0;
 			compPosition.isInstance = false;
 			compPosition.offset = 0;
 			compPosition.semanticIndex = 0;
@@ -115,7 +129,7 @@ namespace Lightning
 			descriptor.components.push_back(compPosition);
 			Render::VertexComponent compNormal;
 			compNormal.format = Render::RenderFormat::R32G32B32_FLOAT;
-			compNormal.instanceStepRate = 1;
+			compNormal.instanceStepRate = 0;
 			compNormal.isInstance = false;
 			compNormal.offset = 0;
 			compNormal.semanticIndex = 0;
@@ -203,6 +217,38 @@ namespace Lightning
 			mWidth(width), mHeight(height), mThickness(thickness)
 		{
 			assert(mWidth > 0 && mHeight > 0 && mThickness > 0 && "The size of the cube must be greater than 0!");
+		}
+
+		void Cube::UpdateRenderNode(IRenderer& renderer)
+		{
+			Primitive::UpdateRenderNode(renderer);
+			if (mTexture)
+			{
+				//generate uv
+				Render::VertexDescriptor descriptor;
+				Render::VertexComponent compPosition;
+				compPosition.format = Render::RenderFormat::R32G32_FLOAT;
+				compPosition.instanceStepRate = 0;
+				compPosition.isInstance = false;
+				compPosition.offset = 0;
+				compPosition.semanticIndex = 0;
+				compPosition.semanticItem = { Render::RenderSemantics::TEXCOORD0, "TEXCOORD0" };
+				descriptor.components.push_back(compPosition);
+				auto pDevice = renderer.GetDevice();
+				auto uvBufferSize = sizeof(Vector2f) * 8;
+				mRenderNode.geometry.vbs[1] = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(uvBufferSize), descriptor);
+				auto uv = reinterpret_cast<Vector2f*>(mRenderNode.geometry.vbs[1]->Lock(0, uvBufferSize));
+				uv[0].x = 0.0f; uv[0].y = 0.0f; //right top front v0
+				uv[1].x = 1.0f; uv[1].y = 0.0f; //right top back v1
+				uv[2].x = 0.0f; uv[2].y = 1.0f; //right bottom front v2
+				uv[3].x = 1.0f; uv[3].y = 1.0f; //right bottom back v3
+				uv[4].x = 1.0f; uv[4].y = 0.0f; //left top front v4
+				uv[5].x = 0.0f; uv[5].y = 0.0f; //left top back v5
+				uv[6].x = 1.0f; uv[6].y = 1.0f; //left bottom front v6
+				uv[7].x = 0.0f; uv[7].y = 1.0f; //left bottom back v7
+				mRenderNode.geometry.vbs[1]->Unlock(0, uvBufferSize);
+				//apply texture to material
+			}
 		}
 		//Cube
 

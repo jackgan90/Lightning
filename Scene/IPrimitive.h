@@ -3,6 +3,7 @@
 #include "Quaternion.h"
 #include "Color.h"
 #include "IDrawable.h"
+#include "Texture/ITexture.h"
 
 namespace Lightning
 {
@@ -12,6 +13,7 @@ namespace Lightning
 		using Foundation::Math::Quaternionf;
 		using Render::Color32;
 		using Render::PrimitiveType;
+		using Render::ITexture;
 		enum class PrimitiveShape
 		{
 			CUBE,
@@ -36,6 +38,7 @@ namespace Lightning
 			virtual void SetColor(float a, float r, float g, float b) = 0;
 			virtual void SetTransparency(std::uint8_t transparency) = 0;
 			virtual void SetTransparency(float transparency) = 0;
+			virtual void SetTexture(ITexture* texture) = 0;
 		};
 	}
 }

@@ -28,8 +28,9 @@ namespace Lightning
 			void SetColor(float a, float r, float g, float b)override;
 			void SetTransparency(std::uint8_t transparency)override;
 			void SetTransparency(float transparency)override;
+			void SetTexture(ITexture* texture)override;
 		protected:
-			void GenerateRenderNode(IRenderer&);
+			virtual void UpdateRenderNode(IRenderer&);
 			virtual std::uint8_t *GetVertices() = 0;
 			virtual std::uint16_t *GetIndices() = 0;
 			virtual Vector3f GetScale() = 0;
@@ -37,8 +38,9 @@ namespace Lightning
 			virtual std::size_t GetIndexBufferSize() = 0;
 			Render::RenderNode mRenderNode;
 			Transform mTransform;
-			bool mFirstDraw;
+			bool mShouldUpdateRenderNode;
 			Color32 mColor;
+			ITexture* mTexture;
 		};
 
 		struct PrimitiveDataSource
@@ -60,6 +62,7 @@ namespace Lightning
 		public:
 			Cube(float width = 1.0f, float height = 1.0f, float thickness = 1.0f);
 		protected:
+			void UpdateRenderNode(IRenderer&)override;
 			std::uint8_t *GetVertices() override { return sDataSource.vertices; }
 			std::uint16_t *GetIndices() override { return sDataSource.indices; }
 			Vector3f GetScale() override { return Vector3f{mWidth, mHeight, mThickness}; }

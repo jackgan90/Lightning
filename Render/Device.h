@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include "IDevice.h"
+#include "ILoader.h"
 
 namespace Lightning
 {
@@ -16,8 +17,10 @@ namespace Lightning
 				const ShaderDefine& defineMap, ShaderLoadFinishHandler handler)override;
 			void CreateTextureFromFile(const std::string& path, TextureLoadFinishHandler handler)override;
 		protected:
+			Device();
 			using DefaultShaderMap = Container::UnorderedMap<ShaderType, IShader*>;
 			DefaultShaderMap mDefaultShaders;
+			Loading::ILoader* mLoader;
 		};
 	}
 }

@@ -141,6 +141,8 @@ namespace Lightning
 			{
 				switch (format)
 				{
+				case RenderFormat::R32G32_FLOAT:
+					return DXGI_FORMAT_R32G32_FLOAT;
 				case RenderFormat::R32G32B32_FLOAT:
 					return DXGI_FORMAT_R32G32B32_FLOAT;
 				case RenderFormat::R8G8B8A8_UNORM:

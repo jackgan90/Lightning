@@ -1,15 +1,24 @@
 #include <cassert>
 #include "Device.h"
-#include "Loader.h"
+#include "IPluginManager.h"
+#include "LoaderPlugin.h"
 #include "Texture/TextureCache.h"
 #include "Serializers/ShaderSerializer.h"
 #include "Serializers/TextureSerializer.h"
 
 namespace Lightning
 {
+	namespace Plugins
+	{
+		extern IPluginManager* gPluginMgr;
+	}
 	namespace Render
 	{
-		using Loading::Loader;
+		Device::Device():mLoader(nullptr)
+		{
+
+		}
+
 		Device::~Device()
 		{
 			for (auto& pair : mDefaultShaders)
@@ -36,8 +45,20 @@ namespace Lightning
 				}
 				return;
 			}
-			//auto ser = new TextureSerializer(descriptor, path, handler);
-			//Loader::Instance()->Load(path, ser);
+			auto ser = new TextureSerializer(path, [path, handler](ITexture* texture) {
+				if (texture)
+					TextureCache::Instance()->AddTexture(path, texture);
+				if (handler)
+				{
+					handler(texture);
+				}
+			});
+			if (!mLoader)
+			{
+				auto loaderPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::LoaderPlugin>("Loader");
+				mLoader = loaderPlugin->GetLoader();
+			}
+			mLoader->Load(path, ser);
 		}
 
 		IShader* Device::GetDefaultShader(ShaderType type)
