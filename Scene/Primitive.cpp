@@ -124,16 +124,14 @@ namespace Lightning
 			compPosition.instanceStepRate = 0;
 			compPosition.isInstance = false;
 			compPosition.offset = 0;
-			compPosition.semanticIndex = 0;
-			compPosition.semanticItem = { Render::RenderSemantics::POSITION, "POSITION" };
+			compPosition.semantic = Render::RenderSemantics::POSITION;
 			descriptor.components.push_back(compPosition);
 			Render::VertexComponent compNormal;
 			compNormal.format = Render::RenderFormat::R32G32B32_FLOAT;
 			compNormal.instanceStepRate = 0;
 			compNormal.isInstance = false;
 			compNormal.offset = 0;
-			compNormal.semanticIndex = 0;
-			compNormal.semanticItem = { Render::RenderSemantics::NORMAL, "NORMAL" };
+			compNormal.semantic = Render::RenderSemantics::NORMAL;
 			descriptor.components.push_back(compNormal);
 
 			std::memset(mRenderNode.geometry.vbs, 0, sizeof(mRenderNode.geometry.vbs));
@@ -231,8 +229,7 @@ namespace Lightning
 				compPosition.instanceStepRate = 0;
 				compPosition.isInstance = false;
 				compPosition.offset = 0;
-				compPosition.semanticIndex = 0;
-				compPosition.semanticItem = { Render::RenderSemantics::TEXCOORD0, "TEXCOORD0" };
+				compPosition.semantic = Render::RenderSemantics::TEXCOORD0;
 				descriptor.components.push_back(compPosition);
 				auto pDevice = renderer.GetDevice();
 				auto uvBufferSize = sizeof(Vector2f) * 8;

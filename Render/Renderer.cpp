@@ -83,12 +83,51 @@ namespace Lightning
 			assert(!sInstance);
 			mOutputWindow->AddRef();
 			sInstance = this;
+			for (const auto& semanticItem : EngineSemantics)
+			{
+				mSemanticInfos[semanticItem.semantic] = ParseSemanticInfo(semanticItem);
+			}
 		}
 
 		Renderer::~Renderer()
 		{
 			assert(sInstance == this);
 			sInstance = nullptr;
+		}
+
+		Renderer::SemanticInfo Renderer::ParseSemanticInfo(const SemanticItem& item)
+		{
+			SemanticInfo info;
+			const std::string fullName(item.name);
+			int i = static_cast<int>(fullName.length() - 1);
+			std::string indexString;
+			for (;i >= 0;--i)
+			{
+				if (fullName[i] >= '0' && fullName[i] <= '9')
+					indexString += fullName[i];
+				else
+					break;
+			}
+			assert(indexString.length() < fullName.length() && "Semantic name error!A semantic name cannot be comprised of digits only!");
+			if (indexString.length() > 0)
+			{
+				std::reverse(indexString.begin(), indexString.end());
+				info.index = std::stoi(indexString);
+			}
+			else
+			{
+				info.index = 0;
+			}
+			info.name = fullName.substr(0, i + 1);
+			return info;
+		}
+
+		void Renderer::GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name)
+		{
+			auto it = mSemanticInfos.find(semantic);
+			assert(it != mSemanticInfos.end() && "Invalid semantic!");
+			index = it->second.index;
+			name = it->second.name;
 		}
 
 		void Renderer::ApplyRenderPasses()

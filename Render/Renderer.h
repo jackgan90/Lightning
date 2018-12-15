@@ -47,6 +47,11 @@ namespace Lightning
 			Window::IWindow* GetOutputWindow()override { return mOutputWindow; }
 			IDepthStencilBuffer* GetDefaultDepthStencilBuffer()override;
 		protected:
+			struct SemanticInfo
+			{
+				std::string name;
+				SemanticIndex index;
+			};
 			Renderer(Window::IWindow* window);
 			void WaitForPreviousFrame(bool waitAll);
 			void InvokeEventCallback(RendererEvent evt);
@@ -62,6 +67,7 @@ namespace Lightning
 			virtual IDepthStencilBuffer* CreateDepthStencilBuffer(std::uint32_t width, std::uint32_t height) = 0;
 			virtual RenderPass* CreateRenderPass(RenderPassType type);
 			void ApplyRenderPasses();
+			void GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name);
 			static IRenderer* sInstance;
 			std::uint64_t mFrameCount;
 			std::unique_ptr<IDevice> mDevice;
@@ -76,6 +82,9 @@ namespace Lightning
 			RenderQueue* mCurrentFrameRenderQueue;
 			Window::IWindow* mOutputWindow;
 			bool mStarted;
+			Container::UnorderedMap<RenderSemantics, SemanticInfo> mSemanticInfos;
+		private:
+			SemanticInfo ParseSemanticInfo(const SemanticItem& item);
 		};
 	}
 }

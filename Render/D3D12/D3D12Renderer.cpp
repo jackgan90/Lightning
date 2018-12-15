@@ -640,8 +640,14 @@ namespace Lightning
 					pInputElementDesc[i].InputSlotClass = component.isInstance ? \
 						D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA : D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 					pInputElementDesc[i].InstanceDataStepRate = component.isInstance ? component.instanceStepRate : 0;
-					pInputElementDesc[i].SemanticIndex = component.semanticIndex;
-					pInputElementDesc[i].SemanticName = component.semanticItem.name;
+					SemanticIndex semanticIndex;
+					std::string semanticName;
+					GetSemanticInfo(component.semantic, semanticIndex, semanticName);
+					auto nameArr = g_RenderAllocator.Allocate<char>(semanticName.length() + 1);
+					nameArr[semanticName.length() - 1] = 0;
+					std::strncpy(nameArr, semanticName.c_str(), semanticName.length());
+					pInputElementDesc[i].SemanticIndex = semanticIndex;
+					pInputElementDesc[i].SemanticName = nameArr;
 					++i;
 				}
 			}

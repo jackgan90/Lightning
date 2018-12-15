@@ -12,25 +12,14 @@ namespace Lightning
 		using Foundation::Container;
 		struct VertexComponent : Foundation::PlainObject<VertexComponent>
 		{
-			VertexComponent():
-				semanticItem(EngineSemantics[0]),
-				semanticIndex(0),
-				format(RenderFormat::R32G32B32_FLOAT),
-				offset(0),
-				isInstance(false),
-				instanceStepRate(0)
-			{
-
-			}
-			SemanticItem semanticItem;
-			SemanticIndex semanticIndex;
-			RenderFormat format;
+			RenderSemantics semantic{ POSITION };
+			RenderFormat format{ RenderFormat::R32G32B32_FLOAT };
 			//relative to the start of a vertex
-			unsigned int offset;
+			unsigned int offset{ 0 };
 			//if this attribute is an instance attribute
-			bool isInstance;
+			bool isInstance{ false };
 			//if this attribute is an instance attribute,specify after drawing how many instances should the attribute move to next value
-			unsigned int instanceStepRate;
+			unsigned int instanceStepRate{ 0 };
 
 		};
 

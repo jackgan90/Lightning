@@ -6,9 +6,9 @@ namespace Lightning
 	namespace Render
 	{
 		using SemanticIndex = unsigned int;
-		enum class RenderSemantics : std::uint8_t
+		enum RenderSemantics
 		{
-			UNKNOWN,
+			UNKNOWN = 0,
 			POSITION,
 			NORMAL,
 			TANGENT,
