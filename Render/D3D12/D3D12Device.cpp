@@ -30,7 +30,7 @@ namespace Lightning
 		const char* const DEFAULT_VS_SOURCE =
 			"cbuffer VSConstants : register(b0)\n"
 			"{\n"
-			"	float4x4 wvp : WVP;\n"
+			"	float4x4 wvp;\n"
 			"};\n"
 			"struct VSInput\n"
 			"{\n"

@@ -82,9 +82,9 @@ namespace Lightning
 			RenderQueue* mCurrentFrameRenderQueue;
 			Window::IWindow* mOutputWindow;
 			bool mStarted;
-			Container::UnorderedMap<RenderSemantics, SemanticInfo> mSemanticInfos;
+			Container::UnorderedMap<RenderSemantics, SemanticInfo> mPipelineInputSemanticInfos;
 		private:
-			SemanticInfo ParseSemanticInfo(const SemanticItem& item);
+			SemanticInfo ParsePipelineInputSemantics(const PipelineInputSemantic& item);
 		};
 	}
 }

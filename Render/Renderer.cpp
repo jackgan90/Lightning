@@ -83,9 +83,9 @@ namespace Lightning
 			assert(!sInstance);
 			mOutputWindow->AddRef();
 			sInstance = this;
-			for (const auto& semanticItem : EngineSemantics)
+			for (const auto& semanticItem : PipelineInputSemantics)
 			{
-				mSemanticInfos[semanticItem.semantic] = ParseSemanticInfo(semanticItem);
+				mPipelineInputSemanticInfos[semanticItem.semantic] = ParsePipelineInputSemantics(semanticItem);
 			}
 		}
 
@@ -95,7 +95,7 @@ namespace Lightning
 			sInstance = nullptr;
 		}
 
-		Renderer::SemanticInfo Renderer::ParseSemanticInfo(const SemanticItem& item)
+		Renderer::SemanticInfo Renderer::ParsePipelineInputSemantics(const PipelineInputSemantic& item)
 		{
 			SemanticInfo info;
 			const std::string fullName(item.name);
@@ -124,8 +124,8 @@ namespace Lightning
 
 		void Renderer::GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name)
 		{
-			auto it = mSemanticInfos.find(semantic);
-			assert(it != mSemanticInfos.end() && "Invalid semantic!");
+			auto it = mPipelineInputSemanticInfos.find(semantic);
+			assert(it != mPipelineInputSemanticInfos.end() && "Invalid semantic!");
 			index = it->second.index;
 			name = it->second.name;
 		}
