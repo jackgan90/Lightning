@@ -22,18 +22,15 @@ namespace Lightning
 		{
 		public:
 			~Material()override;
-			void RequireSemantic(RenderSemantics semantic) override{ mSemantics.emplace(semantic); }
 			void SetShader(IShader* shader)override;
 			void SetParameter(ShaderType type, const ShaderParameter& arg)override;
 			void EnableBlend(bool enable)override;
-			const SemanticSet& GetSemanticRequirements()const { return mSemantics; }
 			IShader* GetShader(ShaderType type);
 			void GetShaders(Container::Vector<IShader*>& shaders);
 			void RemoveShader(ShaderType type);
 			const MaterialShaderMap& GetMaterialShaderMap()const;
 			const BlendState& GetBlendState()const { return mBlendState; }
 		protected:
-			SemanticSet mSemantics;
 			MaterialShaderMap mShaders;
 			BlendState mBlendState;
 		};

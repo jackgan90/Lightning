@@ -46,6 +46,7 @@ namespace Lightning
 			std::size_t GetParameterCount()const override;
 			bool SetParameter(const ShaderParameter& parameter) override;
 			void Compile()override;
+			void GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount)override;
 			void* GetByteCodeBuffer()const;
 			SIZE_T GetByteCodeBufferSize()const;
 			const Container::Vector<D3D12_ROOT_PARAMETER>& GetRootParameters()const;
@@ -89,6 +90,7 @@ namespace Lightning
 			UINT mTotalConstantBufferSize;
 			//buffer used to cache constant buffer value
 			Foundation::ThreadLocalSingleton<ShaderResourceProxy> mResourceProxy;
+			Container::Vector<RenderSemantics> mUniformSemantics;
 		};
 	}
 }

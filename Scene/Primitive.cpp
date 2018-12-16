@@ -156,7 +156,6 @@ namespace Lightning
 			mRenderNode.geometry.primType = Render::PrimitiveType::TRIANGLE_LIST;
 			
 			mRenderNode.material = gRenderPlugin->CreateMaterial();
-			mRenderNode.material->RequireSemantic(Render::RenderSemantics::WVP);
 			auto device = renderer.GetDevice();
 			mRenderNode.material->SetShader(device->GetDefaultShader(Render::ShaderType::VERTEX));
 			mRenderNode.material->SetShader(device->GetDefaultShader(Render::ShaderType::FRAGMENT));

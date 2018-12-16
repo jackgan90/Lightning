@@ -46,6 +46,8 @@ namespace Lightning
 			static IRenderer* Instance() { return sInstance; }
 			Window::IWindow* GetOutputWindow()override { return mOutputWindow; }
 			IDepthStencilBuffer* GetDefaultDepthStencilBuffer()override;
+			RenderSemantics GetUniformSemantic(const char* uniform_name)override;
+			const char* GetUniformName(RenderSemantics semantic)override;
 		protected:
 			struct SemanticInfo
 			{
@@ -83,6 +85,8 @@ namespace Lightning
 			Window::IWindow* mOutputWindow;
 			bool mStarted;
 			Container::UnorderedMap<RenderSemantics, SemanticInfo> mPipelineInputSemanticInfos;
+			Container::UnorderedMap<std::string, RenderSemantics> mUniformToSemantics;
+			Container::UnorderedMap<RenderSemantics, const char*> mSemanticsToUniform;
 		private:
 			SemanticInfo ParsePipelineInputSemantics(const PipelineInputSemantic& item);
 		};

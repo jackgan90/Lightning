@@ -81,32 +81,42 @@ namespace Lightning
 				return;
 			auto material = static_cast<Material*>(node.material);
 			const auto& shaderMap = material->GetMaterialShaderMap();
+			auto renderer = Renderer::Instance();
 			for (const auto& shaderAndArgs : shaderMap)
 			{
+				auto shader = shaderAndArgs.second.shader;
 				for (const auto& arg : shaderAndArgs.second.parameters)
 				{
-					shaderAndArgs.second.shader->SetParameter(arg);
+					shader->SetParameter(arg);
 				}
-			}
-			auto semantics = material->GetSemanticRequirements();
-			for (auto semantic : semantics)
-			{
-				switch (semantic)
+				RenderSemantics* semantics{ nullptr };
+				std::uint16_t semanticCount{ 0 };
+				shader->GetUniformSemantics(&semantics, semanticCount);
+				if (semanticCount > 0)
 				{
-				case RenderSemantics::WVP:
-				{
-					auto vs = material->GetShader(ShaderType::VERTEX);
-					if (vs)
+					for (auto i = 0;i < semanticCount;++i)
 					{
-						//We know that transform.ToMatrix4 may change it's internal matrix
-						auto worldMatrix = const_cast<RenderNode&>(node).transform.LocalToGlobalMatrix4();
-						auto wvp = node.projectionMatrix * node.viewMatrix * worldMatrix;
-						vs->SetParameter(ShaderParameter("wvp", wvp));
+						auto semantic = semantics[i];
+						auto uniformName = renderer->GetUniformName(semantic);
+						switch (semantic)
+						{
+						case RenderSemantics::WVP:
+						{
+							auto vs = material->GetShader(ShaderType::VERTEX);
+							if (vs)
+							{
+								//We know that transform.ToMatrix4 may change it's internal matrix
+								auto worldMatrix = const_cast<RenderNode&>(node).transform.LocalToGlobalMatrix4();
+								auto wvp = node.projectionMatrix * node.viewMatrix * worldMatrix;
+								vs->SetParameter(ShaderParameter(uniformName, wvp));
+							}
+							break;
+						}
+						default:
+							LOG_WARNING("Unsupported semantics : {0}", semantic);
+							break;
+						}
 					}
-					break;
-				}
-				default:
-					break;
 				}
 			}
 		}

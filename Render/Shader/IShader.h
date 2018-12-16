@@ -132,6 +132,7 @@ namespace Lightning
 			virtual bool SetParameter(const ShaderParameter& parameter) = 0;
 			virtual const char* const GetSource()const = 0;
 			virtual void GetShaderModelVersion(int& major, int& minor) = 0;
+			virtual void GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount) = 0;
 		};
 
 		class Shader : public IShader

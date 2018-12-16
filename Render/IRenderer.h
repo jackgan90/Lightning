@@ -104,6 +104,10 @@ namespace Lightning
 			virtual void ShutDown() = 0;
 			//get default depth stencil buffer
 			virtual IDepthStencilBuffer* GetDefaultDepthStencilBuffer() = 0;
+			//Gets the semantic corresponds to a string representing a uniform name
+			virtual RenderSemantics GetUniformSemantic(const char* uniform_name) = 0;
+			//Gets uniform name by RenderSemantics
+			virtual const char* GetUniformName(RenderSemantics semantic) = 0;
 		};
 	}
 }

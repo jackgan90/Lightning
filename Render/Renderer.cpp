@@ -87,6 +87,11 @@ namespace Lightning
 			{
 				mPipelineInputSemanticInfos[semanticItem.semantic] = ParsePipelineInputSemantics(semanticItem);
 			}
+			for (const auto& uniformSemantic : UniformSemantics)
+			{
+				mUniformToSemantics[uniformSemantic.name] = uniformSemantic.semantic;
+				mSemanticsToUniform[uniformSemantic.semantic] = uniformSemantic.name;
+			}
 		}
 
 		Renderer::~Renderer()
@@ -336,6 +341,26 @@ namespace Lightning
 		IDepthStencilBuffer* Renderer::GetDefaultDepthStencilBuffer()
 		{
 			return mFrameResources[mFrameResourceIndex].defaultDepthStencilBuffer;
+		}
+
+		RenderSemantics Renderer::GetUniformSemantic(const char* uniform_name)
+		{
+			auto it = mUniformToSemantics.find(std::string(uniform_name));
+			if (it != mUniformToSemantics.end())
+			{
+				return it->second;
+			}
+			return RenderSemantics::UNKNOWN;
+		}
+
+		const char* Renderer::GetUniformName(RenderSemantics semantic)
+		{
+			auto it = mSemanticsToUniform.find(semantic);
+			if (it != mSemanticsToUniform.end())
+			{
+				return it->second;
+			}
+			return nullptr;
 		}
 
 		void Renderer::WaitForPreviousFrame(bool waitAll)

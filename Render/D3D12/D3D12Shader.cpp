@@ -38,6 +38,7 @@ namespace Lightning
 			if (mDesc.ConstantBuffers > 0)
 			{
 				mDescriptorRanges = new D3D12_DESCRIPTOR_RANGE[mDesc.ConstantBuffers];
+				auto renderer = Renderer::Instance();
 				//initialize cbv descriptor ranges, number of descriptors is the number of constant buffers
 				for (UINT i = 0; i < mDesc.ConstantBuffers; i++)
 				{
@@ -58,6 +59,11 @@ namespace Lightning
 						info.bufferIndex = i;
 						info.offsetInBuffer = shaderVarDesc.StartOffset;
 						mParameters[shaderVarDesc.Name] = info;
+						auto semantic = renderer->GetUniformSemantic(shaderVarDesc.Name);
+						if (semantic != RenderSemantics::UNKNOWN)
+						{
+							mUniformSemantics.push_back(semantic);
+						}
 					}
 					D3D12_SHADER_INPUT_BIND_DESC& bindDesc = inputBindDescs[bufferDesc.Name];
 					mDescriptorRanges[i].BaseShaderRegister = bindDesc.BindPoint;
@@ -172,6 +178,17 @@ namespace Lightning
 			{
 				CompileImpl();
 			}
+		}
+
+		void D3D12Shader::GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount)
+		{
+			semanticCount = static_cast<std::uint16_t>(mUniformSemantics.size());
+			if (semanticCount == 0)
+			{
+				*semantics = nullptr;
+				return;
+			}
+			*semantics = &mUniformSemantics[0];
 		}
 
 		void D3D12Shader::UpdateRootBoundResources()
