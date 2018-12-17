@@ -10,7 +10,7 @@
 #include "IIndexBuffer.h"
 #include "IShader.h"
 #include "Texture/Itexture.h"
-#include "Texture/ISampler.h"
+#include "Texture/Sampler.h"
 #include "ISerializeBuffer.h"
 #include "Rect.h"
 #include "Color.h"

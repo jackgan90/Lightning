@@ -22,7 +22,7 @@ namespace Lightning
 			Border
 		};
 
-		struct SamplerDescriptor
+		struct SamplerState
 		{
 			SamplerFilterMode filterMode;
 			AddressMode addressU;
@@ -32,11 +32,6 @@ namespace Lightning
 			std::uint16_t maxAnisotropy;
 			float minLOD;
 			float maxLOD;
-		};
-
-		class ISampler : Plugins::RefCount
-		{
-
 		};
 	}
 }

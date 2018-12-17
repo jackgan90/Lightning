@@ -55,7 +55,7 @@ set(SHADER_SOURCES	Shader/ShaderDefine.cpp
 
 set(TEXTURE_HEADERS	Texture/ITexture.h
 					Texture/TextureCache.h
-					Texture/ISampler.h)
+					Texture/Sampler.h)
 
 set(TEXTURE_SOURCES Texture/TextureCache.cpp)
 
