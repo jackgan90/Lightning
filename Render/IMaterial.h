@@ -28,6 +28,11 @@ namespace Lightning
 			virtual void EnableBlend(bool enable) = 0;
 			virtual void GetBlendState(BlendState&)const = 0;
 			virtual const ShaderParametersCache& GetAllShaderParameters()const = 0;
+			template<typename... ParameterType>
+			bool SetParameter(ShaderType type, const std::string& name, ParameterType&&... parameter)
+			{
+				return SetParameter(type, ShaderParameter(name, std::forward<ParameterType>(parameter)...));
+			}
 		};
 	}
 }

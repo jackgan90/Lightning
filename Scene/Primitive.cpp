@@ -161,8 +161,8 @@ namespace Lightning
 			mRenderNode.material->SetShader(device->GetDefaultShader(Render::ShaderType::FRAGMENT));
 			float a, r, g, b;
 			GetColor(a, r, g, b);
-			mRenderNode.material->SetParameter(Render::ShaderType::FRAGMENT, ShaderParameter("color", Vector4f(r, g, b, a)));
-			mRenderNode.material->SetParameter(Render::ShaderType::FRAGMENT, ShaderParameter("light", Vector3f(3, 3, 3)));
+			mRenderNode.material->SetParameter(Render::ShaderType::FRAGMENT, "color", Vector4f(r, g, b, a));
+			mRenderNode.material->SetParameter(Render::ShaderType::FRAGMENT, "light", Vector3f(3, 3, 3));
 
 			mRenderNode.material->EnableBlend(mColor.a != 0xff);
 			mTransform.SetScale(GetScale());

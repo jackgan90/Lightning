@@ -440,7 +440,9 @@ namespace Lightning
 					mRootSignatures[seed] = rootSignature;
 				}
 				else
+				{
 					rootSignature = it->second;
+				}
 			}
 			return rootSignature;
 		}
