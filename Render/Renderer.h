@@ -51,6 +51,7 @@ namespace Lightning
 		protected:
 			struct SemanticInfo
 			{
+				std::string rawName;
 				std::string name;
 				SemanticIndex index;
 			};
@@ -88,7 +89,7 @@ namespace Lightning
 			Container::UnorderedMap<std::string, RenderSemantics> mUniformToSemantics;
 			Container::UnorderedMap<RenderSemantics, const char*> mSemanticsToUniform;
 		private:
-			SemanticInfo ParsePipelineInputSemantics(const PipelineInputSemantic& item);
+			SemanticInfo ParsePipelineInputSemantics(const SemanticItem& item);
 		};
 	}
 }

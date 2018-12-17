@@ -100,7 +100,7 @@ namespace Lightning
 			sInstance = nullptr;
 		}
 
-		Renderer::SemanticInfo Renderer::ParsePipelineInputSemantics(const PipelineInputSemantic& item)
+		Renderer::SemanticInfo Renderer::ParsePipelineInputSemantics(const SemanticItem& item)
 		{
 			SemanticInfo info;
 			const std::string fullName(item.name);
@@ -123,6 +123,7 @@ namespace Lightning
 			{
 				info.index = 0;
 			}
+			info.rawName = fullName;
 			info.name = fullName.substr(0, i + 1);
 			return info;
 		}

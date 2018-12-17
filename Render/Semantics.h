@@ -29,20 +29,14 @@ namespace Lightning
 			WVP,
 		};
 
-		struct PipelineInputSemantic
+		struct SemanticItem
 		{
 			RenderSemantics semantic;
 			const char* name;
-		};
-
-		struct UniformSemantic
-		{
-			const char* name;
-			RenderSemantics semantic;
 		};
 
 		//These semantics are input assembly semantics
-		const PipelineInputSemantic PipelineInputSemantics[] = {
+		const SemanticItem PipelineInputSemantics[] = {
 			{RenderSemantics::POSITION, "POSITION"},
 			{RenderSemantics::NORMAL, "NORMAL"},
 			{RenderSemantics::TANGENT, "TANGENT"},
@@ -57,11 +51,11 @@ namespace Lightning
 		};
 
 		//These semantics are uniform(constant buffer variable) semantics
-		const UniformSemantic UniformSemantics[] = {
-			{"wvp", RenderSemantics::WVP},
-			{"camera_pos", RenderSemantics::CAMERA_POSITION},
-			{"frame_count", RenderSemantics::FRAME_COUNT},
-			{"frame_delta_time", RenderSemantics::FRAME_DELTA_TIME},
+		const SemanticItem UniformSemantics[] = {
+			{RenderSemantics::WVP, "wvp"},
+			{RenderSemantics::CAMERA_POSITION, "camera_pos"},
+			{RenderSemantics::FRAME_COUNT, "frame_count"},
+			{RenderSemantics::FRAME_DELTA_TIME, "frame_delta_time"},
 		};
 	}
 }
