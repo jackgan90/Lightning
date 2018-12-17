@@ -88,7 +88,7 @@ namespace Lightning
 			Container::Vector<D3D12_ROOT_PARAMETER> mRootParameters;
 			//each offset corresponds to mIntermediateBuffer
 			Container::UnorderedMap<std::size_t, ConstantBufferInfo> mConstantBufferInfo;
-			D3D12_DESCRIPTOR_RANGE *mDescriptorRanges;
+			Container::Vector<D3D12_DESCRIPTOR_RANGE> mDescriptorRanges;
 			UINT mTotalConstantBufferSize;
 			//buffer used to cache constant buffer value
 			Foundation::ThreadLocalSingleton<ShaderResourceProxy> mResourceProxy;

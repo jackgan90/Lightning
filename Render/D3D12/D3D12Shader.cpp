@@ -19,7 +19,7 @@ namespace Lightning
 
 		D3D12Shader::D3D12Shader(ID3D12Device* device, ShaderType type, const std::string& name, const std::string& entry, const char* const shaderSource):
 			Shader(type, name, entry, shaderSource)
-			, mDescriptorRanges(nullptr), mTotalConstantBufferSize(0)
+			, mTotalConstantBufferSize(0)
 		{
 			assert(shaderSource);
 			CompileImpl();
@@ -45,7 +45,6 @@ namespace Lightning
 		{
 			if (mDesc.ConstantBuffers > 0)
 			{
-				mDescriptorRanges = new D3D12_DESCRIPTOR_RANGE[mDesc.ConstantBuffers];
 				auto renderer = Renderer::Instance();
 				//initialize cbv descriptor ranges, number of descriptors is the number of constant buffers
 				for (UINT i = 0; i < mDesc.ConstantBuffers; i++)
@@ -74,28 +73,26 @@ namespace Lightning
 						}
 					}
 					const auto& bindDesc = inputBindDescs.at(bufferDesc.Name);
-					mDescriptorRanges[i].BaseShaderRegister = bindDesc.BindPoint;
-					mDescriptorRanges[i].NumDescriptors = 1;
-					mDescriptorRanges[i].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-					mDescriptorRanges[i].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-					mDescriptorRanges[i].RegisterSpace = bindDesc.Space;
+					D3D12_DESCRIPTOR_RANGE range;
+					range.BaseShaderRegister = bindDesc.BindPoint;
+					range.NumDescriptors = 1;
+					range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+					range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
+					range.RegisterSpace = bindDesc.Space;
+					mDescriptorRanges.push_back(range);
 				}
 				if (mTotalConstantBufferSize > 0)
 				{
 					mTotalConstantBufferSize = UINT(D3D12ConstantBufferManager::AlignedSize(mTotalConstantBufferSize));
 				}
 				CD3DX12_ROOT_PARAMETER cbvParameter;
-				cbvParameter.InitAsDescriptorTable(mDesc.ConstantBuffers, mDescriptorRanges, GetParameterVisibility());
+				cbvParameter.InitAsDescriptorTable(mDesc.ConstantBuffers, &mDescriptorRanges[0], GetParameterVisibility());
 				mRootParameters.push_back(cbvParameter);
 			}
 		}
 
 		D3D12Shader::~D3D12Shader()
 		{
-			if (mDescriptorRanges)
-			{
-				delete[] mDescriptorRanges;
-			}
 			mParameters.clear();
 			mByteCode.Reset();
 		}
