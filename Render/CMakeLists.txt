@@ -30,7 +30,8 @@ set(HEADERS IDevice.h
 			ForwardRenderPass.h
 			DeferedRenderPass.h
 			FrameMemoryAllocator.h
-			RenderNode.h)
+			RenderNode.h
+			RenderObjectCache.h)
 set(SOURCES Renderer.cpp
 			Device.cpp
 			VertexBuffer.cpp
@@ -54,10 +55,7 @@ set(SHADER_SOURCES	Shader/ShaderDefine.cpp
 					Shader/Shader.cpp)
 
 set(TEXTURE_HEADERS	Texture/ITexture.h
-					Texture/TextureCache.h
 					Texture/Sampler.h)
-
-set(TEXTURE_SOURCES Texture/TextureCache.cpp)
 
 set(SERIALIZERS_HEADERS	Serializers/ShaderSerializer.h
 						Serializers/TextureSerializer.h)
@@ -72,13 +70,13 @@ set(PLUGIN_HEADERS	RenderPlugin.h)
 set(PLUGIN_SOURCES	RenderPlugin.cpp)
 
 list(APPEND HEADERS ${TYPES_HEADERS} ${SHADER_HEADERS} ${UTILITY_HEADERS} ${SERIALIZERS_HEADERS} ${TEXTURE_HEADERS} ${PLUGIN_HEADERS})
-list(APPEND SOURCES ${SHADER_SOURCES} ${UTILITY_SOURCES} ${SERIALIZERS_SOURCES} ${PLUGIN_SOURCES} ${TEXTURE_SOURCES})
+list(APPEND SOURCES ${SHADER_SOURCES} ${UTILITY_SOURCES} ${SERIALIZERS_SOURCES} ${PLUGIN_SOURCES})
 
 source_group("Types" FILES ${TYPES_HEADERS})
 source_group("Shader" FILES ${SHADER_HEADERS}
 							${SHADER_SOURCES})
 
-source_group("Texture" FILES ${TEXTURE_HEADERS} ${TEXTURE_SOURCES})
+source_group("Texture" FILES ${TEXTURE_HEADERS})
 
 source_group("Utility" FILES ${UTILITY_HEADERS} ${UTILITY_SOURCES})
 

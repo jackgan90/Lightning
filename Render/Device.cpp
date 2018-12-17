@@ -2,7 +2,7 @@
 #include "Device.h"
 #include "IPluginManager.h"
 #include "LoaderPlugin.h"
-#include "Texture/TextureCache.h"
+#include "RenderObjectCache.h"
 #include "Serializers/ShaderSerializer.h"
 #include "Serializers/TextureSerializer.h"
 
