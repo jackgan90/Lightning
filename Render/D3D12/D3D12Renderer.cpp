@@ -384,13 +384,38 @@ namespace Lightning
 
 			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
 			Container::Vector<D3D12_ROOT_PARAMETER> cbParameters;
+			D3D12_ROOT_SIGNATURE_FLAGS flags = 
+				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | 
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS | 
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS;
 			for (std::size_t i = 0;i < shaders.size();++i)
 			{
+				switch (shaders[i]->GetType())
+				{
+				case ShaderType::VERTEX:
+					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS;
+					break;
+				case ShaderType::FRAGMENT:
+					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+					break;
+				case ShaderType::GEOMETRY:
+					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
+					break;
+				case ShaderType::TESSELATION_CONTROL:		//hull
+					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS;
+					break;
+				case ShaderType::TESSELATION_EVALUATION:	//domain
+					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS;
+					break;
+				}
 				const auto& parameters = static_cast<D3D12Shader*>(shaders[i])->GetRootParameters();
 				cbParameters.insert(cbParameters.end(), parameters.begin(), parameters.end());
 			}
 			D3D12_ROOT_PARAMETER* pParameters = cbParameters.empty() ? nullptr : &cbParameters[0];
-			rootSignatureDesc.Init(UINT(cbParameters.size()), pParameters, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+			rootSignatureDesc.Init(UINT(cbParameters.size()), pParameters, 0, nullptr, flags);
 
 			ComPtr<ID3DBlob> signature;
 			auto hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, nullptr);
