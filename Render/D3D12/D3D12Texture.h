@@ -1,4 +1,5 @@
 #pragma once
+#include <mutex>
 #include "ITexture.h"
 #include "D3D12StatefulResource.h"
 #include "D3D12Device.h"
@@ -25,6 +26,7 @@ namespace Lightning
 			D3D12StatefulResourcePtr mResource;
 			D3D12StatefulResourcePtr mIntermediateResource;
 			Loading::ISerializeBuffer* mBuffer;
+			std::mutex mCommitMutex;
 		};
 	}
 }

@@ -86,16 +86,22 @@ namespace Lightning
 				return;
 			if (!mBuffer)
 				return;
-			D3D12_SUBRESOURCE_DATA subresourceData{};
-			subresourceData.pData = mBuffer->GetBuffer();
-			subresourceData.RowPitch = GetBytesPerRow(mDesc.Format, std::uint32_t(mDesc.Width));
-			subresourceData.SlicePitch = subresourceData.RowPitch * mDesc.Height;
-			
-			auto commandList = static_cast<D3D12Renderer*>(Renderer::Instance())->GetGraphicsCommandList();
-			::UpdateSubresources(commandList, *mResource, *mIntermediateResource, 0, 0, 1, &subresourceData);
-			mBuffer->Release();
-			mBuffer = nullptr;
-			mCommitted = true;
+			{
+				std::lock_guard<std::mutex> lock(mCommitMutex);
+				if (!mCommitted && mBuffer) //Do double check,because there may be more than one thread enter lock section
+				{
+					D3D12_SUBRESOURCE_DATA subresourceData{};
+					subresourceData.pData = mBuffer->GetBuffer();
+					subresourceData.RowPitch = GetBytesPerRow(mDesc.Format, std::uint32_t(mDesc.Width));
+					subresourceData.SlicePitch = subresourceData.RowPitch * mDesc.Height;
+					
+					auto commandList = static_cast<D3D12Renderer*>(Renderer::Instance())->GetGraphicsCommandList();
+					::UpdateSubresources(commandList, *mResource, *mIntermediateResource, 0, 0, 1, &subresourceData);
+					mBuffer->Release();
+					mBuffer = nullptr;
+					mCommitted = true;
+				}
+			}
 		}
 
 		std::uint16_t D3D12Texture::GetBitsPerPixel(DXGI_FORMAT format)

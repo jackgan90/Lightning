@@ -34,7 +34,15 @@ namespace Lightning
 				inputBindDescs[bindDesc.Name] = bindDesc;
 			}
 			//create heap descriptor(samplers excluded)
+			InitConstantBufferRootParameter(shaderReflection.Get(), inputBindDescs);
 			//TODO : should create sampler descriptor heap
+			//TODO initialize other shader resource
+		}
+
+		void D3D12Shader::InitConstantBufferRootParameter(
+			ID3D12ShaderReflection* shaderReflection, 
+			const Container::UnorderedMap<std::string, D3D12_SHADER_INPUT_BIND_DESC>& inputBindDescs)
+		{
 			if (mDesc.ConstantBuffers > 0)
 			{
 				mDescriptorRanges = new D3D12_DESCRIPTOR_RANGE[mDesc.ConstantBuffers];
@@ -65,7 +73,7 @@ namespace Lightning
 							mUniformSemantics.push_back(semantic);
 						}
 					}
-					D3D12_SHADER_INPUT_BIND_DESC& bindDesc = inputBindDescs[bufferDesc.Name];
+					const auto& bindDesc = inputBindDescs.at(bufferDesc.Name);
 					mDescriptorRanges[i].BaseShaderRegister = bindDesc.BindPoint;
 					mDescriptorRanges[i].NumDescriptors = 1;
 					mDescriptorRanges[i].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
@@ -80,7 +88,6 @@ namespace Lightning
 				cbvParameter.InitAsDescriptorTable(mDesc.ConstantBuffers, mDescriptorRanges, GetParameterVisibility());
 				mRootParameters.push_back(cbvParameter);
 			}
-			//TODO initialize other shader resource
 		}
 
 		D3D12Shader::~D3D12Shader()
@@ -159,15 +166,28 @@ namespace Lightning
 			}
 			auto it = mParameters.find(parameter.name);
 			assert(it != mParameters.end());
-			const auto& bindingInfo = it->second;
 			std::size_t size{ 0 };
-			auto data = parameter.Buffer(size);
-			if (data)
+			if (parameter.type == ShaderParameterType::TEXTURE)
 			{
-				std::uint8_t *p = mResourceProxy->GetConstantBuffer(mTotalConstantBufferSize);
-				std::uint8_t *buffer = p + mConstantBufferInfo[bindingInfo.bufferIndex].offset;
-				std::memcpy(buffer + bindingInfo.offsetInBuffer, data, size);
+				auto texture = const_cast<ITexture*>(reinterpret_cast<const ITexture*>(parameter.Buffer(size)));
+				assert(texture != nullptr && "Encounter null texture!");
+				texture->Commit();
 				return true;
+			}
+			else if (parameter.type == ShaderParameterType::SAMPLER)
+			{
+			}
+			else
+			{
+				auto data = parameter.Buffer(size);
+				if (data)
+				{
+					const auto& bindingInfo = it->second;
+					std::uint8_t *p = mResourceProxy->GetConstantBuffer(mTotalConstantBufferSize);
+					std::uint8_t *buffer = p + mConstantBufferInfo[bindingInfo.bufferIndex].offset;
+					std::memcpy(buffer + bindingInfo.offsetInBuffer, data, size);
+					return true;
+				}
 			}
 			return false;
 		}

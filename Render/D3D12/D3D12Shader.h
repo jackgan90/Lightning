@@ -80,6 +80,8 @@ namespace Lightning
 			void CompileImpl();
 			D3D12_SHADER_VISIBILITY GetParameterVisibility()const;
 			void UpdateRootBoundResources();
+			void InitConstantBufferRootParameter(ID3D12ShaderReflection*, 
+				const Container::UnorderedMap<std::string, D3D12_SHADER_INPUT_BIND_DESC>&);
 			ComPtr<ID3D10Blob> mByteCode;
 			D3D12_SHADER_DESC mDesc;
 			Container::UnorderedMap<std::string, ParameterInfo> mParameters;

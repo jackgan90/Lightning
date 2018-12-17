@@ -9,6 +9,8 @@
 #include "Math/Matrix.h"
 #include "Math/Vector.h"
 #include "RefCount.h"
+#include "Texture/ITexture.h"
+#include "Texture/Sampler.h"
 
 namespace Lightning
 {
@@ -45,10 +47,8 @@ namespace Lightning
 			MATRIX2,
 			MATRIX3,
 			MATRIX4,
-			TEXTURE2D,
-			TEXTURE3D,
-			SAMPLER2D,
-			SAMPLER3D
+			TEXTURE,
+			SAMPLER,
 		};
 		using ShaderParameterRegister = std::uint8_t;
 		using ShaderParameterSpace = std::uint8_t;
@@ -67,7 +67,8 @@ namespace Lightning
 				Vector4f v4;
 				Matrix3f m3;
 				Matrix4f m4;
-				//TODO : add texture and sampler
+				ITexture* texture;
+				SamplerState samplerState;
 			};
 			ShaderParameter():type(ShaderParameterType::UNKNOWN){}
 			ShaderParameter(const std::string& n, const float _f):name(n), type(ShaderParameterType::FLOAT), f(_f){}
@@ -76,7 +77,9 @@ namespace Lightning
 			ShaderParameter(const std::string& n, const Vector4f& _v4) :name(n), type(ShaderParameterType::FLOAT4) { new (&v4)Vector4f(_v4); }
 			ShaderParameter(const std::string& n, const Matrix3f& _m3) :name(n), type(ShaderParameterType::MATRIX3) { new (&m3)Matrix3f(_m3); }
 			ShaderParameter(const std::string& n, const Matrix4f& _m4) :name(n), type(ShaderParameterType::MATRIX4) { new (&m4)Matrix4f(_m4); }
-			const std::uint8_t* Buffer(std::size_t& size)const
+			ShaderParameter(const std::string& n, ITexture* _texture) :name(n), type(ShaderParameterType::TEXTURE) { texture = _texture; }
+			ShaderParameter(const std::string& n, const SamplerState& _state) :name(n), type(ShaderParameterType::SAMPLER) { samplerState = _state; }
+			const void* Buffer(std::size_t& size)const
 			{
 				size = 0;
 				switch (type)
@@ -85,32 +88,28 @@ namespace Lightning
 					break;
 				case ShaderParameterType::FLOAT:
 					size = sizeof(f);
-					return reinterpret_cast<const std::uint8_t*>(&f);
+					return &f;
 				case ShaderParameterType::FLOAT2:
 					size = sizeof(v2);
-					return reinterpret_cast<const std::uint8_t*>(&v2);
+					return &v2;
 				case ShaderParameterType::FLOAT3:
 					size = sizeof(v3);
-					return reinterpret_cast<const std::uint8_t*>(&v3);
+					return &v3;
 				case ShaderParameterType::FLOAT4:
 					size = sizeof(v4);
-					return reinterpret_cast<const std::uint8_t*>(&v4);
+					return &v4;
 				case ShaderParameterType::MATRIX2:
 					break;
 				case ShaderParameterType::MATRIX3:
 					size = sizeof(m3);
-					return reinterpret_cast<const std::uint8_t*>(&m3);
+					return &m3;
 				case ShaderParameterType::MATRIX4:
 					size = sizeof(m4);
-					return reinterpret_cast<const std::uint8_t*>(&m4);
-				case ShaderParameterType::TEXTURE2D:
-					break;
-				case ShaderParameterType::TEXTURE3D:
-					break;
-				case ShaderParameterType::SAMPLER2D:
-					break;
-				case ShaderParameterType::SAMPLER3D:
-					break;
+					return &m4;
+				case ShaderParameterType::TEXTURE:
+					return texture;
+				case ShaderParameterType::SAMPLER:
+					return &samplerState;
 				default:
 					break;
 				}
