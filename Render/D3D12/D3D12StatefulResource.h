@@ -18,6 +18,7 @@ namespace Lightning
 		{
 		public:
 			explicit D3D12StatefulResource(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState);
+			~D3D12StatefulResource();
 			void TransitTo(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState);
 			void GetLocalStates(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES& firstState, D3D12_RESOURCE_STATES& finalState);
 			D3D12_RESOURCE_STATES GetGlobalState()const { return mGlobalState.state; }

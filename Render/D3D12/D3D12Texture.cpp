@@ -76,6 +76,8 @@ namespace Lightning
 
 		D3D12Texture::~D3D12Texture()
 		{
+			mResource.reset();
+			mIntermediateResource.reset();
 			if (mBuffer)
 				mBuffer->Release();
 		}

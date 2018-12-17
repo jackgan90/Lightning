@@ -14,6 +14,11 @@ namespace Lightning
 			mGlobalState.lastAccessFrame = Renderer::Instance()->GetCurrentFrameCount();
 		}
 
+		D3D12StatefulResource::~D3D12StatefulResource()
+		{
+			mResource.Reset();
+		}
+
 		void D3D12StatefulResource::TransitTo(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES newState)
 		{
 			auto currentFrame = Renderer::Instance()->GetCurrentFrameCount();

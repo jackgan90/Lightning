@@ -191,20 +191,23 @@ namespace Lightning
 		{
 			/*
 			if (testTex)
+			{
 				testTex->Commit();
+				testTex->Release();
+				testTex = nullptr;
+			}
 			static bool textureLoaded{ false };
 			if (!textureLoaded)
 			{
 				textureLoaded = true;
-				auto loader = Plugins::gPluginMgr->GetPlugin<Plugins::LoaderPlugin>("Loader")->GetLoader();
-				auto ser = new TextureSerializer("Purged_One_Human_Jumper.jpg", [this](ITexture* texture) {
+				auto device = GetDevice();
+				device->CreateTextureFromFile("win_sequence_rgb.jpg", [this](ITexture* texture) {
 					if (texture)
 					{
 						//texture->Commit();
 						testTex = texture;
 					}
 				});
-				loader->Load("Purged_One_Human_Jumper.jpg", ser);
 			}
 			*/
 		}

@@ -25,6 +25,7 @@ namespace Lightning
 			{
 				pair.second->Release();
 			}
+			TextureCache::Instance()->Clear();
 		}
 
 		void Device::CreateShaderFromFile(ShaderType type, const std::string& path,
@@ -36,7 +37,7 @@ namespace Lightning
 
 		void Device::CreateTextureFromFile(const std::string& path, TextureLoadFinishHandler handler)
 		{
-			auto texture = TextureCache::Instance()->GetTexture(path);
+			auto texture = TextureCache::Instance()->GetObject(path);
 			if (texture)
 			{
 				if (handler)
@@ -47,7 +48,7 @@ namespace Lightning
 			}
 			auto ser = new TextureSerializer(path, [path, handler](ITexture* texture) {
 				if (texture)
-					TextureCache::Instance()->AddTexture(path, texture);
+					TextureCache::Instance()->AddObject(path, texture);
 				if (handler)
 				{
 					handler(texture);

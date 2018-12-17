@@ -52,6 +52,7 @@ set(HEADERS	Common.h
 			IEnvironment.h
 			Environment.h
 			SystemPriority.h
+			RefObjectCache.h
 			)
 set(SOURCES FileSystem.cpp
 			ConfigManager.cpp
