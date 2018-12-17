@@ -2,7 +2,6 @@
 #include "ForwardRenderPass.h"
 #include "Renderer.h"
 #include "FrameMemoryAllocator.h"
-#include "Material.h"
 #include "tbb/flow_graph.h"
 #include "tbb/parallel_for.h"
 
@@ -40,22 +39,23 @@ namespace Lightning
 		void ForwardRenderPass::CommitPipelineStates(const RenderNode& node)
 		{
 			PipelineState state{};
-			//TODO : set render target count based on model setting
 			state.renderTargetCount = static_cast<std::uint8_t>(node.renderTargets.size());
 			auto renderer = Renderer::Instance();
 			auto pSwapChain = renderer->GetSwapChain();
-			state.renderTargets[0] = pSwapChain->GetDefaultRenderTarget();
+			for (auto i = 0;i < node.renderTargets.size();++i)
+			{
+				state.renderTargets[i] = node.renderTargets[i];
+			}
 			if (node.material)
 			{
-				auto material = static_cast<Material*>(node.material);
-				state.vs = material->GetShader(ShaderType::VERTEX);
-				state.fs = material->GetShader(ShaderType::FRAGMENT);
-				state.gs = material->GetShader(ShaderType::GEOMETRY);
-				state.hs = material->GetShader(ShaderType::TESSELATION_CONTROL);
-				state.ds = material->GetShader(ShaderType::TESSELATION_EVALUATION);
+				state.vs = node.material->GetShader(ShaderType::VERTEX);
+				state.fs = node.material->GetShader(ShaderType::FRAGMENT);
+				state.gs = node.material->GetShader(ShaderType::GEOMETRY);
+				state.hs = node.material->GetShader(ShaderType::TESSELATION_CONTROL);
+				state.ds = node.material->GetShader(ShaderType::TESSELATION_EVALUATION);
 				for (auto i = 0;i < state.renderTargetCount;++i)
 				{
-					state.blendStates[i] = material->GetBlendState();
+					node.material->GetBlendState(state.blendStates[i]);
 					if (state.blendStates[i].enable)
 					{
 						state.depthStencilState.depthWriteEnable = false;
@@ -79,13 +79,12 @@ namespace Lightning
 		{
 			if (!node.material)
 				return;
-			auto material = static_cast<Material*>(node.material);
-			const auto& shaderMap = material->GetMaterialShaderMap();
+			const auto& shaderParameters = node.material->GetAllShaderParameters();
 			auto renderer = Renderer::Instance();
-			for (const auto& shaderAndArgs : shaderMap)
+			for (auto it = shaderParameters.cbegin();it != shaderParameters.cend();++it)
 			{
-				auto shader = shaderAndArgs.second.shader;
-				for (const auto& arg : shaderAndArgs.second.parameters)
+				auto shader = it->second.shader;
+				for (const auto& arg : it->second.parameters)
 				{
 					shader->SetParameter(arg);
 				}
@@ -102,7 +101,7 @@ namespace Lightning
 						{
 						case RenderSemantics::WVP:
 						{
-							auto vs = material->GetShader(ShaderType::VERTEX);
+							auto vs = node.material->GetShader(ShaderType::VERTEX);
 							if (vs)
 							{
 								//We know that transform.ToMatrix4 may change it's internal matrix

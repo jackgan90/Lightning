@@ -4,7 +4,6 @@
 #include "D3D12DescriptorHeapManager.h"
 #include "ThreadLocalSingleton.h"
 #include "D3D12Shader.h"
-#include "Material.h"
 
 namespace Lightning
 {
@@ -32,7 +31,7 @@ namespace Lightning
 			static Foundation::ThreadLocalSingleton<ShaderContainer> shadersContainer;
 			auto& shaders = *shadersContainer;
 			shaders.clear();
-			static_cast<Material*>(node.material)->GetShaders(shaders);
+			node.material->GetShaders(shaders);
 			std::for_each(shaders.begin(), shaders.end(), [this](IShader* shader) {
 				auto d3d12Shader = static_cast<D3D12Shader*>(shader);
 				mTotalConstantBufferSize += d3d12Shader->GetConstantBufferSize();

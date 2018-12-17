@@ -44,31 +44,31 @@ namespace Lightning
 			if (!shader)
 				return;
 			shader->AddRef();
+			ResetShader(shader->GetType());
 			mShaders[shader->GetType()].shader = shader;
 		}
 
-		void Material::RemoveShader(ShaderType type)
+		bool Material::ResetShader(ShaderType type)
 		{
 			auto it = mShaders.find(type);
 			if (it != mShaders.end())
 			{
 				it->second.shader->Release();
 				mShaders.erase(it);
+				return true;
 			}
+			return false;
 		}
 
-		void Material::SetParameter(ShaderType type, const ShaderParameter& arg)
+		bool Material::SetParameter(ShaderType type, const ShaderParameter& arg)
 		{
 			auto it = mShaders.find(type);
 			if (it != mShaders.end())
 			{
 				it->second.parameters.push_back(arg);
+				return true;
 			}
-		}
-
-		const MaterialShaderMap& Material::GetMaterialShaderMap()const
-		{
-			return mShaders;
+			return false;
 		}
 
 		void Material::EnableBlend(bool enable)
