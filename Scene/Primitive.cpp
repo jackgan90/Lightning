@@ -134,7 +134,7 @@ namespace Lightning
 			compNormal.format = Render::RenderFormat::R32G32B32_FLOAT;
 			compNormal.instanceStepRate = 0;
 			compNormal.isInstance = false;
-			compNormal.offset = 0;
+			compNormal.offset = sizeof(float) * 3;
 			compNormal.semantic = Render::RenderSemantics::NORMAL;
 			descriptor.components.push_back(compNormal);
 
@@ -238,13 +238,13 @@ namespace Lightning
 			{
 				//generate uv
 				Render::VertexDescriptor descriptor;
-				Render::VertexComponent compPosition;
-				compPosition.format = Render::RenderFormat::R32G32_FLOAT;
-				compPosition.instanceStepRate = 0;
-				compPosition.isInstance = false;
-				compPosition.offset = 0;
-				compPosition.semantic = Render::RenderSemantics::TEXCOORD0;
-				descriptor.components.push_back(compPosition);
+				Render::VertexComponent compTexcoord;
+				compTexcoord.format = Render::RenderFormat::R32G32_FLOAT;
+				compTexcoord.instanceStepRate = 0;
+				compTexcoord.isInstance = false;
+				compTexcoord.offset = 0;
+				compTexcoord.semantic = Render::RenderSemantics::TEXCOORD0;
+				descriptor.components.push_back(compTexcoord);
 				auto pDevice = renderer.GetDevice();
 				auto uvBufferSize = sizeof(Vector2f) * 8;
 				mRenderNode.geometry.vbs[1] = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(uvBufferSize), descriptor);

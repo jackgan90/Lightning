@@ -661,7 +661,10 @@ namespace Lightning
 				for (int k = 0;k < inputLayouts[j].componentCount;++k)
 				{
 					auto& component = inputLayouts[j].components[k];
-					pInputElementDesc[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+					if(component.offset == 0)
+						pInputElementDesc[i].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+					else
+						pInputElementDesc[i].AlignedByteOffset = component.offset;
 					pInputElementDesc[i].Format = D3D12TypeMapper::MapRenderFormat(component.format);
 					pInputElementDesc[i].InputSlot = inputLayout.slot;
 					pInputElementDesc[i].InputSlotClass = component.isInstance ? \
