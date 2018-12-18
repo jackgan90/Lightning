@@ -52,6 +52,24 @@ namespace Lightning
 			auto renderer = renderPlugin->GetRenderer();
 			auto device = renderer->GetDevice();
 			/*
+			device->CreateShaderFromFile(Render::ShaderType::VERTEX, "texture_map.vs", 
+				[cube](Render::IShader* shader) {
+				if (shader)
+				{
+					cube->SetShader(shader);
+					shader->Release();
+				}
+			});
+
+			device->CreateShaderFromFile(Render::ShaderType::FRAGMENT, "texture_map.ps",
+				[cube](Render::IShader* shader) {
+				if (shader)
+				{
+					cube->SetShader(shader);
+					shader->Release();
+				}
+			});*/
+			/*
 			static std::random_device rd;
 			static std::mt19937 mt(rd());
 			static std::uniform_real_distribution<float> rDist(-2, 2);

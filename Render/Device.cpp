@@ -39,49 +39,71 @@ namespace Lightning
 			return mLoader;
 		}
 
-		void Device::CreateShaderFromFile(ShaderType type, const std::string& path,
-			const ShaderMacros& macros, ShaderLoadFinishHandler handler)
+		void Device::CreateShaderFromFile(ShaderType type, const std::string& path, IShaderLoadCallback* callback)
 		{
+			class ShaderLoaded : public IShaderLoadCallback
+			{
+			public:
+				ShaderLoaded(IShaderLoadCallback* callback):mCallback(callback){}
+				void operator()(IShader* shader)
+				{
+					if (shader)
+						ShaderCache::Instance()->AddShader(shader);
+					if (mCallback)
+					{
+						mCallback->operator()(shader);
+					}
+					delete this;
+				}
+			private:
+				IShaderLoadCallback* mCallback;
+			};
+			ShaderMacros macros;
 			auto shader = ShaderCache::Instance()->GetShader(type, path, macros);
 			if (shader)
 			{
-				if (handler)
+				if (callback)
 				{
-					handler(shader);
+					callback->operator()(shader);
 				}
 				return;
 			}
-			auto ser = new ShaderSerializer(type, path, macros, [handler](IShader* shader) {
-				if (shader)
-					ShaderCache::Instance()->AddShader(shader);
-				if (handler)
-				{
-					handler(shader);
-				}
-			});
+			auto ser = new ShaderSerializer(type, path, macros, new ShaderLoaded(callback));
 			auto loader = GetLoader();
 			loader->Load(path, ser);
 		}
 
-		void Device::CreateTextureFromFile(const std::string& path, TextureLoadFinishHandler handler)
+		void Device::CreateTextureFromFile(const std::string& path, ITextureLoadCallback* callback)
 		{
+			class TextureLoaded : public ITextureLoadCallback
+			{
+			public:
+				TextureLoaded(const std::string& path, ITextureLoadCallback* callback):mCallback(callback), mPath(path){}
+				void operator()(ITexture* texture)
+				{
+					if (texture)
+						TextureCache::Instance()->AddObject(mPath, texture);
+					if (mCallback)
+					{
+						mCallback->operator()(texture);
+					}
+					delete this;
+				}
+			private:
+				ITextureLoadCallback* mCallback;
+				std::string mPath;
+			};
+
 			auto texture = TextureCache::Instance()->GetObject(path);
 			if (texture)
 			{
-				if (handler)
+				if (callback)
 				{
-					handler(texture);
+					callback->operator()(texture);
 				}
 				return;
 			}
-			auto ser = new TextureSerializer(path, [path, handler](ITexture* texture) {
-				if (texture)
-					TextureCache::Instance()->AddObject(path, texture);
-				if (handler)
-				{
-					handler(texture);
-				}
-			});
+			auto ser = new TextureSerializer(path, new TextureLoaded(path, callback));
 			auto loader = GetLoader();
 			loader->Load(path, ser);
 		}

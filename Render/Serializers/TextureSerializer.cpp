@@ -98,8 +98,8 @@ namespace Lightning
 			std::string mPath;
 		};
 
-		TextureSerializer::TextureSerializer(const std::string path, TextureLoadFinishHandler finishHandler):
-			mPath(path), mFinishHandler(finishHandler)
+		TextureSerializer::TextureSerializer(const std::string path, ITextureLoadCallback* callback):
+			mPath(path), mFinishCallback(callback)
 		{
 
 		}
@@ -119,17 +119,17 @@ namespace Lightning
 				fiBuffer->GetTextureDescriptor(descriptor);
 				auto device = Renderer::Instance()->GetDevice();
 				auto texture = device->CreateTexture(descriptor, fiBuffer);
-				if (mFinishHandler)
+				if (mFinishCallback)
 				{
-					mFinishHandler(texture);
+					mFinishCallback->operator()(texture);
 				}
 				fiBuffer->Release();
 			}
 			else
 			{
-				if (mFinishHandler)
+				if (mFinishCallback)
 				{
-					mFinishHandler(nullptr);
+					mFinishCallback->operator()(nullptr);
 				}
 			}
 		}

@@ -11,7 +11,7 @@ namespace Lightning
 		{
 		public:
 			ShaderSerializer(ShaderType type, const std::string& path, 
-				const ShaderMacros& macros, ShaderLoadFinishHandler handler);
+				const ShaderMacros& macros, IShaderLoadCallback* callback);
 			void Serialize(char** buffer)override;
 			void Deserialize(Foundation::IFile* file, Loading::ISerializeBuffer* buffer)override;
 			void Dispose()override;
@@ -19,7 +19,7 @@ namespace Lightning
 			ShaderType mType;
 			std::string mPath;
 			ShaderMacros mMacros;
-			ShaderLoadFinishHandler mFinishHandler;
+			IShaderLoadCallback* mFinishCallback;
 		};
 	}
 }
