@@ -33,10 +33,14 @@ namespace Lightning
 
 		Primitive::~Primitive()
 		{
-			if (mRenderNode.material)
-				mRenderNode.material->Release();
 			if (mTexture)
 				mTexture->Release();
+			for (auto shader : mShaders)
+			{
+				shader->Release();
+			}
+			if (mRenderNode.material)
+				mRenderNode.material->Release();
 			if (mRenderNode.geometry.ib)
 				mRenderNode.geometry.ib->Release();
 			for (auto i = 0; i < Foundation::ArraySize(mRenderNode.geometry.vbs);++i)
@@ -157,8 +161,19 @@ namespace Lightning
 			
 			mRenderNode.material = gRenderPlugin->CreateMaterial();
 			auto device = renderer.GetDevice();
-			mRenderNode.material->SetShader(device->GetDefaultShader(Render::ShaderType::VERTEX));
-			mRenderNode.material->SetShader(device->GetDefaultShader(Render::ShaderType::FRAGMENT));
+			for (auto shader : mShaders)
+			{
+				shader->Release();
+			}
+			mShaders.clear();
+			auto vs = device->GetDefaultShader(Render::ShaderType::VERTEX);
+			vs->AddRef();
+			auto ps = device->GetDefaultShader(Render::ShaderType::FRAGMENT);
+			ps->AddRef();
+			mShaders.push_back(vs);
+			mShaders.push_back(ps);
+			mRenderNode.material->SetShader(vs);
+			mRenderNode.material->SetShader(ps);
 			float a, r, g, b;
 			GetColor(a, r, g, b);
 			mRenderNode.material->SetParameter(Render::ShaderType::FRAGMENT, "color", Vector4f(r, g, b, a));

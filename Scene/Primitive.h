@@ -1,7 +1,9 @@
 #pragma once
 #include <memory>
 #include <cstdint>
+#include "Container.h"
 #include "RenderNode.h"
+#include "IShader.h"
 #include "IPrimitive.h"
 
 namespace Lightning
@@ -41,6 +43,7 @@ namespace Lightning
 			bool mShouldUpdateRenderNode;
 			Color32 mColor;
 			ITexture* mTexture;
+			Foundation::Container::Vector<Render::IShader*> mShaders;
 		};
 
 		struct PrimitiveDataSource
