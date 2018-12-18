@@ -26,13 +26,41 @@ namespace Lightning
 				pair.second->Release();
 			}
 			TextureCache::Instance()->Clear();
+			ShaderCache::Instance()->Clear();
+		}
+
+		Loading::ILoader* Device::GetLoader()
+		{
+			if (!mLoader)
+			{
+				auto loaderPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::LoaderPlugin>("Loader");
+				mLoader = loaderPlugin->GetLoader();
+			}
+			return mLoader;
 		}
 
 		void Device::CreateShaderFromFile(ShaderType type, const std::string& path,
 			const ShaderMacros& macros, ShaderLoadFinishHandler handler)
 		{
-			//auto ser = new ShaderSerializer(type, path, defineMap, handler);
-			//Loader::Instance()->Load(path, ser);
+			auto shader = ShaderCache::Instance()->GetShader(type, path, macros);
+			if (shader)
+			{
+				if (handler)
+				{
+					handler(shader);
+				}
+				return;
+			}
+			auto ser = new ShaderSerializer(type, path, macros, [handler](IShader* shader) {
+				if (shader)
+					ShaderCache::Instance()->AddShader(shader);
+				if (handler)
+				{
+					handler(shader);
+				}
+			});
+			auto loader = GetLoader();
+			loader->Load(path, ser);
 		}
 
 		void Device::CreateTextureFromFile(const std::string& path, TextureLoadFinishHandler handler)
@@ -54,12 +82,8 @@ namespace Lightning
 					handler(texture);
 				}
 			});
-			if (!mLoader)
-			{
-				auto loaderPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::LoaderPlugin>("Loader");
-				mLoader = loaderPlugin->GetLoader();
-			}
-			mLoader->Load(path, ser);
+			auto loader = GetLoader();
+			loader->Load(path, ser);
 		}
 
 		IShader* Device::GetDefaultShader(ShaderType type)

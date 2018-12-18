@@ -7,19 +7,9 @@
 #include "Serializers/ShaderSerializer.h"
 #include "Serializers/TextureSerializer.h"
 #include "Loader.h"
-//for test only
-//#include "LoaderPlugin.h"
-//#include "Serializers/TextureSerializer.h"
-//#include "IPluginManager.h"
-//end test
 
 namespace Lightning
 {
-	/*
-	namespace Plugins
-	{
-		extern IPluginManager* gPluginMgr;
-	}*/
 	namespace Render
 	{
 		IRenderer* Renderer::sInstance{ nullptr };
@@ -186,30 +176,8 @@ namespace Lightning
 		{
 		}
 
-		//ITexture* testTex{ nullptr };
 		void Renderer::OnFrameUpdate()
 		{
-			/*
-			if (testTex)
-			{
-				testTex->Commit();
-				testTex->Release();
-				testTex = nullptr;
-			}
-			static bool textureLoaded{ false };
-			if (!textureLoaded)
-			{
-				textureLoaded = true;
-				auto device = GetDevice();
-				device->CreateTextureFromFile("win_sequence_rgb.jpg", [this](ITexture* texture) {
-					if (texture)
-					{
-						//texture->Commit();
-						testTex = texture;
-					}
-				});
-			}
-			*/
 		}
 
 		void Renderer::OnFrameEnd()

@@ -18,8 +18,10 @@ namespace Lightning
 			void CreateTextureFromFile(const std::string& path, TextureLoadFinishHandler handler)override;
 		protected:
 			Device();
+			Loading::ILoader* GetLoader();
 			using DefaultShaderMap = Container::UnorderedMap<ShaderType, IShader*>;
 			DefaultShaderMap mDefaultShaders;
+		private:
 			Loading::ILoader* mLoader;
 		};
 	}

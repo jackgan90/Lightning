@@ -15,18 +15,19 @@ namespace Lightning
 		public:
 			ShaderMacros();
 			ShaderMacros(const MacroContainer& map);
-			bool operator==(const ShaderMacros& define)const;
-			ShaderMacros operator+(const ShaderMacros& define)const;
-			ShaderMacros operator-(const ShaderMacros& define)const;
-			ShaderMacros& operator+=(const ShaderMacros& define);
-			ShaderMacros& operator-=(const ShaderMacros& define);
-			void Combine(const ShaderMacros& define);
-			void Exclude(const ShaderMacros& define);
+			bool operator==(const ShaderMacros& shaderMacros)const;
+			ShaderMacros operator+(const ShaderMacros& shaderMacros)const;
+			ShaderMacros operator-(const ShaderMacros& shaderMacros)const;
+			ShaderMacros& operator+=(const ShaderMacros& shaderMacros);
+			ShaderMacros& operator-=(const ShaderMacros& shaderMacros);
+			void Combine(const ShaderMacros& shaderMacros);
+			void Exclude(const ShaderMacros& shaderMacros);
 			bool HasMacro(const std::string& macroName)const;
 			void Define(const std::string& macroName, const std::string& macroValue);
 			const std::string GetMacroValue(const std::string& macroName)const;
 			const MacroContainer& GetAllMacros()const;
 			size_t GetMacroCount()const;
+			std::string GetMacroString()const;
 		private:
 			MacroContainer mMacros;
 		};

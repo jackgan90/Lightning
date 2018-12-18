@@ -123,8 +123,8 @@ namespace Lightning
 			virtual std::string GetEntryPoint()const = 0; 
 			virtual void SetEntryPoint(const std::string& entryPoint) = 0;
 			virtual ShaderType GetType()const = 0;
-			virtual void DefineMacros(const ShaderMacros& define) = 0;
-			virtual const ShaderMacros GetMacros()const = 0;
+			virtual void DefineMacros(const ShaderMacros& macros) = 0;
+			virtual const ShaderMacros& GetMacros()const = 0;
 			virtual std::size_t GetParameterCount()const = 0;
 			virtual void Compile() = 0;
 			virtual std::string GetName()const = 0;

@@ -40,7 +40,7 @@ namespace Lightning
 			friend class D3D12ShaderManager;
 			D3D12Shader(ID3D12Device* device, ShaderType type, const std::string& name, const std::string& entry, const char* const shaderSource);
 			~D3D12Shader()override;
-			const ShaderMacros GetMacros()const override;
+			const ShaderMacros& GetMacros()const override;
 			//bool Compile(const Foundation::SharedFilePtr& file, const ShaderDefine& define)override;
 			//const std::string GetCompileErrorLog()const override;
 			std::size_t GetParameterCount()const override;

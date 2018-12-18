@@ -59,13 +59,13 @@ namespace Lightning
 		}
 
 
-		void ShaderMacros::Combine(const ShaderMacros& define)
+		void ShaderMacros::Combine(const ShaderMacros& shaderMacros)
 		{
-			std::for_each(define.mMacros.begin(), define.mMacros.end(), 
+			std::for_each(shaderMacros.mMacros.begin(), shaderMacros.mMacros.end(), 
 				[&](const std::pair<std::string, std::string>& macro) {if(macro.first.length())mMacros[macro.first] = macro.second; });
 		}
 
-		void ShaderMacros::Exclude(const ShaderMacros& define)
+		void ShaderMacros::Exclude(const ShaderMacros& shaderMacros)
 		{
 		}
 
@@ -96,6 +96,17 @@ namespace Lightning
 		const MacroContainer& ShaderMacros::GetAllMacros()const
 		{
 			return mMacros;
+		}
+
+		std::string ShaderMacros::GetMacroString()const
+		{
+			std::string str;
+			for (auto it = mMacros.cbegin(); it != mMacros.cend();++it)
+			{
+				str += it->first + " " + it->second + '\n';
+			}
+
+			return str;
 		}
 	}
 }
