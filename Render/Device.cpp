@@ -29,7 +29,7 @@ namespace Lightning
 		}
 
 		void Device::CreateShaderFromFile(ShaderType type, const std::string& path,
-			const ShaderDefine& defineMap, ShaderLoadFinishHandler handler)
+			const ShaderMacros& macros, ShaderLoadFinishHandler handler)
 		{
 			//auto ser = new ShaderSerializer(type, path, defineMap, handler);
 			//Loader::Instance()->Load(path, ser);

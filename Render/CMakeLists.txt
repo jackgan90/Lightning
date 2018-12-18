@@ -44,14 +44,15 @@ set(SOURCES Renderer.cpp
 			RenderPass.cpp
 			ForwardRenderPass.cpp
 			FrameMemoryAllocator.cpp
-			DeferedRenderPass.cpp)
+			DeferedRenderPass.cpp
+			RenderObjectCache.cpp)
 
 set(TYPES_HEADERS	Types/Color.h
 					Types/Rect.h)
 
 set(SHADER_HEADERS	Shader/IShader.h
-					Shader/ShaderDefine.h)
-set(SHADER_SOURCES	Shader/ShaderDefine.cpp
+					Shader/ShaderMacros.h)
+set(SHADER_SOURCES	Shader/ShaderMacros.cpp
 					Shader/Shader.cpp)
 
 set(TEXTURE_HEADERS	Texture/ITexture.h

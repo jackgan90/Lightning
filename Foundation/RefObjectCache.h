@@ -14,7 +14,7 @@ namespace Lightning
 		{
 			static_assert(std::is_base_of<Plugins::RefCount, T>::value, "T must be a subclass of RefCount.");
 		public:
-			~RefObjectCache()
+			virtual ~RefObjectCache()
 			{
 				Clear();
 			}

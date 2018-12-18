@@ -126,7 +126,7 @@ namespace Lightning
 		}
 
 
-		const ShaderDefine D3D12Shader::GetMacros()const
+		const ShaderMacros D3D12Shader::GetMacros()const
 		{
 			return mMacros;
 		}

@@ -77,8 +77,8 @@ namespace Lightning
 			CreateNativeDevice(factory);
 			D3D12_COMMAND_QUEUE_DESC desc = {};
 			//should create first default pipeline state
-			mDefaultShaders[ShaderType::VERTEX] = CreateShader(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderDefine());
-			mDefaultShaders[ShaderType::FRAGMENT] = CreateShader(ShaderType::FRAGMENT, "[Built-in]default.ps", DEFAULT_PS_SOURCE, ShaderDefine());
+			mDefaultShaders[ShaderType::VERTEX] = CreateShader(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, ShaderMacros());
+			mDefaultShaders[ShaderType::FRAGMENT] = CreateShader(ShaderType::FRAGMENT, "[Built-in]default.ps", DEFAULT_PS_SOURCE, ShaderMacros());
 		}
 
 		D3D12Device::~D3D12Device()
@@ -136,7 +136,7 @@ namespace Lightning
 
 
 		IShader* D3D12Device::CreateShader(ShaderType type, const std::string& shaderName, 
-			const char* const shaderSource, const ShaderDefine& defineMap)
+			const char* const shaderSource, const ShaderMacros& macros)
 		{
 			return NEW_REF_OBJ(D3D12Shader, mDevice.Get(), type, shaderName, DEFAULT_SHADER_ENTRY, shaderSource);
 		}

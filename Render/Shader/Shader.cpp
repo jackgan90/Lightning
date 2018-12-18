@@ -5,11 +5,11 @@ namespace Lightning
 {
 	namespace Render
 	{
-		size_t Shader::Hash(const ShaderType& type, const std::string& shaderName, const ShaderDefine& defineMap)
+		size_t Shader::Hash(const ShaderType& type, const std::string& shaderName, const ShaderMacros& shaderMacros)
 		{
 			std::size_t seed = 0;
 			boost::hash_combine(seed, shaderName);
-			auto& macros = defineMap.GetAllMacros();
+			auto& macros = shaderMacros.GetAllMacros();
 			for (auto it = macros.begin(); it != macros.end(); ++it)
 			{
 				boost::hash_combine(seed, it->first);
@@ -44,7 +44,7 @@ namespace Lightning
 				SetHashDirty();
 		}
 
-		void Shader::DefineMacros(const ShaderDefine& define)
+		void Shader::DefineMacros(const ShaderMacros& define)
 		{
 			mMacros += define;
 			SetHashDirty();

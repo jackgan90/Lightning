@@ -2,7 +2,7 @@
 #include <string>
 #include <exception>
 #include <boost/functional/hash.hpp>
-#include "ShaderDefine.h"
+#include "ShaderMacros.h"
 #include "HashableObject.h"
 #include "Semantics.h"
 #include "RenderException.h"
@@ -123,8 +123,8 @@ namespace Lightning
 			virtual std::string GetEntryPoint()const = 0; 
 			virtual void SetEntryPoint(const std::string& entryPoint) = 0;
 			virtual ShaderType GetType()const = 0;
-			virtual void DefineMacros(const ShaderDefine& define) = 0;
-			virtual const ShaderDefine GetMacros()const = 0;
+			virtual void DefineMacros(const ShaderMacros& define) = 0;
+			virtual const ShaderMacros GetMacros()const = 0;
 			virtual std::size_t GetParameterCount()const = 0;
 			virtual void Compile() = 0;
 			virtual std::string GetName()const = 0;
@@ -137,11 +137,11 @@ namespace Lightning
 		class Shader : public IShader
 		{
 		public:
-			static size_t Hash(const ShaderType& type, const std::string& shaderName, const ShaderDefine& defineMap);
+			static size_t Hash(const ShaderType& type, const std::string& shaderName, const ShaderMacros& macros);
 			Shader(ShaderType type, const std::string& name, const std::string& entryPoint, const char* const source);
 			~Shader()override;
 			void SetEntryPoint(const std::string& entryPoint)override;
-			void DefineMacros(const ShaderDefine& define)override;
+			void DefineMacros(const ShaderMacros& define)override;
 			std::string GetEntryPoint()const override { return mEntryPoint; }
 			ShaderType GetType()const override;
 			const char* const GetSource()const override;
@@ -153,7 +153,7 @@ namespace Lightning
 			std::string mName;
 			std::string mEntryPoint;
 			const char* const mSource;
-			ShaderDefine mMacros;
+			ShaderMacros mMacros;
 			int mShaderModelMajorVersion;
 			int mShaderModelMinorVersion;
 		};

@@ -14,7 +14,7 @@ namespace Lightning
 			~Device()override;
 			IShader* GetDefaultShader(ShaderType type)override;
 			void CreateShaderFromFile(ShaderType type, const std::string& path,
-				const ShaderDefine& defineMap, ShaderLoadFinishHandler handler)override;
+				const ShaderMacros& macros, ShaderLoadFinishHandler handler)override;
 			void CreateTextureFromFile(const std::string& path, TextureLoadFinishHandler handler)override;
 		protected:
 			Device();

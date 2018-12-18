@@ -1,21 +1,21 @@
 #include <algorithm>
-#include "ShaderDefine.h"
+#include "ShaderMacros.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		ShaderDefine::ShaderDefine()
+		ShaderMacros::ShaderMacros()
 		{
 
 		}
 
-		ShaderDefine::ShaderDefine(const MacroContainer& map)
+		ShaderMacros::ShaderMacros(const MacroContainer& map)
 		{
 			mMacros = map;
 		}
 
-		bool ShaderDefine::operator==(const ShaderDefine& define)const
+		bool ShaderMacros::operator==(const ShaderMacros& define)const
 		{
 			if (mMacros.size() != define.mMacros.size())
 				return false;
@@ -30,70 +30,70 @@ namespace Lightning
 			return true;
 		}
 
-		ShaderDefine ShaderDefine::operator+(const ShaderDefine& define)const
+		ShaderMacros ShaderMacros::operator+(const ShaderMacros& define)const
 		{
-			ShaderDefine result(*this);
+			ShaderMacros result(*this);
 			result.Combine(define);
 
 			return result;
 		}
 
-		ShaderDefine ShaderDefine::operator-(const ShaderDefine& define)const
+		ShaderMacros ShaderMacros::operator-(const ShaderMacros& define)const
 		{
-			ShaderDefine result(*this);
+			ShaderMacros result(*this);
 			result.Exclude(define);
 
 			return result;
 		}
 
-		ShaderDefine& ShaderDefine::operator+=(const ShaderDefine& define)
+		ShaderMacros& ShaderMacros::operator+=(const ShaderMacros& define)
 		{
 			Combine(define);
 			return *this;
 		}
 
-		ShaderDefine& ShaderDefine::operator-=(const ShaderDefine& define)
+		ShaderMacros& ShaderMacros::operator-=(const ShaderMacros& define)
 		{
 			Exclude(define);
 			return *this;
 		}
 
 
-		void ShaderDefine::Combine(const ShaderDefine& define)
+		void ShaderMacros::Combine(const ShaderMacros& define)
 		{
 			std::for_each(define.mMacros.begin(), define.mMacros.end(), 
 				[&](const std::pair<std::string, std::string>& macro) {if(macro.first.length())mMacros[macro.first] = macro.second; });
 		}
 
-		void ShaderDefine::Exclude(const ShaderDefine& define)
+		void ShaderMacros::Exclude(const ShaderMacros& define)
 		{
 		}
 
 
-		bool ShaderDefine::HasMacro(const std::string& macroName)const
+		bool ShaderMacros::HasMacro(const std::string& macroName)const
 		{
 			return mMacros.find(macroName) != mMacros.end();
 		}
 
-		size_t ShaderDefine::GetMacroCount()const
+		size_t ShaderMacros::GetMacroCount()const
 		{
 			return mMacros.size();
 		}
 
 
-		const std::string ShaderDefine::GetMacroValue(const std::string& macroName)const
+		const std::string ShaderMacros::GetMacroValue(const std::string& macroName)const
 		{
 			auto it = mMacros.find(macroName);
 			return it == mMacros.end() ? "" : it->second;
 		}
 
-		void ShaderDefine::Define(const std::string& macroName, const std::string& macroValue)
+		void ShaderMacros::Define(const std::string& macroName, const std::string& macroValue)
 		{
 			if(macroName.length())
 				mMacros[macroName] = macroValue;
 		}
 
-		const MacroContainer& ShaderDefine::GetAllMacros()const
+		const MacroContainer& ShaderMacros::GetAllMacros()const
 		{
 			return mMacros;
 		}
