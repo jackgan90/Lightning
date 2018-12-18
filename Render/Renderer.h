@@ -35,7 +35,7 @@ namespace Lightning
 			ISwapChain* GetSwapChain()override;
 			//return the current frame index
 			std::uint64_t GetCurrentFrameCount()const override;
-			void SetClearColor(const ColorF& color)override;
+			void SetClearColor(float r, float g, float b, float a)override;
 			void CommitRenderNode(const RenderNode& item)override;
 			//TODO there can be multiple render passes in effect simultaneously,should change it
 			void AddRenderPass(RenderPassType type)override;

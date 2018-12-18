@@ -75,7 +75,7 @@ namespace Lightning
 			virtual ISwapChain* GetSwapChain() = 0;
 			virtual Window::IWindow* GetOutputWindow() = 0;
 			//set default render target clear color.At the beginning of each frame,the back buffer is cleared to this color
-			virtual void SetClearColor(const ColorF& color) = 0;
+			virtual void SetClearColor(float r, float g, float b, float a) = 0;
 			//get the current frame index
 			virtual std::uint64_t GetCurrentFrameCount()const = 0;
 			virtual std::size_t GetFrameResourceIndex()const = 0;

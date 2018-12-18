@@ -186,9 +186,9 @@ namespace Lightning
 		}
 
 
-		void Renderer::SetClearColor(const ColorF& color)
+		void Renderer::SetClearColor(float r, float g, float b, float a)
 		{
-			mClearColor = color;
+			mClearColor = ColorF(r, g, b, a);
 		}
 
 		std::uint64_t Renderer::GetCurrentFrameCount()const
