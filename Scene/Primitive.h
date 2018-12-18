@@ -30,7 +30,9 @@ namespace Lightning
 			void SetColor(float a, float r, float g, float b)override;
 			void SetTransparency(std::uint8_t transparency)override;
 			void SetTransparency(float transparency)override;
-			void SetTexture(ITexture* texture)override;
+			void SetTexture(const std::string& name, ITexture* texture)override;
+			void SetSamplerState(const std::string& name, const SamplerState& state)override;
+			void SetShader(IShader* shader)override;
 		protected:
 			virtual void UpdateRenderNode(IRenderer&);
 			virtual std::uint8_t *GetVertices() = 0;
@@ -42,7 +44,10 @@ namespace Lightning
 			Transform mTransform;
 			bool mShouldUpdateRenderNode;
 			Color32 mColor;
+			std::string mTextureName;
 			ITexture* mTexture;
+			std::string mSamplerStateName;
+			SamplerState mSamplerState;
 			Foundation::Container::Vector<Render::IShader*> mShaders;
 		};
 

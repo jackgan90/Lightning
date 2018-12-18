@@ -4,6 +4,8 @@
 #include "Color.h"
 #include "IDrawable.h"
 #include "Texture/ITexture.h"
+#include "Texture/Sampler.h"
+#include "IShader.h"
 
 namespace Lightning
 {
@@ -14,6 +16,8 @@ namespace Lightning
 		using Render::Color32;
 		using Render::PrimitiveType;
 		using Render::ITexture;
+		using Render::SamplerState;
+		using Render::IShader;
 		enum class PrimitiveShape
 		{
 			CUBE,
@@ -38,7 +42,9 @@ namespace Lightning
 			virtual void SetColor(float a, float r, float g, float b) = 0;
 			virtual void SetTransparency(std::uint8_t transparency) = 0;
 			virtual void SetTransparency(float transparency) = 0;
-			virtual void SetTexture(ITexture* texture) = 0;
+			virtual void SetTexture(const std::string& name, ITexture* texture) = 0;
+			virtual void SetSamplerState(const std::string& name, const SamplerState& state) = 0;
+			virtual void SetShader(IShader* shader) = 0;
 		};
 	}
 }

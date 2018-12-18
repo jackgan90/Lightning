@@ -40,6 +40,18 @@ namespace Lightning
 		void GenerateSceneObjects(ISceneManager* sceneMgr, Plugins::ScenePlugin* scenePlugin)
 		{
 			auto scene = sceneMgr->GetForegroundScene();
+			auto cube = scenePlugin->CreateCube(1.0f, 1.0f, 1.0f);
+			Render::Color32 color;
+			color.r = 0;
+			color.g = 255;
+			color.b = 0;
+			color.a = 255;
+			cube->SetColor(color);
+			scene->AddDrawable(cube);
+			cube->Release();
+			auto renderer = renderPlugin->GetRenderer();
+			auto device = renderer->GetDevice();
+			/*
 			static std::random_device rd;
 			static std::mt19937 mt(rd());
 			static std::uniform_real_distribution<float> rDist(-2, 2);
@@ -79,7 +91,7 @@ namespace Lightning
 				p->SetWorldRotation(Transform::RandomRotation());
 				scene->AddDrawable(p);
 				p->Release();
-			}
+			}*/
 		}
 		//For test only end
 
@@ -123,7 +135,7 @@ namespace Lightning
 			auto sceneMgr = scenePlugin->GetSceneManager();
 			auto scene = sceneMgr->CreateScene();
 			auto camera = scene->GetActiveCamera();
-			camera->MoveTo(Render::Vector3f({0.0f, 0.0f, 2.0f}));
+			camera->MoveTo(Render::Vector3f({2.0f, 2.0f, 2.0f}));
 			camera->LookAt(Render::Vector3f({ 0.0f, 0.0f, 0.0f }));
 			//camera->SetRotation(Quaternionf(EulerAnglef(3.14 + 0.0, 0, 0)));
 			//camera->SetCameraType(Scene::CameraType::Orthographic);

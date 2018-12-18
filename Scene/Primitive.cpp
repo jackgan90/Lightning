@@ -89,15 +89,44 @@ namespace Lightning
 			mColor.a = static_cast<std::uint8_t>(255 * transparency);
 		}
 
-		void Primitive::SetTexture(ITexture* texture)
+		void Primitive::SetTexture(const std::string& name, ITexture* texture)
 		{
 			if (texture != mTexture)
 			{
 				if (texture)
 					texture->AddRef();
+				mTextureName = name;
 				mTexture = texture;
 				mShouldUpdateRenderNode = true;
 			}
+		}
+
+		void Primitive::SetSamplerState(const std::string& name, const SamplerState& state)
+		{
+			mSamplerStateName = name;
+			mSamplerState = state;
+			mShouldUpdateRenderNode = true;
+		}
+
+		void Primitive::SetShader(IShader* shader)
+		{
+			if (shader == nullptr)
+				return;
+			shader->AddRef();
+			bool replaced{ false };
+			for(auto i = 0;i < mShaders.size();++i)
+			{
+				auto s = mShaders[i];
+				if (s->GetType() == shader->GetType())
+				{
+					s->Release();
+					mShaders[i] = shader;
+					replaced = true;
+					break;
+				}
+			}
+			if (!replaced)
+				mShaders.push_back(shader);
 		}
 
 		void Primitive::Draw(IRenderer& renderer, const SceneRenderData& sceneRenderData)
@@ -161,19 +190,29 @@ namespace Lightning
 			
 			mRenderNode.material = gRenderPlugin->CreateMaterial();
 			auto device = renderer.GetDevice();
+			IShader *vs{ nullptr }, *ps{ nullptr };
 			for (auto shader : mShaders)
 			{
-				shader->Release();
+				if (shader->GetType() == Render::ShaderType::VERTEX)
+					vs = shader;
+				if (shader->GetType() == Render::ShaderType::FRAGMENT)
+					ps = shader;
+				mRenderNode.material->SetShader(shader);
 			}
-			mShaders.clear();
-			auto vs = device->GetDefaultShader(Render::ShaderType::VERTEX);
-			vs->AddRef();
-			auto ps = device->GetDefaultShader(Render::ShaderType::FRAGMENT);
-			ps->AddRef();
-			mShaders.push_back(vs);
-			mShaders.push_back(ps);
-			mRenderNode.material->SetShader(vs);
-			mRenderNode.material->SetShader(ps);
+			if (!vs)
+			{
+				vs = device->GetDefaultShader(Render::ShaderType::VERTEX);
+				vs->AddRef();
+				mShaders.push_back(vs);
+				mRenderNode.material->SetShader(vs);
+			}
+			if (!ps)
+			{
+				ps = device->GetDefaultShader(Render::ShaderType::FRAGMENT);
+				ps->AddRef();
+				mShaders.push_back(ps);
+				mRenderNode.material->SetShader(ps);
+			}
 			float a, r, g, b;
 			GetColor(a, r, g, b);
 			mRenderNode.material->SetParameter(Render::ShaderType::FRAGMENT, "color", Vector4f(r, g, b, a));

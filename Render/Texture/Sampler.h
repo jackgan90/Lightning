@@ -1,6 +1,6 @@
 #pragma once
 #include <cstdint>
-#include "RefCount.h"
+#include "PlainObject.h"
 
 namespace Lightning
 {
@@ -22,7 +22,7 @@ namespace Lightning
 			Border
 		};
 
-		struct SamplerState
+		struct SamplerState : Foundation::PlainObject<SamplerState>
 		{
 			SamplerFilterMode filterMode;
 			AddressMode addressU;
