@@ -34,12 +34,13 @@ namespace Lightning
 		using Foundation::Math::EulerAnglef;
 		using Foundation::Math::Quaternionf;
 		using Foundation::Math::Vector3f;
-		using Foundation::Math::Transform;
+		using Foundation::Math::Transformer;
 
 		//For test only
 		void GenerateSceneObjects(ISceneManager* sceneMgr, Plugins::ScenePlugin* scenePlugin)
 		{
 			auto scene = sceneMgr->GetForegroundScene();
+			
 			auto cube = scenePlugin->CreateCube(1.0f, 1.0f, 1.0f);
 			Render::Color32 color;
 			color.r = 0;
@@ -106,7 +107,7 @@ namespace Lightning
 				color.g = cDist(mt);
 				color.b = cDist(mt);
 				p->SetColor(color);
-				p->SetWorldRotation(Transform::RandomRotation());
+				p->SetWorldRotation(Transformer::RandomRotation());
 				scene->AddDrawable(p);
 				p->Release();
 			}*/

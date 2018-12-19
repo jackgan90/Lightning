@@ -54,6 +54,7 @@ namespace Lightning
 			std::size_t baseIndex;
 			std::size_t baseInstance;
 		};
+		static_assert(std::is_pod<DrawParam>::value, "DrawParam is not a POD type.");
 
 		enum class RendererEvent
 		{

@@ -10,10 +10,26 @@
 #include "RenderConstants.h"
 #include "types/Rect.h"
 
+#define GET_HASH_METHOD \
+std::uint32_t GetHash()const\
+{\
+	return GetObjectHash(this);\
+}
+
 namespace Lightning
 {
 	namespace Render
 	{
+		template<typename T>
+		std::uint32_t GetObjectHash(T* object)
+		{
+			static std::random_device rd;
+			static std::mt19937 mt(rd());
+			static std::uniform_int_distribution<std::uint32_t> dist(1, static_cast<std::uint32_t>(-1));
+			static std::uint32_t seed = dist(mt);
+			return Foundation::Utility::Hash(object, sizeof(T), seed);
+		}
+
 		enum class BlendOperation : std::uint8_t
 		{
 			ADD,
@@ -83,48 +99,91 @@ namespace Lightning
 			DECREASE_WRAP
 		};
 
-		struct BlendState : Foundation::PlainObject<BlendState>
+		struct BlendState
 		{
-			bool enable{ false };
-			BlendOperation colorOp{BlendOperation::ADD};
-			BlendOperation alphaOp{BlendOperation::ADD};
-			BlendFactor srcColorFactor{BlendFactor::SRC_ALPHA};
-			BlendFactor srcAlphaFactor{BlendFactor::SRC_ALPHA};
-			BlendFactor destColorFactor{BlendFactor::INV_SRC_ALPHA};
-			BlendFactor destAlphaFactor{BlendFactor::INV_SRC_ALPHA};
+			GET_HASH_METHOD
+			void Reset()
+			{
+				enable = false;
+				colorOp = BlendOperation::ADD;
+				alphaOp = BlendOperation::ADD;
+				srcColorFactor = BlendFactor::SRC_ALPHA;
+				srcAlphaFactor = BlendFactor::SRC_ALPHA;
+				destColorFactor = BlendFactor::INV_SRC_ALPHA;
+				destAlphaFactor = BlendFactor::INV_SRC_ALPHA;
+			}
+			bool enable;
+			BlendOperation colorOp;
+			BlendOperation alphaOp;
+			BlendFactor srcColorFactor;
+			BlendFactor srcAlphaFactor;
+			BlendFactor destColorFactor;
+			BlendFactor destAlphaFactor;
 		};
+		static_assert(std::is_pod<BlendState>::value, "BlendState is not a POD type.");
 
-		struct RasterizerState : Foundation::PlainObject<RasterizerState>
+		struct RasterizerState
 		{
-			FillMode fillMode{FillMode::SOLID};
-			CullMode cullMode{CullMode::BACK};
-			WindingOrder frontFace{WindingOrder::COUNTER_CLOCKWISE};
-
+			GET_HASH_METHOD
+			void Reset()
+			{
+				fillMode = FillMode::SOLID;
+				cullMode = CullMode::BACK;
+				frontFace = WindingOrder::COUNTER_CLOCKWISE;
+			}
+			FillMode fillMode;
+			CullMode cullMode;
+			WindingOrder frontFace;
 		};
+		static_assert(std::is_pod<RasterizerState>::value, "RasterizerState is not a POD type.");
 
-		struct StencilFace : Foundation::PlainObject<StencilFace>
+		struct StencilFace
 		{
-			CmpFunc cmpFunc{CmpFunc::ALWAYS};
-			StencilOp passOp{StencilOp::KEEP};
-			StencilOp failOp{StencilOp::KEEP};
-			StencilOp depthFailOp{StencilOp::KEEP};
+			GET_HASH_METHOD
+			void Reset()
+			{
+				cmpFunc = CmpFunc::ALWAYS;
+				passOp = StencilOp::KEEP;
+				failOp = StencilOp::KEEP;
+				depthFailOp = StencilOp::KEEP;
+			}
+			CmpFunc cmpFunc;
+			StencilOp passOp;
+			StencilOp failOp;
+			StencilOp depthFailOp;
 		};
+		static_assert(std::is_pod<StencilFace>::value, "StencilFace is not a POD type.");
 
-		struct DepthStencilState : Foundation::PlainObject<DepthStencilState>
+		struct DepthStencilState
 		{
+			GET_HASH_METHOD
+			void Reset()
+			{
+				depthTestEnable = true;
+				depthWriteEnable = true;
+				depthCmpFunc = CmpFunc::LESS;
+				stencilEnable = false;
+				stencilRef = 0;
+				stencilReadMask = 0xff;
+				stencilWriteMask = 0xff;
+				frontFace.Reset();
+				backFace.Reset();
+				bufferFormat = RenderFormat::UNDEFINED;
+			}
 			//depth config
-			bool depthTestEnable{true};
-			bool depthWriteEnable{true};
-			CmpFunc depthCmpFunc{CmpFunc::LESS};
+			bool depthTestEnable;
+			bool depthWriteEnable;
+			CmpFunc depthCmpFunc;
 			//stencil config
-			bool stencilEnable{false};
-			std::uint8_t stencilRef{ 0 };
-			std::uint8_t stencilReadMask{0xff};
-			std::uint8_t stencilWriteMask{0xff};
-			StencilFace frontFace{};
-			StencilFace backFace{};
+			bool stencilEnable;
+			std::uint8_t stencilRef;
+			std::uint8_t stencilReadMask;
+			std::uint8_t stencilWriteMask;
+			StencilFace frontFace;
+			StencilFace backFace;
 			RenderFormat bufferFormat;
 		};
+		static_assert(std::is_pod<DepthStencilState>::value, "DepthStencilState is not a POD type.");
 
 		struct VertexInputLayout : Foundation::PlainObject<VertexInputLayout>
 		{
@@ -151,6 +210,15 @@ namespace Lightning
 
 		struct PipelineState : Foundation::PlainObject<PipelineState>
 		{
+			void Reset()
+			{
+				rasterizerState.Reset();
+				for (auto i = 0;i < MAX_RENDER_TARGET_COUNT;++i)
+				{
+					blendStates[i].Reset();
+				}
+				depthStencilState.Reset();
+			}
 			PrimitiveType primType;
 			std::uint8_t renderTargetCount;
 			RasterizerState rasterizerState;

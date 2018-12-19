@@ -38,7 +38,8 @@ namespace Lightning
 
 		void ForwardRenderPass::CommitPipelineStates(const RenderNode& node)
 		{
-			PipelineState state{};
+			PipelineState state;
+			state.Reset();
 			state.renderTargetCount = node.renderTargetCount;
 			auto renderer = Renderer::Instance();
 			auto pSwapChain = renderer->GetSwapChain();
