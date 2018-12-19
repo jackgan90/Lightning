@@ -10,9 +10,9 @@
 namespace
 {
 	using Lightning::Foundation::Math::Matrix4f;
-	using Lightning::Foundation::Math::Matrix3f;
+	//using Lightning::Foundation::Math::Matrix3f;
 	using Lightning::Foundation::Math::Matrix4i;
-	using Lightning::Foundation::Math::Matrix3i;
+	//using Lightning::Foundation::Math::Matrix3i;
 	using Lightning::Foundation::Math::Vector4f;
 	using Lightning::Foundation::Math::Vector4i;
 	using Lightning::Foundation::Math::Vector3f;
@@ -27,26 +27,26 @@ namespace
 		auto dotProduct = v1.Dot(v2);
 		REQUIRE(dotProduct == Approx(38.0));
 		auto v3 = v1.Cross(v2);
-		REQUIRE(v3[0] == Approx(-4.0));
-		REQUIRE(v3[1] == Approx(8.0));
-		REQUIRE(v3[2] == Approx(-4.0));
+		REQUIRE(v3.x == Approx(-4.0));
+		REQUIRE(v3.y == Approx(8.0));
+		REQUIRE(v3.z == Approx(-4.0));
 
 		Vector3f sum = v1 + v2;
-		REQUIRE(sum[0] == Approx(6.0f));
-		REQUIRE(sum[1] == Approx(8.0f));
-		REQUIRE(sum[2] == Approx(10.0f));
+		REQUIRE(sum.x == Approx(6.0f));
+		REQUIRE(sum.y == Approx(8.0f));
+		REQUIRE(sum.z == Approx(10.0f));
 
 		//constructor
 		Vector3f diff = v1 - v2;
-		REQUIRE(diff[0] == Approx(-4.0f));
-		REQUIRE(diff[1] == Approx(-4.0f));
-		REQUIRE(diff[2] == Approx(-4.0f));
+		REQUIRE(diff.x == Approx(-4.0f));
+		REQUIRE(diff.y == Approx(-4.0f));
+		REQUIRE(diff.z == Approx(-4.0f));
 
 		//operator=
 		diff = v1 - v2;
-		REQUIRE(diff[0] == Approx(-4.0f));
-		REQUIRE(diff[1] == Approx(-4.0f));
-		REQUIRE(diff[2] == Approx(-4.0f));
+		REQUIRE(diff.x == Approx(-4.0f));
+		REQUIRE(diff.y == Approx(-4.0f));
+		REQUIRE(diff.z == Approx(-4.0f));
 
 		Vector3f zero = Vector3f::Zero();
 		Vector3f zero1{ 0.0f, 0.0f, 0.0f };
@@ -78,20 +78,20 @@ namespace
 		Vector3f v11;
 
 		Vector3f v13{ 3.0f, 4.0f, 5.0f };
-		Vector4f v15(v13);
-		REQUIRE(v15[0] == Approx(3.0f));
-		REQUIRE(v15[1] == Approx(4.0f));
-		REQUIRE(v15[2] == Approx(5.0f));
+		Vector4f v15{v13.x, v13.y, v13.z, 0};
+		REQUIRE(v15.x == Approx(3.0f));
+		REQUIRE(v15.y == Approx(4.0f));
+		REQUIRE(v15.z == Approx(5.0f));
 
 		Vector3f v16 = -v13;
-		REQUIRE(v16[0] == Approx(-3.0f));
-		REQUIRE(v16[1] == Approx(-4.0f));
-		REQUIRE(v16[2] == Approx(-5.0f));
+		REQUIRE(v16.x == Approx(-3.0f));
+		REQUIRE(v16.y == Approx(-4.0f));
+		REQUIRE(v16.z == Approx(-5.0f));
 
 		Vector3f v17 = -Vector3f{ 1.0f, 2.0f, 3.0f };
-		REQUIRE(v17[0] == Approx(-1.0f));
-		REQUIRE(v17[1] == Approx(-2.0f));
-		REQUIRE(v17[2] == Approx(-3.0f));
+		REQUIRE(v17.x == Approx(-1.0f));
+		REQUIRE(v17.y == Approx(-2.0f));
+		REQUIRE(v17.z == Approx(-3.0f));
 	}
 
 	TEST_CASE("Matrix test", "[Matrix test]")

@@ -13,7 +13,7 @@ namespace Lightning
 		extern Plugins::RenderPlugin* gRenderPlugin;
 		Camera::Camera():mType(CameraType::Perspective), mNearPlane(0.01f), mFarPlane(1000.0f), 
 			mFov(DegreesToRadians(60.0f)), mAspectRatio(1.0f),
-			mTransform(Vector3f::Zero(), Vector3f(1, 1, 1), Quaternionf::Identity())
+			mTransform(Vector3f::Zero(), Vector3f{1, 1, 1}, Quaternionf::Identity())
 		{
 			UpdateViewMatrix();
 			UpdateProjectionMatrix();
@@ -148,6 +148,10 @@ namespace Lightning
 					| R RA|
 					| 0 1 |
 			*/	
+			//static int cnt = 0;
+			//if (cnt >= 3)
+			//	return;
+			//cnt++;
 			mViewMatrix = mTransform.GlobalToLocalMatrix4();
 			mInvViewMatrix = mTransform.LocalToGlobalMatrix4();
 
@@ -156,26 +160,28 @@ namespace Lightning
 
 		Vector3f Camera::CameraPointToWorld(const Vector3f& point)const
 		{
-			return mInvViewMatrix * Vector4f(point);
+			auto res = mInvViewMatrix * Vector4f{point.x, point.y, point.z, 1.0f};
+			return Vector3f{ res.x, res.y, res.z };
 		}
 
 		Vector3f Camera::WorldPointToCamera(const Vector3f& point)const
 		{
-			return mViewMatrix * Vector4f(point);
+			auto res = mViewMatrix * Vector4f{point.x, point.y, point.z, 1.0f};
+			return Vector3f{ res.x, res.y, res.z };
 		}
 
 		Vector3f Camera::CameraDirectionToWorld(const Vector3f& direction)const
 		{
-			Vector4f dir(direction);
-			dir.w = 0;
-			return mInvViewMatrix * dir;
+			Vector4f dir{direction.x, direction.y, direction.z, 0.0f};
+			auto res = mInvViewMatrix * dir;
+			return Vector3f{ res.x, res.y, res.z };
 		}
 
 		Vector3f Camera::WorldDirectionToCamera(const Vector3f& direction)const
 		{
-			Vector4f dir(direction);
-			dir.w = 0;
-			return mViewMatrix * dir;
+			Vector4f dir{direction.x, direction.y, direction.z, 0.0f};
+			auto res = mViewMatrix * dir;
+			return Vector3f{ res.x, res.y, res.z };
 		}
 	}
 }

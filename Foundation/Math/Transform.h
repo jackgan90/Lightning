@@ -14,7 +14,7 @@ namespace Lightning
 			class Transform
 			{
 			public:
-				Transform(): mPosition(0.0f, 0.0f, 0.0f) ,mRotation(0, 0, 0, 1) ,mScale(1.0f, 1.0f, 1.0f) ,mMatrixDirty(true) { }
+				Transform(): mPosition{0.0f, 0.0f, 0.0f} ,mRotation(0, 0, 0, 1) ,mScale{1.0f, 1.0f, 1.0f} ,mMatrixDirty(true) { }
 				Transform(const Vector3f& pos, const Vector3f& scale, const Quaternionf& rot)
 					:mPosition(pos), mScale(scale), mRotation(rot), mMatrixDirty(true){}
 
@@ -103,7 +103,7 @@ namespace Lightning
 					auto theta = thetaDist(mt);
 					auto coef = std::sqrt(1 - z * z);
 
-					auto direction = Vector3f(coef * std::cos(theta), coef * std::sin(theta), z);
+					auto direction = Vector3f{coef * std::cos(theta), coef * std::sin(theta), z};
 
 					return Quaternionf::MakeRotation(Vector3f::back(), direction);
 				}
@@ -116,7 +116,7 @@ namespace Lightning
 
 					Matrix4f matTrans;
 					matTrans.SetIdentity();
-					matTrans.SetColumn(3, Vector4f(mPosition));
+					matTrans.SetColumn(3, Vector4f{mPosition.x, mPosition.y, mPosition.z, 1.0f});
 
 					Matrix4f matRotation;
 					mRotation.ToMatrix(matRotation);
@@ -137,7 +137,7 @@ namespace Lightning
 					mRotation.Inversed().ToMatrix(matRotation);
 
 					matTrans.SetIdentity();
-					matTrans.SetColumn(3, Vector4f(-mPosition));
+					matTrans.SetColumn(3, Vector4f{-mPosition.x, -mPosition.y, -mPosition.z, 1.0f});
 
 					mInvMatrix = matScale * matRotation * matTrans;
 				}

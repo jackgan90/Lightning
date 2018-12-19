@@ -130,7 +130,7 @@ namespace Lightning
 				Vector3<T> RotateVector(const Vector3<T>& v)const
 				{ 
 					// Extract the vector part of the quaternion
-					Vector3<T> u(x, y, z);
+					Vector3<T> u{x, y, z};
 
 					// Do the math
 					return T(2.0) * u.Dot(v) * u + (w*w - u.Dot(u)) * v + T(2.0) * w * u.Cross(v);

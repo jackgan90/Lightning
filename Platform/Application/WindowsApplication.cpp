@@ -55,7 +55,7 @@ namespace Lightning
 				auto camera = scene->GetActiveCamera();
 				if (camera)
 				{
-					Vector3f camOffset;
+					Vector3f camOffset{ 0, 0, 0 };
 					auto position = camera->GetWorldPosition();
 					switch (event.code & ~VK_CONTROL_MASK)
 					{
@@ -148,7 +148,7 @@ namespace Lightning
 					{
 						float delta_x = float(event.x) - mousePosition.x;
 						float delta_y = float(event.y) - mousePosition.y;
-						Vector3f direction(delta_x, -delta_y, 0);
+						Vector3f direction{delta_x, -delta_y, 0};
 						direction = camera->CameraDirectionToWorld(direction);
 						auto forward = camera->GetForward();
 						auto dest_dir = forward + direction * 0.005f;

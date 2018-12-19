@@ -19,7 +19,7 @@ namespace Lightning
 		using Foundation::Math::Vector2f;
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Vector4f;
-		using Foundation::Math::Matrix3f;
+		//using Foundation::Math::Matrix3f;
 		using Foundation::Math::Matrix4f;
 		class ShaderCompileException : public RendererException
 		{
@@ -44,8 +44,8 @@ namespace Lightning
 			FLOAT2,
 			FLOAT3,
 			FLOAT4,
-			MATRIX2,
-			MATRIX3,
+			//MATRIX2,
+			//MATRIX3,
 			MATRIX4,
 			TEXTURE,
 			SAMPLER,
@@ -65,7 +65,7 @@ namespace Lightning
 				Vector2f v2;
 				Vector3f v3;
 				Vector4f v4;
-				Matrix3f m3;
+				//Matrix3f m3;
 				Matrix4f m4;
 				ITexture* texture;
 				SamplerState samplerState;
@@ -75,7 +75,7 @@ namespace Lightning
 			ShaderParameter(const std::string& n, const Vector2f& _v2) :name(n), type(ShaderParameterType::FLOAT2) { new (&v2)Vector2f(_v2); }
 			ShaderParameter(const std::string& n, const Vector3f& _v3) :name(n), type(ShaderParameterType::FLOAT3) { new (&v3)Vector3f(_v3); }
 			ShaderParameter(const std::string& n, const Vector4f& _v4) :name(n), type(ShaderParameterType::FLOAT4) { new (&v4)Vector4f(_v4); }
-			ShaderParameter(const std::string& n, const Matrix3f& _m3) :name(n), type(ShaderParameterType::MATRIX3) { new (&m3)Matrix3f(_m3); }
+			//ShaderParameter(const std::string& n, const Matrix3f& _m3) :name(n), type(ShaderParameterType::MATRIX3) { new (&m3)Matrix3f(_m3); }
 			ShaderParameter(const std::string& n, const Matrix4f& _m4) :name(n), type(ShaderParameterType::MATRIX4) { new (&m4)Matrix4f(_m4); }
 			ShaderParameter(const std::string& n, ITexture* _texture) :name(n), type(ShaderParameterType::TEXTURE) { texture = _texture; }
 			ShaderParameter(const std::string& n, const SamplerState& _state) :name(n), type(ShaderParameterType::SAMPLER) { samplerState = _state; }
@@ -98,11 +98,13 @@ namespace Lightning
 				case ShaderParameterType::FLOAT4:
 					size = sizeof(v4);
 					return &v4;
+					/*
 				case ShaderParameterType::MATRIX2:
 					break;
 				case ShaderParameterType::MATRIX3:
 					size = sizeof(m3);
 					return &m3;
+					*/
 				case ShaderParameterType::MATRIX4:
 					size = sizeof(m4);
 					return &m4;
