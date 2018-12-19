@@ -13,7 +13,7 @@ namespace Lightning
 		extern Plugins::RenderPlugin* gRenderPlugin;
 		Camera::Camera():mType(CameraType::Perspective), mNearPlane(0.01f), mFarPlane(1000.0f), 
 			mFov(DegreesToRadians(60.0f)), mAspectRatio(1.0f),
-			mTransform(Vector3f::Zero(), Vector3f{1, 1, 1}, Quaternionf::Identity())
+			mTransformer(Vector3f::Zero(), Vector3f{1, 1, 1}, Quaternionf::Identity())
 		{
 			UpdateViewMatrix();
 			UpdateProjectionMatrix();
@@ -23,8 +23,8 @@ namespace Lightning
 			mType(CameraType::Perspective), mNearPlane(0.01f), mFarPlane(1000.0f),
 			mFov(DegreesToRadians(60.0f)), mAspectRatio(1.0f)
 		{
-			mTransform.SetPosition(worldPosition);
-			mTransform.OrientTo(lookDir, worldUp);
+			mTransformer.SetPosition(worldPosition);
+			mTransformer.OrientTo(lookDir, worldUp);
 			UpdateViewMatrix();
 			UpdateProjectionMatrix();
 		}
@@ -36,8 +36,8 @@ namespace Lightning
 			mType(CameraType::Perspective), mNearPlane(0.01f), mFarPlane(1000.0f), 
 			mFov(DegreesToRadians(fov)),mAspectRatio(aspectRatio)
 		{
-			mTransform.SetPosition(worldPosition);
-			mTransform.OrientTo(lookDir, worldUp);
+			mTransformer.SetPosition(worldPosition);
+			mTransformer.OrientTo(lookDir, worldUp);
 			UpdateViewMatrix();
 			UpdateProjectionMatrix();
 		}
@@ -58,19 +58,19 @@ namespace Lightning
 
 		void Camera::MoveTo(const Vector3f& worldPosition)
 		{
-			mTransform.SetPosition(worldPosition);
+			mTransformer.SetPosition(worldPosition);
 			UpdateViewMatrix();
 		}
 
 		void Camera::RotateTowards(const Vector3f& direction)
 		{
-			mTransform.OrientTo(direction, Vector3f::up());
+			mTransformer.OrientTo(direction, Vector3f::up());
 			UpdateViewMatrix();
 		}
 
 		void Camera::LookAt(const Vector3f& lookPosition)
 		{
-			mTransform.LookAt(lookPosition, Vector3f::up());
+			mTransformer.LookAt(lookPosition, Vector3f::up());
 			UpdateViewMatrix();
 		}
 
@@ -133,7 +133,7 @@ namespace Lightning
 
 		void Camera::SetRotation(const Quaternionf& rotation)
 		{
-			mTransform.SetRotation(rotation);
+			mTransformer.SetRotation(rotation);
 			UpdateViewMatrix();
 		}
 
@@ -152,8 +152,8 @@ namespace Lightning
 			//if (cnt >= 3)
 			//	return;
 			//cnt++;
-			mViewMatrix = mTransform.GlobalToLocalMatrix4();
-			mInvViewMatrix = mTransform.LocalToGlobalMatrix4();
+			mViewMatrix = mTransformer.GlobalToLocalMatrix4();
+			mInvViewMatrix = mTransformer.LocalToGlobalMatrix4();
 
 			//auto res = mViewMatrix * mInvViewMatrix;
 		}

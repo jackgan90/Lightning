@@ -136,10 +136,10 @@ namespace Lightning
 				UpdateRenderNode(renderer);
 				mShouldUpdateRenderNode = false;
 			}
-			mRenderNode.renderTargets.clear();
 			auto swapChain = renderer.GetSwapChain();
 			auto defaultRT = swapChain->GetDefaultRenderTarget();
-			mRenderNode.renderTargets.push_back(defaultRT);
+			mRenderNode.renderTargets[0] = defaultRT;
+			mRenderNode.renderTargetCount = 1;
 			mRenderNode.depthStencilBuffer = renderer.GetDefaultDepthStencilBuffer();
 			if (sceneRenderData.camera)
 			{
@@ -220,7 +220,7 @@ namespace Lightning
 
 			mRenderNode.material->EnableBlend(mColor.a != 0xff);
 			mTransform.SetScale(GetScale());
-			mRenderNode.transform = mTransform;
+			mRenderNode.transform = mTransform.GetTransform();
 		}
 
 		

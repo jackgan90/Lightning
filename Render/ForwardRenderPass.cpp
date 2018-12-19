@@ -39,10 +39,10 @@ namespace Lightning
 		void ForwardRenderPass::CommitPipelineStates(const RenderNode& node)
 		{
 			PipelineState state{};
-			state.renderTargetCount = static_cast<std::uint8_t>(node.renderTargets.size());
+			state.renderTargetCount = node.renderTargetCount;
 			auto renderer = Renderer::Instance();
 			auto pSwapChain = renderer->GetSwapChain();
-			for (auto i = 0;i < node.renderTargets.size();++i)
+			for (auto i = 0;i < node.renderTargetCount;++i)
 			{
 				state.renderTargets[i] = node.renderTargets[i];
 			}
@@ -71,7 +71,7 @@ namespace Lightning
 			{
 				state.depthStencilState.bufferFormat = node.depthStencilBuffer->GetRenderFormat();
 			}
-			renderer->ApplyRenderTargets(node.renderTargets, node.depthStencilBuffer);
+			renderer->ApplyRenderTargets(node.renderTargets, node.renderTargetCount, node.depthStencilBuffer);
 			renderer->ApplyPipelineState(state);
 		}
 
@@ -105,8 +105,7 @@ namespace Lightning
 							if (vs)
 							{
 								//We know that transform.ToMatrix4 may change it's internal matrix
-								auto worldMatrix = const_cast<RenderNode&>(node).transform.LocalToGlobalMatrix4();
-								auto wvp = node.projectionMatrix * node.viewMatrix * worldMatrix;
+								auto wvp = node.projectionMatrix * node.viewMatrix * node.transform.matrix;
 								vs->SetParameter(ShaderParameter(uniformName, wvp));
 							}
 							break;

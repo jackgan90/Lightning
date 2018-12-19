@@ -35,9 +35,9 @@ namespace Lightning
 					}
 					if (node.depthStencilBuffer)
 						node.depthStencilBuffer->Release();
-					for (auto renderTarget : node.renderTargets)
+					for (auto i = 0;i < node.renderTargetCount;++i)
 					{
-						renderTarget->Release();
+						node.renderTargets[i]->Release();
 					}
 				}
 				renderQueue->clear();
@@ -231,10 +231,10 @@ namespace Lightning
 			assert((hasVB || hasIB) && "vb or ib can not both be empty!");
 			if (node.depthStencilBuffer)
 				node.depthStencilBuffer->AddRef();
-			for (auto renderTarget : node.renderTargets)
+			for (auto i = 0; i < node.renderTargetCount; ++i)
 			{
-				assert(renderTarget && "renderTarget cannot be null!");
-				renderTarget->AddRef();
+				assert(node.renderTargets[i] && "renderTarget cannot be null!");
+				node.renderTargets[i]->AddRef();
 			}
 			mCurrentFrameRenderQueue->push_back(node);
 			for (auto& pass : mRenderPasses)

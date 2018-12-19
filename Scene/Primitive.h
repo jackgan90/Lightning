@@ -10,7 +10,7 @@ namespace Lightning
 {
 	namespace Scene
 	{
-		using Foundation::Math::Transform;
+		using Foundation::Math::Transformer;
 		class Primitive : public IPrimitive
 		{
 		public:
@@ -41,7 +41,7 @@ namespace Lightning
 			virtual std::size_t GetVertexBufferSize() = 0;
 			virtual std::size_t GetIndexBufferSize() = 0;
 			Render::RenderNode mRenderNode;
-			Transform mTransform;
+			Transformer mTransform;
 			bool mShouldUpdateRenderNode;
 			Color32 mColor;
 			std::string mTextureName;

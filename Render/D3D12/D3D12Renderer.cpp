@@ -193,11 +193,10 @@ namespace Lightning
 			}
 		}
 
-		void D3D12Renderer::ApplyRenderTargets(const Container::Vector<IRenderTarget*>& renderTargets, IDepthStencilBuffer* dsBuffer)
+		void D3D12Renderer::ApplyRenderTargets(const IRenderTarget*const* renderTargets, std::uint8_t renderTargetCount, IDepthStencilBuffer* dsBuffer)
 		{
-			assert(renderTargets.size() <= MAX_RENDER_TARGET_COUNT);
+			assert(renderTargetCount <= MAX_RENDER_TARGET_COUNT);
 			auto commandList = GetGraphicsCommandList();
-			auto renderTargetCount = renderTargets.size();
 			//TODO : actually should set pipeline description based on PipelineState rather than set them here
 			auto rtvHandles = g_RenderAllocator.Allocate<D3D12_CPU_DESCRIPTOR_HANDLE>(renderTargetCount);
 			for (std::size_t i = 0; i < renderTargetCount;++i)

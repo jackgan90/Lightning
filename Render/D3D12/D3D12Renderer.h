@@ -37,7 +37,7 @@ namespace Lightning
 			void Start()override;
 			void ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, const RectIList* rects=nullptr)override;
 			void ClearDepthStencilBuffer(IDepthStencilBuffer* buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr)override;
-			void ApplyRenderTargets(const Container::Vector<IRenderTarget*>& renderTargets, IDepthStencilBuffer* dsBuffer)override;
+			void ApplyRenderTargets(const IRenderTarget*const * renderTargets, std::uint8_t renderTargetCount, IDepthStencilBuffer* dsBuffer)override;
 			void ApplyPipelineState(const PipelineState& state)override;
 			void BindGPUBuffer(std::uint8_t slot, IGPUBuffer* buffer)override;
 			void Draw(const DrawParam& param)override;

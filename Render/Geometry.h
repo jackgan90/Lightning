@@ -1,4 +1,5 @@
 #pragma once
+#include <type_traits>
 #include <memory>
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
@@ -15,5 +16,6 @@ namespace Lightning
 			IIndexBuffer* ib;
 			PrimitiveType primType;
 		};
+		static_assert(std::is_pod<Geometry>::value, "Geometry is not a POD type.");
 	}
 }
