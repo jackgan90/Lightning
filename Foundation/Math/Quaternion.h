@@ -14,26 +14,16 @@ namespace Lightning
 			template<typename T>
 			struct EulerAngle
 			{
-				EulerAngle() : yaw(0), roll(0), pitch(0){}
-				EulerAngle(T _yaw, T _roll, T _pitch) : yaw(_yaw), roll(_roll), pitch(_pitch){}
+				static_assert(std::is_pod<T>::value, "T is not a POD for EulerAngle!");
 				T yaw, roll, pitch;
 			};
+			using EulerAnglef = EulerAngle<float>;
+			static_assert(std::is_pod<EulerAnglef>::value, "EulerAnglef is not a POD!");
 
 			template<typename T>
-			struct Quaternion : PlainObject<Quaternion<T>>
+			struct Quaternion
 			{
-				Quaternion() : x(0), y(0), z(0), w(1){}
-				Quaternion(T _x, T _y, T _z, T _w) : x(_x), y(_y), z(_z), w(_w){}
-				//direction is a normalized vector3
-				Quaternion(const Vector3<T>& direction, T theta)
-				{
-					FromAxisAndAngle(direction, theta);
-				}
-
-				Quaternion(const EulerAngle<T>& angle)
-				{
-					FromEulerAngle(angle);
-				}
+				static_assert(std::is_pod<T>::value, "T is not a POD!");
 
 				T Length()const
 				{
@@ -53,7 +43,7 @@ namespace Lightning
 
 				Quaternion<T> Inversed()const
 				{
-					Quaternion<T> q(-x, -y, -z, w);
+					Quaternion<T> q{-x, -y, -z, w};
 					auto sqrl = q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w;
 					assert(sqrl > 0);
 					q.x /= sqrl;
@@ -164,14 +154,16 @@ namespace Lightning
 							rotAxis = Vector3<T>::right().Cross(source);
 						}
 						rotAxis.Normalize();
-						return Quaternion<T>(rotAxis, T(PI));
+						Quaternion<T> res;
+						res.FromAxisAndAngle(rotAxis, T(PI));
+						return res;
 					}
 					else
 					{
 						rotAxis = source.Cross(dest);
 						auto s = std::sqrt((1 + dot) * 2.0);
 						auto invs = 1 / s;
-						return Quaternion<T>(T(rotAxis.x * invs), T(rotAxis.y * invs), T(rotAxis.z * invs), T(s * 0.5));
+						return Quaternion<T>{T(rotAxis.x * invs), T(rotAxis.y * invs), T(rotAxis.z * invs), T(s * 0.5)};
 					}
 				}
 
@@ -207,13 +199,15 @@ namespace Lightning
 				static const Quaternion& Identity()
 				{
 					static Quaternion quat;
+					quat.x = quat.y = quat.z = T(0);
+					quat.w = T(1);
 					return quat;
 				}
 				T x, y, z, w;
 			};
 
-			using EulerAnglef = EulerAngle<float>;
 			using Quaternionf = Quaternion<float>;
+			static_assert(std::is_pod<Quaternionf>::value, "Quaternionf is not a POD!");
 		}
 	}
 }

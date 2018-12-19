@@ -14,7 +14,7 @@ namespace Lightning
 			class Transform
 			{
 			public:
-				Transform(): mPosition{0.0f, 0.0f, 0.0f} ,mRotation(0, 0, 0, 1) ,mScale{1.0f, 1.0f, 1.0f} ,mMatrixDirty(true) { }
+				Transform(): mPosition{0.0f, 0.0f, 0.0f} ,mRotation{0, 0, 0, 1} ,mScale{1.0f, 1.0f, 1.0f} ,mMatrixDirty(true) { }
 				Transform(const Vector3f& pos, const Vector3f& scale, const Quaternionf& rot)
 					:mPosition(pos), mScale(scale), mRotation(rot), mMatrixDirty(true){}
 
@@ -83,7 +83,9 @@ namespace Lightning
 					fwdDot = std::min(std::max(-1.0f, fwdDot), 1.0f);
 					if (fwdDot < 0)
 					{
-						mRotation = Quaternionf(desiredUp, std::acos(fwdDot)) * mRotation;
+						Quaternionf quat;
+						quat.FromAxisAndAngle(desiredUp, std::cos(fwdDot));
+						mRotation = quat * mRotation;
 						//LOG_INFO("TRIGGER, x, y, z, w : %f, %f, %f, %f", mRotation.x, mRotation.y, mRotation.z, mRotation.w);
 					}
 
