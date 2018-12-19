@@ -22,7 +22,7 @@ namespace Lightning
 			void CommitPipelineStates(const RenderNode& item);
 			void CommitShaderParameters(const RenderNode& item);
 			void Draw(const Geometry& geometry);
-			void GetInputLayouts(const Geometry& geometry, VertexInputLayout** layouts, std::uint8_t& layoutCount);
+			void GetInputLayouts(const Geometry& geometry, VertexInputLayout* layouts, std::uint8_t& layoutCount);
 		};
 	}
 }

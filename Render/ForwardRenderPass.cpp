@@ -66,7 +66,7 @@ namespace Lightning
 			state.primType = node.geometry.primType;
 			//TODO : Apply other pipeline states(blend state, rasterizer state etc)
 			
-			GetInputLayouts(node.geometry, &state.inputLayouts, state.inputLayoutCount);
+			GetInputLayouts(node.geometry, state.inputLayouts, state.inputLayoutCount);
 
 			if (node.depthStencilBuffer)
 			{
@@ -120,23 +120,19 @@ namespace Lightning
 			}
 		}
 
-		void ForwardRenderPass::GetInputLayouts(const Geometry& geometry, VertexInputLayout** layouts, std::uint8_t& layoutCount)
+		void ForwardRenderPass::GetInputLayouts(const Geometry& geometry, VertexInputLayout* layouts, std::uint8_t& layoutCount)
 		{
-			*layouts = nullptr;
 			layoutCount = 0;
 			for (std::size_t i = 0;i < Foundation::ArraySize(geometry.vbs);i++)
 			{
 				if (!geometry.vbs[i])
 					continue;
-				if (*layouts == nullptr)
-					*layouts = g_RenderAllocator.Allocate<VertexInputLayout>(Foundation::ArraySize(geometry.vbs));
-				auto& layout = (*layouts)[layoutCount];
+				auto& layout = layouts[layoutCount];
 				layout.slot = static_cast<std::uint8_t>(i);
 				layout.componentCount = static_cast<std::uint8_t>(geometry.vbs[i]->GetVertexComponentCount());
-				layout.components = nullptr;
+				assert(layout.componentCount <= MAX_INPUT_LAYOUT_COMPONENT_COUNT && "Input layout component count too large!");
 				if (layout.componentCount > 0)
 				{
-					layout.components = g_RenderAllocator.Allocate<VertexComponent>(layout.componentCount);
 					for (std::size_t j = 0;j < layout.componentCount;++j)
 					{
 						layout.components[j] = geometry.vbs[i]->GetVertexComponent(j);

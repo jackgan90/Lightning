@@ -174,11 +174,12 @@ namespace Lightning
 			void Reset()
 			{
 				slot = 0;
-				components = nullptr;
 				componentCount = 0;
+				//Don't reset each components,because componentCount indicate the number of valid components is 0
 			}
 			std::uint8_t slot;
-			VertexComponent *components;
+			VertexComponent components[MAX_INPUT_LAYOUT_COMPONENT_COUNT];
+			//Users of this struct should always check componentCount to ensure validation of components
 			std::uint8_t componentCount;
 		};
 		static_assert(std::is_pod<VertexInputLayout>::value, "VertexInputLayout is not a POD type.");
@@ -216,7 +217,6 @@ namespace Lightning
 			void Reset()
 			{
 				vs = fs = gs = hs = ds = nullptr;
-				inputLayouts = nullptr;
 				inputLayoutCount = 0;
 
 				primType = PrimitiveType::TRIANGLE_LIST;
@@ -227,18 +227,12 @@ namespace Lightning
 				scissorRect.Reset();
 
 				renderTargetCount = 0;
-				for (auto i = 0;i < MAX_RENDER_TARGET_COUNT;++i)
-				{
-					blendStates[i].Reset();
-					renderTargets[i] = nullptr;
-				}
 			}
 			IShader* vs;
 			IShader* fs;
 			IShader* gs;
 			IShader* hs;
 			IShader* ds;
-			VertexInputLayout *inputLayouts;
 			std::uint8_t inputLayoutCount;
 			PrimitiveType primType;
 			RasterizerState rasterizerState;
@@ -246,6 +240,8 @@ namespace Lightning
 			Viewport viewPort;
 			ScissorRect scissorRect;
 			std::uint8_t renderTargetCount;
+			//Don't try to reorder the following fields.array fields must be put to the end of struct
+			VertexInputLayout inputLayouts[MAX_INPUT_LAYOUT_COUNT];
 			BlendState blendStates[MAX_RENDER_TARGET_COUNT];
 			IRenderTarget* renderTargets[MAX_RENDER_TARGET_COUNT];
 		};
@@ -280,18 +276,23 @@ namespace std{
 	{
 		std::size_t operator()(const Lightning::Render::PipelineState& state)const noexcept
 		{
-			std::uint8_t buffer[sizeof(state)];
-			std::memcpy(buffer, &state, sizeof(state));
-			auto inputLayoutOffset = reinterpret_cast<const std::uint8_t*>(&state.inputLayouts) - \
-				reinterpret_cast<const std::uint8_t*>(&state);
-			std::memset(&buffer[inputLayoutOffset], 0, sizeof(state.inputLayouts));
-			//*reinterpret_cast<std::size_t*>(&buffer[sizeof(state)]) = \
-			//	std::hash<Lightning::Render::VertexInputLayout>{}(*state.inputLayouts);
+			constexpr std::size_t bufferSize = sizeof(state)
+				- sizeof(state.inputLayouts) - sizeof(state.blendStates) - sizeof(state.renderTargets);
+			std::uint8_t buffer[bufferSize];
+			std::memcpy(buffer, &state, bufferSize);
+
 			std::size_t hashValue = Lightning::Foundation::Utility::Hash(buffer, sizeof(buffer), 0x12345678u);
+
 			for (auto i = 0;i < state.inputLayoutCount;++i)
 			{
 				auto layoutHash = std::hash<Lightning::Render::VertexInputLayout>{}(state.inputLayouts[i]);
 				boost::hash_combine(hashValue, layoutHash);
+			}
+
+			for (auto i = 0;i < state.renderTargetCount;++i)
+			{
+				boost::hash_combine(hashValue, state.blendStates[i].GetHash());
+				boost::hash_combine(hashValue, state.renderTargets[i]);
 			}
 			return hashValue;
 		}
