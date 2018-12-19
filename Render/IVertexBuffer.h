@@ -10,18 +10,27 @@ namespace Lightning
 	namespace Render
 	{
 		using Foundation::Container;
-		struct VertexComponent : Foundation::PlainObject<VertexComponent>
+		struct VertexComponent
 		{
-			RenderSemantics semantic{ POSITION };
-			RenderFormat format{ RenderFormat::R32G32B32_FLOAT };
+			GET_HASH_METHOD
+			void Reset()
+			{
+				semantic = POSITION;
+				format = RenderFormat::R32G32B32_FLOAT;
+				offset = 0;
+				isInstance = false;
+				instanceStepRate = 0;
+			}
+			RenderSemantics semantic;
+			RenderFormat format;
 			//relative to the start of a vertex
-			unsigned int offset{ 0 };
+			unsigned int offset;
 			//if this attribute is an instance attribute
-			bool isInstance{ false };
+			bool isInstance;
 			//if this attribute is an instance attribute,specify after drawing how many instances should the attribute move to next value
-			unsigned int instanceStepRate{ 0 };
-
+			unsigned int instanceStepRate;
 		};
+		static_assert(std::is_pod<VertexComponent>::value, "VertexComponent is not a POD type.");
 
 		struct VertexDescriptor
 		{

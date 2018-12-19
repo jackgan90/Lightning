@@ -10,26 +10,10 @@
 #include "RenderConstants.h"
 #include "types/Rect.h"
 
-#define GET_HASH_METHOD \
-std::uint32_t GetHash()const\
-{\
-	return GetObjectHash(this);\
-}
-
 namespace Lightning
 {
 	namespace Render
 	{
-		template<typename T>
-		std::uint32_t GetObjectHash(T* object)
-		{
-			static std::random_device rd;
-			static std::mt19937 mt(rd());
-			static std::uniform_int_distribution<std::uint32_t> dist(1, static_cast<std::uint32_t>(-1));
-			static std::uint32_t seed = dist(mt);
-			return Foundation::Utility::Hash(object, sizeof(T), seed);
-		}
-
 		enum class BlendOperation : std::uint8_t
 		{
 			ADD,
@@ -185,45 +169,70 @@ namespace Lightning
 		};
 		static_assert(std::is_pod<DepthStencilState>::value, "DepthStencilState is not a POD type.");
 
-		struct VertexInputLayout : Foundation::PlainObject<VertexInputLayout>
-		{
-			std::uint8_t slot{ 0 };
-			VertexComponent *components{ nullptr };
-			std::uint8_t componentCount{ 0 };
-		};
-
-		struct Viewport : public Foundation::PlainObject<Viewport>
-		{
-			float left{ .0f };
-			float top{ .0f };
-			float width{ .0f };
-			float height{ .0f};
-		};
-
-		struct ScissorRect : public Foundation::PlainObject<ScissorRect>
-		{
-			float left{ .0f };
-			float top{ .0f };
-			float width{ .0f };
-			float height{ .0f };
-		};
-
-		struct PipelineState : Foundation::PlainObject<PipelineState>
+		struct VertexInputLayout
 		{
 			void Reset()
 			{
+				slot = 0;
+				components = nullptr;
+				componentCount = 0;
+			}
+			std::uint8_t slot;
+			VertexComponent *components;
+			std::uint8_t componentCount;
+		};
+		static_assert(std::is_pod<VertexInputLayout>::value, "VertexInputLayout is not a POD type.");
+
+		struct Viewport
+		{
+			GET_HASH_METHOD
+			void Reset()
+			{
+				left = top = width = height = .0f;
+			}
+			float left;
+			float top;
+			float width;
+			float height;
+		};
+		static_assert(std::is_pod<Viewport>::value, "Viewport is not a POD type.");
+
+		struct ScissorRect
+		{
+			GET_HASH_METHOD
+			void Reset()
+			{
+				left = top = width = height = .0f;
+			}
+			float left;
+			float top;
+			float width;
+			float height;
+		};
+		static_assert(std::is_pod<ScissorRect>::value, "ScissorRect is not a POD type.");
+
+		struct PipelineState
+		{
+			void Reset()
+			{
+				vs = fs = gs = hs = ds = nullptr;
+				inputLayouts = nullptr;
+				inputLayoutCount = 0;
+
+				primType = PrimitiveType::TRIANGLE_LIST;
 				rasterizerState.Reset();
+				depthStencilState.Reset();
+
+				viewPort.Reset();
+				scissorRect.Reset();
+
+				renderTargetCount = 0;
 				for (auto i = 0;i < MAX_RENDER_TARGET_COUNT;++i)
 				{
 					blendStates[i].Reset();
+					renderTargets[i] = nullptr;
 				}
-				depthStencilState.Reset();
 			}
-			PrimitiveType primType;
-			std::uint8_t renderTargetCount;
-			RasterizerState rasterizerState;
-			BlendState blendStates[MAX_RENDER_TARGET_COUNT];
-			DepthStencilState depthStencilState;
 			IShader* vs;
 			IShader* fs;
 			IShader* gs;
@@ -231,10 +240,16 @@ namespace Lightning
 			IShader* ds;
 			VertexInputLayout *inputLayouts;
 			std::uint8_t inputLayoutCount;
+			PrimitiveType primType;
+			RasterizerState rasterizerState;
+			DepthStencilState depthStencilState;
 			Viewport viewPort;
 			ScissorRect scissorRect;
+			std::uint8_t renderTargetCount;
+			BlendState blendStates[MAX_RENDER_TARGET_COUNT];
 			IRenderTarget* renderTargets[MAX_RENDER_TARGET_COUNT];
 		};
+		static_assert(std::is_pod<PipelineState>::value, "PipelineState is not a POD type.");
 
 	}
 }
@@ -248,20 +263,16 @@ PLAIN_OBJECT_HASH_SPECILIZATION(Lightning::Render::StencilFace)
 namespace std{
 	template<> struct std::hash<Lightning::Render::VertexInputLayout>
 	{
-		std::size_t operator()(const Lightning::Render::VertexInputLayout& state)const noexcept
+		std::size_t operator()(const Lightning::Render::VertexInputLayout& layout)const noexcept
 		{
-			static constexpr std::size_t MAX_COMPONENT_COUNT{ 32 };
-			static constexpr std::size_t VERTEX_COMPONENT_SIZE = sizeof(Lightning::Render::VertexComponent);
-			assert(state.componentCount < MAX_COMPONENT_COUNT);
-			std::uint8_t buffer[2 + MAX_COMPONENT_COUNT * VERTEX_COMPONENT_SIZE];
-			std::memset(buffer, 0, sizeof(buffer));
-			buffer[0] = state.slot;
-			buffer[1] = state.componentCount;
-			for (auto i = 0;i < state.componentCount;++i)
+			std::size_t seed{ 0 };
+			boost::hash_combine(seed, layout.slot);
+			boost::hash_combine(seed, layout.componentCount);
+			for (auto i = 0;i < layout.componentCount;++i)
 			{
-				std::memcpy(buffer + 2 + i * VERTEX_COMPONENT_SIZE, &state.components[i], VERTEX_COMPONENT_SIZE);
+				boost::hash_combine(seed, layout.components[i].GetHash());
 			}
-			return Lightning::Foundation::Utility::Hash(buffer, sizeof(buffer), 0x12345678u);
+			return seed;
 		}
 	};
 
@@ -269,14 +280,20 @@ namespace std{
 	{
 		std::size_t operator()(const Lightning::Render::PipelineState& state)const noexcept
 		{
-			std::uint8_t buffer[sizeof(state) + sizeof(std::size_t)];
+			std::uint8_t buffer[sizeof(state)];
 			std::memcpy(buffer, &state, sizeof(state));
 			auto inputLayoutOffset = reinterpret_cast<const std::uint8_t*>(&state.inputLayouts) - \
 				reinterpret_cast<const std::uint8_t*>(&state);
 			std::memset(&buffer[inputLayoutOffset], 0, sizeof(state.inputLayouts));
-			*reinterpret_cast<std::size_t*>(&buffer[sizeof(state)]) = \
-				std::hash<Lightning::Render::VertexInputLayout>{}(*state.inputLayouts);
-			return Lightning::Foundation::Utility::Hash(buffer, sizeof(buffer), 0x12345678u);
+			//*reinterpret_cast<std::size_t*>(&buffer[sizeof(state)]) = \
+			//	std::hash<Lightning::Render::VertexInputLayout>{}(*state.inputLayouts);
+			std::size_t hashValue = Lightning::Foundation::Utility::Hash(buffer, sizeof(buffer), 0x12345678u);
+			for (auto i = 0;i < state.inputLayoutCount;++i)
+			{
+				auto layoutHash = std::hash<Lightning::Render::VertexInputLayout>{}(state.inputLayouts[i]);
+				boost::hash_combine(hashValue, layoutHash);
+			}
+			return hashValue;
 		}
 	};
 }

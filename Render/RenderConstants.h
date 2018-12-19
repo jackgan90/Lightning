@@ -35,9 +35,9 @@ namespace Lightning
 
 		constexpr int DEFAULT_SHADER_MODEL_MAJOR_VERSION = 5;
 		constexpr int DEFAULT_SHADER_MODEL_MINOR_VERSION = 0;
-		constexpr int MAX_GEOMETRY_BUFFER_COUNT = 8;
-		constexpr int RENDER_FRAME_COUNT = 3;
-		constexpr int MAX_RENDER_TARGET_COUNT = 8;
+		constexpr std::uint8_t MAX_GEOMETRY_BUFFER_COUNT = 8;
+		constexpr std::uint8_t RENDER_FRAME_COUNT = 3;
+		constexpr std::uint8_t MAX_RENDER_TARGET_COUNT = 8;
 		constexpr char* const DEFAULT_SHADER_ENTRY = "main";
 	}
 }

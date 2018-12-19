@@ -17,10 +17,27 @@ namespace std{\
 	};\
 }\
 
+#define GET_HASH_METHOD \
+std::uint32_t GetHash()const\
+{\
+	return Lightning::Foundation::GetObjectHash(this);\
+}
+
+
 namespace Lightning
 {
 	namespace Foundation
 	{
+		template<typename T>
+		std::uint32_t GetObjectHash(T* object)
+		{
+			static std::random_device rd;
+			static std::mt19937 mt(rd());
+			static std::uniform_int_distribution<std::uint32_t> dist(1, static_cast<std::uint32_t>(-1));
+			static std::uint32_t seed = dist(mt);
+			return Utility::Hash(object, sizeof(T), seed);
+		}
+
 		template<typename Derived>
 		struct PlainObject
 		{
@@ -42,11 +59,7 @@ namespace Lightning
 
 			std::uint32_t GetHash()const
 			{
-				static std::random_device rd;
-				static std::mt19937 mt(rd());
-				static std::uniform_int_distribution<std::uint32_t> dist(1, static_cast<std::uint32_t>(-1));
-				static std::uint32_t seed = dist(mt);
-				return Utility::Hash(this, sizeof(Derived), seed);
+				return GetObjectHash(this);
 			}
 		};
 	}
