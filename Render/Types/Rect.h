@@ -1,18 +1,14 @@
 #pragma once
-#include "Container.h"
-#include "PlainObject.h"
+#include <type_traits>
 
 namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::Container;
 		template<typename T>
-		struct Rect : Foundation::PlainObject<Rect<T>>
+		struct Rect
 		{
-		public:
-			Rect() : 
-			Rect(T l, T t, T w, T h) : left(l), top(t), width(w), height(h){}
+			static_assert(std::is_pod<T>::value, "T is not a POD type.");
 			T right()const { return left + width; }
 			T bottom()const { return top + height; }
 			T left, top, width, height;
@@ -20,9 +16,7 @@ namespace Lightning
 
 		using RectI = Rect<int>;
 		using RectF = Rect<float>;
-		template<typename T>
-		using RectList = Container::Vector<Rect<T>>;
-		using RectIList = RectList<int>;
-		using RectFList = RectList<float>;
+		static_assert(std::is_pod<RectI>::value, "RectI is not a POD type.");
+		static_assert(std::is_pod<RectF>::value, "RectF is not a POD type.");
 	}
 }

@@ -26,7 +26,7 @@ namespace Lightning
 		extern Plugins::RenderPlugin* gRenderPlugin;
 
 		Primitive::Primitive():mShouldUpdateRenderNode(true)
-			,mColor(0, 0, 0, 255), mTexture(nullptr)
+			,mColor{0, 0, 0, 255}, mTexture(nullptr)
 		{
 			mRenderNode.material = nullptr;
 		}

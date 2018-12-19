@@ -83,8 +83,10 @@ namespace Lightning
 			//Commit a render node for rendering
 			virtual void CommitRenderNode(const RenderNode& node) = 0;
 			//clear a specified render target,possibly parts of it defined by an array of rects
-			virtual void ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, const RectIList* rects=nullptr) = 0;
-			virtual void ClearDepthStencilBuffer(IDepthStencilBuffer* buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr) = 0;
+			virtual void ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, 
+				const RectI*const* rects=nullptr, std::size_t rectCount = 0) = 0;
+			virtual void ClearDepthStencilBuffer(IDepthStencilBuffer* buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, 
+				const RectI* const* rects = nullptr, std::size_t rectCount = 0) = 0;
 			virtual void ApplyRenderTargets(const IRenderTarget*const * renderTargets, std::uint8_t renderTargetCount, IDepthStencilBuffer* dsBuffer) = 0;
 			virtual void ApplyPipelineState(const PipelineState& state) = 0;
 			//bind pBuffer to a GPU slot(does not copy data,just binding), each invocation will override previous binding

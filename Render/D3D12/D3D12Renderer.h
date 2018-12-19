@@ -35,8 +35,10 @@ namespace Lightning
 			float GetNDCNearPlane()const override { return 0.0f; }
 			void ShutDown()override;
 			void Start()override;
-			void ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, const RectIList* rects=nullptr)override;
-			void ClearDepthStencilBuffer(IDepthStencilBuffer* buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, const RectIList* rects = nullptr)override;
+			void ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, 
+				const RectI*const* rects=nullptr, std::size_t rectCount = 0)override;
+			void ClearDepthStencilBuffer(IDepthStencilBuffer* buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, 
+				const RectI* const* rects = nullptr, std::size_t rectCount = 0)override;
 			void ApplyRenderTargets(const IRenderTarget*const * renderTargets, std::uint8_t renderTargetCount, IDepthStencilBuffer* dsBuffer)override;
 			void ApplyPipelineState(const PipelineState& state)override;
 			void BindGPUBuffer(std::uint8_t slot, IGPUBuffer* buffer)override;
@@ -72,8 +74,8 @@ namespace Lightning
 			void ApplyRasterizerState(const RasterizerState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			void ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			void ApplyDepthStencilState(const DepthStencilState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
-			void ApplyViewports(const RectFList& vp, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
-			void ApplyScissorRects(const RectFList& scissorRects, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
+			void ApplyViewports(const RectF*const* vps, std::size_t count, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
+			void ApplyScissorRects(const RectF*const* scissorRects, std::size_t count, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			void ApplyShader(IShader* pShader, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			void UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::uint8_t  layoutCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			//Analyze shader root resources.

@@ -65,7 +65,7 @@ namespace Lightning
 			: mOutputWindow(window)
 			, mFrameCount(0)
 			, mFrameResourceIndex(0)
-			, mClearColor(0.5f, 0.5f, 0.5f, 1.0f)
+			, mClearColor{0.5f, 0.5f, 0.5f, 1.0f}
 			, mRenderQueueIndex(RENDER_FRAME_COUNT)
 			, mCurrentFrameRenderQueue(&mRenderQueues[RENDER_FRAME_COUNT])
 			, mStarted(false)
@@ -188,7 +188,7 @@ namespace Lightning
 
 		void Renderer::SetClearColor(float r, float g, float b, float a)
 		{
-			mClearColor = ColorF(r, g, b, a);
+			mClearColor = ColorF{r, g, b, a};
 		}
 
 		std::uint64_t Renderer::GetCurrentFrameCount()const

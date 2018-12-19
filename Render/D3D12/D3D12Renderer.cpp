@@ -126,7 +126,8 @@ namespace Lightning
 			return device;
 		}
 
-		void D3D12Renderer::ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, const RectIList* rects)
+		void D3D12Renderer::ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, 
+			const RectI*const* rects, std::size_t rectCount)
 		{
 			D3D12RenderTarget *pTarget = static_cast<D3D12RenderTarget*>(renderTarget);
 			assert(pTarget);
@@ -139,18 +140,18 @@ namespace Lightning
 
 			const float clearColor[] = { color.r, color.g, color.b, color.a };
 			auto rtvHandle = pTarget->GetCPUHandle();
-			if (rects && !rects->empty())
+			if (rects && rectCount > 0)
 			{
 				//TODO : This implementation is wrong.Should allocate frame memory not local memory,must fix later
-				D3D12_RECT* d3dRect = g_RenderAllocator.Allocate<D3D12_RECT>(rects->size());
-				for (size_t i = 0; i < rects->size(); i++)
+				D3D12_RECT* d3dRect = g_RenderAllocator.Allocate<D3D12_RECT>(rectCount);
+				for (size_t i = 0; i < rectCount; i++)
 				{
 					d3dRect[i].left = (*rects)[i].left;
 					d3dRect[i].right = (*rects)[i].right();
 					d3dRect[i].top = (*rects)[i].top;
 					d3dRect[i].bottom = (*rects)[i].bottom();
 				}
-				commandList->ClearRenderTargetView(rtvHandle, clearColor, UINT(rects->size()), d3dRect);
+				commandList->ClearRenderTargetView(rtvHandle, clearColor, UINT(rectCount), d3dRect);
 			}
 			else
 			{
@@ -159,7 +160,7 @@ namespace Lightning
 		}
 
 		void D3D12Renderer::ClearDepthStencilBuffer(IDepthStencilBuffer* buffer, DepthStencilClearFlags flags, 
-			float depth, std::uint8_t stencil, const RectIList* rects)
+			float depth, std::uint8_t stencil, const RectI*const* rects, std::size_t rectCount)
 		{
 			D3D12_CLEAR_FLAGS clearFlags = D3D12_CLEAR_FLAG_DEPTH;
 			if ((flags & DepthStencilClearFlags::CLEAR_DEPTH) != DepthStencilClearFlags::CLEAR_DEPTH)
@@ -174,18 +175,18 @@ namespace Lightning
 			auto d3d12DSBuffer = static_cast<D3D12DepthStencilBuffer*>(buffer);
 			d3d12DSBuffer->TransitToState(commandList, D3D12_RESOURCE_STATE_DEPTH_WRITE);
 			auto dsvHandle = d3d12DSBuffer->GetCPUHandle();
-			if (rects && !rects->empty())
+			if (rects && rectCount > 0)
 			{
 				//TODO : This implementation is wrong.Should allocate frame memory not local memory,must fix later
-				D3D12_RECT* d3dRect = g_RenderAllocator.Allocate<D3D12_RECT>(rects->size());
-				for (size_t i = 0; i < rects->size(); i++)
+				D3D12_RECT* d3dRect = g_RenderAllocator.Allocate<D3D12_RECT>(rectCount);
+				for (size_t i = 0; i < rectCount; i++)
 				{
 					d3dRect[i].left = (*rects)[i].left;
 					d3dRect[i].right = (*rects)[i].right();
 					d3dRect[i].top = (*rects)[i].top;
 					d3dRect[i].bottom = (*rects)[i].bottom();
 				}
-				commandList->ClearDepthStencilView(dsvHandle, clearFlags, depth, stencil, UINT(rects->size()), d3dRect);
+				commandList->ClearDepthStencilView(dsvHandle, clearFlags, depth, stencil, UINT(rectCount), d3dRect);
 			}
 			else
 			{
@@ -593,12 +594,12 @@ namespace Lightning
 			return constantBuffers;
 		}
 
-		void D3D12Renderer::ApplyViewports(const RectFList& vp, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
+		void D3D12Renderer::ApplyViewports(const RectF*const* vps, std::size_t count, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
 
 		}
 
-		void D3D12Renderer::ApplyScissorRects(const RectFList& scissorRects, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
+		void D3D12Renderer::ApplyScissorRects(const RectF*const* scissorRects, std::size_t count, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
 
 		}
