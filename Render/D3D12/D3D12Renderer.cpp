@@ -127,7 +127,7 @@ namespace Lightning
 		}
 
 		void D3D12Renderer::ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, 
-			const RectI*const* rects, std::size_t rectCount)
+			const RectI* rects, std::size_t rectCount)
 		{
 			D3D12RenderTarget *pTarget = static_cast<D3D12RenderTarget*>(renderTarget);
 			assert(pTarget);
@@ -146,10 +146,10 @@ namespace Lightning
 				D3D12_RECT* d3dRect = g_RenderAllocator.Allocate<D3D12_RECT>(rectCount);
 				for (size_t i = 0; i < rectCount; i++)
 				{
-					d3dRect[i].left = (*rects)[i].left;
-					d3dRect[i].right = (*rects)[i].right();
-					d3dRect[i].top = (*rects)[i].top;
-					d3dRect[i].bottom = (*rects)[i].bottom();
+					d3dRect[i].left = rects[i].left;
+					d3dRect[i].right = rects[i].right();
+					d3dRect[i].top = rects[i].top;
+					d3dRect[i].bottom = rects[i].bottom();
 				}
 				commandList->ClearRenderTargetView(rtvHandle, clearColor, UINT(rectCount), d3dRect);
 			}
@@ -160,7 +160,7 @@ namespace Lightning
 		}
 
 		void D3D12Renderer::ClearDepthStencilBuffer(IDepthStencilBuffer* buffer, DepthStencilClearFlags flags, 
-			float depth, std::uint8_t stencil, const RectI*const* rects, std::size_t rectCount)
+			float depth, std::uint8_t stencil, const RectI* rects, std::size_t rectCount)
 		{
 			D3D12_CLEAR_FLAGS clearFlags = D3D12_CLEAR_FLAG_DEPTH;
 			if ((flags & DepthStencilClearFlags::CLEAR_DEPTH) != DepthStencilClearFlags::CLEAR_DEPTH)
@@ -181,10 +181,10 @@ namespace Lightning
 				D3D12_RECT* d3dRect = g_RenderAllocator.Allocate<D3D12_RECT>(rectCount);
 				for (size_t i = 0; i < rectCount; i++)
 				{
-					d3dRect[i].left = (*rects)[i].left;
-					d3dRect[i].right = (*rects)[i].right();
-					d3dRect[i].top = (*rects)[i].top;
-					d3dRect[i].bottom = (*rects)[i].bottom();
+					d3dRect[i].left = rects[i].left;
+					d3dRect[i].right = rects[i].right();
+					d3dRect[i].top = rects[i].top;
+					d3dRect[i].bottom = rects[i].bottom();
 				}
 				commandList->ClearDepthStencilView(dsvHandle, clearFlags, depth, stencil, UINT(rectCount), d3dRect);
 			}
