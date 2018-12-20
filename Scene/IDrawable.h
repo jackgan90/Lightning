@@ -13,7 +13,7 @@ namespace Lightning
 		class IDrawable : public RefCount
 		{
 		public:
-			virtual void Draw(IRenderer&, const SceneRenderData&) = 0;
+			virtual void Draw(IRenderer* , const SceneRenderData&) = 0;
 		};
 	}
 }

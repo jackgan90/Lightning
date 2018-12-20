@@ -16,7 +16,7 @@ namespace Lightning
 		public:
 			Primitive();
 			~Primitive()override;
-			void Draw(IRenderer& renderer, const SceneRenderData& sceneRenderData) override;
+			void Draw(IRenderer* renderer, const SceneRenderData& sceneRenderData) override;
 			PrimitiveType GetPrimitiveType()const override{ return mRenderNode.geometry.primType; }
 			void SetWorldPosition(const Vector3f& pos) override{ mTransform.SetPosition(pos); }
 			Vector3f GetWorldPosition()const override{ return mTransform.GetPosition(); }
@@ -34,7 +34,7 @@ namespace Lightning
 			void SetSamplerState(const std::string& name, const SamplerState& state)override;
 			void SetShader(IShader* shader)override;
 		protected:
-			virtual void UpdateRenderNode(IRenderer&);
+			virtual void UpdateRenderNode(IRenderer*);
 			virtual std::uint8_t *GetVertices() = 0;
 			virtual std::uint16_t *GetIndices() = 0;
 			virtual Vector3f GetScale() = 0;
@@ -70,7 +70,7 @@ namespace Lightning
 		public:
 			Cube(float width = 1.0f, float height = 1.0f, float thickness = 1.0f);
 		protected:
-			void UpdateRenderNode(IRenderer&)override;
+			void UpdateRenderNode(IRenderer*)override;
 			std::uint8_t *GetVertices() override { return sDataSource.vertices; }
 			std::uint16_t *GetIndices() override { return sDataSource.indices; }
 			Vector3f GetScale() override { return Vector3f{mWidth, mHeight, mThickness}; }

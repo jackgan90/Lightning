@@ -129,27 +129,27 @@ namespace Lightning
 				mShaders.push_back(shader);
 		}
 
-		void Primitive::Draw(IRenderer& renderer, const SceneRenderData& sceneRenderData)
+		void Primitive::Draw(IRenderer* renderer, const SceneRenderData& sceneRenderData)
 		{
 			if (mShouldUpdateRenderNode)
 			{
 				UpdateRenderNode(renderer);
 				mShouldUpdateRenderNode = false;
 			}
-			auto swapChain = renderer.GetSwapChain();
+			auto swapChain = renderer->GetSwapChain();
 			auto defaultRT = swapChain->GetDefaultRenderTarget();
 			mRenderNode.renderTargets[0] = defaultRT;
 			mRenderNode.renderTargetCount = 1;
-			mRenderNode.depthStencilBuffer = renderer.GetDefaultDepthStencilBuffer();
+			mRenderNode.depthStencilBuffer = renderer->GetDefaultDepthStencilBuffer();
 			if (sceneRenderData.camera)
 			{
 				mRenderNode.viewMatrix = sceneRenderData.camera->GetViewMatrix();
 				mRenderNode.projectionMatrix = sceneRenderData.camera->GetProjectionMatrix();
 			}
-			renderer.CommitRenderNode(mRenderNode);
+			renderer->CommitRenderNode(mRenderNode);
 		}
 
-		void Primitive::UpdateRenderNode(IRenderer& renderer)
+		void Primitive::UpdateRenderNode(IRenderer* renderer)
 		{
 			Render::VertexDescriptor descriptor;
 			auto& compPosition = descriptor.components[0];
@@ -167,7 +167,7 @@ namespace Lightning
 			descriptor.componentCount = 2;
 
 			std::memset(mRenderNode.geometry.vbs, 0, sizeof(mRenderNode.geometry.vbs));
-			auto pDevice = renderer.GetDevice();
+			auto pDevice = renderer->GetDevice();
 			auto vbSize = GetVertexBufferSize();
 			auto ibSize = GetIndexBufferSize();
 			mRenderNode.geometry.vbs[0] = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(vbSize), descriptor);
@@ -188,7 +188,6 @@ namespace Lightning
 			mRenderNode.geometry.primType = Render::PrimitiveType::TRIANGLE_LIST;
 			
 			mRenderNode.material = gRenderPlugin->CreateMaterial();
-			auto device = renderer.GetDevice();
 			IShader *vs{ nullptr }, *ps{ nullptr };
 			for (auto shader : mShaders)
 			{
@@ -200,14 +199,14 @@ namespace Lightning
 			}
 			if (!vs)
 			{
-				vs = device->GetDefaultShader(Render::ShaderType::VERTEX);
+				vs = pDevice->GetDefaultShader(Render::ShaderType::VERTEX);
 				vs->AddRef();
 				mShaders.push_back(vs);
 				mRenderNode.material->SetShader(vs);
 			}
 			if (!ps)
 			{
-				ps = device->GetDefaultShader(Render::ShaderType::FRAGMENT);
+				ps = pDevice->GetDefaultShader(Render::ShaderType::FRAGMENT);
 				ps->AddRef();
 				mShaders.push_back(ps);
 				mRenderNode.material->SetShader(ps);
@@ -269,7 +268,7 @@ namespace Lightning
 			assert(mWidth > 0 && mHeight > 0 && mThickness > 0 && "The size of the cube must be greater than 0!");
 		}
 
-		void Cube::UpdateRenderNode(IRenderer& renderer)
+		void Cube::UpdateRenderNode(IRenderer* renderer)
 		{
 			Primitive::UpdateRenderNode(renderer);
 			if (mTexture)
@@ -283,7 +282,7 @@ namespace Lightning
 				compTexcoord.offset = 0;
 				compTexcoord.semantic = Render::RenderSemantics::TEXCOORD0;
 				descriptor.componentCount = 1;
-				auto pDevice = renderer.GetDevice();
+				auto pDevice = renderer->GetDevice();
 				auto uvBufferSize = sizeof(Vector2f) * 8;
 				mRenderNode.geometry.vbs[1] = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(uvBufferSize), descriptor);
 				auto uv = reinterpret_cast<Vector2f*>(mRenderNode.geometry.vbs[1]->Lock(0, uvBufferSize));

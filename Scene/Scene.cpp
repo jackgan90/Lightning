@@ -32,7 +32,7 @@ namespace Lightning
 			auto renderer = gRenderPlugin->GetRenderer();
 			for (auto& drawable : mDrawables)
 			{
-				drawable->Draw(*renderer, mRenderData);
+				drawable->Draw(renderer, mRenderData);
 			}
 		}
 
