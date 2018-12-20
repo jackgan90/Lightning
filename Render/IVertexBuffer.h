@@ -34,8 +34,10 @@ namespace Lightning
 
 		struct VertexDescriptor
 		{
-			Container::Vector<VertexComponent> components;
+			VertexComponent components[MAX_INPUT_LAYOUT_COMPONENT_COUNT];
+			std::uint8_t componentCount;
 		};
+		static_assert(std::is_pod<VertexDescriptor>::value, "VertexDescriptor is not a POD type.");
 
 		class IVertexBuffer : public GPUBuffer
 		{

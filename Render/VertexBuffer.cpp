@@ -20,13 +20,13 @@ namespace Lightning
 
 		const VertexComponent& VertexBuffer::GetVertexComponent(size_t index)
 		{
-			assert(index < mVertexDescriptor.components.size());
+			assert(index < mVertexDescriptor.componentCount);
 			return mVertexDescriptor.components[index];
 		}
 
 		std::size_t VertexBuffer::GetVertexComponentCount()
 		{
-			return mVertexDescriptor.components.size();
+			return mVertexDescriptor.componentCount;
 		}
 
 		std::uint32_t VertexBuffer::GetVertexSize()const

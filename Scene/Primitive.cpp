@@ -152,20 +152,19 @@ namespace Lightning
 		void Primitive::UpdateRenderNode(IRenderer& renderer)
 		{
 			Render::VertexDescriptor descriptor;
-			Render::VertexComponent compPosition;
+			auto& compPosition = descriptor.components[0];
 			compPosition.format = Render::RenderFormat::R32G32B32_FLOAT;
 			compPosition.instanceStepRate = 0;
 			compPosition.isInstance = false;
 			compPosition.offset = 0;
 			compPosition.semantic = Render::RenderSemantics::POSITION;
-			descriptor.components.push_back(compPosition);
-			Render::VertexComponent compNormal;
+			auto& compNormal = descriptor.components[1];
 			compNormal.format = Render::RenderFormat::R32G32B32_FLOAT;
 			compNormal.instanceStepRate = 0;
 			compNormal.isInstance = false;
 			compNormal.offset = sizeof(float) * 3;
 			compNormal.semantic = Render::RenderSemantics::NORMAL;
-			descriptor.components.push_back(compNormal);
+			descriptor.componentCount = 2;
 
 			std::memset(mRenderNode.geometry.vbs, 0, sizeof(mRenderNode.geometry.vbs));
 			auto pDevice = renderer.GetDevice();
@@ -277,13 +276,13 @@ namespace Lightning
 			{
 				//generate uv
 				Render::VertexDescriptor descriptor;
-				Render::VertexComponent compTexcoord;
+				auto& compTexcoord = descriptor.components[0];
 				compTexcoord.format = Render::RenderFormat::R32G32_FLOAT;
 				compTexcoord.instanceStepRate = 0;
 				compTexcoord.isInstance = false;
 				compTexcoord.offset = 0;
 				compTexcoord.semantic = Render::RenderSemantics::TEXCOORD0;
-				descriptor.components.push_back(compTexcoord);
+				descriptor.componentCount = 1;
 				auto pDevice = renderer.GetDevice();
 				auto uvBufferSize = sizeof(Vector2f) * 8;
 				mRenderNode.geometry.vbs[1] = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(uvBufferSize), descriptor);
