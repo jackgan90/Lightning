@@ -3,7 +3,7 @@
 #include <cassert>
 #include <string>
 #include <atomic>
-#include "RefCount.h"
+#include "RefObject.h"
 
 #ifdef LIGHTNING_WIN32
 #define LIGHTNING_PLUGIN_DLL_EXPORT __declspec(dllexport)
@@ -32,7 +32,7 @@ namespace Lightning
 {
 	namespace Plugins
 	{
-		class Plugin : public RefCount
+		class Plugin : public RefObject
 		{
 		public:
 			std::string GetName()const { return mName; }

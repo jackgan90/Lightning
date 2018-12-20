@@ -4,7 +4,7 @@
 #include <string>
 #include "Container.h"
 #include "Singleton.h"
-#include "RefCount.h"
+#include "RefObject.h"
 
 namespace Lightning
 {
@@ -13,7 +13,7 @@ namespace Lightning
 		template<typename Derived, typename T>
 		class RefObjectCache : public Singleton<Derived>
 		{
-			static_assert(std::is_base_of<Plugins::RefCount, T>::value, "T must be a subclass of RefCount.");
+			static_assert(std::is_base_of<Plugins::RefObject, T>::value, "T must be a subclass of RefObject.");
 		public:
 			virtual ~RefObjectCache()
 			{

@@ -211,15 +211,15 @@ namespace Lightning
 {
 	namespace Plugins
 	{
-		class RefCount
+		class RefObject
 		{
 		public:
-			virtual ~RefCount() = default;
-			RefCount():mRefCount(1)
+			virtual ~RefObject() = default;
+			RefObject():mRefCount(1)
 			{
 			}
-			RefCount(const RefCount&) = delete;
-			RefCount& operator=(const RefCount&) = delete;
+			RefObject(const RefObject&) = delete;
+			RefObject& operator=(const RefObject&) = delete;
 			//Although AddRef and Release are declared virtual,subclasses should not try to override them
 			//This is just a trick to make compiler generate late binding code.We have to invoke delete in the
 			//dll which creates the object.

@@ -8,7 +8,7 @@
 #include "RenderException.h"
 #include "Math/Matrix.h"
 #include "Math/Vector.h"
-#include "RefCount.h"
+#include "RefObject.h"
 #include "Texture/ITexture.h"
 #include "Texture/Sampler.h"
 
@@ -119,7 +119,7 @@ namespace Lightning
 			}
 		};
 
-		class IShader : public HashableObject, public Plugins::RefCount
+		class IShader : public HashableObject, public Plugins::RefObject
 		{
 		public:
 			virtual std::string GetEntryPoint()const = 0; 

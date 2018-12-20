@@ -1,7 +1,7 @@
 #pragma once
 #include <fstream>
 #include "EnumOperation.h"
-#include "RefCount.h"
+#include "RefObject.h"
 
 namespace Lightning
 {
@@ -29,7 +29,7 @@ namespace Lightning
 		};
 		ENABLE_ENUM_BITMASK_OPERATORS(FileAccess)
 
-		class IFile : public Plugins::RefCount
+		class IFile : public Plugins::RefObject
 		{
 		public:
 			virtual FileSize GetSize() = 0;

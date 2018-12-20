@@ -1,6 +1,6 @@
 #pragma once
 #include <cstdint>
-#include "RefCount.h"
+#include "RefObject.h"
 
 #define WINDOW_MSG_CLASS_HANDLER(EventMgr, EventType, Handler)\
 EventMgr->Subscribe(EventType, [&](const Foundation::IEvent& event){\
@@ -11,7 +11,7 @@ namespace Lightning
 {
 	namespace Window
 	{
-		class IWindow : public Plugins::RefCount
+		class IWindow : public Plugins::RefObject
 		{
 		public:
 			virtual bool Show(bool show) = 0;

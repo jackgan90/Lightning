@@ -15,7 +15,7 @@ namespace Lightning
 
 		using ShaderParametersCache = Container::UnorderedMap<ShaderType, ShaderParameters>;
 
-		class IMaterial : public Plugins::RefCount
+		class IMaterial : public Plugins::RefObject
 		{
 		public:
 			//set shader used by this material

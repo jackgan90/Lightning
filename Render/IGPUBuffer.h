@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <memory>
 #include "RenderConstants.h"
-#include "RefCount.h"
+#include "RefObject.h"
 
 namespace Lightning
 {
@@ -15,7 +15,7 @@ namespace Lightning
 		};
 		
 
-		class IGPUBuffer : public Plugins::RefCount
+		class IGPUBuffer : public Plugins::RefObject
 		{
 		public:
 			//get internal data
