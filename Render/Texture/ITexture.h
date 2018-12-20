@@ -20,19 +20,30 @@ namespace Lightning
 
 		struct TextureDescriptor
 		{
-			TEXTURE_TYPE type{TEXTURE_TYPE_2D};
-			std::uint16_t width{ 0 };
-			std::uint16_t height{ 0 };
+			void Reset()
+			{
+				type = TEXTURE_TYPE_2D;
+				width = height = 0;
+				depth = 0;
+				numberOfMipmaps = 1;
+				format = RenderFormat::UNDEFINED;
+				multiSampleCount = 1;
+				multiSampleQuality = 1;
+			}
+			TEXTURE_TYPE type;
+			std::uint16_t width;
+			std::uint16_t height;
 			union 
 			{
-				std::uint16_t depth{ 1 };
+				std::uint16_t depth;
 				std::uint16_t arraySize;
 			};
-			std::uint16_t numberOfMipmaps{ 1 };
-			RenderFormat format{ RenderFormat::UNDEFINED };
-			std::uint16_t multiSampleCount{ 1 };
-			std::uint16_t multiSampleQuality{ 1 };
+			std::uint16_t numberOfMipmaps;
+			RenderFormat format;
+			std::uint16_t multiSampleCount;
+			std::uint16_t multiSampleQuality;
 		};
+		static_assert(std::is_pod<TextureDescriptor>::value, "TextureDescriptor is not a POD type.");
 
 		class ITexture : public Plugins::RefCount
 		{

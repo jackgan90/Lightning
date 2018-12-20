@@ -39,7 +39,7 @@ namespace Lightning
 			return mLoader;
 		}
 
-		void Device::CreateShaderFromFile(ShaderType type, const std::string& path, IShaderLoadCallback* callback)
+		void Device::CreateShaderFromFile(ShaderType type, const char* const path, IShaderLoadCallback* callback)
 		{
 			class ShaderLoaded : public IShaderLoadCallback
 			{
@@ -73,7 +73,7 @@ namespace Lightning
 			loader->Load(path, ser);
 		}
 
-		void Device::CreateTextureFromFile(const std::string& path, ITextureLoadCallback* callback)
+		void Device::CreateTextureFromFile(const char* const path, ITextureLoadCallback* callback)
 		{
 			class TextureLoaded : public ITextureLoadCallback
 			{
