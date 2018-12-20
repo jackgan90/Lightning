@@ -64,7 +64,6 @@ namespace Lightning
 			FRAME_END
 		};
 
-		using RendererCallback = std::function<void()>;
 		class IRenderer
 		{
 		public:
@@ -94,8 +93,6 @@ namespace Lightning
 			virtual void BindGPUBuffer(std::uint8_t slot, IGPUBuffer* buffer) = 0;
 			//issue underlying draw call
 			virtual void Draw(const DrawParam& param) = 0;
-			//register renderer event callback.The callback will be called on certain moment of rendering
-			virtual void RegisterCallback(RendererEvent evt, RendererCallback cb) = 0;
 			//get near plane value corresponding to normalized device coordinate
 			//different render API may have different near plane definition
 			//for example OpenGL clips coordinates to [-1, 1] and DirectX clips coordinates to [0, 1]

@@ -42,7 +42,6 @@ namespace Lightning
 			std::size_t GetFrameResourceIndex()const override;
 			void Start()override;
 			void ShutDown()override;
-			void RegisterCallback(RendererEvent evt, RendererCallback cb)override;
 			static IRenderer* Instance() { return sInstance; }
 			Window::IWindow* GetOutputWindow()override { return mOutputWindow; }
 			IDepthStencilBuffer* GetDefaultDepthStencilBuffer()override;
@@ -57,10 +56,9 @@ namespace Lightning
 			};
 			Renderer(Window::IWindow* window);
 			void WaitForPreviousFrame(bool waitAll);
-			void InvokeEventCallback(RendererEvent evt);
-			virtual void OnFrameBegin();
-			virtual void OnFrameUpdate();
-			virtual void OnFrameEnd();
+			virtual void OnFrameBegin() = 0;
+			virtual void OnFrameUpdate() = 0;
+			virtual void OnFrameEnd() = 0;
 			//CreateRenderFence is called in Start after the creation of device and swap chain
 			virtual IRenderFence* CreateRenderFence() = 0;
 			//CreateDevice is called first in Start
@@ -78,7 +76,6 @@ namespace Lightning
 			Container::Vector<std::unique_ptr<RenderPass>> mRenderPasses;
 			std::size_t mFrameResourceIndex;
 			ColorF mClearColor;
-			Container::UnorderedMap<RendererEvent, Container::Vector<RendererCallback>> mCallbacks;
 			FrameResource mFrameResources[RENDER_FRAME_COUNT];
 			std::size_t mRenderQueueIndex;
 			RenderQueue mRenderQueues[RENDER_FRAME_COUNT + 1];

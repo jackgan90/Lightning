@@ -14,7 +14,7 @@ namespace Lightning
 		class RenderPass
 		{
 		public:
-			virtual ~RenderPass(){}
+			virtual ~RenderPass() = default;
 			//Apply is called by renderer once per frame.Subclasses should commit render resources to device in this method.
 			virtual void Apply(RenderQueue&) = 0;
 			virtual void OnAddRenderNode(const RenderNode& node) = 0;

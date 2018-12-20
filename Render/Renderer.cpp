@@ -153,17 +153,18 @@ namespace Lightning
 
 			mCurrentFrameRenderQueue = &mRenderQueues[mRenderQueueIndex];
 			OnFrameBegin();
-			InvokeEventCallback(RendererEvent::FRAME_BEGIN);
 			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
 			ClearRenderTarget(defaultRenderTarget, mClearColor);
 			auto depthStencilBuffer = GetDefaultDepthStencilBuffer();
 			ClearDepthStencilBuffer(depthStencilBuffer, DepthStencilClearFlags::CLEAR_DEPTH | DepthStencilClearFlags::CLEAR_STENCIL,
 				depthStencilBuffer->GetDepthClearValue(), depthStencilBuffer->GetStencilClearValue(), nullptr);
 			OnFrameUpdate();
-			InvokeEventCallback(RendererEvent::FRAME_UPDATE);
 			ApplyRenderPasses();
 			OnFrameEnd();
-			InvokeEventCallback(RendererEvent::FRAME_END);
+			for (auto& pass : mRenderPasses)
+			{
+				pass->OnFrameEnd();
+			}
 			auto fence = mFrameResources[mFrameResourceIndex].fence;
 			mFrameResources[mFrameResourceIndex].frame = mFrameCount;
 			fence->SetTargetValue(mFrameCount);
@@ -171,20 +172,6 @@ namespace Lightning
 			mFrameResourceIndex = mSwapChain->GetCurrentBackBufferIndex();
 			g_RenderAllocator.FinishFrame(mFrameCount);
 		}
-
-		void Renderer::OnFrameBegin()
-		{
-		}
-
-		void Renderer::OnFrameUpdate()
-		{
-		}
-
-		void Renderer::OnFrameEnd()
-		{
-
-		}
-
 
 		void Renderer::SetClearColor(float r, float g, float b, float a)
 		{
@@ -255,11 +242,6 @@ namespace Lightning
 			return mFrameResourceIndex;
 		}
 
-		void Renderer::RegisterCallback(RendererEvent evt, RendererCallback cb)
-		{
-			mCallbacks[evt].push_back(cb);
-		}
-
 		RenderPass* Renderer::CreateRenderPass(RenderPassType type)
 		{
 			switch (type)
@@ -306,7 +288,6 @@ namespace Lightning
 			mDevice.reset();
 			mSwapChain.reset();
 			mRenderPasses.clear();
-			mCallbacks.clear();
 			mStarted = false;
 		}
 
@@ -356,16 +337,6 @@ namespace Lightning
 				auto& frameResource = mFrameResources[bufferIndex];
 				frameResource.fence->WaitForTarget();
 				g_RenderAllocator.ReleaseFramesBefore(frameResource.frame);
-			}
-		}
-
-		void Renderer::InvokeEventCallback(RendererEvent evt)
-		{
-			auto it = mCallbacks.find(evt);
-			if (it != mCallbacks.end())
-			{
-				for (auto& func : it->second)
-					func();
 			}
 		}
 	}

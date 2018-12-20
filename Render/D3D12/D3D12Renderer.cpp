@@ -673,9 +673,10 @@ namespace Lightning
 					SemanticIndex semanticIndex;
 					std::string semanticName;
 					GetSemanticInfo(component.semantic, semanticIndex, semanticName);
-					auto nameArr = g_RenderAllocator.Allocate<char>(semanticName.length() + 1);
-					nameArr[semanticName.length() - 1] = 0;
-					std::strncpy(nameArr, semanticName.c_str(), semanticName.length());
+					auto nameBufferSize = semanticName.length() + 1;
+					auto nameArr = g_RenderAllocator.Allocate<char>(nameBufferSize);
+					nameArr[nameBufferSize - 1] = 0;
+					strncpy_s(nameArr, nameBufferSize, semanticName.c_str(), semanticName.length());
 					pInputElementDesc[i].SemanticIndex = semanticIndex;
 					pInputElementDesc[i].SemanticName = nameArr;
 					++i;
@@ -744,6 +745,11 @@ namespace Lightning
 			auto d3d12DSBuffer = static_cast<D3D12DepthStencilBuffer*>(
 				mFrameResources[mFrameResourceIndex].defaultDepthStencilBuffer);
 			d3d12DSBuffer->TransitToState(commandList, D3D12_RESOURCE_STATE_COMMON);
+		}
+
+		void D3D12Renderer::OnFrameUpdate()
+		{
+
 		}
 
 		void D3D12Renderer::OnFrameEnd()
