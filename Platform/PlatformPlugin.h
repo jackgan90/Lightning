@@ -1,14 +1,13 @@
 #pragma once
-#include "Plugin.h"
+#include "IPlugin.h"
 #include "Application/IApplication.h"
 
 namespace Lightning
 {
 	namespace Plugins
 	{
-		class PlatformPlugin : public Plugins::Plugin
+		struct PlatformPlugin : public Plugins::IPlugin
 		{
-		public:
 			virtual App::IApplication* CreateApplication() = 0;
 		};
 	}

@@ -4,6 +4,7 @@
 #include "IPluginManager.h"
 #include "FoundationPlugin.h"
 #include "Logger.h"
+#include "Plugin.h"
 
 namespace Lightning
 {
@@ -14,6 +15,7 @@ namespace Lightning
 		class PlatformPluginImpl : public PlatformPlugin
 		{
 		public:
+			PlatformPluginImpl(){}
 			~PlatformPluginImpl()override;
 			IApplication* CreateApplication()override;
 			void Update()override;
@@ -22,6 +24,7 @@ namespace Lightning
 		private:
 			std::unique_ptr<IApplication> mApp;
 			IPluginManager* mPluginMgr;
+			PLUGIN_OVERRIDE(PlatformPluginImpl)
 		};
 
 		void PlatformPluginImpl::OnCreated(IPluginManager* mgr)

@@ -5,6 +5,7 @@
 #include "RenderPlugin.h"
 #include "Logger.h"
 #include "FoundationPlugin.h"
+#include "Plugin.h"
 
 namespace Lightning
 {
@@ -19,6 +20,7 @@ namespace Lightning
 		class ScenePluginImpl : public ScenePlugin
 		{
 		public:
+			ScenePluginImpl() {};
 			~ScenePluginImpl()override;
 			ISceneManager* GetSceneManager()override;
 			IPrimitive* CreateCube(float width, float height, float thickness)override;
@@ -30,6 +32,7 @@ namespace Lightning
 			void OnCreated(IPluginManager*)override;
 		private:
 			IPluginManager* mPluginMgr;
+			PLUGIN_OVERRIDE(ScenePluginImpl)
 		};
 
 		void ScenePluginImpl::OnCreated(IPluginManager* mgr)

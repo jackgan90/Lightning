@@ -5,9 +5,8 @@ namespace Lightning
 {
 	namespace Plugins
 	{
-		class IPlugin : public IRefObject
+		struct IPlugin : public IRefObject
 		{
-		public:
 			virtual const char* GetName()const = 0;
 			virtual const char* GetFullName()const = 0;
 			//The following methods are meant for IPluginManager to invoke,never invoke those methods directly

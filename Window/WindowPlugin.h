@@ -1,14 +1,13 @@
 #pragma once
-#include "Plugin.h"
+#include "IPlugin.h"
 #include "IWindow.h"
 
 namespace Lightning
 {
 	namespace Plugins
 	{
-		class WindowPlugin : public Plugin
+		struct WindowPlugin : public IPlugin
 		{
-		public:
 			virtual Window::IWindow* NewWindow() = 0;
 		};
 	}

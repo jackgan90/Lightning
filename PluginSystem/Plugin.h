@@ -22,12 +22,40 @@ namespace Lightning\
 }\
 extern "C"\
 {\
-	LIGHTNING_PLUGIN_DLL_EXPORT Lightning::Plugins::Plugin* GetPlugin(Lightning::Plugins::IPluginManager* mgr)\
+	LIGHTNING_PLUGIN_DLL_EXPORT Lightning::Plugins::IPlugin* GetPlugin(Lightning::Plugins::IPluginManager* mgr)\
 	{\
 		Lightning::Plugins::gPluginMgr = mgr;\
 		return NEW_REF_OBJ(Lightning::Plugins::##pluginImpl);\
 	}\
 }\
+
+#define PLUGIN_GETNAME_METHOD const char* GetName()const override{ return mName.c_str(); }
+#define PLUGIN_GETFULLNAME_METHOD const char* GetFullName()const override { return mFullName.c_str(); }
+
+#define PLUGIN_SETNAME_METHOD \
+void SetName(const char* name)override \
+{ \
+	mName = name; \
+	mFullName = mName + std::string(PluginExtension); \
+}
+
+#define PLUGIN_SETUPDATEORDER_METHOD void SetUpdateOrder(int updateOrder)override { mUpdateOrder = updateOrder; }
+#define PLUGIN_GETUPDATEORDER_METHOD int GetUpdateOrder()const override{ return mUpdateOrder; }
+#define PLUGIN_PRIVATE_FIELDS \
+std::string mName;\
+std::string mFullName;\
+int mUpdateOrder;
+
+#define PLUGIN_OVERRIDE(ClassName) \
+public: \
+PLUGIN_GETNAME_METHOD \
+PLUGIN_GETFULLNAME_METHOD \
+PLUGIN_SETNAME_METHOD \
+PLUGIN_SETUPDATEORDER_METHOD \
+PLUGIN_GETUPDATEORDER_METHOD \
+private: \
+PLUGIN_PRIVATE_FIELDS \
+REF_OBJECT_OVERRIDE(ClassName)
 
 namespace Lightning
 {
@@ -36,35 +64,6 @@ namespace Lightning
 #ifdef LIGHTNING_WIN32
 		constexpr char* PluginExtension = ".dll";
 #endif
-		class Plugin : public IPlugin
-		{
-		public:
-			const char* GetName()const override{ return mName.c_str(); }
-			//Decrease the reference count of this plugin,returns true if the plugin is deleted
-			const char* GetFullName()const override
-			{
-				return mFullName.c_str();
-			}
-			void SetName(const char* name)override
-			{
-				mName = name;
-				mFullName = name + std::string(PluginExtension);
-			}
-			void SetUpdateOrder(int updateOrder)override
-			{
-				mUpdateOrder = updateOrder;
-			}
-			int GetUpdateOrder()const override{ return mUpdateOrder; }
-		protected:
-			Plugin() : mName("")
-			{
-			}
-		private:
-			std::string mName;
-			std::string mFullName;
-			int mUpdateOrder;
-			REF_OBJECT_OVERRIDE(Plugin)
-		};
-		extern "C" typedef Plugin* (*GetPluginProc)(class IPluginManager*);
+		extern "C" typedef IPlugin* (*GetPluginProc)(class IPluginManager*);
 	}
 }

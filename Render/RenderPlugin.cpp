@@ -5,6 +5,7 @@
 #include "IPluginManager.h"
 #include "Logger.h"
 #include "FoundationPlugin.h"
+#include "Plugin.h"
 
 namespace Lightning
 {
@@ -27,6 +28,7 @@ namespace Lightning
 			void DestroyRendererImpl(Render::IRenderer*);
 			IPluginManager* mPluginMgr;
 			IRenderer* mRenderer;
+			PLUGIN_OVERRIDE(RenderPluginImpl)
 		};
 
 		RenderPluginImpl::RenderPluginImpl():mRenderer(nullptr)

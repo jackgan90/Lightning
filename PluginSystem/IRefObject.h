@@ -4,9 +4,8 @@ namespace Lightning
 {
 	namespace Plugins
 	{
-		class IRefObject
+		struct IRefObject
 		{
-		public:
 			virtual ~IRefObject() = default;
 			virtual void AddRef() = 0;
 			virtual bool Release() = 0;

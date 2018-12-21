@@ -1,7 +1,7 @@
 #pragma once
-#include "Plugin.h"
 #include "Logger.h"
 #include "ECS/IEventManager.h"
+#include "IPlugin.h"
 #include "IFileSystem.h"
 #include "IConfigManager.h"
 #include "IEnvironment.h"
@@ -22,9 +22,8 @@ namespace Lightning
 {
 	namespace Plugins
 	{
-		class FoundationPlugin : public Plugin
+		struct FoundationPlugin : public IPlugin
 		{
-		public:
 			virtual void InitLogger(const char* name, Foundation::Logger* logger) = 0;
 			virtual void FinalizeLogger(Foundation::Logger* logger) = 0;
 			virtual Foundation::IEventManager* GetEventManager() = 0;

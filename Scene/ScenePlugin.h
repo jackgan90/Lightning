@@ -1,5 +1,5 @@
 #pragma once
-#include "Plugin.h"
+#include "IPlugin.h"
 #include "ISceneManager.h"
 #include "IPrimitive.h"
 
@@ -7,9 +7,8 @@ namespace Lightning
 {
 	namespace Plugins
 	{
-		class ScenePlugin : public Plugin
+		struct ScenePlugin : public IPlugin
 		{
-		public:
 			virtual Scene::ISceneManager* GetSceneManager() = 0;
 			virtual Scene::IPrimitive* CreateCube(float width, float height, float thickness) = 0;
 			virtual Scene::IPrimitive* CreateCylinder(float height, float radius) = 0;

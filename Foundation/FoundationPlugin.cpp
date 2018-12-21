@@ -5,6 +5,7 @@
 #include "IPluginManager.h"
 #include "ConfigManager.h"
 #include "Environment.h"
+#include "Plugin.h"
 
 namespace Lightning
 {
@@ -47,6 +48,7 @@ namespace Lightning
 			std::shared_ptr<spdlog::sinks::msvc_sink_mt> mMsvcSink;
 #endif
 			static constexpr char* LogFileName = "log.txt";
+			PLUGIN_OVERRIDE(FoundationPluginImpl)
 		};
 
 		void FoundationPluginImpl::OnCreated(IPluginManager* mgr)

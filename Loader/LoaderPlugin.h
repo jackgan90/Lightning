@@ -1,14 +1,13 @@
 #pragma once
-#include "Plugin.h"
+#include "IPlugin.h"
 #include "ILoader.h"
 
 namespace Lightning
 {
 	namespace Plugins
 	{
-		class LoaderPlugin : public Plugin
+		struct LoaderPlugin : public IPlugin
 		{
-		public:
 			virtual Loading::ILoader* GetLoader() = 0;
 		};
 	}

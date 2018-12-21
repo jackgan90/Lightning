@@ -1,5 +1,5 @@
 #pragma once
-#include "Plugin.h"
+#include "IPlugin.h"
 #include "IMaterial.h"
 #include "IRenderer.h"
 #include "IWindow.h"
@@ -12,9 +12,8 @@ namespace Lightning
 		//the renderer instance created by CreateRenderer.Finally DestroyRenderer should be called
 		//note that CreateRenderer and DestroyRenderer are not thread safe.So ensure there's no concurrent
 		//call for the two methods.
-		class RenderPlugin : public Plugin
+		struct RenderPlugin : public IPlugin
 		{
-		public:
 			virtual Render::IMaterial* CreateMaterial() = 0;
 			virtual Render::IRenderer* GetRenderer() = 0;
 			//Thread unsafe
