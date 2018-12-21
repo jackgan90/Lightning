@@ -27,14 +27,14 @@ namespace Lightning
 		void WindowsApplication::Start()
 		{
 			Application::Start();
-			auto scenePlugin = Plugins::gPluginMgr->GetPlugin<Plugins::ScenePlugin>("Scene");
+			auto scenePlugin = Plugins::GetPlugin<Plugins::ScenePlugin>(Plugins::gPluginMgr, "Scene");
 			mSceneMgr = scenePlugin->GetSceneManager();
 		}
 
 		void WindowsApplication::RegisterWindowHandlers()
 		{
 			Application::RegisterWindowHandlers();
-			auto foundationPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::FoundationPlugin>("Foundation");
+			auto foundationPlugin = Plugins::GetPlugin<Plugins::FoundationPlugin>(Plugins::gPluginMgr, "Foundation");
 			auto eventMgr = foundationPlugin->GetEventManager();
 			auto id = WINDOW_MSG_CLASS_HANDLER(eventMgr, MOUSE_WHEEL_EVENT, OnMouseWheel);
 			mSubscriberIDs.insert(id);

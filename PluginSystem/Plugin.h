@@ -65,6 +65,6 @@ namespace Lightning
 			int mUpdateOrder;
 			REF_OBJECT_OVERRIDE(Plugin)
 		};
-		typedef Plugin* (*GetPluginProc)(class IPluginManager*);
+		extern "C" typedef Plugin* (*GetPluginProc)(class IPluginManager*);
 	}
 }

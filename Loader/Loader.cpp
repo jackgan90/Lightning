@@ -75,7 +75,7 @@ namespace Lightning
 		//happens in tbb threads.
 		void Loader::IOThread()
 		{
-			auto foundation = Plugins::gPluginMgr->GetPlugin<Plugins::FoundationPlugin>("Foundation");
+			auto foundation = Plugins::GetPlugin<Plugins::FoundationPlugin>(Plugins::gPluginMgr, "Foundation");
 			//If Users has exited app,foundation will be null
 			if (!foundation)
 				return;

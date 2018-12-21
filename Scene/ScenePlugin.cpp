@@ -36,7 +36,7 @@ namespace Lightning
 		{
 			mPluginMgr = mgr;
 			INIT_LOGGER(mgr, Scene)
-			Scene::gRenderPlugin = mgr->GetPlugin<RenderPlugin>("Render");
+			Scene::gRenderPlugin = Plugins::GetPlugin<RenderPlugin>(mgr, "Render");
 			mgr->MakePlugin1UpdateBeforePlugin2(this, Scene::gRenderPlugin);
 			LOG_INFO("Scene plugin init.");
 		}

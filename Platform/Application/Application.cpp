@@ -132,10 +132,10 @@ namespace Lightning
 		void Application::Start()
 		{
 			mRunning = true;
-			auto foundationPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::FoundationPlugin>("Foundation");
-			windowPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::WindowPlugin>("Window");
-			renderPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::RenderPlugin>("Render");
-			scenePlugin = Plugins::gPluginMgr->GetPlugin<Plugins::ScenePlugin>("Scene");
+			auto foundationPlugin = Plugins::GetPlugin<Plugins::FoundationPlugin>(Plugins::gPluginMgr, "Foundation");
+			windowPlugin = Plugins::GetPlugin<Plugins::WindowPlugin>(Plugins::gPluginMgr, "Window");
+			renderPlugin = Plugins::GetPlugin<Plugins::RenderPlugin>(Plugins::gPluginMgr, "Render");
+			scenePlugin = Plugins::GetPlugin<Plugins::ScenePlugin>(Plugins::gPluginMgr, "Scene");
 			mEventMgr = foundationPlugin->GetEventManager();
 			static tbb::task_scheduler_init init(tbb::task_scheduler_init::deferred);
 			auto threadCount = foundationPlugin->GetConfigManager()->GetConfig().ThreadCount;
@@ -172,7 +172,7 @@ namespace Lightning
 		{
 			mRunning = false;
 			mExitCode = exitCode;
-			auto sceneMgr = Plugins::gPluginMgr->GetPlugin<Plugins::ScenePlugin>("Scene")->GetSceneManager();
+			auto sceneMgr = Plugins::GetPlugin<Plugins::ScenePlugin>(Plugins::gPluginMgr, "Scene")->GetSceneManager();
 			sceneMgr->DestroyAllScenes();
 			mRenderer->ShutDown();
 			for (auto subscriberID : mSubscriberIDs)

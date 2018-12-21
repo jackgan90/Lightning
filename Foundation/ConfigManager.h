@@ -11,7 +11,7 @@ namespace Lightning
 		class ConfigManager : public IConfigManager, public Singleton<ConfigManager>
 		{
 		public:
-			std::string GetConfigString(const std::string& node_path)override;
+			~ConfigManager();
 			const EngineConfig& GetConfig()const override{ return mConfig; }
 		private:
 			friend class Singleton<ConfigManager>;

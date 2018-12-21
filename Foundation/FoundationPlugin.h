@@ -8,12 +8,12 @@
 
 #define INIT_LOGGER(mgr, name)										\
 {																		\
-	mgr->LoadPlugin<Lightning::Plugins::FoundationPlugin>("Foundation")		\
+	Lightning::Plugins::GetPlugin<Lightning::Plugins::FoundationPlugin>(mgr, "Foundation")		\
 	->InitLogger(#name, Foundation::Logger::Instance());				\
 }
 
 #define FINALIZE_LOGGER(mgr) \
-mgr->GetPlugin<Lightning::Plugins::FoundationPlugin>("Foundation")		\
+Lightning::Plugins::GetPlugin<Lightning::Plugins::FoundationPlugin>(mgr, "Foundation")		\
 ->FinalizeLogger(Foundation::Logger::Instance());				\
 mgr->UnloadPlugin("Foundation");
 

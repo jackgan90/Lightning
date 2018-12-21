@@ -36,9 +36,8 @@ namespace Lightning
 			virtual void operator()(ITexture*) = 0;
 		};
 
-		class IDevice
+		struct IDevice
 		{
-		public:
 			virtual ~IDevice() = default;
 			virtual IVertexBuffer* CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor) = 0;
 			virtual IIndexBuffer* CreateIndexBuffer(std::uint32_t bufferSize, IndexType type) = 0;

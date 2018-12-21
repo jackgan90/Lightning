@@ -64,9 +64,8 @@ namespace Lightning
 			FRAME_END
 		};
 
-		class IRenderer
+		struct IRenderer
 		{
-		public:
 			virtual ~IRenderer() = default;
 			//entry point of render system
 			virtual void Render() = 0;

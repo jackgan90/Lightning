@@ -33,7 +33,7 @@ namespace Lightning
 		{
 			if (!mLoader)
 			{
-				auto loaderPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::LoaderPlugin>("Loader");
+				auto loaderPlugin = Plugins::GetPlugin<Plugins::LoaderPlugin>(Plugins::gPluginMgr, "Loader");
 				mLoader = loaderPlugin->GetLoader();
 			}
 			return mLoader;

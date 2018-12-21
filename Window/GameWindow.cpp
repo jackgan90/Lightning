@@ -13,8 +13,8 @@ namespace Lightning
 	{
 		GameWindow::GameWindow()
 		{
-			auto foundationPlugin = Lightning::Plugins::gPluginMgr->GetPlugin<Lightning::Plugins::FoundationPlugin>("Foundation");
-			mEventMgr = foundationPlugin->GetEventManager();
+			auto foundation = Plugins::GetPlugin<Plugins::FoundationPlugin>(Plugins::gPluginMgr, "Foundation");
+			mEventMgr = foundation->GetEventManager();
 		}
 
 		void GameWindow::OnIdle()

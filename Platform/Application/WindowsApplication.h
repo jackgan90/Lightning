@@ -7,7 +7,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		class IRenderer;
+		struct IRenderer;
 	}
 
 	namespace App

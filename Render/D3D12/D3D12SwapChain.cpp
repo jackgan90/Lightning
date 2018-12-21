@@ -33,7 +33,7 @@ namespace Lightning
 
 		void D3D12SwapChain::CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, Window::IWindow* pWindow)
 		{
-			auto foundationPlugin = Plugins::gPluginMgr->GetPlugin<Plugins::FoundationPlugin>("Foundation");
+			auto foundationPlugin = Plugins::GetPlugin<Plugins::FoundationPlugin>(Plugins::gPluginMgr, "Foundation");
 			const auto& config = foundationPlugin->GetConfigManager()->GetConfig();
 			UINT sampleCount = 1;
 			bool msaaEnabled = false;
