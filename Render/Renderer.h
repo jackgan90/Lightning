@@ -30,23 +30,23 @@ namespace Lightning
 		public:
 			~Renderer()override;
 			//entry point of render system
-			void Render()override;
-			IDevice* GetDevice()override;
-			ISwapChain* GetSwapChain()override;
+			void INTERFACECALL Render()override;
+			IDevice* INTERFACECALL GetDevice()override;
+			ISwapChain* INTERFACECALL GetSwapChain()override;
 			//return the current frame index
-			std::uint64_t GetCurrentFrameCount()const override;
-			void SetClearColor(float r, float g, float b, float a)override;
-			void CommitRenderNode(const RenderNode& item)override;
+			std::uint64_t INTERFACECALL GetCurrentFrameCount()const override;
+			void INTERFACECALL SetClearColor(float r, float g, float b, float a)override;
+			void INTERFACECALL CommitRenderNode(const RenderNode& item)override;
 			//TODO there can be multiple render passes in effect simultaneously,should change it
-			void AddRenderPass(RenderPassType type)override;
-			std::size_t GetFrameResourceIndex()const override;
-			void Start()override;
-			void ShutDown()override;
+			void INTERFACECALL AddRenderPass(RenderPassType type)override;
+			std::size_t INTERFACECALL GetFrameResourceIndex()const override;
+			void INTERFACECALL Start()override;
+			void INTERFACECALL ShutDown()override;
 			static IRenderer* Instance() { return sInstance; }
-			Window::IWindow* GetOutputWindow()override { return mOutputWindow; }
-			IDepthStencilBuffer* GetDefaultDepthStencilBuffer()override;
-			RenderSemantics GetUniformSemantic(const char* uniform_name)override;
-			const char* GetUniformName(RenderSemantics semantic)override;
+			Window::IWindow* INTERFACECALL GetOutputWindow()override { return mOutputWindow; }
+			IDepthStencilBuffer* INTERFACECALL GetDefaultDepthStencilBuffer()override;
+			RenderSemantics INTERFACECALL GetUniformSemantic(const char* uniform_name)override;
+			const char* INTERFACECALL GetUniformName(RenderSemantics semantic)override;
 		protected:
 			struct SemanticInfo
 			{

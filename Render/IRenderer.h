@@ -12,6 +12,7 @@
 #include "RenderNode.h"
 #include "RenderPass.h"
 #include "IWindow.h"
+#include "Portable.h"
 
 namespace Lightning
 {
@@ -66,47 +67,47 @@ namespace Lightning
 
 		struct IRenderer
 		{
-			virtual ~IRenderer() = default;
+			virtual INTERFACECALL ~IRenderer() = default;
 			//entry point of render system
-			virtual void Render() = 0;
+			virtual void INTERFACECALL Render() = 0;
 			//return the device of render system
-			virtual IDevice* GetDevice() = 0;
-			virtual ISwapChain* GetSwapChain() = 0;
-			virtual Window::IWindow* GetOutputWindow() = 0;
+			virtual IDevice* INTERFACECALL GetDevice() = 0;
+			virtual ISwapChain* INTERFACECALL GetSwapChain() = 0;
+			virtual Window::IWindow* INTERFACECALL GetOutputWindow() = 0;
 			//set default render target clear color.At the beginning of each frame,the back buffer is cleared to this color
-			virtual void SetClearColor(float r, float g, float b, float a) = 0;
+			virtual void INTERFACECALL SetClearColor(float r, float g, float b, float a) = 0;
 			//get the current frame index
-			virtual std::uint64_t GetCurrentFrameCount()const = 0;
-			virtual std::size_t GetFrameResourceIndex()const = 0;
-			virtual void AddRenderPass(RenderPassType type) = 0;
+			virtual std::uint64_t INTERFACECALL GetCurrentFrameCount()const = 0;
+			virtual std::size_t INTERFACECALL GetFrameResourceIndex()const = 0;
+			virtual void INTERFACECALL AddRenderPass(RenderPassType type) = 0;
 			//Commit a render node for rendering
-			virtual void CommitRenderNode(const RenderNode& node) = 0;
+			virtual void INTERFACECALL CommitRenderNode(const RenderNode& node) = 0;
 			//clear a specified render target,possibly parts of it defined by an array of rects
-			virtual void ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, 
+			virtual void INTERFACECALL ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, 
 				const RectI* rects=nullptr, std::size_t rectCount = 0) = 0;
-			virtual void ClearDepthStencilBuffer(IDepthStencilBuffer* buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, 
+			virtual void INTERFACECALL ClearDepthStencilBuffer(IDepthStencilBuffer* buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, 
 				const RectI* rects = nullptr, std::size_t rectCount = 0) = 0;
-			virtual void ApplyRenderTargets(const IRenderTarget*const * renderTargets, std::uint8_t renderTargetCount, IDepthStencilBuffer* dsBuffer) = 0;
-			virtual void ApplyPipelineState(const PipelineState& state) = 0;
+			virtual void INTERFACECALL ApplyRenderTargets(const IRenderTarget*const * renderTargets, std::uint8_t renderTargetCount, IDepthStencilBuffer* dsBuffer) = 0;
+			virtual void INTERFACECALL ApplyPipelineState(const PipelineState& state) = 0;
 			//bind pBuffer to a GPU slot(does not copy data,just binding), each invocation will override previous binding
-			virtual void BindGPUBuffer(std::uint8_t slot, IGPUBuffer* buffer) = 0;
+			virtual void INTERFACECALL BindGPUBuffer(std::uint8_t slot, IGPUBuffer* buffer) = 0;
 			//issue underlying draw call
-			virtual void Draw(const DrawParam& param) = 0;
+			virtual void INTERFACECALL Draw(const DrawParam& param) = 0;
 			//get near plane value corresponding to normalized device coordinate
 			//different render API may have different near plane definition
 			//for example OpenGL clips coordinates to [-1, 1] and DirectX clips coordinates to [0, 1]
 			//This method returns 0 for DirectX and -1 for OpenGL
-			virtual float GetNDCNearPlane()const = 0;
+			virtual float INTERFACECALL GetNDCNearPlane()const = 0;
 			//start the renderer
-			virtual void Start() = 0;
+			virtual void INTERFACECALL Start() = 0;
 			//Shut down the renderer
-			virtual void ShutDown() = 0;
+			virtual void INTERFACECALL ShutDown() = 0;
 			//get default depth stencil buffer
-			virtual IDepthStencilBuffer* GetDefaultDepthStencilBuffer() = 0;
+			virtual IDepthStencilBuffer* INTERFACECALL GetDefaultDepthStencilBuffer() = 0;
 			//Gets the semantic corresponds to a string representing a uniform name
-			virtual RenderSemantics GetUniformSemantic(const char* uniform_name) = 0;
+			virtual RenderSemantics INTERFACECALL GetUniformSemantic(const char* uniform_name) = 0;
 			//Gets uniform name by RenderSemantics
-			virtual const char* GetUniformName(RenderSemantics semantic) = 0;
+			virtual const char* INTERFACECALL GetUniformName(RenderSemantics semantic) = 0;
 		};
 	}
 }

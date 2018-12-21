@@ -31,18 +31,18 @@ namespace Lightning
 		{
 		public:
 			D3D12Renderer(Window::IWindow* window);
-			~D3D12Renderer()override;
-			float GetNDCNearPlane()const override { return 0.0f; }
-			void ShutDown()override;
-			void Start()override;
-			void ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, 
+			INTERFACECALL ~D3D12Renderer()override;
+			float INTERFACECALL GetNDCNearPlane()const override { return 0.0f; }
+			void INTERFACECALL ShutDown()override;
+			void INTERFACECALL Start()override;
+			void INTERFACECALL ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, 
 				const RectI* rects=nullptr, std::size_t rectCount = 0)override;
-			void ClearDepthStencilBuffer(IDepthStencilBuffer* buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, 
+			void INTERFACECALL ClearDepthStencilBuffer(IDepthStencilBuffer* buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, 
 				const RectI* rects = nullptr, std::size_t rectCount = 0)override;
-			void ApplyRenderTargets(const IRenderTarget*const * renderTargets, std::uint8_t renderTargetCount, IDepthStencilBuffer* dsBuffer)override;
-			void ApplyPipelineState(const PipelineState& state)override;
-			void BindGPUBuffer(std::uint8_t slot, IGPUBuffer* buffer)override;
-			void Draw(const DrawParam& param)override;
+			void INTERFACECALL ApplyRenderTargets(const IRenderTarget*const * renderTargets, std::uint8_t renderTargetCount, IDepthStencilBuffer* dsBuffer)override;
+			void INTERFACECALL ApplyPipelineState(const PipelineState& state)override;
+			void INTERFACECALL BindGPUBuffer(std::uint8_t slot, IGPUBuffer* buffer)override;
+			void INTERFACECALL Draw(const DrawParam& param)override;
 			ID3D12CommandQueue* GetCommandQueue();
 			ID3D12GraphicsCommandList* GetGraphicsCommandList();
 		protected:
