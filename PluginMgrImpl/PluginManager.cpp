@@ -87,7 +87,7 @@ namespace Lightning
 
 			PluginInfo info;
 #ifdef LIGHTNING_WIN32
-			info.handle = ::LoadLibrary((name + Plugin::PluginExtension).c_str());
+			info.handle = ::LoadLibrary((name + PluginExtension).c_str());
 			if (info.handle)
 			{
 				GetPluginProc pGetProc = (GetPluginProc)::GetProcAddress(info.handle, GET_PLUGIN_PROC);
@@ -96,7 +96,7 @@ namespace Lightning
 					info.plugin = pGetProc(this);
 					if (info.plugin)
 					{
-						info.plugin->SetName(name);
+						info.plugin->SetName(name.c_str());
 						info.plugin->SetUpdateOrder(mPluginUpdatePriority.fetch_add(1, std::memory_order_relaxed));
 						info.plugin->OnCreated(this);
 						//mPlugins.emplace(name, info);
