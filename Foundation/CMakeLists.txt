@@ -28,8 +28,8 @@ set(ECS_SOURCES		ECS/Component.cpp
 					ECS/EntityManager.cpp
 					ECS/EventManager.cpp)
 
-set(PLUGIN_HEADERS	FoundationPlugin.h)
-set(PLUGIN_SOURCES	FoundationPlugin.cpp)
+set(PLUGIN_HEADERS	IFoundationPlugin.h)
+set(PLUGIN_SOURCES	FoundationPluginImpl.cpp)
 
 set(HEADERS	Common.h
 			TimeSystem.h

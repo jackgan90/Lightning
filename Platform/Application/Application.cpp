@@ -8,17 +8,17 @@
 #include "Transform.h"
 #include "Loader.h"
 #include "IPluginManager.h"
-#include "FoundationPlugin.h"
-#include "ScenePlugin.h"
-#include "RenderPlugin.h"
-#include "WindowPlugin.h"
+#include "IFoundationPlugin.h"
+#include "IScenePlugin.h"
+#include "IRenderPlugin.h"
+#include "IWindowPlugin.h"
 #include "tbb/task_scheduler_init.h"
 
 namespace
 {
-	Lightning::Plugins::WindowPlugin* windowPlugin = nullptr;
-	Lightning::Plugins::RenderPlugin* renderPlugin = nullptr;
-	Lightning::Plugins::ScenePlugin* scenePlugin = nullptr;
+	Lightning::Plugins::IWindowPlugin* windowPlugin = nullptr;
+	Lightning::Plugins::IRenderPlugin* renderPlugin = nullptr;
+	Lightning::Plugins::IScenePlugin* scenePlugin = nullptr;
 }
 
 namespace Lightning
@@ -37,7 +37,7 @@ namespace Lightning
 		using Foundation::Math::Transformer;
 
 		//For test only
-		void GenerateSceneObjects(ISceneManager* sceneMgr, Plugins::ScenePlugin* scenePlugin)
+		void GenerateSceneObjects(ISceneManager* sceneMgr, Plugins::IScenePlugin* scenePlugin)
 		{
 			auto scene = sceneMgr->GetForegroundScene();
 			/*
@@ -132,10 +132,10 @@ namespace Lightning
 		void Application::Start()
 		{
 			mRunning = true;
-			auto foundationPlugin = Plugins::GetPlugin<Plugins::FoundationPlugin>(Plugins::gPluginMgr, "Foundation");
-			windowPlugin = Plugins::GetPlugin<Plugins::WindowPlugin>(Plugins::gPluginMgr, "Window");
-			renderPlugin = Plugins::GetPlugin<Plugins::RenderPlugin>(Plugins::gPluginMgr, "Render");
-			scenePlugin = Plugins::GetPlugin<Plugins::ScenePlugin>(Plugins::gPluginMgr, "Scene");
+			auto foundationPlugin = Plugins::GetPlugin<Plugins::IFoundationPlugin>(Plugins::gPluginMgr, "Foundation");
+			windowPlugin = Plugins::GetPlugin<Plugins::IWindowPlugin>(Plugins::gPluginMgr, "Window");
+			renderPlugin = Plugins::GetPlugin<Plugins::IRenderPlugin>(Plugins::gPluginMgr, "Render");
+			scenePlugin = Plugins::GetPlugin<Plugins::IScenePlugin>(Plugins::gPluginMgr, "Scene");
 			mEventMgr = foundationPlugin->GetEventManager();
 			static tbb::task_scheduler_init init(tbb::task_scheduler_init::deferred);
 			auto threadCount = foundationPlugin->GetConfigManager()->GetConfig().ThreadCount;
@@ -172,7 +172,7 @@ namespace Lightning
 		{
 			mRunning = false;
 			mExitCode = exitCode;
-			auto sceneMgr = Plugins::GetPlugin<Plugins::ScenePlugin>(Plugins::gPluginMgr, "Scene")->GetSceneManager();
+			auto sceneMgr = Plugins::GetPlugin<Plugins::IScenePlugin>(Plugins::gPluginMgr, "Scene")->GetSceneManager();
 			sceneMgr->DestroyAllScenes();
 			mRenderer->ShutDown();
 			for (auto subscriberID : mSubscriberIDs)

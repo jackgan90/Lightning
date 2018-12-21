@@ -1,7 +1,7 @@
 #include <cassert>
 #include "Device.h"
 #include "IPluginManager.h"
-#include "LoaderPlugin.h"
+#include "ILoaderPlugin.h"
 #include "RenderObjectCache.h"
 #include "Serializers/ShaderSerializer.h"
 #include "Serializers/TextureSerializer.h"
@@ -33,7 +33,7 @@ namespace Lightning
 		{
 			if (!mLoader)
 			{
-				auto loaderPlugin = Plugins::GetPlugin<Plugins::LoaderPlugin>(Plugins::gPluginMgr, "Loader");
+				auto loaderPlugin = Plugins::GetPlugin<Plugins::ILoaderPlugin>(Plugins::gPluginMgr, "Loader");
 				mLoader = loaderPlugin->GetLoader();
 			}
 			return mLoader;

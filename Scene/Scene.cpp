@@ -1,13 +1,13 @@
 #include "Scene.h"
 #include "IRenderer.h"
-#include "RenderPlugin.h"
+#include "IRenderPlugin.h"
 #include "Camera.h"
 
 namespace Lightning
 {
 	namespace Scene
 	{
-		extern Plugins::RenderPlugin* gRenderPlugin;
+		extern Plugins::IRenderPlugin* gRenderPlugin;
 		Scene::Scene(const std::uint32_t id):mID(id)
 		{
 			mActiveCamera = new Camera();

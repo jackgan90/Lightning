@@ -6,7 +6,7 @@ namespace Lightning
 {
 	namespace Plugins
 	{
-		struct WindowPlugin : public IPlugin
+		struct IWindowPlugin : public IPlugin
 		{
 			virtual Window::IWindow* NewWindow() = 0;
 		};

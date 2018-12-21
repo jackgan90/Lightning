@@ -6,8 +6,8 @@ message(STATUS "Configuring project Loader")
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(PLUGIN_HEADERS	LoaderPlugin.h)
-set(PLUGIN_SOURCES	LoaderPlugin.cpp)
+set(PLUGIN_HEADERS	ILoaderPlugin.h)
+set(PLUGIN_SOURCES	LoaderPluginImpl.cpp)
 
 set(HEADERS ISerializer.h
 			ILoader.h

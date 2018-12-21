@@ -1,10 +1,10 @@
-#include "RenderPlugin.h"
+#include "IRenderPlugin.h"
 #include "Material.h"
 #include "Renderer.h"
 #include "RendererFactory.h"
 #include "IPluginManager.h"
 #include "Logger.h"
-#include "FoundationPlugin.h"
+#include "IFoundationPlugin.h"
 #include "Plugin.h"
 
 namespace Lightning
@@ -12,7 +12,7 @@ namespace Lightning
 	namespace Plugins
 	{
 		using namespace Render;
-		class RenderPluginImpl : public RenderPlugin
+		class RenderPluginImpl : public IRenderPlugin
 		{
 		public:
 			RenderPluginImpl();

@@ -3,8 +3,8 @@ message(STATUS "Configuring project Platform")
 
 set(APPLICATION_SUBSYSTEM_DIR "Application")
 
-set(PLUGIN_HEADERS	PlatformPlugin.h)
-set(PLUGIN_SOURCES	PlatformPlugin.cpp)
+set(PLUGIN_HEADERS	IPlatformPlugin.h)
+set(PLUGIN_SOURCES	PlatformPluginImpl.cpp)
 
 set(APPLICATION_HEADERS		${APPLICATION_SUBSYSTEM_DIR}/IApplication.h
 							${APPLICATION_SUBSYSTEM_DIR}/Application.h

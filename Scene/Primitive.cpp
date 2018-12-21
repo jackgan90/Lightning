@@ -7,7 +7,7 @@
 #include "Math/Vector.h"
 #include "Primitive.h"
 #include "IPluginManager.h"
-#include "RenderPlugin.h"
+#include "IRenderPlugin.h"
 
 namespace Lightning
 {
@@ -23,7 +23,7 @@ namespace Lightning
 		using Foundation::Math::DegreesToRadians;
 		using Foundation::Container;
 		using Render::ShaderParameter;
-		extern Plugins::RenderPlugin* gRenderPlugin;
+		extern Plugins::IRenderPlugin* gRenderPlugin;
 
 		Primitive::Primitive():mShouldUpdateRenderNode(true)
 			,mColor{0, 0, 0, 255}, mTexture(nullptr)

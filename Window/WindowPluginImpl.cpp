@@ -1,6 +1,6 @@
-#include "WindowPlugin.h"
+#include "IWindowPlugin.h"
 #include "IPluginManager.h"
-#include "FoundationPlugin.h"
+#include "IFoundationPlugin.h"
 #include "Logger.h"
 #include "Container.h"
 #include "Plugin.h"
@@ -13,7 +13,7 @@ namespace Lightning
 	namespace Plugins
 	{
 		using namespace Foundation;
-		class WindowPluginImpl : public WindowPlugin
+		class WindowPluginImpl : public IWindowPlugin
 		{
 		public:
 			WindowPluginImpl(){}

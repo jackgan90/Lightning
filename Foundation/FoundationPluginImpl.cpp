@@ -1,5 +1,5 @@
 #include <memory>
-#include "FoundationPlugin.h"
+#include "IFoundationPlugin.h"
 #include "ECS/EventManager.h"
 #include "FileSystemFactory.h"
 #include "IPluginManager.h"
@@ -11,7 +11,7 @@ namespace Lightning
 {
 	namespace Plugins
 	{
-		class FoundationPluginImpl : public FoundationPlugin
+		class FoundationPluginImpl : public IFoundationPlugin
 		{
 		public:
 			FoundationPluginImpl()

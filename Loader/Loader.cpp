@@ -2,7 +2,7 @@
 #include "Logger.h"
 #include "tbb/task.h"
 #include "IPluginManager.h"
-#include "FoundationPlugin.h"
+#include "IFoundationPlugin.h"
 #include "SerializeBuffer.h"
 
 namespace Lightning
@@ -75,7 +75,7 @@ namespace Lightning
 		//happens in tbb threads.
 		void Loader::IOThread()
 		{
-			auto foundation = Plugins::GetPlugin<Plugins::FoundationPlugin>(Plugins::gPluginMgr, "Foundation");
+			auto foundation = Plugins::GetPlugin<Plugins::IFoundationPlugin>(Plugins::gPluginMgr, "Foundation");
 			//If Users has exited app,foundation will be null
 			if (!foundation)
 				return;

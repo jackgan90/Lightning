@@ -1,8 +1,8 @@
-#include "LoaderPlugin.h"
+#include "ILoaderPlugin.h"
 #include "Loader.h"
 #include "Logger.h"
 #include "IPluginManager.h"
-#include "FoundationPlugin.h"
+#include "IFoundationPlugin.h"
 #include "Plugin.h"
 
 namespace Lightning
@@ -10,7 +10,7 @@ namespace Lightning
 	namespace Plugins
 	{
 		using namespace Loading;
-		class LoaderPluginImpl : public LoaderPlugin
+		class LoaderPluginImpl : public ILoaderPlugin
 		{
 		public:
 			LoaderPluginImpl(){}

@@ -1,6 +1,6 @@
 #include "Camera.h"
 #include "IRenderer.h"
-#include "RenderPlugin.h"
+#include "IRenderPlugin.h"
 #define EPSILON 0.0001
 
 namespace Lightning
@@ -10,7 +10,7 @@ namespace Lightning
 		using Foundation::Math::DegreesToRadians;
 		using Foundation::Math::Vector4f;
 		using Foundation::Math::Quaternionf;
-		extern Plugins::RenderPlugin* gRenderPlugin;
+		extern Plugins::IRenderPlugin* gRenderPlugin;
 		Camera::Camera():mType(CameraType::Perspective), mNearPlane(0.01f), mFarPlane(1000.0f), 
 			mFov(DegreesToRadians(60.0f)), mAspectRatio(1.0f),
 			mTransformer(Vector3f::Zero(), Vector3f{1, 1, 1}, Quaternionf::Identity())

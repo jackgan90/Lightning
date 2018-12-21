@@ -18,8 +18,8 @@ set(SOURCES Scene.cpp
 			Camera.cpp
 			SceneRenderData.cpp)
 
-set(PLUGIN_HEADERS	ScenePlugin.h)
-set(PLUGIN_SOURCES	ScenePlugin.cpp)
+set(PLUGIN_HEADERS	IScenePlugin.h)
+set(PLUGIN_SOURCES	ScenePluginImpl.cpp)
 
 list(APPEND HEADERS	${PLUGIN_HEADERS})
 list(APPEND SOURCES ${PLUGIN_SOURCES})

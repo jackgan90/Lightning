@@ -4,8 +4,8 @@
 #include "TimeSystem.h"
 #include "IPluginManager.h"
 #include "IRenderer.h"
-#include "ScenePlugin.h"
-#include "FoundationPlugin.h"
+#include "IScenePlugin.h"
+#include "IFoundationPlugin.h"
 #undef min
 #undef max
 
@@ -27,14 +27,14 @@ namespace Lightning
 		void WindowsApplication::Start()
 		{
 			Application::Start();
-			auto scenePlugin = Plugins::GetPlugin<Plugins::ScenePlugin>(Plugins::gPluginMgr, "Scene");
+			auto scenePlugin = Plugins::GetPlugin<Plugins::IScenePlugin>(Plugins::gPluginMgr, "Scene");
 			mSceneMgr = scenePlugin->GetSceneManager();
 		}
 
 		void WindowsApplication::RegisterWindowHandlers()
 		{
 			Application::RegisterWindowHandlers();
-			auto foundationPlugin = Plugins::GetPlugin<Plugins::FoundationPlugin>(Plugins::gPluginMgr, "Foundation");
+			auto foundationPlugin = Plugins::GetPlugin<Plugins::IFoundationPlugin>(Plugins::gPluginMgr, "Foundation");
 			auto eventMgr = foundationPlugin->GetEventManager();
 			auto id = WINDOW_MSG_CLASS_HANDLER(eventMgr, MOUSE_WHEEL_EVENT, OnMouseWheel);
 			mSubscriberIDs.insert(id);

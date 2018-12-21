@@ -1,7 +1,7 @@
 #pragma once
 #include "SceneManager.h"
 #include "IRenderer.h"
-#include "RenderPlugin.h"
+#include "IRenderPlugin.h"
 #include "Scene.h"
 
 namespace Lightning
@@ -9,7 +9,7 @@ namespace Lightning
 	namespace Scene
 	{
 		using Render::IRenderer;
-		extern Plugins::RenderPlugin* gRenderPlugin;
+		extern Plugins::IRenderPlugin* gRenderPlugin;
 		void SceneManager::Update()
 		{
 			for (auto& scene : mScenes)

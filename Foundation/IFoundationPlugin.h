@@ -8,12 +8,12 @@
 
 #define INIT_LOGGER(mgr, name)										\
 {																		\
-	Lightning::Plugins::GetPlugin<Lightning::Plugins::FoundationPlugin>(mgr, "Foundation")		\
+	Lightning::Plugins::GetPlugin<Lightning::Plugins::IFoundationPlugin>(mgr, "Foundation")		\
 	->InitLogger(#name, Foundation::Logger::Instance());				\
 }
 
 #define FINALIZE_LOGGER(mgr) \
-Lightning::Plugins::GetPlugin<Lightning::Plugins::FoundationPlugin>(mgr, "Foundation")		\
+Lightning::Plugins::GetPlugin<Lightning::Plugins::IFoundationPlugin>(mgr, "Foundation")		\
 ->FinalizeLogger(Foundation::Logger::Instance());				\
 mgr->UnloadPlugin("Foundation");
 
@@ -22,7 +22,7 @@ namespace Lightning
 {
 	namespace Plugins
 	{
-		struct FoundationPlugin : public IPlugin
+		struct IFoundationPlugin : public IPlugin
 		{
 			virtual void InitLogger(const char* name, Foundation::Logger* logger) = 0;
 			virtual void FinalizeLogger(Foundation::Logger* logger) = 0;

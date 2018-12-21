@@ -6,7 +6,7 @@ namespace Lightning
 {
 	namespace Plugins
 	{
-		struct LoaderPlugin : public IPlugin
+		struct ILoaderPlugin : public IPlugin
 		{
 			virtual Loading::ILoader* GetLoader() = 0;
 		};

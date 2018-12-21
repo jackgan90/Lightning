@@ -1,10 +1,10 @@
 #include "Engine.h"
-#include "PlatformPlugin.h"
-#include "FoundationPlugin.h"
+#include "IPlatformPlugin.h"
+#include "IFoundationPlugin.h"
 
 namespace Lightning
 {
-	using Plugins::PlatformPlugin;
+	using Plugins::IPlatformPlugin;
 	Engine::Engine()
 	{
 
@@ -15,14 +15,14 @@ namespace Lightning
 		auto pluginMgr = CreatePluginMgr();
 		//Load Foundation.dll,this is the fundamental module providing basic services for all other plugins
 		//such log, config ,file system etc.So it must be the first plugin to load and the last to free.
-		auto foundation = Plugins::LoadPlugin<Plugins::FoundationPlugin>(pluginMgr, "Foundation");
+		auto foundation = Plugins::LoadPlugin<Plugins::IFoundationPlugin>(pluginMgr, "Foundation");
 		auto configMgr = foundation->GetConfigManager();
 		const auto& config = configMgr->GetConfig();
 		for (unsigned i = 0;i < config.PluginCount;++i)
 		{
 			pluginMgr->LoadPlugin(config.Plugins[i]);
 		}
-		auto platformPlugin = Plugins::GetPlugin<PlatformPlugin>(pluginMgr, "Platform");
+		auto platformPlugin = Plugins::GetPlugin<IPlatformPlugin>(pluginMgr, "Platform");
 
 
 		auto application = platformPlugin->CreateApplication();

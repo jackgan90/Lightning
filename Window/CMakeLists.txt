@@ -12,8 +12,8 @@ set(HEADERS	IWindow.h
 set(SOURCES	GameWindow.cpp
 			WindowsGameWindow.cpp)
 
-set(PLUGIN_HEADERS WindowPlugin.h)
-set(PLUGIN_SOURCES WindowPlugin.cpp)
+set(PLUGIN_HEADERS IWindowPlugin.h)
+set(PLUGIN_SOURCES WindowPluginImpl.cpp)
 
 if(WIN32)
 	add_definitions(-DLIGHTNING_WIN32)

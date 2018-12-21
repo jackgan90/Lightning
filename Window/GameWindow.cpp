@@ -1,7 +1,7 @@
 #include "GameWindow.h"
 #include "ECS/EventManager.h"
 #include "IPluginManager.h"
-#include "FoundationPlugin.h"
+#include "IFoundationPlugin.h"
 
 namespace Lightning
 {
@@ -13,7 +13,7 @@ namespace Lightning
 	{
 		GameWindow::GameWindow()
 		{
-			auto foundation = Plugins::GetPlugin<Plugins::FoundationPlugin>(Plugins::gPluginMgr, "Foundation");
+			auto foundation = Plugins::GetPlugin<Plugins::IFoundationPlugin>(Plugins::gPluginMgr, "Foundation");
 			mEventMgr = foundation->GetEventManager();
 		}
 
