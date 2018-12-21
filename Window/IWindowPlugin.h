@@ -8,7 +8,7 @@ namespace Lightning
 	{
 		struct IWindowPlugin : public IPlugin
 		{
-			virtual Window::IWindow* NewWindow() = 0;
+			virtual Window::IWindow* INTERFACECALL NewWindow() = 0;
 		};
 	}
 }

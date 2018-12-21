@@ -16,11 +16,10 @@ namespace Lightning
 		{
 		public:
 			PlatformPluginImpl(){}
-			~PlatformPluginImpl()override;
-			IApplication* CreateApplication()override;
-			void Update()override;
-		protected:
-			void OnCreated(IPluginManager*)override;
+			INTERFACECALL ~PlatformPluginImpl()override;
+			IApplication* INTERFACECALL CreateApplication()override;
+			void INTERFACECALL Update()override;
+			void INTERFACECALL OnCreated(IPluginManager*)override;
 		private:
 			std::unique_ptr<IApplication> mApp;
 			IPluginManager* mPluginMgr;

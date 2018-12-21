@@ -29,18 +29,18 @@ extern "C"\
 	}\
 }\
 
-#define PLUGIN_GETNAME_METHOD const char* GetName()const override{ return mName.c_str(); }
-#define PLUGIN_GETFULLNAME_METHOD const char* GetFullName()const override { return mFullName.c_str(); }
+#define PLUGIN_GETNAME_METHOD const char* INTERFACECALL GetName()const override{ return mName.c_str(); }
+#define PLUGIN_GETFULLNAME_METHOD const char* INTERFACECALL GetFullName()const override { return mFullName.c_str(); }
 
 #define PLUGIN_SETNAME_METHOD \
-void SetName(const char* name)override \
+void INTERFACECALL SetName(const char* name)override \
 { \
 	mName = name; \
 	mFullName = mName + std::string(PluginExtension); \
 }
 
-#define PLUGIN_SETUPDATEORDER_METHOD void SetUpdateOrder(int updateOrder)override { mUpdateOrder = updateOrder; }
-#define PLUGIN_GETUPDATEORDER_METHOD int GetUpdateOrder()const override{ return mUpdateOrder; }
+#define PLUGIN_SETUPDATEORDER_METHOD void INTERFACECALL SetUpdateOrder(int updateOrder)override { mUpdateOrder = updateOrder; }
+#define PLUGIN_GETUPDATEORDER_METHOD int INTERFACECALL GetUpdateOrder()const override{ return mUpdateOrder; }
 #define PLUGIN_PRIVATE_FIELDS \
 std::string mName;\
 std::string mFullName;\

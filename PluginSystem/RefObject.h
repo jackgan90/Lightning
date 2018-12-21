@@ -209,13 +209,13 @@ private:
 #endif
 
 #define REF_OBJECT_ADDREF_METHOD \
-void AddRef()override\
+void INTERFACECALL AddRef()override\
 {\
 	mRefCount.fetch_add(1, std::memory_order_relaxed);\
 }
 
 #define REF_OBJECT_RELEASE_METHOD \
-bool Release()override\
+bool INTERFACECALL Release()override\
 {\
 	auto oldRefCountBase = mRefCount.fetch_sub(1, std::memory_order_relaxed);\
 	if (oldRefCountBase == 1)\
@@ -227,7 +227,7 @@ bool Release()override\
 }
 
 #define REF_OBJECT_GETREFCOUNT_METHOD \
-int GetRefCount()const override{ return mRefCount; }
+int INTERFACECALL GetRefCount()const override{ return mRefCount; }
 
 #ifndef NDEBUG
 #define REF_OBJECT_NEW_OVERRIDE \

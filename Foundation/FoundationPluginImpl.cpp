@@ -25,21 +25,20 @@ namespace Lightning
 				mFileSystem = Foundation::FileSystemFactory::Instance()->CreateFileSystem();
 				LOG_INFO("File system created!Current working directory:{0}", mFileSystem->GetRoot().c_str());
 			}
-			~FoundationPluginImpl()override
+			INTERFACECALL ~FoundationPluginImpl()override
 			{
 				Foundation::FileSystemFactory::Instance()->DestroyFileSystem(mFileSystem);
 				LOG_INFO("Foundation plugin unloaded.");
 				mFileSink->flush();
 			}
-			void Update()override;
-			void InitLogger(const char* name, Foundation::Logger* logger)override;
-			void FinalizeLogger(Foundation::Logger* logger)override;
-			Foundation::IEventManager* GetEventManager()override;
-			Foundation::IFileSystem* GetFileSystem()override;
-			Foundation::IConfigManager* GetConfigManager()override;
-			Foundation::IEnvironment* GetEnvironment()override;
-		protected:
-			void OnCreated(IPluginManager*)override;
+			void INTERFACECALL Update()override;
+			void INTERFACECALL InitLogger(const char* name, Foundation::Logger* logger)override;
+			void INTERFACECALL FinalizeLogger(Foundation::Logger* logger)override;
+			Foundation::IEventManager* INTERFACECALL GetEventManager()override;
+			Foundation::IFileSystem* INTERFACECALL GetFileSystem()override;
+			Foundation::IConfigManager* INTERFACECALL GetConfigManager()override;
+			Foundation::IEnvironment* INTERFACECALL GetEnvironment()override;
+			void INTERFACECALL OnCreated(IPluginManager*)override;
 		private:
 			void InitLoggerImpl(const char* name, Foundation::Logger* logger);
 			std::shared_ptr<spdlog::sinks::basic_file_sink_mt> mFileSink;

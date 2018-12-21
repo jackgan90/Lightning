@@ -8,7 +8,7 @@ namespace Lightning
 	{
 		struct IPlatformPlugin : public Plugins::IPlugin
 		{
-			virtual App::IApplication* CreateApplication() = 0;
+			virtual App::IApplication* INTERFACECALL CreateApplication() = 0;
 		};
 	}
 }

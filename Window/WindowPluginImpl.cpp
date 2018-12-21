@@ -17,11 +17,10 @@ namespace Lightning
 		{
 		public:
 			WindowPluginImpl(){}
-			~WindowPluginImpl()override;
-			Window::IWindow* NewWindow()override;
-			void Update()override;
-		protected:
-			void OnCreated(IPluginManager*)override;
+			INTERFACECALL ~WindowPluginImpl()override;
+			Window::IWindow* INTERFACECALL NewWindow()override;
+			void INTERFACECALL Update()override;
+			void INTERFACECALL OnCreated(IPluginManager*)override;
 		private:
 			IPluginManager* mPluginMgr;
 			Container::Vector<Window::IWindow*> mWindows;

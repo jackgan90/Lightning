@@ -16,14 +16,13 @@ namespace Lightning
 		{
 		public:
 			RenderPluginImpl();
-			~RenderPluginImpl()override;
-			IMaterial* CreateMaterial()override;
-			IRenderer* GetRenderer()override;
-			Render::IRenderer* CreateRenderer(Window::IWindow*)override;
-			void DestroyRenderer(Render::IRenderer*)override;
-			void Update()override;
-		protected:
-			void OnCreated(IPluginManager*)override;
+			INTERFACECALL ~RenderPluginImpl()override;
+			IMaterial* INTERFACECALL CreateMaterial()override;
+			IRenderer* INTERFACECALL GetRenderer()override;
+			Render::IRenderer* INTERFACECALL CreateRenderer(Window::IWindow*)override;
+			void INTERFACECALL DestroyRenderer(Render::IRenderer*)override;
+			void INTERFACECALL Update()override;
+			void INTERFACECALL OnCreated(IPluginManager*)override;
 		private:
 			void DestroyRendererImpl(Render::IRenderer*);
 			IPluginManager* mPluginMgr;

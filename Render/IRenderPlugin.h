@@ -14,12 +14,12 @@ namespace Lightning
 		//call for the two methods.
 		struct IRenderPlugin : public IPlugin
 		{
-			virtual Render::IMaterial* CreateMaterial() = 0;
-			virtual Render::IRenderer* GetRenderer() = 0;
+			virtual Render::IMaterial* INTERFACECALL CreateMaterial() = 0;
+			virtual Render::IRenderer* INTERFACECALL GetRenderer() = 0;
 			//Thread unsafe
-			virtual Render::IRenderer* CreateRenderer(Window::IWindow*) = 0;
+			virtual Render::IRenderer* INTERFACECALL CreateRenderer(Window::IWindow*) = 0;
 			//Thread unsafe
-			virtual void DestroyRenderer(Render::IRenderer*) = 0;
+			virtual void INTERFACECALL DestroyRenderer(Render::IRenderer*) = 0;
 		};
 	}
 }

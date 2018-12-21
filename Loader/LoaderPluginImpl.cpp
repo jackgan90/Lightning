@@ -14,11 +14,10 @@ namespace Lightning
 		{
 		public:
 			LoaderPluginImpl(){}
-			~LoaderPluginImpl()override;
-			ILoader* GetLoader()override;
-			void Update()override;
-		protected:
-			void OnCreated(IPluginManager*)override;
+			INTERFACECALL ~LoaderPluginImpl()override;
+			ILoader* INTERFACECALL GetLoader()override;
+			void INTERFACECALL Update()override;
+			void INTERFACECALL OnCreated(IPluginManager*)override;
 		private:
 			IPluginManager* mPluginMgr;
 			PLUGIN_OVERRIDE(LoaderPluginImpl)

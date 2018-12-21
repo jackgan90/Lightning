@@ -21,15 +21,14 @@ namespace Lightning
 		{
 		public:
 			ScenePluginImpl() {};
-			~ScenePluginImpl()override;
-			ISceneManager* GetSceneManager()override;
-			IPrimitive* CreateCube(float width, float height, float thickness)override;
-			IPrimitive* CreateCylinder(float height, float radius)override;
-			IPrimitive* CreateHemisphere(float radius)override;
-			IPrimitive* CreateSphere(float radius)override;
-			void Update()override;
-		protected:
-			void OnCreated(IPluginManager*)override;
+			INTERFACECALL ~ScenePluginImpl()override;
+			ISceneManager* INTERFACECALL GetSceneManager()override;
+			IPrimitive* INTERFACECALL CreateCube(float width, float height, float thickness)override;
+			IPrimitive* INTERFACECALL CreateCylinder(float height, float radius)override;
+			IPrimitive* INTERFACECALL CreateHemisphere(float radius)override;
+			IPrimitive* INTERFACECALL CreateSphere(float radius)override;
+			void INTERFACECALL Update()override;
+			void INTERFACECALL OnCreated(IPluginManager*)override;
 		private:
 			IPluginManager* mPluginMgr;
 			PLUGIN_OVERRIDE(ScenePluginImpl)

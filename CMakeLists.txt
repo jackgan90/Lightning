@@ -65,6 +65,7 @@ set(LIBRARY_HEADERS	PluginSystem/IPlugin.h
 					PluginSystem/IPluginManager.h
 					PluginSystem/RefObject.h
 					PluginSystem/IRefObject.h
+					PluginSystem/Portable.h
 					PluginMgrImpl/PluginManager.h)
 
 set(LIBRARY_SOURCES	PluginMgrImpl/PluginManager.cpp)

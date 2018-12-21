@@ -8,7 +8,7 @@ namespace Lightning
 	{
 		struct ILoaderPlugin : public IPlugin
 		{
-			virtual Loading::ILoader* GetLoader() = 0;
+			virtual Loading::ILoader* INTERFACECALL GetLoader() = 0;
 		};
 	}
 }
