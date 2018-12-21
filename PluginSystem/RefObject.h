@@ -5,6 +5,7 @@
 #include <mutex>
 #include <unordered_map>
 #endif
+#include "IRefObject.h"
 
 #ifndef NDEBUG
 #define NEW_REF_OBJ(Type, ...) new (__FILE__, #Type, __LINE__) Type(__VA_ARGS__)
@@ -207,56 +208,61 @@ private:
 #define NEW_REF_OBJ(Type, ...) new Type(__VA_ARGS__)
 #endif
 
-namespace Lightning
-{
-	namespace Plugins
-	{
-		class RefObject
-		{
-		public:
-			virtual ~RefObject() = default;
-			RefObject():mRefCount(1)
-			{
-			}
-			RefObject(const RefObject&) = delete;
-			RefObject& operator=(const RefObject&) = delete;
-			//Although AddRef and Release are declared virtual,subclasses should not try to override them
-			//This is just a trick to make compiler generate late binding code.We have to invoke delete in the
-			//dll which creates the object.
-			virtual bool Release()
-			{
-				auto oldRefCountBase = mRefCount.fetch_sub(1, std::memory_order_relaxed);
-				if (oldRefCountBase == 1)
-				{
-					delete this;
-					return true;
-				}
-				return false;
-			}
-			virtual void AddRef()
-			{
-				mRefCount.fetch_add(1, std::memory_order_relaxed);
-			}
-			//This method is only for debug purpose,logic should not rely on the value returns by this method
-			virtual int GetRefCount()const { return mRefCount; }
-#ifndef NDEBUG
-			void* operator new(std::size_t size, const char* file, const char* typeName, int line)
-			{
-				return RefMonitor::Instance()->Allococate(size, file, typeName, line);
-			}
-
-			void operator delete(void *p)
-			{
-				RefMonitor::Instance()->Deallocate(p);
-			}
-
-			void operator delete(void *p, const char* file, const char* typeName, int line) 
-			{
-				RefMonitor::Instance()->Deallocate(p);
-			}
-#endif
-		private:
-			std::atomic<int> mRefCount;
-		};
-	}
+#define REF_OBJECT_ADDREF_METHOD \
+void AddRef()override\
+{\
+	mRefCount.fetch_add(1, std::memory_order_relaxed);\
 }
+
+#define REF_OBJECT_RELEASE_METHOD \
+bool Release()override\
+{\
+	auto oldRefCountBase = mRefCount.fetch_sub(1, std::memory_order_relaxed);\
+	if (oldRefCountBase == 1)\
+	{\
+		delete this;\
+		return true;\
+	}\
+	return false;\
+}
+
+#define REF_OBJECT_GETREFCOUNT_METHOD \
+int GetRefCount()const override{ return mRefCount; }
+
+#ifndef NDEBUG
+#define REF_OBJECT_NEW_OVERRIDE \
+void* operator new(std::size_t size, const char* file, const char* typeName, int line)\
+{\
+	return RefMonitor::Instance()->Allococate(size, file, typeName, line);\
+}\
+void operator delete(void *p)\
+{\
+	RefMonitor::Instance()->Deallocate(p);\
+}\
+void operator delete(void *p, const char* file, const char* typeName, int line) \
+{\
+	RefMonitor::Instance()->Deallocate(p);\
+}
+#else
+#define REF_OBJECT_NEW_OVERRIDE
+#endif
+
+#define REF_OBJECT_DISABLE_COPY(ClassName) \
+ClassName(const ClassName&) = delete; \
+ClassName& operator=(const ClassName&) = delete;
+
+
+#define REF_OBJECT_METHODS
+
+#define REF_OBJECT_OVERRIDE(ClassName) \
+public:\
+REF_OBJECT_ADDREF_METHOD \
+REF_OBJECT_RELEASE_METHOD \
+REF_OBJECT_GETREFCOUNT_METHOD \
+REF_OBJECT_NEW_OVERRIDE \
+REF_OBJECT_DISABLE_COPY(ClassName) \
+private:\
+std::atomic<int> mRefCount{1};
+
+
+

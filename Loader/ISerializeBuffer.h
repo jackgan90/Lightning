@@ -1,12 +1,13 @@
 #pragma once
+#include <cstddef>
 #include <cstdint>
-#include "RefObject.h"
+#include "IRefObject.h"
 
 namespace Lightning
 {
 	namespace Loading
 	{
-		class ISerializeBuffer : public Plugins::RefObject
+		class ISerializeBuffer : public Plugins::IRefObject
 		{
 		public:
 			virtual char* GetBuffer() = 0;

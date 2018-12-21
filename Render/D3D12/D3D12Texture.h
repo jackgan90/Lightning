@@ -4,6 +4,7 @@
 #include "D3D12StatefulResource.h"
 #include "D3D12Device.h"
 #include "ISerializeBuffer.h"
+#include "RefObject.h"
 
 namespace Lightning
 {
@@ -27,6 +28,7 @@ namespace Lightning
 			D3D12StatefulResourcePtr mIntermediateResource;
 			Loading::ISerializeBuffer* mBuffer;
 			std::mutex mCommitMutex;
+			REF_OBJECT_OVERRIDE(D3D12Texture)
 		};
 	}
 }

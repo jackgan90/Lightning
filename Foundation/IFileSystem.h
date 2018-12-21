@@ -29,7 +29,7 @@ namespace Lightning
 		};
 		ENABLE_ENUM_BITMASK_OPERATORS(FileAccess)
 
-		class IFile : public Plugins::RefObject
+		class IFile : public Plugins::IRefObject
 		{
 		public:
 			virtual FileSize GetSize() = 0;

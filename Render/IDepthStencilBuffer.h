@@ -2,13 +2,13 @@
 #include <cstdint>
 #include <memory>
 #include "RenderConstants.h"
-#include "RefObject.h"
+#include "IRefObject.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		class IDepthStencilBuffer : public Plugins::RefObject
+		class IDepthStencilBuffer : public Plugins::IRefObject
 		{
 		public:
 			virtual void SetClearValue(float depthValue=1.0f, std::uint32_t stencilValue=0) = 0;

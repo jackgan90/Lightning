@@ -2,6 +2,7 @@
 #include "IndexBuffer.h"
 #include "D3D12Device.h"
 #include "D3D12BufferResource.h"
+#include "RefObject.h"
 
 namespace Lightning
 {
@@ -19,6 +20,7 @@ namespace Lightning
 		private:
 			D3D12_INDEX_BUFFER_VIEW mBufferView;
 			D3D12BufferResource mResource;
+			REF_OBJECT_OVERRIDE(D3D12IndexBuffer)
 		};
 	}
 }

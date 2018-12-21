@@ -119,7 +119,7 @@ namespace Lightning
 			}
 		};
 
-		class IShader : public HashableObject, public Plugins::RefObject
+		class IShader : public HashableObject, public Plugins::IRefObject
 		{
 		public:
 			virtual std::string GetEntryPoint()const = 0; 
@@ -158,6 +158,7 @@ namespace Lightning
 			ShaderMacros mMacros;
 			int mShaderModelMajorVersion;
 			int mShaderModelMinorVersion;
+			REF_OBJECT_OVERRIDE(Shader)
 		};
 	}
 }

@@ -31,8 +31,6 @@ namespace Lightning
 			GeneralFile();
 			GeneralFile(const std::string& path, FileAccess bitmask);
 			//should not copy an existing file which may cause chaos file access.
-			GeneralFile(const GeneralFile& f) = delete;
-			GeneralFile& operator=(const GeneralFile& f) = delete;
 			GeneralFile(GeneralFile&& f);
 			GeneralFile& operator=(GeneralFile&& f);
 			~GeneralFile()override;
@@ -52,6 +50,7 @@ namespace Lightning
 			bool mSizeDirty;
 			std::unique_ptr<std::fstream> mFile;
 			FileAccess mAccess;
+			REF_OBJECT_OVERRIDE(GeneralFile)
 		};
 
 	}

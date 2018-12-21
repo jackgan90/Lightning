@@ -3,6 +3,7 @@
 #include <wrl\client.h>
 #include "ISwapChain.h"
 #include "IRenderTarget.h"
+#include "RefObject.h"
 #include "D3D12DescriptorHeapManager.h"
 #include "D3D12StatefulResource.h"
 
@@ -33,6 +34,7 @@ namespace Lightning
 			std::uint32_t mSampleCount;
 			int mSampleQuality;
 			RenderFormat mFormat;
+			REF_OBJECT_OVERRIDE(D3D12RenderTarget)
 		};
 	}
 }

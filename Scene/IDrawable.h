@@ -1,6 +1,6 @@
 #pragma once
 #include <memory>
-#include "RefObject.h"
+#include "IRefObject.h"
 #include "IRenderer.h"
 #include "SceneRenderData.h"
 
@@ -9,8 +9,8 @@ namespace Lightning
 	namespace Scene
 	{
 		using Render::IRenderer;
-		using Plugins::RefObject;
-		class IDrawable : public RefObject
+		using Plugins::IRefObject;
+		class IDrawable : public IRefObject
 		{
 		public:
 			virtual void Draw(IRenderer* , const SceneRenderData&) = 0;

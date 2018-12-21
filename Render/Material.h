@@ -12,6 +12,7 @@ namespace Lightning
 		class Material : public IMaterial
 		{
 		public:
+			Material();
 			~Material()override;
 			void SetShader(IShader* shader)override;
 			bool ResetShader(ShaderType type)override;
@@ -24,6 +25,7 @@ namespace Lightning
 		protected:
 			ShaderParametersCache mShaders;
 			BlendState mBlendState;
+			REF_OBJECT_OVERRIDE(Material)
 		};
 	}
 }

@@ -4,6 +4,11 @@ namespace Lightning
 {
 	namespace Render
 	{
+		Material::Material()
+		{
+
+		}
+
 		Material::~Material()
 		{
 			for (auto& pair : mShaders)

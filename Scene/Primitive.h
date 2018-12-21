@@ -5,6 +5,7 @@
 #include "RenderNode.h"
 #include "IShader.h"
 #include "IPrimitive.h"
+#include "RefObject.h"
 
 namespace Lightning
 {
@@ -49,6 +50,7 @@ namespace Lightning
 			std::string mSamplerStateName;
 			SamplerState mSamplerState;
 			Foundation::Container::Vector<Render::IShader*> mShaders;
+			REF_OBJECT_OVERRIDE(Primitive)
 		};
 
 		struct PrimitiveDataSource

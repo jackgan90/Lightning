@@ -1,4 +1,5 @@
 #pragma once
+#include "RefObject.h"
 #include "VertexBuffer.h" 
 #include "D3D12Device.h"
 #include "D3D12BufferResource.h"
@@ -19,6 +20,7 @@ namespace Lightning
 		private:
 			D3D12_VERTEX_BUFFER_VIEW mBufferView;
 			D3D12BufferResource mResource;
+			REF_OBJECT_OVERRIDE(D3D12VertexBuffer)
 		};
 	}
 }

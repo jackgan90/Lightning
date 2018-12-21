@@ -1,6 +1,7 @@
 #pragma once
 #include<d3d12.h>
 #include <wrl\client.h>
+#include "RefObject.h"
 #include "IDepthStencilBuffer.h"
 #include "D3D12DescriptorHeapManager.h"
 #include "D3D12StatefulResource.h"
@@ -34,6 +35,7 @@ namespace Lightning
 			std::uint32_t mWidth;
 			std::uint32_t mHeight;
 			DescriptorHeap* mHeap;
+			REF_OBJECT_OVERRIDE(D3D12DepthStencilBuffer)
 		};
 	}
 }

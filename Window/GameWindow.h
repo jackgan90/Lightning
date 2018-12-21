@@ -6,6 +6,7 @@
 #include "IWindow.h"
 #include "Logger.h"
 #include "ECS/IEventManager.h"
+#include "RefObject.h"
 
 namespace Lightning
 {
@@ -34,6 +35,7 @@ namespace Lightning
 			std::uint32_t mWidth;
 			std::uint32_t mHeight;
 			Foundation::IEventManager* mEventMgr;
+			REF_OBJECT_OVERRIDE(GameWindow)
 		};
 	}
 }

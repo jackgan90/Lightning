@@ -32,7 +32,7 @@ namespace Lightning
 {
 	namespace Plugins
 	{
-		class Plugin : public RefObject
+		class Plugin : public IRefObject
 		{
 		public:
 			std::string GetName()const { return mName; }
@@ -48,8 +48,6 @@ namespace Lightning
 			Plugin() : mName("")
 			{
 			}
-			Plugin(const Plugin&) = delete;
-			Plugin& operator=(const Plugin&) = delete;
 			virtual void OnCreated(class IPluginManager*) = 0;
 			//Load and Unload is only called by PluginMgr
 		private:
@@ -67,6 +65,7 @@ namespace Lightning
 #ifdef LIGHTNING_WIN32
 			static constexpr char* PluginExtension = ".dll";
 #endif
+			REF_OBJECT_OVERRIDE(Plugin)
 		};
 		typedef Plugin* (*GetPluginProc)(class IPluginManager*);
 	}

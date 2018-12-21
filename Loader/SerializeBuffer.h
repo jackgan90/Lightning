@@ -1,5 +1,6 @@
 #pragma once
 #include "ISerializeBuffer.h"
+#include "RefObject.h"
 
 namespace Lightning
 {
@@ -15,6 +16,7 @@ namespace Lightning
 		private:
 			char* mBuffer;
 			std::size_t mSize;
+			REF_OBJECT_OVERRIDE(SerializeBuffer)
 		};
 	}
 }

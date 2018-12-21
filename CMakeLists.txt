@@ -63,6 +63,7 @@ endif()
 set(LIBRARY_HEADERS	PluginSystem/Plugin.h
 					PluginSystem/IPluginManager.h
 					PluginSystem/RefObject.h
+					PluginSystem/IRefObject.h
 					PluginMgrImpl/PluginManager.h)
 
 set(LIBRARY_SOURCES	PluginMgrImpl/PluginManager.cpp)

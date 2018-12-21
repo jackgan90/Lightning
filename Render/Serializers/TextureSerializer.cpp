@@ -2,6 +2,7 @@
 #include "FreeImage.h"
 #include "Logger.h"
 #include "Renderer.h"
+#include "RefObject.h"
 
 namespace Lightning
 {
@@ -96,6 +97,7 @@ namespace Lightning
 			ISerializeBuffer* mRawBuffer;
 			FIBITMAP* mBitmap;
 			std::string mPath;
+			REF_OBJECT_OVERRIDE(FreeImageBuffer)
 		};
 
 		TextureSerializer::TextureSerializer(const std::string path, ITextureLoadCallback* callback):

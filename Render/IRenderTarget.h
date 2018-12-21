@@ -2,7 +2,7 @@
 #include <memory>
 #include "Container.h"
 #include "RenderConstants.h"
-#include "RefObject.h"
+#include "IRefObject.h"
 
 namespace Lightning
 {
@@ -11,7 +11,7 @@ namespace Lightning
 		using Foundation::Container;
 
 		using RenderTargetID = int;
-		class IRenderTarget : public Plugins::RefObject
+		class IRenderTarget : public Plugins::IRefObject
 		{
 		public:
 			//get pixel sample count
