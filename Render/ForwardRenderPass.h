@@ -19,8 +19,9 @@ namespace Lightning
 			void OnFrameEnd()override;
 		protected:
 			void CommitBuffers(const Geometry& geometry);
-			void CommitPipelineStates(const RenderNode& item);
-			void CommitShaderParameters(const RenderNode& item);
+			void CommitPipelineStates(const RenderNode& node);
+			void CommitShaderParameters(const RenderNode& node);
+			void CommitShaderUniforms(IShader* shader, const RenderNode& node);
 			void Draw(const Geometry& geometry);
 			void GetInputLayouts(const Geometry& geometry, VertexInputLayout* layouts, std::uint8_t& layoutCount);
 		};

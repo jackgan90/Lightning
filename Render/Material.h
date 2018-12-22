@@ -20,8 +20,16 @@ namespace Lightning
 			bool SetParameter(ShaderType type, const IShaderParameter* parameter)override;
 			void EnableBlend(bool enable)override;
 			void GetBlendState(BlendState& state)const override{ state = mBlendState; }
-			const ShaderParametersCache& GetAllShaderParameters()const override { return mShaders; }
+			std::size_t GetParameterCount(ShaderType type)const override;
+			IShaderParameter* GetParameter(ShaderType type, std::size_t parameterIndex)override;
 		protected:
+			struct ShaderParameters
+			{
+				IShader* shader;
+				Container::Vector<ShaderParameter> parameters;
+			};
+			using ShaderParametersCache = Container::UnorderedMap<ShaderType, ShaderParameters>;
+
 			ShaderParametersCache mShaders;
 			BlendState mBlendState;
 			REF_OBJECT_OVERRIDE(Material)

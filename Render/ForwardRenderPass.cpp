@@ -1,4 +1,3 @@
-#include <unordered_map>
 #include "ForwardRenderPass.h"
 #include "Renderer.h"
 #include "FrameMemoryAllocator.h"
@@ -80,42 +79,49 @@ namespace Lightning
 		{
 			if (!node.material)
 				return;
-			const auto& shaderParameters = node.material->GetAllShaderParameters();
+			static const ShaderType shaderTypes[] = { ShaderType::VERTEX, ShaderType::FRAGMENT, ShaderType::GEOMETRY,
+			ShaderType::TESSELATION_CONTROL, ShaderType::TESSELATION_EVALUATION };
 			auto renderer = Renderer::Instance();
-			for (auto it = shaderParameters.cbegin();it != shaderParameters.cend();++it)
+			for (auto shaderType : shaderTypes)
 			{
-				auto shader = it->second.shader;
-				for (const auto& arg : it->second.parameters)
+				IShader* shader = node.material->GetShader(shaderType);
+				if (shader)
 				{
-					shader->SetParameter(&arg);
-				}
-				RenderSemantics* semantics{ nullptr };
-				std::uint16_t semanticCount{ 0 };
-				shader->GetUniformSemantics(&semantics, semanticCount);
-				if (semanticCount > 0)
-				{
-					for (auto i = 0;i < semanticCount;++i)
+					auto parameterCount = node.material->GetParameterCount(shaderType);
+					for (auto i = 0;i < parameterCount;++i)
 					{
-						auto semantic = semantics[i];
-						auto uniformName = renderer->GetUniformName(semantic);
-						switch (semantic)
-						{
-						case RenderSemantics::WVP:
-						{
-							auto vs = node.material->GetShader(ShaderType::VERTEX);
-							if (vs)
-							{
-								//We know that transform.ToMatrix4 may change it's internal matrix
-								auto wvp = node.projectionMatrix * node.viewMatrix * node.transform.matrix;
-								vs->SetParameter(&ShaderParameter(uniformName, wvp));
-							}
-							break;
-						}
-						default:
-							LOG_WARNING("Unsupported semantics : {0}", semantic);
-							break;
-						}
+						auto parameter = node.material->GetParameter(shaderType, i);
+						shader->SetParameter(parameter);
 					}
+					CommitShaderUniforms(shader, node);
+				}
+			}
+		}
+
+		void ForwardRenderPass::CommitShaderUniforms(IShader* shader, const RenderNode& node)
+		{
+			auto renderer = Renderer::Instance();
+			RenderSemantics* semantics{ nullptr };
+			std::uint16_t semanticCount{ 0 };
+			shader->GetUniformSemantics(&semantics, semanticCount);
+			if (semanticCount == 0)
+				return;
+			for (auto i = 0;i < semanticCount;++i)
+			{
+				auto semantic = semantics[i];
+				auto uniformName = renderer->GetUniformName(semantic);
+				switch (semantic)
+				{
+				case RenderSemantics::WVP:
+				{
+					//We know that transform.ToMatrix4 may change it's internal matrix
+					auto wvp = node.projectionMatrix * node.viewMatrix * node.transform.matrix;
+					shader->SetParameter(&ShaderParameter(uniformName, wvp));
+					break;
+				}
+				default:
+					LOG_WARNING("Unsupported semantics : {0}", semantic);
+					break;
 				}
 			}
 		}

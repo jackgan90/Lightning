@@ -72,5 +72,24 @@ namespace Lightning
 			mBlendState.destColorFactor = BlendFactor::INV_SRC_ALPHA;
 			mBlendState.destAlphaFactor = BlendFactor::INV_SRC_ALPHA;
 		}
+
+		std::size_t Material::GetParameterCount(ShaderType type)const
+		{
+			auto it = mShaders.find(type);
+			if (it == mShaders.end())
+				return 0;
+			return it->second.parameters.size();
+		}
+
+		IShaderParameter* Material::GetParameter(ShaderType type, std::size_t parameterIndex)
+		{
+			auto it = mShaders.find(type);
+			if (it != mShaders.end())
+			{
+				return &it->second.parameters[parameterIndex];
+			}
+			return nullptr;
+		}
+
 	}
 }
