@@ -13,8 +13,8 @@ namespace Lightning
 			friend class Renderer;
 			~Device()override;
 			IShader* GetDefaultShader(ShaderType type)override;
-			void CreateShaderFromFile(ShaderType type, const char* const path, IShaderLoadCallback* callback)override;
-			void CreateTextureFromFile(const char* const path, ITextureLoadCallback* callback)override;
+			void CreateShaderFromFile(ShaderType type, const char* const path, IShaderCallback* callback)override;
+			void CreateTextureFromFile(const char* const path, ITextureCallback* callback)override;
 		protected:
 			Device();
 			Loading::ILoader* GetLoader();

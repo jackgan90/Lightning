@@ -7,7 +7,7 @@ namespace Lightning
 	namespace Render
 	{
 		ShaderSerializer::ShaderSerializer(ShaderType type, const std::string& path, 
-			const ShaderMacros& macros, IShaderLoadCallback* callback)
+			const ShaderMacros& macros, IShaderCallback* callback)
 			:mType(type), mPath(path), mMacros(macros), mFinishCallback(callback)
 		{
 
@@ -24,7 +24,7 @@ namespace Lightning
 			auto shader = device->CreateShader(mType, mPath, buffer->GetBuffer(), mMacros);
 			if (mFinishCallback)
 			{
-				mFinishCallback->operator()(shader);
+				mFinishCallback->Execute(shader);
 			}
 		}
 

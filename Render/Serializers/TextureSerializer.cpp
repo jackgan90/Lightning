@@ -100,7 +100,7 @@ namespace Lightning
 			REF_OBJECT_OVERRIDE(FreeImageBuffer)
 		};
 
-		TextureSerializer::TextureSerializer(const std::string path, ITextureLoadCallback* callback):
+		TextureSerializer::TextureSerializer(const std::string path, ITextureCallback* callback):
 			mPath(path), mFinishCallback(callback)
 		{
 
@@ -123,7 +123,7 @@ namespace Lightning
 				auto texture = device->CreateTexture(descriptor, fiBuffer);
 				if (mFinishCallback)
 				{
-					mFinishCallback->operator()(texture);
+					mFinishCallback->Execute(texture);
 				}
 				fiBuffer->Release();
 			}
@@ -131,7 +131,7 @@ namespace Lightning
 			{
 				if (mFinishCallback)
 				{
-					mFinishCallback->operator()(nullptr);
+					mFinishCallback->Execute(nullptr);
 				}
 			}
 		}

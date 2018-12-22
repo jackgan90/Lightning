@@ -22,18 +22,16 @@ namespace Lightning
 		using Foundation::Container;
 		using Loading::ISerializeBuffer;
 		//Avoid using template in cross module interfaces
-		class IShaderLoadCallback
+		struct IShaderCallback
 		{
-		public:
-			virtual ~IShaderLoadCallback() = default;
-			virtual void operator()(IShader*) = 0;
+			virtual ~IShaderCallback() = default;
+			virtual void Execute(IShader*) = 0;
 		};
 
-		class ITextureLoadCallback
+		struct ITextureCallback
 		{
-		public:
-			virtual ~ITextureLoadCallback() = default;
-			virtual void operator()(ITexture*) = 0;
+			virtual ~ITextureCallback() = default;
+			virtual void Execute(ITexture*) = 0;
 		};
 
 		struct IDevice
@@ -42,9 +40,9 @@ namespace Lightning
 			virtual IVertexBuffer* CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor) = 0;
 			virtual IIndexBuffer* CreateIndexBuffer(std::uint32_t bufferSize, IndexType type) = 0;
 			virtual IShader* CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderMacros& macros) = 0;
-			virtual void CreateShaderFromFile(ShaderType type, const char* const path, IShaderLoadCallback* callback) = 0;
+			virtual void CreateShaderFromFile(ShaderType type, const char* const path, IShaderCallback* callback) = 0;
 			virtual ITexture* CreateTexture(const TextureDescriptor& descriptor, ISerializeBuffer* buffer) = 0;
-			virtual void CreateTextureFromFile(const char* const path, ITextureLoadCallback* callback) = 0;
+			virtual void CreateTextureFromFile(const char* const path, ITextureCallback* callback) = 0;
 			virtual IShader* GetDefaultShader(ShaderType type) = 0;
 		};
 	}

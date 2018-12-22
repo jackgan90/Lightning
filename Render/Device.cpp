@@ -39,24 +39,24 @@ namespace Lightning
 			return mLoader;
 		}
 
-		void Device::CreateShaderFromFile(ShaderType type, const char* const path, IShaderLoadCallback* callback)
+		void Device::CreateShaderFromFile(ShaderType type, const char* const path, IShaderCallback* callback)
 		{
-			class ShaderLoaded : public IShaderLoadCallback
+			class ShaderLoaded : public IShaderCallback
 			{
 			public:
-				ShaderLoaded(IShaderLoadCallback* callback):mCallback(callback){}
-				void operator()(IShader* shader)
+				ShaderLoaded(IShaderCallback* callback):mCallback(callback){}
+				void Execute(IShader* shader)override
 				{
 					if (shader)
 						ShaderCache::Instance()->AddShader(shader);
 					if (mCallback)
 					{
-						mCallback->operator()(shader);
+						mCallback->Execute(shader);
 					}
 					delete this;
 				}
 			private:
-				IShaderLoadCallback* mCallback;
+				IShaderCallback* mCallback;
 			};
 			ShaderMacros macros;
 			auto shader = ShaderCache::Instance()->GetShader(type, path, macros);
@@ -64,7 +64,7 @@ namespace Lightning
 			{
 				if (callback)
 				{
-					callback->operator()(shader);
+					callback->Execute(shader);
 				}
 				return;
 			}
@@ -73,24 +73,24 @@ namespace Lightning
 			loader->Load(path, ser);
 		}
 
-		void Device::CreateTextureFromFile(const char* const path, ITextureLoadCallback* callback)
+		void Device::CreateTextureFromFile(const char* const path, ITextureCallback* callback)
 		{
-			class TextureLoaded : public ITextureLoadCallback
+			class TextureLoaded : public ITextureCallback
 			{
 			public:
-				TextureLoaded(const std::string& path, ITextureLoadCallback* callback):mCallback(callback), mPath(path){}
-				void operator()(ITexture* texture)
+				TextureLoaded(const std::string& path, ITextureCallback* callback):mCallback(callback), mPath(path){}
+				void Execute(ITexture* texture)override
 				{
 					if (texture)
 						TextureCache::Instance()->AddObject(mPath, texture);
 					if (mCallback)
 					{
-						mCallback->operator()(texture);
+						mCallback->Execute(texture);
 					}
 					delete this;
 				}
 			private:
-				ITextureLoadCallback* mCallback;
+				ITextureCallback* mCallback;
 				std::string mPath;
 			};
 
@@ -99,7 +99,7 @@ namespace Lightning
 			{
 				if (callback)
 				{
-					callback->operator()(texture);
+					callback->Execute(texture);
 				}
 				return;
 			}
