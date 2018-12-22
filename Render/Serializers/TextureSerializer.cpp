@@ -124,7 +124,7 @@ namespace Lightning
 
 		void TextureSerializer::Deserialize(Foundation::IFile* file, ISerializeBuffer* buffer)
 		{
-			auto fiBuffer = NEW_REF_OBJ(FreeImageBuffer, buffer, file->GetPath().c_str());
+			auto fiBuffer = NEW_REF_OBJ(FreeImageBuffer, buffer, file->GetPath());
 			if (fiBuffer->Init())
 			{
 				TextureDescriptor descriptor;

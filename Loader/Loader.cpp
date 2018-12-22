@@ -101,7 +101,7 @@ namespace Lightning
 				if (mgr->mTasks.try_pop(task))
 				{
 					LOG_INFO("Start to load file : {0}", task.path);
-					auto file = fileSystem->FindFile(task.path, Foundation::FileAccess::READ);
+					auto file = fileSystem->FindFile(task.path.c_str(), Foundation::FileAccess::READ);
 					if (!file)
 					{
 						LOG_ERROR("Can't find file : {0}", task.path.c_str());
@@ -117,7 +117,7 @@ namespace Lightning
 					auto size = file->GetSize();
 					if (size <= 0)
 					{
-						LOG_ERROR("File is empty : {0}", file->GetPath().c_str());
+						LOG_ERROR("File is empty : {0}", file->GetPath());
 						file->Close();
 						task.serializer->Dispose();
 						continue;

@@ -16,9 +16,9 @@ namespace Lightning
 		public:
 			GeneralFileSystem();
 			~GeneralFileSystem()override;
-			IFile* FindFile(const std::string& fileName, FileAccess bitMask)override;
-			bool SetRoot(std::string rootPath)override;
-			const std::string GetRoot() const override{ return mRoot.string(); }
+			IFile* FindFile(const char* fileName, FileAccess bitMask)override;
+			bool SetRoot(const char* rootPath)override;
+			const char* GetRoot() const override{ return mRoot.string().c_str(); }
 		protected:
 			boost::filesystem::path mRoot;
 			Container::UnorderedMap<std::string, IFile*> mCachedFiles;
@@ -33,14 +33,14 @@ namespace Lightning
 			//should not copy an existing file which may cause chaos file access.
 			GeneralFile(GeneralFile&& f);
 			GeneralFile& operator=(GeneralFile&& f);
-			~GeneralFile()override;
-			FileSize GetSize()override;
-			void SetFilePointer(FilePointerType type, FileAnchor anchor, FileSize offset)override;
-			FileSize Read(char* buf, FileSize length)override;
-			void Close()override;
-			bool IsOpen()const override;
-			const std::string GetPath()const override;
-			const std::string GetName()const override;
+			INTERFACECALL ~GeneralFile()override;
+			FileSize INTERFACECALL GetSize()override;
+			void INTERFACECALL SetFilePointer(FilePointerType type, FileAnchor anchor, FileSize offset)override;
+			FileSize INTERFACECALL Read(char* buf, FileSize length)override;
+			void INTERFACECALL Close()override;
+			bool INTERFACECALL IsOpen()const override;
+			const char* INTERFACECALL GetPath()const override;
+			const char* INTERFACECALL GetName()const override;
 		protected:
 			void CalculateFileSize();
 			void OpenFile();

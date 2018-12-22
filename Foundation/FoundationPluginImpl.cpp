@@ -23,7 +23,7 @@ namespace Lightning
 				InitLoggerImpl("Foundation", Foundation::Logger::Instance());
 				LOG_INFO("Foundation plugin init.");
 				mFileSystem = Foundation::FileSystemFactory::Instance()->CreateFileSystem();
-				LOG_INFO("File system created!Current working directory:{0}", mFileSystem->GetRoot().c_str());
+				LOG_INFO("File system created!Current working directory:{0}", mFileSystem->GetRoot());
 			}
 			INTERFACECALL ~FoundationPluginImpl()override
 			{

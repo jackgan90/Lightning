@@ -1,16 +1,16 @@
 #pragma once
 #include <thread>
+#include "Portable.h"
 
 namespace Lightning
 {
 	namespace Foundation
 	{
-		class IEnvironment
+		struct IEnvironment
 		{
-		public:
-			virtual ~IEnvironment() = default;
-			virtual void SetLoaderIOThreadID(std::thread::id) = 0;
-			virtual bool IsInLoaderIOThread()const = 0;
+			virtual INTERFACECALL ~IEnvironment() = default;
+			virtual void INTERFACECALL SetLoaderIOThreadID(std::thread::id) = 0;
+			virtual bool INTERFACECALL IsInLoaderIOThread()const = 0;
 		};
 	}
 }

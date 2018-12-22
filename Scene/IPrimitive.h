@@ -26,25 +26,24 @@ namespace Lightning
 			SPHERE
 		};
 
-		class IPrimitive : public IDrawable
+		struct IPrimitive : IDrawable
 		{
-		public:
-			virtual PrimitiveType GetPrimitiveType()const = 0;
-			virtual void SetWorldPosition(const Vector3f& pos) = 0;
-			virtual Vector3f GetWorldPosition()const = 0;
-			virtual void SetWorldRotation(const Quaternionf& rot) = 0;
-			virtual Quaternionf GetWorldRotation()const = 0;
-			virtual Color32 GetColor()const = 0;
-			virtual void GetColor(float& a, float& r, float& g, float& b) = 0;
-			virtual void SetColor(const Color32& color) = 0;
+			virtual PrimitiveType INTERFACECALL GetPrimitiveType()const = 0;
+			virtual void INTERFACECALL SetWorldPosition(const Vector3f& pos) = 0;
+			virtual Vector3f INTERFACECALL GetWorldPosition()const = 0;
+			virtual void INTERFACECALL SetWorldRotation(const Quaternionf& rot) = 0;
+			virtual Quaternionf INTERFACECALL GetWorldRotation()const = 0;
+			virtual Color32 INTERFACECALL GetColor()const = 0;
+			virtual void INTERFACECALL GetColor(float& a, float& r, float& g, float& b) = 0;
+			virtual void INTERFACECALL SetColor(const Color32& color) = 0;
 			//color is in ARGB order
-			virtual void SetColor(std::uint32_t color) = 0;
-			virtual void SetColor(float a, float r, float g, float b) = 0;
-			virtual void SetTransparency(std::uint8_t transparency) = 0;
-			virtual void SetTransparency(float transparency) = 0;
-			virtual void SetTexture(const std::string& name, ITexture* texture) = 0;
-			virtual void SetSamplerState(const std::string& name, const SamplerState& state) = 0;
-			virtual void SetShader(IShader* shader) = 0;
+			virtual void INTERFACECALL SetColor(std::uint32_t color) = 0;
+			virtual void INTERFACECALL SetColor(float a, float r, float g, float b) = 0;
+			virtual void INTERFACECALL SetTransparency(std::uint8_t transparency) = 0;
+			virtual void INTERFACECALL SetTransparency(float transparency) = 0;
+			virtual void INTERFACECALL SetTexture(const char* name, ITexture* texture) = 0;
+			virtual void INTERFACECALL SetSamplerState(const char* name, const SamplerState& state) = 0;
+			virtual void INTERFACECALL SetShader(IShader* shader) = 0;
 		};
 	}
 }

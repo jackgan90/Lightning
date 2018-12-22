@@ -15,7 +15,7 @@ namespace Lightning
 		class WindowsApplication : public Application
 		{
 		public:
-			void Start()override;
+			void INTERFACECALL Start()override;
 		protected:
 			void OnMouseWheel(const Foundation::IEvent& event);
 			void OnKeyDown(const Foundation::IEvent& event);

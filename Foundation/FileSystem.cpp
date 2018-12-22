@@ -143,14 +143,14 @@ namespace Lightning
 			return *mFile ? readSize : mFile->gcount();
 		}
 
-		const std::string GeneralFile::GetPath()const
+		const char* GeneralFile::GetPath()const
 		{
-			return mPath.string();
+			return mPath.string().c_str();
 		}
 
-		const std::string GeneralFile::GetName()const
+		const char* GeneralFile::GetName()const
 		{
-			return mPath.filename().string();
+			return mPath.filename().string().c_str();
 		}
 
 
@@ -168,7 +168,7 @@ namespace Lightning
 			}
 		}
 
-		IFile* GeneralFileSystem::FindFile(const std::string& filename, FileAccess bitmask)
+		IFile* GeneralFileSystem::FindFile(const char* filename, FileAccess bitmask)
 		{
 			assert(Environment::Instance()->IsInLoaderIOThread() && "FindFile must be called from LoaderIO Thread!");
 			auto cachedFile = mCachedFiles.find(filename);
@@ -195,7 +195,7 @@ namespace Lightning
 			return nullptr;
 		}
 
-		bool GeneralFileSystem::SetRoot(std::string root_path)
+		bool GeneralFileSystem::SetRoot(const char* root_path)
 		{
 			mRoot = root_path;
 			return true;

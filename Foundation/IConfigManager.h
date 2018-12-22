@@ -1,6 +1,6 @@
 #pragma once
 #include <type_traits>
-#include "Container.h"
+#include "Portable.h"
 
 namespace Lightning
 {
@@ -19,8 +19,8 @@ namespace Lightning
 
 		struct IConfigManager
 		{
-			virtual ~IConfigManager() = default;
-			virtual const EngineConfig& GetConfig()const = 0;
+			virtual INTERFACECALL ~IConfigManager() = default;
+			virtual const EngineConfig& INTERFACECALL GetConfig()const = 0;
 		};
 	}
 }

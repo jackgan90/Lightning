@@ -17,11 +17,11 @@ namespace Lightning
 		{
 		public:
 			Application();
-			~Application()override;
-			void Update()override;
-			void Start()override;
-			bool IsRunning() override{ return mRunning; }
-			int GetExitCode()const override{ return mExitCode; }
+			INTERFACECALL ~Application()override;
+			void INTERFACECALL Update()override;
+			void INTERFACECALL Start()override;
+			bool INTERFACECALL IsRunning() override{ return mRunning; }
+			int INTERFACECALL GetExitCode()const override{ return mExitCode; }
 		protected:
 			virtual void OnWindowIdle(const Foundation::IEvent& event);
 			virtual void RegisterWindowHandlers();

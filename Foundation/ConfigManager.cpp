@@ -1,6 +1,7 @@
 #include <boost/property_tree/exceptions.hpp>
 #include <cstdlib>
 #include "ConfigManager.h"
+#include "Container.h"
 #include "Logger.h"
 
 namespace Lightning

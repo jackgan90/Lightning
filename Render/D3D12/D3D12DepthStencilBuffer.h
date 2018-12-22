@@ -17,14 +17,14 @@ namespace Lightning
 		public:
 			D3D12DepthStencilBuffer(const std::uint32_t width, const std::uint32_t height);
 			D3D12DepthStencilBuffer(const std::uint32_t width, const std::uint32_t height, RenderFormat format, const float depthClearValue, const std::uint32_t stencilClearValue);
-			~D3D12DepthStencilBuffer()override;
-			void SetClearValue(float depthValue=1.0f, std::uint32_t stencilValue=0)override;
-			float GetDepthClearValue()const override;
-			std::uint32_t GetStencilClearValue()const override;
-			RenderFormat GetRenderFormat()const override;
+			INTERFACECALL ~D3D12DepthStencilBuffer()override;
+			void INTERFACECALL SetClearValue(float depthValue=1.0f, std::uint32_t stencilValue=0)override;
+			float INTERFACECALL GetDepthClearValue()const override;
+			std::uint32_t INTERFACECALL GetStencilClearValue()const override;
+			RenderFormat INTERFACECALL GetRenderFormat()const override;
+			std::uint32_t INTERFACECALL GetWidth()const override { return mWidth; }
+			std::uint32_t INTERFACECALL GetHeight()const override { return mHeight; }
 			D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return mHeap->cpuHandle; }
-			std::uint32_t GetWidth()const override { return mWidth; }
-			std::uint32_t GetHeight()const override { return mHeight; }
 			void TransitToState(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES state);
 		private:
 			void CreateResource();

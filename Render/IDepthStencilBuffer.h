@@ -1,22 +1,21 @@
 #pragma once
 #include <cstdint>
-#include <memory>
 #include "RenderConstants.h"
 #include "IRefObject.h"
+#include "Portable.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		class IDepthStencilBuffer : public Plugins::IRefObject
+		struct IDepthStencilBuffer : Plugins::IRefObject
 		{
-		public:
-			virtual void SetClearValue(float depthValue=1.0f, std::uint32_t stencilValue=0) = 0;
-			virtual float GetDepthClearValue()const = 0;
-			virtual std::uint32_t GetStencilClearValue()const = 0;
-			virtual RenderFormat GetRenderFormat()const = 0;
-			virtual std::uint32_t GetWidth()const = 0;
-			virtual std::uint32_t GetHeight()const = 0;
+			virtual void INTERFACECALL SetClearValue(float depthValue=1.0f, std::uint32_t stencilValue=0) = 0;
+			virtual float INTERFACECALL GetDepthClearValue()const = 0;
+			virtual std::uint32_t INTERFACECALL GetStencilClearValue()const = 0;
+			virtual RenderFormat INTERFACECALL GetRenderFormat()const = 0;
+			virtual std::uint32_t INTERFACECALL GetWidth()const = 0;
+			virtual std::uint32_t INTERFACECALL GetHeight()const = 0;
 		};
 	}
 }
