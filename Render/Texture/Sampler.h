@@ -22,7 +22,7 @@ namespace Lightning
 			Border
 		};
 
-		struct SamplerState : Foundation::PlainObject<SamplerState>
+		struct SamplerState
 		{
 			SamplerFilterMode filterMode;
 			AddressMode addressU;
@@ -33,5 +33,6 @@ namespace Lightning
 			float minLOD;
 			float maxLOD;
 		};
+		static_assert(std::is_pod<SamplerState>::value, "SamplerState is not a POD type.");
 	}
 }
