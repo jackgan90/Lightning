@@ -40,7 +40,7 @@ namespace Lightning
 		void GenerateSceneObjects(ISceneManager* sceneMgr, Plugins::IScenePlugin* scenePlugin)
 		{
 			auto scene = sceneMgr->GetForegroundScene();
-			/*
+			
 			auto cube = scenePlugin->CreateCube(1.0f, 1.0f, 1.0f);
 			Render::Color32 color;
 			color.r = 0;
@@ -51,26 +51,23 @@ namespace Lightning
 			scene->AddDrawable(cube);
 			cube->Release();
 			auto renderer = renderPlugin->GetRenderer();
-			auto device = renderer->GetDevice();*/
-			/*
-			device->CreateShaderFromFile(Render::ShaderType::VERTEX, "texture_map.vs", 
-				[cube](Render::IShader* shader) {
-				if (shader)
-				{
-					cube->SetShader(shader);
-					shader->Release();
+			auto device = renderer->GetDevice();
+			struct test : Render::IShaderCallback
+			{
+				test(Scene::IPrimitive* p) : prim(p){}
+				void Execute(Render::IShader* shader)override
+				{	
+					prim->SetShader(shader);
+					delete this;
 				}
-			});
-
-			device->CreateShaderFromFile(Render::ShaderType::FRAGMENT, "texture_map.ps",
-				[cube](Render::IShader* shader) {
-				if (shader)
-				{
-					cube->SetShader(shader);
-					shader->Release();
-				}
-			});*/
+				Scene::IPrimitive* prim;
+			};
 			
+			device->CreateShaderFromFile(Render::ShaderType::VERTEX, "default.vs", new test(cube));
+
+
+			//device->CreateShaderFromFile(Render::ShaderType::FRAGMENT, "texture_map.ps", new test(cube));
+			/*
 			static std::random_device rd;
 			static std::mt19937 mt(rd());
 			static std::uniform_real_distribution<float> rDist(-2, 2);
@@ -110,7 +107,7 @@ namespace Lightning
 				p->SetWorldRotation(Transformer::RandomRotation());
 				scene->AddDrawable(p);
 				p->Release();
-			}
+			}*/
 		}
 		//For test only end
 
