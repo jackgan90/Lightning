@@ -23,17 +23,16 @@ namespace Lightning
 			//reset shader of specific type used by this material(reverse operation of SetShader)
 			virtual bool ResetShader(ShaderType) = 0;
 			virtual IShader* GetShader(ShaderType) = 0;
-			virtual void GetShaders(Container::Vector<IShader*>& shaders) = 0;
-			virtual bool SetParameter(ShaderType type, const ShaderParameter& arg) = 0;
+			virtual bool SetParameter(ShaderType type, const char* name, float value) = 0;
+			virtual bool SetParameter(ShaderType type, const char* name, const Vector2f& value) = 0;
+			virtual bool SetParameter(ShaderType type, const char* name, const Vector3f& value) = 0;
+			virtual bool SetParameter(ShaderType type, const char* name, const Vector4f& value) = 0;
+			virtual bool SetParameter(ShaderType type, const char* name, const Matrix4f& value) = 0;
+			virtual bool SetParameter(ShaderType type, const char* name, ITexture* texture) = 0;
+			virtual bool SetParameter(ShaderType type, const char* name, const SamplerState& samplerState) = 0;
 			virtual void EnableBlend(bool enable) = 0;
 			virtual void GetBlendState(BlendState&)const = 0;
 			virtual const ShaderParametersCache& GetAllShaderParameters()const = 0;
 		};
-
-		template<typename... ParameterType>
-		bool SetMaterialParameter(IMaterial* material, ShaderType type, const char* name, ParameterType&&... parameter)
-		{
-			return material->SetParameter(type, ShaderParameter(name, std::forward<ParameterType>(parameter)...));
-		}
 	}
 }

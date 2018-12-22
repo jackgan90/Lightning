@@ -31,12 +31,31 @@ namespace Lightning
 			static Foundation::ThreadLocalSingleton<ShaderContainer> shadersContainer;
 			auto& shaders = *shadersContainer;
 			shaders.clear();
-			node.material->GetShaders(shaders);
+			GetMaterialShaders(node.material, shaders);
 			std::for_each(shaders.begin(), shaders.end(), [this](IShader* shader) {
 				auto d3d12Shader = static_cast<D3D12Shader*>(shader);
 				mTotalConstantBufferSize += d3d12Shader->GetConstantBufferSize();
 				mTotalConstantBuffers += d3d12Shader->GetConstantBufferCount();
 			});
+		}
+		
+		void D3D12ForwardRenderPass::GetMaterialShaders(IMaterial* material, Container::Vector<IShader*>& shaders)
+		{
+			auto vs = material->GetShader(ShaderType::VERTEX);
+			auto fs = material->GetShader(ShaderType::FRAGMENT);
+			auto gs = material->GetShader(ShaderType::GEOMETRY);
+			auto hs = material->GetShader(ShaderType::TESSELATION_CONTROL);
+			auto ds = material->GetShader(ShaderType::TESSELATION_EVALUATION);
+			if (vs)
+				shaders.push_back(vs);
+			if (fs)
+				shaders.push_back(fs);
+			if (gs)
+				shaders.push_back(gs);
+			if (hs)
+				shaders.push_back(hs);
+			if (ds)
+				shaders.push_back(ds);
 		}
 
 		void D3D12ForwardRenderPass::OnFrameEnd()

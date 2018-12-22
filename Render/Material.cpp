@@ -25,25 +25,6 @@ namespace Lightning
 			return it->second.shader;
 		}
 
-		void Material::GetShaders(Container::Vector<IShader*>& shaders)
-		{
-			auto vs = GetShader(ShaderType::VERTEX);
-			if (vs)
-				shaders.push_back(vs);
-			auto fs = GetShader(ShaderType::FRAGMENT);
-			if (fs)
-				shaders.push_back(fs);
-			auto gs = GetShader(ShaderType::GEOMETRY);
-			if (gs)
-				shaders.push_back(gs);
-			auto tcs = GetShader(ShaderType::TESSELATION_CONTROL);
-			if (tcs)
-				shaders.push_back(tcs);
-			auto tes = GetShader(ShaderType::TESSELATION_EVALUATION);
-			if (tes)
-				shaders.push_back(tes);
-		}
-
 		void Material::SetShader(IShader* shader)
 		{
 			if (!shader)
@@ -74,6 +55,41 @@ namespace Lightning
 				return true;
 			}
 			return false;
+		}
+
+		bool Material::SetParameter(ShaderType type, const char* name, float value)
+		{
+			return SetParameter(type, ShaderParameter(name, value));
+		}
+
+		bool Material::SetParameter(ShaderType type, const char* name, const Vector2f& value)
+		{
+			return SetParameter(type, ShaderParameter(name, value));
+		}
+
+		bool Material::SetParameter(ShaderType type, const char* name, const Vector3f& value)
+		{
+			return SetParameter(type, ShaderParameter(name, value));
+		}
+
+		bool Material::SetParameter(ShaderType type, const char* name, const Vector4f& value)
+		{
+			return SetParameter(type, ShaderParameter(name, value));
+		}
+
+		bool Material::SetParameter(ShaderType type, const char* name, const Matrix4f& value)
+		{
+			return SetParameter(type, ShaderParameter(name, value));
+		}
+
+		bool Material::SetParameter(ShaderType type, const char* name, ITexture* texture)
+		{
+			return SetParameter(type, ShaderParameter(name, texture));
+		}
+
+		bool Material::SetParameter(ShaderType type, const char* name, const SamplerState& samplerState)
+		{
+			return SetParameter(type, ShaderParameter(name, samplerState));
 		}
 
 		void Material::EnableBlend(bool enable)
