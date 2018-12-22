@@ -20,11 +20,11 @@ namespace Lightning
 		class PluginManager : public IPluginManager
 		{
 		public:
-			IPlugin* LoadPlugin(const char* pluginName)override;
-			IPlugin* GetPlugin(const char* pluginName)override;
-			bool UnloadPlugin(const char* pluginName)override;
-			void Update()override;
-			void MakePlugin1UpdateBeforePlugin2(IPlugin* plugin1, IPlugin* plugin2)override;
+			IPlugin* INTERFACECALL LoadPlugin(const char* pluginName)override;
+			IPlugin* INTERFACECALL GetPlugin(const char* pluginName)override;
+			bool INTERFACECALL UnloadPlugin(const char* pluginName)override;
+			void INTERFACECALL Update()override;
+			void INTERFACECALL MakePlugin1UpdateBeforePlugin2(IPlugin* plugin1, IPlugin* plugin2)override;
 		private:
 			friend class Engine;
 			struct PluginInfo

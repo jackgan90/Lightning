@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef LIGHTNING_WIN32
+#ifdef _MSC_VER
 #define INTERFACECALL __stdcall
 #else
 #define INTERFACECALL
