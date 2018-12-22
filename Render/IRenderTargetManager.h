@@ -8,26 +8,24 @@ namespace Lightning
 {
 	namespace Render
 	{
-		class IRenderTargetManager
+		using Foundation::Container;
+		struct IRenderTargetManager
 		{
-		public:
+			virtual INTERFACECALL ~IRenderTargetManager() = default;
 			//create a render target
-			virtual IRenderTarget* CreateRenderTarget() = 0;
+			virtual IRenderTarget* INTERFACECALL CreateRenderTarget() = 0;
 			//obtain a render target by ID
-			virtual IRenderTarget* GetRenderTarget(const RenderTargetID rtID) = 0;
+			virtual IRenderTarget* INTERFACECALL GetRenderTarget(const RenderTargetID rtID) = 0;
 			//destroy the render target identified by rtID managed by the manager
-			virtual void DestroyRenderTarget(const RenderTargetID rtID) = 0;
-
-			virtual ~IRenderTargetManager() = default;
+			virtual void INTERFACECALL DestroyRenderTarget(const RenderTargetID rtID) = 0;
 		};
-		using SharedRenderTargetManagerPtr = std::shared_ptr<IRenderTargetManager>;
 
 		using RenderTargetMap = Container::ConcurrentUnorderedMap<RenderTargetID, IRenderTarget*>;
 		template<typename Derived>
 		class RenderTargetManager : public IRenderTargetManager, public Foundation::Singleton<Derived>
 		{
 		public:
-			~RenderTargetManager()override
+			INTERFACECALL ~RenderTargetManager()override
 			{
 				Clear();
 			}
@@ -46,7 +44,7 @@ namespace Lightning
 				mDestroyedTargetIDs.clear();
 			}
 			//Thread safe
-			IRenderTarget* GetRenderTarget(const RenderTargetID targetID) override
+			IRenderTarget* INTERFACECALL GetRenderTarget(const RenderTargetID targetID) override
 			{
 				if (mDestroyedTargetIDs.find(targetID) != mDestroyedTargetIDs.end())
 					return nullptr;
@@ -67,7 +65,7 @@ namespace Lightning
 				mRenderTargets.clear();
 			}
 
-			void DestroyRenderTarget(const RenderTargetID rtID)override
+			void INTERFACECALL DestroyRenderTarget(const RenderTargetID rtID)override
 			{
 				mDestroyedTargetIDs.insert(rtID);
 			}

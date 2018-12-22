@@ -7,14 +7,13 @@ namespace Lightning
 {
 	namespace Scene
 	{
-		class IScene
+		struct IScene
 		{
-		public:
-			virtual ~IScene(){}
-			virtual std::uint32_t GetID()const = 0;
-			virtual void Update() = 0;
-			virtual void AddDrawable(IDrawable*) = 0;
-			virtual ICamera* GetActiveCamera() = 0;
+			virtual INTERFACECALL ~IScene() = default;
+			virtual std::uint32_t INTERFACECALL GetID()const = 0;
+			virtual void INTERFACECALL Update() = 0;
+			virtual void INTERFACECALL AddDrawable(IDrawable*) = 0;
+			virtual ICamera* INTERFACECALL GetActiveCamera() = 0;
 		};
 	}
 }

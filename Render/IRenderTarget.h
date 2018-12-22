@@ -1,6 +1,4 @@
 #pragma once
-#include <memory>
-#include "Container.h"
 #include "RenderConstants.h"
 #include "IRefObject.h"
 
@@ -8,22 +6,17 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::Container;
-
 		using RenderTargetID = int;
-		class IRenderTarget : public Plugins::IRefObject
+		struct IRenderTarget : Plugins::IRefObject
 		{
-		public:
 			//get pixel sample count
-			virtual std::uint32_t GetSampleCount() = 0;
+			virtual std::uint32_t INTERFACECALL GetSampleCount() = 0;
 			//get pixel sample quality
-			virtual int GetSampleQuality() = 0;
+			virtual int INTERFACECALL GetSampleQuality() = 0;
 			//get render format
-			virtual RenderFormat GetRenderFormat()const = 0;
+			virtual RenderFormat INTERFACECALL GetRenderFormat()const = 0;
 			//return the attached RT ID
-			virtual RenderTargetID GetID()const = 0;
-			virtual ~IRenderTarget() = default;
+			virtual RenderTargetID INTERFACECALL GetID()const = 0;
 		};
-		using RenderTargetList = Container::Vector<IRenderTarget*>;
 	}
 }
