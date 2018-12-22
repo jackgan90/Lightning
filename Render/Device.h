@@ -1,5 +1,4 @@
 #pragma once
-#include <memory>
 #include "IDevice.h"
 #include "ILoader.h"
 

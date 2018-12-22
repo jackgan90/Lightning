@@ -1,19 +1,10 @@
 #pragma once
-#include <memory>
 #include <functional>
-#include "Container.h"
-#include "IRenderTarget.h"
-#include "IDepthStencilBuffer.h"
-#include "PipelineState.h"
-#include "IGPUBuffer.h"
 #include "IVertexBuffer.h"
 #include "IIndexBuffer.h"
 #include "IShader.h"
 #include "Texture/Itexture.h"
-#include "Texture/Sampler.h"
 #include "ISerializeBuffer.h"
-#include "Rect.h"
-#include "Color.h"
 
 namespace Lightning
 {

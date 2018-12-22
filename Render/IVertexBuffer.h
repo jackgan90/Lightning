@@ -1,6 +1,5 @@
 #pragma once
 #include <boost/functional/hash.hpp>
-#include "Container.h"
 #include "PlainObject.h"
 #include "GPUBuffer.h"
 #include "Semantics.h"
@@ -9,7 +8,6 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::Container;
 		struct VertexComponent
 		{
 			GET_HASH_METHOD

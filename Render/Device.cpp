@@ -41,9 +41,8 @@ namespace Lightning
 
 		void Device::CreateShaderFromFile(ShaderType type, const char* const path, IShaderCallback* callback)
 		{
-			class ShaderLoaded : public IShaderCallback
+			struct ShaderLoaded : IShaderCallback
 			{
-			public:
 				ShaderLoaded(IShaderCallback* callback):mCallback(callback){}
 				void Execute(IShader* shader)override
 				{
@@ -55,7 +54,7 @@ namespace Lightning
 					}
 					delete this;
 				}
-			private:
+
 				IShaderCallback* mCallback;
 			};
 			ShaderMacros macros;
@@ -75,9 +74,8 @@ namespace Lightning
 
 		void Device::CreateTextureFromFile(const char* const path, ITextureCallback* callback)
 		{
-			class TextureLoaded : public ITextureCallback
+			struct TextureLoaded : ITextureCallback
 			{
-			public:
 				TextureLoaded(const std::string& path, ITextureCallback* callback):mCallback(callback), mPath(path){}
 				void Execute(ITexture* texture)override
 				{
@@ -89,7 +87,7 @@ namespace Lightning
 					}
 					delete this;
 				}
-			private:
+
 				ITextureCallback* mCallback;
 				std::string mPath;
 			};

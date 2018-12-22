@@ -7,9 +7,8 @@ namespace Lightning
 {
 	namespace Loading
 	{
-		class ILoader
+		struct ILoader
 		{
-		public:
 			virtual ~ILoader() = default;
 			virtual void Finalize() = 0;
 			virtual void Load(const std::string& path, ISerializer* ser) = 0;
