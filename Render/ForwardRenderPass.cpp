@@ -93,12 +93,12 @@ namespace Lightning
 						auto parameter = node.material->GetParameter(shaderType, i);
 						shader->SetParameter(parameter);
 					}
-					CommitShaderUniforms(shader, node);
+					CommitSemanticUniforms(shader, node);
 				}
 			}
 		}
 
-		void ForwardRenderPass::CommitShaderUniforms(IShader* shader, const RenderNode& node)
+		void ForwardRenderPass::CommitSemanticUniforms(IShader* shader, const RenderNode& node)
 		{
 			auto renderer = Renderer::Instance();
 			RenderSemantics* semantics{ nullptr };

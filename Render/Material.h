@@ -13,15 +13,15 @@ namespace Lightning
 		{
 		public:
 			Material();
-			~Material()override;
-			void SetShader(IShader* shader)override;
-			bool ResetShader(ShaderType type)override;
-			IShader* GetShader(ShaderType type)override;
-			bool SetParameter(ShaderType type, const IShaderParameter* parameter)override;
-			void EnableBlend(bool enable)override;
-			void GetBlendState(BlendState& state)const override{ state = mBlendState; }
-			std::size_t GetParameterCount(ShaderType type)const override;
-			IShaderParameter* GetParameter(ShaderType type, std::size_t parameterIndex)override;
+			INTERFACECALL ~Material()override;
+			void INTERFACECALL SetShader(IShader* shader)override;
+			bool INTERFACECALL ResetShader(ShaderType type)override;
+			IShader* INTERFACECALL GetShader(ShaderType type)override;
+			bool INTERFACECALL SetParameter(ShaderType type, const IShaderParameter* parameter)override;
+			void INTERFACECALL EnableBlend(bool enable)override;
+			void INTERFACECALL GetBlendState(BlendState& state)const override{ state = mBlendState; }
+			std::size_t INTERFACECALL GetParameterCount(ShaderType type)const override;
+			const IShaderParameter* INTERFACECALL GetParameter(ShaderType type, std::size_t parameterIndex)const override;
 		protected:
 			struct ShaderParameters
 			{

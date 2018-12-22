@@ -81,7 +81,7 @@ namespace Lightning
 			return it->second.parameters.size();
 		}
 
-		IShaderParameter* Material::GetParameter(ShaderType type, std::size_t parameterIndex)
+		const IShaderParameter* Material::GetParameter(ShaderType type, std::size_t parameterIndex)const
 		{
 			auto it = mShaders.find(type);
 			if (it != mShaders.end())
