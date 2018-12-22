@@ -45,10 +45,9 @@ namespace Lightning
 		};
 		static_assert(std::is_pod<TextureDescriptor>::value, "TextureDescriptor is not a POD type.");
 
-		class ITexture : public Plugins::IRefObject
+		struct ITexture : Plugins::IRefObject
 		{
-		public:
-			virtual void Commit() = 0;
+			virtual void INTERFACECALL Commit() = 0;
 		};
 	}
 }

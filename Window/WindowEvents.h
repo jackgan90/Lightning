@@ -21,7 +21,7 @@ namespace Lightning
 			MOUSE_MOVE_EVENT
 		};
 
-		class IWindow;
+		struct IWindow;
 		using Foundation::Event;
 		enum VirtualKeyCode
 		{

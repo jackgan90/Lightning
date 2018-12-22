@@ -21,13 +21,13 @@ namespace Lightning
 			//we have to use raw pointer,because at the time the swap chain is created, D3D12Renderer is not constructed successfully yet
 			//so there's actually no shared pointer pointed to it.Passing a smart pointer here will cause error
 			D3D12SwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* commandQueue, Window::IWindow* pWindow);
-			~D3D12SwapChain()override;
-			bool Present()override;
-			std::uint32_t GetSampleCount()const override { return mDesc.SampleDesc.Count; }
-			int GetSampleQuality()const override { return mDesc.SampleDesc.Quality; }
-			RenderFormat GetRenderFormat()const override{ return D3D12TypeMapper::MapRenderFormat(mDesc.BufferDesc.Format); }
-			std::uint32_t GetCurrentBackBufferIndex()const override;
-			IRenderTarget* GetDefaultRenderTarget()override;
+			INTERFACECALL ~D3D12SwapChain()override;
+			bool INTERFACECALL Present()override;
+			std::uint32_t INTERFACECALL GetSampleCount()const override { return mDesc.SampleDesc.Count; }
+			int INTERFACECALL GetSampleQuality()const override { return mDesc.SampleDesc.Quality; }
+			RenderFormat INTERFACECALL GetRenderFormat()const override{ return D3D12TypeMapper::MapRenderFormat(mDesc.BufferDesc.Format); }
+			std::uint32_t INTERFACECALL GetCurrentBackBufferIndex()const override;
+			IRenderTarget* INTERFACECALL GetDefaultRenderTarget()override;
 		private:
 			void BindRenderTargets();
 			void CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, Window::IWindow* pWindow);

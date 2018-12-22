@@ -11,13 +11,12 @@ namespace Lightning
 {
 	namespace Window
 	{
-		class IWindow : public Plugins::IRefObject
+		struct IWindow : Plugins::IRefObject
 		{
-		public:
-			virtual bool Show(bool show) = 0;
-			virtual void Update() = 0;
-			virtual std::uint32_t GetWidth()const = 0;
-			virtual std::uint32_t GetHeight()const = 0;
+			virtual bool INTERFACECALL Show(bool show) = 0;
+			virtual void INTERFACECALL Update() = 0;
+			virtual std::uint32_t INTERFACECALL GetWidth()const = 0;
+			virtual std::uint32_t INTERFACECALL GetHeight()const = 0;
 		};
 
 	}

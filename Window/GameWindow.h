@@ -26,8 +26,8 @@ namespace Lightning
 		{
 		public:
 			//Only left for backwards compatibility,will remove later once refactoring is over
-			std::uint32_t GetWidth()const override{ return mWidth; }
-			std::uint32_t GetHeight()const override{ return mHeight; }
+			std::uint32_t INTERFACECALL GetWidth()const override{ return mWidth; }
+			std::uint32_t INTERFACECALL GetHeight()const override{ return mHeight; }
 		protected:
 			GameWindow();
 			virtual void OnIdle();
