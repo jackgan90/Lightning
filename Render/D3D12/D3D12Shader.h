@@ -44,7 +44,7 @@ namespace Lightning
 			//bool Compile(const Foundation::SharedFilePtr& file, const ShaderDefine& define)override;
 			//const std::string GetCompileErrorLog()const override;
 			std::size_t GetParameterCount()const override;
-			bool SetParameter(const ShaderParameter& parameter) override;
+			bool SetParameter(const IShaderParameter* parameter) override;
 			void Compile()override;
 			void GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount)override;
 			void* GetByteCodeBuffer()const;

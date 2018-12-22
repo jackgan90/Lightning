@@ -87,7 +87,7 @@ namespace Lightning
 				auto shader = it->second.shader;
 				for (const auto& arg : it->second.parameters)
 				{
-					shader->SetParameter(arg);
+					shader->SetParameter(&arg);
 				}
 				RenderSemantics* semantics{ nullptr };
 				std::uint16_t semanticCount{ 0 };
@@ -107,7 +107,7 @@ namespace Lightning
 							{
 								//We know that transform.ToMatrix4 may change it's internal matrix
 								auto wvp = node.projectionMatrix * node.viewMatrix * node.transform.matrix;
-								vs->SetParameter(ShaderParameter(uniformName, wvp));
+								vs->SetParameter(&ShaderParameter(uniformName, wvp));
 							}
 							break;
 						}

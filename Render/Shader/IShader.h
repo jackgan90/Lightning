@@ -50,39 +50,43 @@ namespace Lightning
 			TEXTURE,
 			SAMPLER,
 		};
-		using ShaderParameterRegister = std::uint8_t;
-		using ShaderParameterSpace = std::uint8_t;
 
-		struct ShaderParameter
+		struct IShaderParameter
 		{
-			ShaderParameterType type;
-			ShaderParameterRegister registerIndex;
-			ShaderParameterSpace registerSpace;
-			std::string name;
-			union
+			virtual INTERFACECALL ~IShaderParameter() = default;
+			virtual const char* INTERFACECALL GetName()const = 0;
+			virtual ShaderParameterType INTERFACECALL GetType()const = 0;
+			virtual const void* INTERFACECALL Buffer(std::size_t& size)const = 0;
+		};
+
+		class ShaderParameter : public IShaderParameter
+		{
+		public:
+			ShaderParameter():mType(ShaderParameterType::UNKNOWN){}
+			ShaderParameter(const char* n, const float _f):mName(n), mType(ShaderParameterType::FLOAT), f(_f){}
+			ShaderParameter(const char* n, const Vector2f& _v2) :mName(n), mType(ShaderParameterType::FLOAT2) { new (&v2)Vector2f(_v2); }
+			ShaderParameter(const char* n, const Vector3f& _v3) :mName(n), mType(ShaderParameterType::FLOAT3) { new (&v3)Vector3f(_v3); }
+			ShaderParameter(const char* n, const Vector4f& _v4) :mName(n), mType(ShaderParameterType::FLOAT4) { new (&v4)Vector4f(_v4); }
+			ShaderParameter(const char* n, const Matrix4f& _m4) :mName(n), mType(ShaderParameterType::MATRIX4) { new (&m4)Matrix4f(_m4); }
+			ShaderParameter(const char* n, ITexture* _texture) :mName(n), mType(ShaderParameterType::TEXTURE) { texture = _texture; }
+			ShaderParameter(const char* n, const SamplerState& _state) :mName(n), mType(ShaderParameterType::SAMPLER) { samplerState = _state; }
+			ShaderParameter(const char* n, ShaderParameterType type, const void* buffer, std::size_t bufferSize) : mName(n), mType(type)
 			{
-				float f;
-				Vector2f v2;
-				Vector3f v3;
-				Vector4f v4;
-				//Matrix3f m3;
-				Matrix4f m4;
-				ITexture* texture;
-				SamplerState samplerState;
-			};
-			ShaderParameter():type(ShaderParameterType::UNKNOWN){}
-			ShaderParameter(const std::string& n, const float _f):name(n), type(ShaderParameterType::FLOAT), f(_f){}
-			ShaderParameter(const std::string& n, const Vector2f& _v2) :name(n), type(ShaderParameterType::FLOAT2) { new (&v2)Vector2f(_v2); }
-			ShaderParameter(const std::string& n, const Vector3f& _v3) :name(n), type(ShaderParameterType::FLOAT3) { new (&v3)Vector3f(_v3); }
-			ShaderParameter(const std::string& n, const Vector4f& _v4) :name(n), type(ShaderParameterType::FLOAT4) { new (&v4)Vector4f(_v4); }
-			//ShaderParameter(const std::string& n, const Matrix3f& _m3) :name(n), type(ShaderParameterType::MATRIX3) { new (&m3)Matrix3f(_m3); }
-			ShaderParameter(const std::string& n, const Matrix4f& _m4) :name(n), type(ShaderParameterType::MATRIX4) { new (&m4)Matrix4f(_m4); }
-			ShaderParameter(const std::string& n, ITexture* _texture) :name(n), type(ShaderParameterType::TEXTURE) { texture = _texture; }
-			ShaderParameter(const std::string& n, const SamplerState& _state) :name(n), type(ShaderParameterType::SAMPLER) { samplerState = _state; }
-			const void* Buffer(std::size_t& size)const
+				std::memcpy(&f, buffer, bufferSize);
+			}
+			const char* INTERFACECALL GetName()const override
+			{
+				return mName.c_str();
+			}
+			ShaderParameterType INTERFACECALL GetType()const override
+			{
+				return mType;
+			}
+
+			const void* INTERFACECALL Buffer(std::size_t& size)const override
 			{
 				size = 0;
-				switch (type)
+				switch (mType)
 				{
 				case ShaderParameterType::UNKNOWN:
 					break;
@@ -98,13 +102,6 @@ namespace Lightning
 				case ShaderParameterType::FLOAT4:
 					size = sizeof(v4);
 					return &v4;
-					/*
-				case ShaderParameterType::MATRIX2:
-					break;
-				case ShaderParameterType::MATRIX3:
-					size = sizeof(m3);
-					return &m3;
-					*/
 				case ShaderParameterType::MATRIX4:
 					size = sizeof(m4);
 					return &m4;
@@ -117,6 +114,19 @@ namespace Lightning
 				}
 				return nullptr;
 			}
+		private:
+			ShaderParameterType mType;
+			std::string mName;
+			union
+			{
+				float f;
+				Vector2f v2;
+				Vector3f v3;
+				Vector4f v4;
+				Matrix4f m4;
+				ITexture* texture;
+				SamplerState samplerState;
+			};
 		};
 
 		class IShader : public HashableObject, public Plugins::IRefObject
@@ -130,7 +140,7 @@ namespace Lightning
 			virtual std::size_t GetParameterCount()const = 0;
 			virtual void Compile() = 0;
 			virtual std::string GetName()const = 0;
-			virtual bool SetParameter(const ShaderParameter& parameter) = 0;
+			virtual bool SetParameter(const IShaderParameter* parameter) = 0;
 			virtual const char* const GetSource()const = 0;
 			virtual void GetShaderModelVersion(int& major, int& minor) = 0;
 			virtual void GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount) = 0;

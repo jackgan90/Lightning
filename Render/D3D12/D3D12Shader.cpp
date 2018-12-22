@@ -154,35 +154,37 @@ namespace Lightning
 			return mDesc.BoundResources;
 		}
 
-		bool D3D12Shader::SetParameter(const ShaderParameter& parameter)
+		bool D3D12Shader::SetParameter(const IShaderParameter* parameter)
 		{
-			if (parameter.type == ShaderParameterType::UNKNOWN)
+			assert(parameter != nullptr && "parameter cannot be nullptr.");
+			auto parameterType = parameter->GetType();
+			if (parameterType == ShaderParameterType::UNKNOWN)
 			{
 				LOG_WARNING("Unknown shader parameter type when set shader {0}", mName.c_str());
 				return false;
 			}
-			auto it = mParameters.find(parameter.name);
+			auto it = mParameters.find(parameter->GetName());
 			assert(it != mParameters.end());
 			std::size_t size{ 0 };
-			if (parameter.type == ShaderParameterType::TEXTURE)
+			auto parameterBuffer = parameter->Buffer(size);
+			if (parameterType == ShaderParameterType::TEXTURE)
 			{
-				auto texture = const_cast<ITexture*>(reinterpret_cast<const ITexture*>(parameter.Buffer(size)));
+				auto texture = const_cast<ITexture*>(reinterpret_cast<const ITexture*>(parameterBuffer));
 				assert(texture != nullptr && "Encounter null texture!");
 				texture->Commit();
 				return true;
 			}
-			else if (parameter.type == ShaderParameterType::SAMPLER)
+			else if (parameterType == ShaderParameterType::SAMPLER)
 			{
 			}
 			else
 			{
-				auto data = parameter.Buffer(size);
-				if (data)
+				if (parameterBuffer)
 				{
 					const auto& bindingInfo = it->second;
 					std::uint8_t *p = mResourceProxy->GetConstantBuffer(mTotalConstantBufferSize);
 					std::uint8_t *buffer = p + mConstantBufferInfo[bindingInfo.bufferIndex].offset;
-					std::memcpy(buffer + bindingInfo.offsetInBuffer, data, size);
+					std::memcpy(buffer + bindingInfo.offsetInBuffer, parameterBuffer, size);
 					return true;
 				}
 			}

@@ -46,50 +46,20 @@ namespace Lightning
 			return false;
 		}
 
-		bool Material::SetParameter(ShaderType type, const ShaderParameter& arg)
+		bool Material::SetParameter(ShaderType type, const IShaderParameter* parameter)
 		{
+			assert(parameter != nullptr && "shader parameter cannot be nullptr!");
 			auto it = mShaders.find(type);
 			if (it != mShaders.end())
 			{
-				it->second.parameters.push_back(arg);
+				auto parameterName = parameter->GetName();
+				auto parameterType = parameter->GetType();
+				std::size_t bufferSize;
+				auto buffer = parameter->Buffer(bufferSize);
+				it->second.parameters.push_back(ShaderParameter(parameterName, parameterType, buffer, bufferSize));
 				return true;
 			}
 			return false;
-		}
-
-		bool Material::SetParameter(ShaderType type, const char* name, float value)
-		{
-			return SetParameter(type, ShaderParameter(name, value));
-		}
-
-		bool Material::SetParameter(ShaderType type, const char* name, const Vector2f& value)
-		{
-			return SetParameter(type, ShaderParameter(name, value));
-		}
-
-		bool Material::SetParameter(ShaderType type, const char* name, const Vector3f& value)
-		{
-			return SetParameter(type, ShaderParameter(name, value));
-		}
-
-		bool Material::SetParameter(ShaderType type, const char* name, const Vector4f& value)
-		{
-			return SetParameter(type, ShaderParameter(name, value));
-		}
-
-		bool Material::SetParameter(ShaderType type, const char* name, const Matrix4f& value)
-		{
-			return SetParameter(type, ShaderParameter(name, value));
-		}
-
-		bool Material::SetParameter(ShaderType type, const char* name, ITexture* texture)
-		{
-			return SetParameter(type, ShaderParameter(name, texture));
-		}
-
-		bool Material::SetParameter(ShaderType type, const char* name, const SamplerState& samplerState)
-		{
-			return SetParameter(type, ShaderParameter(name, samplerState));
 		}
 
 		void Material::EnableBlend(bool enable)
