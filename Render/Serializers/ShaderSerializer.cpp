@@ -8,9 +8,19 @@ namespace Lightning
 	{
 		ShaderSerializer::ShaderSerializer(ShaderType type, const std::string& path, 
 			const ShaderMacros& macros, IShaderCallback* callback)
-			:mType(type), mPath(path), mMacros(macros), mFinishCallback(callback)
+			:mType(type), mPath(path), mMacros(macros), mFinishCallback(callback), mShader(nullptr)
 		{
 
+		}
+
+		ShaderSerializer::~ShaderSerializer()
+		{
+			if (mFinishCallback)
+			{
+				mFinishCallback->Execute(mShader);
+			}
+			if (mShader)
+				mShader->Release();
 		}
 
 		void ShaderSerializer::Serialize(char** buffer)
@@ -21,11 +31,7 @@ namespace Lightning
 		void ShaderSerializer::Deserialize(Foundation::IFile* file, Loading::ISerializeBuffer* buffer)
 		{
 			auto device = Renderer::Instance()->GetDevice();
-			auto shader = device->CreateShader(mType, mPath, buffer->GetBuffer(), mMacros);
-			if (mFinishCallback)
-			{
-				mFinishCallback->Execute(shader);
-			}
+			mShader = device->CreateShader(mType, mPath, buffer->GetBuffer(), mMacros);
 		}
 
 		void ShaderSerializer::Dispose()

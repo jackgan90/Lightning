@@ -38,7 +38,7 @@ namespace Lightning
 		{
 		public:
 			void Finalize()override;
-			void Load(const std::string& path, ISerializer* ser)override;
+			void Load(const char* path, ISerializer* ser)override;
 			~Loader()override;
 		private:
 			friend class Foundation::Singleton<Loader>;

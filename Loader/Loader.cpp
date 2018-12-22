@@ -54,8 +54,9 @@ namespace Lightning
 			mLoaderIOThread.join();
 		}
 
-		void Loader::Load(const std::string& path, ISerializer* ser)
+		void Loader::Load(const char* path, ISerializer* ser)
 		{
+			assert(ser != nullptr && "Serializer must not be nullptr!");
 			LoadTask task;
 			task.serializer = ser;
 			task.path = path;
@@ -104,6 +105,7 @@ namespace Lightning
 					if (!file)
 					{
 						LOG_ERROR("Can't find file : {0}", task.path.c_str());
+						task.serializer->Dispose();
 						continue;
 					}
 					if (file->IsOpen())
@@ -117,6 +119,7 @@ namespace Lightning
 					{
 						LOG_ERROR("File is empty : {0}", file->GetPath().c_str());
 						file->Close();
+						task.serializer->Dispose();
 						continue;
 					}
 					file->SetFilePointer(Foundation::FilePointerType::Read, Foundation::FileAnchor::Begin, 0);
@@ -130,6 +133,7 @@ namespace Lightning
 						LOG_ERROR("Unable to read whole file : {0}", file->GetPath());
 						file->Close();
 						sharedBuffer->Release();
+						task.serializer->Dispose();
 						continue;
 					}
 					mgr->mBuffers[task.path] = sharedBuffer;

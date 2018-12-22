@@ -11,7 +11,7 @@ namespace Lightning
 		{
 			virtual ~ILoader() = default;
 			virtual void Finalize() = 0;
-			virtual void Load(const std::string& path, ISerializer* ser) = 0;
+			virtual void Load(const char* path, ISerializer* ser) = 0;
 		};
 	}
 }
