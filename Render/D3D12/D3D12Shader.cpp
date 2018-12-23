@@ -17,8 +17,8 @@ namespace Lightning
 
 		extern FrameMemoryAllocator g_RenderAllocator;
 
-		D3D12Shader::D3D12Shader(ID3D12Device* device, ShaderType type, const std::string& name, const std::string& entry, const char* const shaderSource):
-			Shader(type, name, entry, shaderSource)
+		D3D12Shader::D3D12Shader(ID3D12Device* device, ShaderType type, const std::string& name, const char* const shaderSource):
+			Shader(type, name, shaderSource)
 			, mTotalConstantBufferSize(0)
 		{
 			assert(shaderSource);
@@ -126,9 +126,9 @@ namespace Lightning
 		}
 
 
-		const ShaderMacros& D3D12Shader::GetMacros()const
+		const IShaderMacros* D3D12Shader::GetMacros()const
 		{
-			return mMacros;
+			return &mMacros;
 		}
 
 		void* D3D12Shader::GetByteCodeBuffer()const

@@ -1,20 +1,20 @@
 #include <boost/functional/hash.hpp>
-#include "IShader.h"
+#include "Shader.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		size_t Shader::Hash(const ShaderType& type, const std::string& shaderName, const ShaderMacros& shaderMacros)
+		size_t Shader::Hash(const ShaderType& type, const std::string& shaderName, const IShaderMacros* shaderMacros)
 		{
 			std::size_t seed = 0;
 			boost::hash_combine(seed, shaderName);
-			boost::hash_combine(seed, shaderMacros.GetHash());
+			boost::hash_combine(seed, shaderMacros->GetHash());
 			boost::hash_combine(seed, type);
 			return seed;
 		}
 		
-		Shader::Shader(ShaderType type, const std::string& name, const std::string& entryPoint, const char* const source):
+		Shader::Shader(ShaderType type, const std::string& name, const char* const source):
 			mType(type), mName(name), mSource(source)
 		{
 
@@ -25,15 +25,15 @@ namespace Lightning
 
 		}
 
-		size_t Shader::CalculateHashInternal()
+		void Shader::DefineMacros(const IShaderMacros* macros)
 		{
-			return Hash(GetType(), GetName(), GetMacros());
+			//mMacros += define;
+			//SetHashDirty();
 		}
 
-		void Shader::DefineMacros(const ShaderMacros& define)
+		std::size_t Shader::GetHash()const
 		{
-			mMacros += define;
-			SetHashDirty();
+			return Hash(mType, mName, &mMacros);
 		}
 
 		ShaderType Shader::GetType()const
@@ -46,9 +46,9 @@ namespace Lightning
 			return mSource;
 		}
 
-		std::string Shader::GetName()const
+		const char* Shader::GetName()const
 		{
-			return mName;
+			return mName.c_str();
 		}
 
 		void Shader::GetShaderModelVersion(int& major, int& minor)

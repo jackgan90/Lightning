@@ -3,6 +3,7 @@
 #include "Container.h"
 #include "Semantics.h"
 #include "IMaterial.h"
+#include "RefObject.h"
 
 namespace Lightning
 {

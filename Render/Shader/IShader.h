@@ -2,15 +2,14 @@
 #include <string>
 #include <exception>
 #include <boost/functional/hash.hpp>
-#include "ShaderMacros.h"
-#include "HashableObject.h"
 #include "Semantics.h"
 #include "RenderException.h"
 #include "Math/Matrix.h"
 #include "Math/Vector.h"
-#include "RefObject.h"
+#include "IRefObject.h"
 #include "Texture/ITexture.h"
 #include "Texture/Sampler.h"
+#include "IShaderMacros.h"
 
 namespace Lightning
 {
@@ -27,7 +26,6 @@ namespace Lightning
 			ShaderCompileException(const char*const w):RendererException(w){}
 		};
 
-		using Utility::HashableObject;
 		enum class ShaderType
 		{
 			VERTEX = 1,
@@ -129,52 +127,20 @@ namespace Lightning
 			};
 		};
 
-		class IShader : public HashableObject, public Plugins::IRefObject
+		struct IShader :  Plugins::IRefObject
 		{
-		public:
-			virtual ShaderType GetType()const = 0;
-			virtual void DefineMacros(const ShaderMacros& macros) = 0;
-			virtual const ShaderMacros& GetMacros()const = 0;
-			virtual std::size_t GetParameterCount()const = 0;
-			virtual void Compile() = 0;
-			virtual std::string GetName()const = 0;
-			virtual bool SetParameter(const IShaderParameter* parameter) = 0;
-			virtual const char* const GetSource()const = 0;
-			virtual void GetShaderModelVersion(int& major, int& minor) = 0;
-			virtual void GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount) = 0;
-		};
-
-		class Shader : public IShader
-		{
-		public:
-			static size_t Hash(const ShaderType& type, const std::string& shaderName, const ShaderMacros& macros);
-			Shader(ShaderType type, const std::string& name, const std::string& entryPoint, const char* const source);
-			~Shader()override;
-			void DefineMacros(const ShaderMacros& define)override;
-			ShaderType GetType()const override;
-			const char* const GetSource()const override;
-			std::string GetName()const override;
-			void GetShaderModelVersion(int& major, int& minor)override;
-		protected:
-			size_t CalculateHashInternal()override;
-			ShaderType mType;
-			std::string mName;
-			const char* const mSource;
-			ShaderMacros mMacros;
-			int mShaderModelMajorVersion;
-			int mShaderModelMinorVersion;
-			REF_OBJECT_OVERRIDE(Shader)
+			virtual ShaderType INTERFACECALL GetType()const = 0;
+			virtual void INTERFACECALL DefineMacros(const IShaderMacros* macros) = 0;
+			virtual const IShaderMacros* INTERFACECALL GetMacros()const = 0;
+			virtual std::size_t INTERFACECALL GetParameterCount()const = 0;
+			virtual void INTERFACECALL Compile() = 0;
+			virtual const char* INTERFACECALL GetName()const = 0;
+			virtual bool INTERFACECALL SetParameter(const IShaderParameter* parameter) = 0;
+			virtual const char* const INTERFACECALL GetSource()const = 0;
+			virtual void INTERFACECALL GetShaderModelVersion(int& major, int& minor) = 0;
+			virtual void INTERFACECALL GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount) = 0;
+			virtual std::size_t INTERFACECALL GetHash()const = 0;
 		};
 	}
 }
 
-namespace std
-{
-	template<> struct hash<Lightning::Render::IShader>
-	{
-		std::size_t operator()(const Lightning::Render::IShader& shader)const noexcept
-		{
-			return Lightning::Render::Shader::Hash(shader.GetType(), shader.GetName(), shader.GetMacros());
-		}
-	};
-}

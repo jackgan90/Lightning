@@ -2,6 +2,7 @@
 #include "IDevice.h"
 #include "IShader.h"
 #include "ISerializer.h"
+#include "ShaderMacros.h"
 
 namespace Lightning
 {

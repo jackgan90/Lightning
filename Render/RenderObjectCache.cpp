@@ -5,7 +5,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		IShader* ShaderCache::GetShader(ShaderType type, const std::string& name, const ShaderMacros& macros)
+		IShader* ShaderCache::GetShader(ShaderType type, const std::string& name, const IShaderMacros* macros)
 		{
 			return GetObject(GetKey(type, name, macros));
 		}
@@ -15,9 +15,9 @@ namespace Lightning
 			return AddObject(GetKey(shader->GetType(), shader->GetName(), shader->GetMacros()), shader);
 		}
 
-		std::string ShaderCache::GetKey(ShaderType type, const std::string& name, const ShaderMacros& macros)
+		std::string ShaderCache::GetKey(ShaderType type, const std::string& name, const IShaderMacros* macros)
 		{
-			return std::to_string(static_cast<int>(type)) + "_" + name + + "_" + macros.GetMacroString();
+			return std::to_string(static_cast<int>(type)) + "_" + name + + "_" + macros->GetMacroString();
 		}
 	}
 }

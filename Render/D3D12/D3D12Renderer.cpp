@@ -372,7 +372,7 @@ namespace Lightning
 			boost::hash_combine(seed, shaders.size());
 			for (const auto& s : shaders)
 			{
-				boost::hash_combine(seed, s->GetHashValue());
+				boost::hash_combine(seed, s->GetHash());
 			}
 
 			{

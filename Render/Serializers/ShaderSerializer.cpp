@@ -31,7 +31,7 @@ namespace Lightning
 		void ShaderSerializer::Deserialize(Foundation::IFile* file, Loading::ISerializeBuffer* buffer)
 		{
 			auto device = Renderer::Instance()->GetDevice();
-			mShader = device->CreateShader(mType, mPath, buffer->GetBuffer(), mMacros);
+			mShader = device->CreateShader(mType, mPath.c_str(), buffer->GetBuffer(), &mMacros);
 		}
 
 		void ShaderSerializer::Dispose()

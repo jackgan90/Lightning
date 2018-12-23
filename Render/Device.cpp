@@ -58,7 +58,7 @@ namespace Lightning
 				IShaderCallback* mCallback;
 			};
 			ShaderMacros macros;
-			auto shader = ShaderCache::Instance()->GetShader(type, path, macros);
+			auto shader = ShaderCache::Instance()->GetShader(type, path, &macros);
 			if (shader)
 			{
 				if (callback)

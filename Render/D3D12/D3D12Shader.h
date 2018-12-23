@@ -6,7 +6,7 @@
 #include "Container.h"
 #include "D3D12ConstantBufferManager.h"
 #include "D3D12DescriptorHeapManager.h"
-#include "IShader.h"
+#include "Shader.h"
 
 namespace Lightning
 {
@@ -38,15 +38,13 @@ namespace Lightning
 		public:
 			friend class D3D12Device;
 			friend class D3D12ShaderManager;
-			D3D12Shader(ID3D12Device* device, ShaderType type, const std::string& name, const std::string& entry, const char* const shaderSource);
-			~D3D12Shader()override;
-			const ShaderMacros& GetMacros()const override;
-			//bool Compile(const Foundation::SharedFilePtr& file, const ShaderDefine& define)override;
-			//const std::string GetCompileErrorLog()const override;
-			std::size_t GetParameterCount()const override;
-			bool SetParameter(const IShaderParameter* parameter) override;
-			void Compile()override;
-			void GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount)override;
+			D3D12Shader(ID3D12Device* device, ShaderType type, const std::string& name, const char* const shaderSource);
+			INTERFACECALL ~D3D12Shader()override;
+			const IShaderMacros* INTERFACECALL GetMacros()const override;
+			std::size_t INTERFACECALL GetParameterCount()const override;
+			bool INTERFACECALL SetParameter(const IShaderParameter* parameter) override;
+			void INTERFACECALL Compile()override;
+			void INTERFACECALL GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount)override;
 			void* GetByteCodeBuffer()const;
 			SIZE_T GetByteCodeBufferSize()const;
 			const Container::Vector<D3D12_ROOT_PARAMETER>& GetRootParameters()const;

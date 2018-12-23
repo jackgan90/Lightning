@@ -29,6 +29,6 @@ namespace Lightning
 		//queue won't be cleared until next time the renderer renders to the same swap chain,which ensures the 
 		//render resource validation during this frame(render resources won't be deleted because a render node
 		//holds all shared_ptr referring to them).
-		using RenderQueue = Container::Vector<RenderNode>;
+		using RenderQueue = Foundation::Container::Vector<RenderNode>;
 	}
 }

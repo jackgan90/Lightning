@@ -10,7 +10,6 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::Container;
 		using Loading::ISerializeBuffer;
 		//Avoid using template in cross module interfaces
 		struct IShaderCallback
@@ -30,7 +29,8 @@ namespace Lightning
 			virtual ~IDevice() = default;
 			virtual IVertexBuffer* CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor) = 0;
 			virtual IIndexBuffer* CreateIndexBuffer(std::uint32_t bufferSize, IndexType type) = 0;
-			virtual IShader* CreateShader(ShaderType type, const std::string& shaderName, const char* const shaderSource, const ShaderMacros& macros) = 0;
+			virtual IShader* CreateShader(ShaderType type, const char* shaderName, 
+				const char* const shaderSource, const IShaderMacros* macros) = 0;
 			virtual void CreateShaderFromFile(ShaderType type, const char* const path, IShaderCallback* callback) = 0;
 			virtual ITexture* CreateTexture(const TextureDescriptor& descriptor, ISerializeBuffer* buffer) = 0;
 			virtual void CreateTextureFromFile(const char* const path, ITextureCallback* callback) = 0;
