@@ -132,8 +132,6 @@ namespace Lightning
 		class IShader : public HashableObject, public Plugins::IRefObject
 		{
 		public:
-			virtual std::string GetEntryPoint()const = 0; 
-			virtual void SetEntryPoint(const std::string& entryPoint) = 0;
 			virtual ShaderType GetType()const = 0;
 			virtual void DefineMacros(const ShaderMacros& macros) = 0;
 			virtual const ShaderMacros& GetMacros()const = 0;
@@ -152,9 +150,7 @@ namespace Lightning
 			static size_t Hash(const ShaderType& type, const std::string& shaderName, const ShaderMacros& macros);
 			Shader(ShaderType type, const std::string& name, const std::string& entryPoint, const char* const source);
 			~Shader()override;
-			void SetEntryPoint(const std::string& entryPoint)override;
 			void DefineMacros(const ShaderMacros& define)override;
-			std::string GetEntryPoint()const override { return mEntryPoint; }
 			ShaderType GetType()const override;
 			const char* const GetSource()const override;
 			std::string GetName()const override;
@@ -163,7 +159,6 @@ namespace Lightning
 			size_t CalculateHashInternal()override;
 			ShaderType mType;
 			std::string mName;
-			std::string mEntryPoint;
 			const char* const mSource;
 			ShaderMacros mMacros;
 			int mShaderModelMajorVersion;

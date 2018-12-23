@@ -9,18 +9,13 @@ namespace Lightning
 		{
 			std::size_t seed = 0;
 			boost::hash_combine(seed, shaderName);
-			auto& macros = shaderMacros.GetAllMacros();
-			for (auto it = macros.begin(); it != macros.end(); ++it)
-			{
-				boost::hash_combine(seed, it->first);
-				boost::hash_combine(seed, it->second);
-			}
+			boost::hash_combine(seed, shaderMacros.GetHash());
 			boost::hash_combine(seed, type);
 			return seed;
 		}
 		
 		Shader::Shader(ShaderType type, const std::string& name, const std::string& entryPoint, const char* const source):
-			mType(type), mName(name), mEntryPoint(entryPoint), mSource(source)
+			mType(type), mName(name), mSource(source)
 		{
 
 		}
@@ -33,15 +28,6 @@ namespace Lightning
 		size_t Shader::CalculateHashInternal()
 		{
 			return Hash(GetType(), GetName(), GetMacros());
-		}
-
-		void Shader::SetEntryPoint(const std::string& entryPoint)
-		{
-			//TODO recompile
-			bool changed = mEntryPoint != entryPoint;
-			mEntryPoint = entryPoint;
-			if (changed)
-				SetHashDirty();
 		}
 
 		void Shader::DefineMacros(const ShaderMacros& define)

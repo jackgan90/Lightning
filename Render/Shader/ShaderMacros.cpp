@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <boost/functional/hash.hpp>
 #include "ShaderMacros.h"
 
 namespace Lightning
@@ -70,7 +71,7 @@ namespace Lightning
 		}
 
 
-		bool ShaderMacros::HasMacro(const std::string& macroName)const
+		bool ShaderMacros::HasMacro(const char* macroName)const
 		{
 			return mMacros.find(macroName) != mMacros.end();
 		}
@@ -81,32 +82,55 @@ namespace Lightning
 		}
 
 
-		const std::string ShaderMacros::GetMacroValue(const std::string& macroName)const
+		const char* ShaderMacros::GetMacroValue(const char* macroName)const
 		{
 			auto it = mMacros.find(macroName);
-			return it == mMacros.end() ? "" : it->second;
+			return it == mMacros.end() ? "" : it->second.c_str();
 		}
 
-		void ShaderMacros::Define(const std::string& macroName, const std::string& macroValue)
+		void ShaderMacros::Define(const char* macroName, const char* macroValue)
 		{
-			if(macroName.length())
+			if(macroName)
 				mMacros[macroName] = macroValue;
 		}
 
-		const MacroContainer& ShaderMacros::GetAllMacros()const
+		void ShaderMacros::Undefine(const char* macroName)
 		{
-			return mMacros;
+			mMacros.erase(macroName);
 		}
 
-		std::string ShaderMacros::GetMacroString()const
+		void ShaderMacros::GetAllMacros(MacroPair** pairs)const
 		{
-			std::string str;
+			auto macroArray = *pairs;
+			auto i = 0;
+			for (auto it = mMacros.cbegin(); it != mMacros.cend();++it, ++i)
+			{
+				macroArray[i].name = it->first.c_str();
+				macroArray[i].value = it->second.c_str();
+			}
+		}
+
+		std::size_t ShaderMacros::GetHash()const
+		{
+			std::size_t seed = 0x43d6799;
+			for (auto it = mMacros.begin(); it != mMacros.end(); ++it)
+			{
+				boost::hash_combine(seed, it->first);
+				boost::hash_combine(seed, it->second);
+			}
+			return seed;
+		}
+
+		const char* ShaderMacros::GetMacroString()const
+		{
+			static std::string str;
+			str.clear();
 			for (auto it = mMacros.cbegin(); it != mMacros.cend();++it)
 			{
 				str += it->first + " " + it->second + '\n';
 			}
 
-			return str;
+			return str.c_str();
 		}
 	}
 }

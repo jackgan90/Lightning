@@ -284,12 +284,13 @@ namespace Lightning
 			if (macroCount)
 			{
 				pMacros = g_RenderAllocator.Allocate<D3D_SHADER_MACRO>(macroCount + 1);
+				auto macroPairs = g_RenderAllocator.Allocate<MacroPair>(macroCount);
 				std::memset(&pMacros[macroCount], 0, sizeof(D3D_SHADER_MACRO));
-				auto macros = mMacros.GetAllMacros();
+				mMacros.GetAllMacros(&macroPairs);
 				auto idx = 0;
-				for (auto it = macros.begin(); it != macros.end(); ++it,++idx)
+				for (auto i = 0;i < macroCount; ++i,++idx)
 				{
-					const char* name = it->first.c_str();
+					auto name = macroPairs[i].name;
 					auto nameSize = std::strlen(name) + 1;
 					pMacros[idx].Name = g_RenderAllocator.Allocate<const char>(nameSize);
 #ifdef _MSC_VER
@@ -297,7 +298,7 @@ namespace Lightning
 #else
 					std::strcpy(const_cast<char*>(pMacros[idx].Name), name);
 #endif
-					const char* definition = it->second.c_str();
+					auto definition = macroPairs[i].value;
 					auto definitionSize = std::strlen(definition) + 1;
 					pMacros[idx].Definition = g_RenderAllocator.Allocate<const char>(definitionSize);
 #ifdef _MSC_VER
