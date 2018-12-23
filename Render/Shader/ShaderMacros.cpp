@@ -11,11 +11,6 @@ namespace Lightning
 
 		}
 
-		ShaderMacros::ShaderMacros(const MacroContainer& map)
-		{
-			mMacros = map;
-		}
-
 		bool ShaderMacros::operator==(const ShaderMacros& define)const
 		{
 			if (mMacros.size() != define.mMacros.size())
