@@ -53,6 +53,8 @@ set(TYPES_HEADERS	Types/Color.h
 set(SHADER_HEADERS	Shader/IShader.h
 					Shader/Shader.h
 					Shader/IShaderMacros.h
+					Shader/IShaderParameter.h
+					Shader/ShaderParameter.h
 					Shader/ShaderMacros.h)
 set(SHADER_SOURCES	Shader/ShaderMacros.cpp
 					Shader/Shader.cpp)

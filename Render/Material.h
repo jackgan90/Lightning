@@ -4,6 +4,7 @@
 #include "Semantics.h"
 #include "IMaterial.h"
 #include "RefObject.h"
+#include "ShaderParameter.h"
 
 namespace Lightning
 {

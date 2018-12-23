@@ -10,7 +10,7 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::Math::Transform;
+		using namespace Foundation::Math;
 		struct RenderNode
 		{
 			Geometry geometry;	//vb ib 

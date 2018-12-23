@@ -1,6 +1,7 @@
 #include "ForwardRenderPass.h"
 #include "Renderer.h"
 #include "FrameMemoryAllocator.h"
+#include "ShaderParameter.h"
 #include "tbb/flow_graph.h"
 #include "tbb/parallel_for.h"
 

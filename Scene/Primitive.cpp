@@ -8,6 +8,7 @@
 #include "Primitive.h"
 #include "IPluginManager.h"
 #include "IRenderPlugin.h"
+#include "ShaderParameter.h"
 
 namespace Lightning
 {
