@@ -17,9 +17,9 @@ namespace Lightning
 
 		extern FrameMemoryAllocator g_RenderAllocator;
 
-		D3D12Shader::D3D12Shader(ID3D12Device* device, ShaderType type, const std::string& name, const char* const shaderSource):
+		D3D12Shader::D3D12Shader(D3D_SHADER_MODEL shaderModel, ShaderType type, const std::string& name, const char* const shaderSource):
 			Shader(type, name, shaderSource)
-			, mTotalConstantBufferSize(0)
+			, mShaderModel(shaderModel), mTotalConstantBufferSize(0)
 		{
 			assert(shaderSource);
 			CompileImpl();
@@ -275,6 +275,36 @@ namespace Lightning
 			}
 		}
 
+		void D3D12Shader::GetShaderModelString(char* buf)
+		{
+			std::stringstream ss;
+			if (ShaderType::VERTEX == mType)
+				ss << "vs_";
+			else if (ShaderType::FRAGMENT == mType)
+				ss << "ps_";
+			else if (ShaderType::GEOMETRY == mType)
+				ss << "gs_";
+			else if (ShaderType::TESSELATION_CONTROL == mType)
+				ss << "hs_";
+			else if (ShaderType::TESSELATION_EVALUATION == mType)
+				ss << "ds_";
+
+			if (D3D_SHADER_MODEL_5_1 == mShaderModel)
+				ss << "5_1";
+			if (D3D_SHADER_MODEL_6_0 == mShaderModel)
+				ss << "5_1";
+			if (D3D_SHADER_MODEL_6_1 == mShaderModel)
+				ss << "5_1";
+			if (D3D_SHADER_MODEL_6_2 == mShaderModel)
+				ss << "5_1";
+
+#ifdef _MSC_VER
+			strcpy_s(buf, ss.str().length() + 1, ss.str().c_str());
+#else
+			std::strcpy(buf, ss.str().c_str());
+#endif
+		}
+
 
 
 		void D3D12Shader::CompileImpl()
@@ -318,9 +348,8 @@ namespace Lightning
 			UINT flags2 = 0;
 			ComPtr<ID3DBlob> errorLog;
 			char shaderModel[32];
-			mShaderModelMajorVersion = DEFAULT_SHADER_MODEL_MAJOR_VERSION;
-			mShaderModelMinorVersion = DEFAULT_SHADER_MODEL_MINOR_VERSION;
-			GetShaderModelString(shaderModel, mType, DEFAULT_SHADER_MODEL_MAJOR_VERSION, DEFAULT_SHADER_MODEL_MINOR_VERSION);
+			
+			GetShaderModelString(shaderModel);
 			HRESULT hr = ::D3DCompile(mSource, static_cast<SIZE_T>(strlen(mSource) + 1), nullptr, pMacros, nullptr, DEFAULT_SHADER_ENTRY,
 				shaderModel, flags1, flags2, &mByteCode, &errorLog);
 			if (FAILED(hr))

@@ -17,15 +17,12 @@ namespace Lightning
 			ShaderType INTERFACECALL GetType()const override;
 			const char* const INTERFACECALL GetSource()const override;
 			const char* INTERFACECALL GetName()const override;
-			void INTERFACECALL GetShaderModelVersion(int& major, int& minor)override;
 			std::size_t INTERFACECALL GetHash()const override;
 		protected:
 			ShaderType mType;
 			std::string mName;
 			const char* const mSource;
 			ShaderMacros mMacros;
-			int mShaderModelMajorVersion;
-			int mShaderModelMinorVersion;
 			REF_OBJECT_OVERRIDE(Shader)
 		};
 	}

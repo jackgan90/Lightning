@@ -75,6 +75,10 @@ namespace Lightning
 			:Device()
 		{
 			CreateNativeDevice(factory);
+			D3D12_FEATURE_DATA_SHADER_MODEL featureShaderModel;
+			featureShaderModel.HighestShaderModel = D3D_SHADER_MODEL_6_2;
+			auto res = CheckFeatureSupport(D3D12_FEATURE_SHADER_MODEL, &featureShaderModel, sizeof(featureShaderModel));
+			mHighestShaderModel = featureShaderModel.HighestShaderModel;
 			D3D12_COMMAND_QUEUE_DESC desc = {};
 			//should create first default pipeline state
 			mDefaultShaders[ShaderType::VERTEX] = CreateShader(ShaderType::VERTEX, "[Built-in]default.vs", DEFAULT_VS_SOURCE, nullptr);
@@ -138,7 +142,7 @@ namespace Lightning
 		IShader* D3D12Device::CreateShader(ShaderType type, const char* shaderName, 
 			const char* const shaderSource, const IShaderMacros* macros)
 		{
-			return NEW_REF_OBJ(D3D12Shader, mDevice.Get(), type, shaderName, shaderSource);
+			return NEW_REF_OBJ(D3D12Shader, mHighestShaderModel, type, shaderName, shaderSource);
 		}
 
 		ITexture* D3D12Device::CreateTexture(const TextureDescriptor& descriptor, ISerializeBuffer* buffer)

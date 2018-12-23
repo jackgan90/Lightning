@@ -80,6 +80,7 @@ namespace Lightning
 			void CreateNativeDevice(IDXGIFactory4* factory);
 			ID3D12GraphicsCommandList* GetGraphicsCommandList();
 			ComPtr<ID3D12Device> mDevice;
+			D3D_SHADER_MODEL mHighestShaderModel;
 		};
 	}
 }

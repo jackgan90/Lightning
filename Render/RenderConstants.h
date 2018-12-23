@@ -33,8 +33,6 @@ namespace Lightning
 		};
 		ENABLE_ENUM_BITMASK_OPERATORS(DepthStencilClearFlags)
 
-		constexpr int DEFAULT_SHADER_MODEL_MAJOR_VERSION = 5;
-		constexpr int DEFAULT_SHADER_MODEL_MINOR_VERSION = 0;
 		constexpr std::uint8_t MAX_GEOMETRY_BUFFER_COUNT = 8;
 		constexpr std::uint8_t RENDER_FRAME_COUNT = 3;
 		constexpr std::uint8_t MAX_RENDER_TARGET_COUNT = 8;

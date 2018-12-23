@@ -137,7 +137,6 @@ namespace Lightning
 			virtual const char* INTERFACECALL GetName()const = 0;
 			virtual bool INTERFACECALL SetParameter(const IShaderParameter* parameter) = 0;
 			virtual const char* const INTERFACECALL GetSource()const = 0;
-			virtual void INTERFACECALL GetShaderModelVersion(int& major, int& minor) = 0;
 			virtual void INTERFACECALL GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount) = 0;
 			virtual std::size_t INTERFACECALL GetHash()const = 0;
 		};

@@ -51,11 +51,5 @@ namespace Lightning
 			return mName.c_str();
 		}
 
-		void Shader::GetShaderModelVersion(int& major, int& minor)
-		{
-			major = mShaderModelMajorVersion;
-			minor = mShaderModelMinorVersion;
-		}
-
 	}
 }

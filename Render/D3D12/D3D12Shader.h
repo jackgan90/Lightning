@@ -38,7 +38,7 @@ namespace Lightning
 		public:
 			friend class D3D12Device;
 			friend class D3D12ShaderManager;
-			D3D12Shader(ID3D12Device* device, ShaderType type, const std::string& name, const char* const shaderSource);
+			D3D12Shader(D3D_SHADER_MODEL shaderModel, ShaderType type, const std::string& name, const char* const shaderSource);
 			INTERFACECALL ~D3D12Shader()override;
 			const IShaderMacros* INTERFACECALL GetMacros()const override;
 			std::size_t INTERFACECALL GetParameterCount()const override;
@@ -75,6 +75,7 @@ namespace Lightning
 				std::uint8_t *mConstantBuffer;
 				std::size_t mBufferSize;
 			};
+			void GetShaderModelString(char* buf);
 			void CompileImpl();
 			D3D12_SHADER_VISIBILITY GetParameterVisibility()const;
 			void UpdateRootBoundResources();
@@ -91,6 +92,7 @@ namespace Lightning
 			//buffer used to cache constant buffer value
 			Foundation::ThreadLocalSingleton<ShaderResourceProxy> mResourceProxy;
 			Container::Vector<RenderSemantics> mUniformSemantics;
+			D3D_SHADER_MODEL mShaderModel;
 		};
 	}
 }
