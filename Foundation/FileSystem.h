@@ -15,10 +15,10 @@ namespace Lightning
 		{
 		public:
 			GeneralFileSystem();
-			~GeneralFileSystem()override;
-			IFile* FindFile(const char* fileName, FileAccess bitMask)override;
-			bool SetRoot(const char* rootPath)override;
-			const char* GetRoot() const override{ return mRoot.string().c_str(); }
+			INTERFACECALL ~GeneralFileSystem()override;
+			IFile* INTERFACECALL FindFile(const char* fileName, FileAccess bitMask)override;
+			bool INTERFACECALL SetRoot(const char* rootPath)override;
+			const char* INTERFACECALL GetRoot() const override;
 		protected:
 			boost::filesystem::path mRoot;
 			Container::UnorderedMap<std::string, IFile*> mCachedFiles;

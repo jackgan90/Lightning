@@ -201,5 +201,10 @@ namespace Lightning
 			return true;
 		}
 
+		const char* GeneralFileSystem::GetRoot() const
+		{
+			return mRoot.string().c_str();
+		}
+
 	}
 }

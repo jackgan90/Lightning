@@ -7,11 +7,10 @@ namespace Lightning
 {
 	namespace Loading
 	{
-		class ISerializeBuffer : public Plugins::IRefObject
+		struct ISerializeBuffer : Plugins::IRefObject
 		{
-		public:
-			virtual char* GetBuffer() = 0;
-			virtual std::size_t GetBufferSize()const = 0;
+			virtual char* INTERFACECALL GetBuffer() = 0;
+			virtual std::size_t INTERFACECALL GetBufferSize()const = 0;
 		};
 	}
 }

@@ -72,7 +72,7 @@ namespace Lightning
 				return true;
 			}
 
-			~FreeImageBuffer()
+			INTERFACECALL ~FreeImageBuffer()
 			{
 				if (mBitmap)
 				{
@@ -84,12 +84,12 @@ namespace Lightning
 				}
 			}
 
-			char* GetBuffer()override
+			char* INTERFACECALL GetBuffer()override
 			{
 				return reinterpret_cast<char*>(FreeImage_GetBits(mBitmap));
 			}
 
-			std::size_t GetBufferSize()const
+			std::size_t INTERFACECALL GetBufferSize()const override
 			{
 				return FreeImage_GetMemorySize(mBitmap);
 			}

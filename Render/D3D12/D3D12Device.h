@@ -25,12 +25,12 @@ namespace Lightning
 		public:
 			friend class D3D12Renderer;
 			D3D12Device(IDXGIFactory4* factory);
-			~D3D12Device()override;
-			IVertexBuffer* CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor)override;
-			IIndexBuffer* CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;
-			IShader* CreateShader(ShaderType type, const char* shaderName, 
+			INTERFACECALL ~D3D12Device()override;
+			IVertexBuffer* INTERFACECALL CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor)override;
+			IIndexBuffer* INTERFACECALL CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;
+			IShader* INTERFACECALL CreateShader(ShaderType type, const char* shaderName, 
 				const char* const shaderSource, const IShaderMacros* macros)override;
-			ITexture* CreateTexture(const TextureDescriptor& descriptor, ISerializeBuffer* buffer)override;
+			ITexture* INTERFACECALL CreateTexture(const TextureDescriptor& descriptor, ISerializeBuffer* buffer)override;
 			//native device method wrapper start
 			D3D12StatefulResourcePtr CreateCommittedResource(
 				const D3D12_HEAP_PROPERTIES *pHeapProperties,

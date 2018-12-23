@@ -1,18 +1,18 @@
 #pragma once
 #include <cstdint>
+#include "Portable.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		class IRenderFence
+		struct IRenderFence
 		{
-		public:
-			virtual ~IRenderFence(){}
-			virtual void SetTargetValue(std::uint64_t value) = 0;
-			virtual std::uint64_t GetTargetValue() = 0;
-			virtual std::uint64_t GetCompletedValue() = 0;
-			virtual void WaitForTarget() = 0;
+			virtual INTERFACECALL ~IRenderFence() = default;
+			virtual void INTERFACECALL SetTargetValue(std::uint64_t value) = 0;
+			virtual std::uint64_t INTERFACECALL GetTargetValue() = 0;
+			virtual std::uint64_t INTERFACECALL GetCompletedValue() = 0;
+			virtual void INTERFACECALL WaitForTarget() = 0;
 		};
 	}
 }

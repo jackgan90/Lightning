@@ -26,15 +26,15 @@ namespace Lightning
 
 		struct IDevice
 		{
-			virtual ~IDevice() = default;
-			virtual IVertexBuffer* CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor) = 0;
-			virtual IIndexBuffer* CreateIndexBuffer(std::uint32_t bufferSize, IndexType type) = 0;
-			virtual IShader* CreateShader(ShaderType type, const char* shaderName, 
+			virtual INTERFACECALL ~IDevice() = default;
+			virtual IVertexBuffer* INTERFACECALL CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor) = 0;
+			virtual IIndexBuffer* INTERFACECALL CreateIndexBuffer(std::uint32_t bufferSize, IndexType type) = 0;
+			virtual IShader* INTERFACECALL CreateShader(ShaderType type, const char* shaderName, 
 				const char* const shaderSource, const IShaderMacros* macros) = 0;
-			virtual void CreateShaderFromFile(ShaderType type, const char* const path, IShaderCallback* callback) = 0;
-			virtual ITexture* CreateTexture(const TextureDescriptor& descriptor, ISerializeBuffer* buffer) = 0;
-			virtual void CreateTextureFromFile(const char* const path, ITextureCallback* callback) = 0;
-			virtual IShader* GetDefaultShader(ShaderType type) = 0;
+			virtual void INTERFACECALL CreateShaderFromFile(ShaderType type, const char* const path, IShaderCallback* callback) = 0;
+			virtual ITexture* INTERFACECALL CreateTexture(const TextureDescriptor& descriptor, ISerializeBuffer* buffer) = 0;
+			virtual void INTERFACECALL CreateTextureFromFile(const char* const path, ITextureCallback* callback) = 0;
+			virtual IShader* INTERFACECALL GetDefaultShader(ShaderType type) = 0;
 		};
 	}
 }
