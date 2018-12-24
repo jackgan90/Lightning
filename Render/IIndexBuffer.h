@@ -1,26 +1,15 @@
 #pragma once
-#include <memory>
-#include "GPUBuffer.h"
+#include "IGPUBuffer.h"
+#include "RenderConstants.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		enum class IndexType
+		struct IIndexBuffer : IGPUBuffer
 		{
-			UINT16,
-			UINT32,
-		};
-
-		class IIndexBuffer : public GPUBuffer
-		{
-		public:
-			IIndexBuffer(std::uint32_t bufferSize, IndexType type) : GPUBuffer(bufferSize), mType(type){}
-			IndexType GetIndexType()const { return mType; }
-			GPUBufferType GetType()const override { return GPUBufferType::INDEX; }
-			std::size_t GetIndexCount()const { return mType == IndexType::UINT16 ? mBufferSize / 2 : mBufferSize / 4; }
-		protected:
-			IndexType mType;
+			virtual IndexType GetIndexType()const = 0;
+			virtual std::size_t GetIndexCount()const = 0;
 		};
 	}
 }

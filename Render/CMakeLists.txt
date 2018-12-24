@@ -21,7 +21,6 @@ set(HEADERS IDevice.h
 			RenderException.h
 			RendererFactory.h
 			IGPUBuffer.h
-			GPUBuffer.h
 			RenderConstants.h
 			Geometry.h
 			IMaterial.h
@@ -38,7 +37,6 @@ set(SOURCES Renderer.cpp
 			IndexBuffer.cpp
 			RendererHelper.cpp
 			RendererFactory.cpp
-			GPUBuffer.cpp
 			Geometry.cpp
 			Material.cpp
 			RenderPass.cpp

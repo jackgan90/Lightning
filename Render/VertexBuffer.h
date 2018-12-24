@@ -3,7 +3,6 @@
 #include <memory>
 #include "Container.h"
 #include "IVertexBuffer.h"
-#include "GPUBuffer.h"
 
 namespace Lightning
 {
@@ -13,17 +12,20 @@ namespace Lightning
 		class VertexBuffer : public IVertexBuffer
 		{
 		public:
-			const VertexComponent& GetVertexComponent(size_t index)override;
-			~VertexBuffer()override;
+			VertexComponent GetVertexComponent(size_t index)const override;
 			//get vertex attribute count associate with this vertex buffer
-			std::size_t GetVertexComponentCount()override;
+			std::size_t GetVertexComponentCount()const override;
 			//get vertex size in bytes
 			std::uint32_t GetVertexSize()const override;
+			std::uint32_t GetBufferSize()const override;
+			//get the buffer type
+			GPUBufferType GetType()const override { return GPUBufferType::VERTEX; }
 		protected:
 			VertexBuffer(uint32_t bufferSize, const VertexDescriptor& descriptor);
 			void CalculateVertexSize();
 			VertexDescriptor mVertexDescriptor;
 			std::uint32_t mVertexSize;
+			std::uint32_t mBufferSize;
 		};
 	}
 }

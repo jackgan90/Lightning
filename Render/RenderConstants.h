@@ -26,6 +26,18 @@ namespace Lightning
 			TRIANGLE_STRIP
 		};
 
+		enum class GPUBufferType
+		{
+			VERTEX,
+			INDEX,
+		};
+
+		enum class IndexType
+		{
+			UINT16,
+			UINT32,
+		};
+
 		enum class DepthStencilClearFlags : std::uint8_t
 		{
 			CLEAR_DEPTH = 0x01,

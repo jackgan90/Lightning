@@ -40,7 +40,7 @@ namespace Lightning
 		void GenerateSceneObjects(ISceneManager* sceneMgr, Plugins::IScenePlugin* scenePlugin)
 		{
 			auto scene = sceneMgr->GetForegroundScene();
-			
+			/*
 			auto cube = scenePlugin->CreateCube(1.0f, 1.0f, 1.0f);
 			Render::Color32 color;
 			color.r = 0;
@@ -63,11 +63,11 @@ namespace Lightning
 				Scene::IPrimitive* prim;
 			};
 			
-			device->CreateShaderFromFile(Render::ShaderType::VERTEX, "default.vs", new test(cube));
+			device->CreateShaderFromFile(Render::ShaderType::VERTEX, "default.vs", new test(cube));*/
 
 
 			//device->CreateShaderFromFile(Render::ShaderType::FRAGMENT, "texture_map.ps", new test(cube));
-			/*
+			
 			static std::random_device rd;
 			static std::mt19937 mt(rd());
 			static std::uniform_real_distribution<float> rDist(-2, 2);
@@ -107,7 +107,7 @@ namespace Lightning
 				p->SetWorldRotation(Transformer::RandomRotation());
 				scene->AddDrawable(p);
 				p->Release();
-			}*/
+			}
 		}
 		//For test only end
 

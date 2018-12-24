@@ -8,16 +8,8 @@ namespace Lightning
 {
 	namespace Render
 	{
-		enum class GPUBufferType
+		struct IGPUBuffer : Plugins::IRefObject
 		{
-			VERTEX,
-			INDEX,
-		};
-		
-
-		class IGPUBuffer : public Plugins::IRefObject
-		{
-		public:
 			//get internal data
 			virtual std::uint8_t* Lock(std::size_t start, std::size_t size) = 0;
 			//set internal buffer,no copy

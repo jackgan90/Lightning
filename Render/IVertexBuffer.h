@@ -1,7 +1,7 @@
 #pragma once
 #include <boost/functional/hash.hpp>
 #include "PlainObject.h"
-#include "GPUBuffer.h"
+#include "IGPUBuffer.h"
 #include "Semantics.h"
 
 namespace Lightning
@@ -37,16 +37,13 @@ namespace Lightning
 		};
 		static_assert(std::is_pod<VertexDescriptor>::value, "VertexDescriptor is not a POD type.");
 
-		class IVertexBuffer : public GPUBuffer
+		struct IVertexBuffer : IGPUBuffer
 		{
-		public:
-			IVertexBuffer(std::uint32_t bufferSize):GPUBuffer(bufferSize){}
-			virtual const VertexComponent& GetVertexComponent(size_t index) = 0;
-			//get vertex attribute count associate with this vertex buffer
-			virtual std::size_t GetVertexComponentCount() = 0;
+			virtual VertexComponent GetVertexComponent(size_t index)const = 0;
+			//get vertex component count associate with this vertex buffer
+			virtual std::size_t GetVertexComponentCount()const = 0;
 			//get vertex size in bytes
 			virtual std::uint32_t GetVertexSize()const = 0;
-			GPUBufferType GetType()const override { return GPUBufferType::VERTEX; }
 		};
 	}
 }
