@@ -6,7 +6,6 @@
 #include "ThreadLocalSingleton.h"
 #include "Container.h"
 #include "Device.h"
-#include "StackAllocator.h"
 #include "FileSystem.h"
 #include "D3D12Shader.h"
 #include "D3D12CommandEncoder.h"
@@ -18,7 +17,6 @@ namespace Lightning
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
-		using Foundation::StackAllocator;
 		using Foundation::Container;
 		class D3D12Device : public Device
 		{

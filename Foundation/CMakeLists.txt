@@ -1,10 +1,7 @@
 project(Foundation)
 message(STATUS "Configuring project Foundation")
 
-set(MEMORY_HEADERS	Memory/IMemoryAllocator.h
-					Memory/PoolAllocator.h
-					Memory/StackAllocator.h
-					Memory/MemoryPool.h)
+set(MEMORY_HEADERS	Memory/MemoryPool.h)
 
 set(MATH_HEADERS	Math/Common.h
 					Math/Vector.h
