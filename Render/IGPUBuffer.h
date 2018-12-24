@@ -1,8 +1,8 @@
 #pragma once
 #include <cstdint>
-#include <memory>
 #include "RenderConstants.h"
 #include "IRefObject.h"
+#include "Portable.h"
 
 namespace Lightning
 {
@@ -11,15 +11,15 @@ namespace Lightning
 		struct IGPUBuffer : Plugins::IRefObject
 		{
 			//get internal data
-			virtual std::uint8_t* Lock(std::size_t start, std::size_t size) = 0;
+			virtual std::uint8_t* INTERFACECALL Lock(std::size_t start, std::size_t size) = 0;
 			//set internal buffer,no copy
-			virtual void Unlock(std::size_t start, std::size_t size) = 0;
+			virtual void INTERFACECALL Unlock(std::size_t start, std::size_t size) = 0;
 			//commit the buffer to GPU
-			virtual void Commit() = 0;
+			virtual void INTERFACECALL Commit() = 0;
 			//get internal buffer size in bytes
-			virtual std::uint32_t GetBufferSize()const = 0;
+			virtual std::uint32_t INTERFACECALL GetBufferSize()const = 0;
 			//get the buffer type
-			virtual GPUBufferType GetType()const = 0;
+			virtual GPUBufferType INTERFACECALL GetType()const = 0;
 		};
 	}
 }

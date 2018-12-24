@@ -8,8 +8,8 @@ namespace Lightning
 	{
 		struct IIndexBuffer : IGPUBuffer
 		{
-			virtual IndexType GetIndexType()const = 0;
-			virtual std::size_t GetIndexCount()const = 0;
+			virtual IndexType INTERFACECALL GetIndexType()const = 0;
+			virtual std::size_t INTERFACECALL GetIndexCount()const = 0;
 		};
 	}
 }
