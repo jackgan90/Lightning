@@ -83,7 +83,7 @@ namespace Lightning
 			auto mgr = Loader::Instance();
 			auto fileSystem = foundation->GetFileSystem();
 			auto environment = foundation->GetEnvironment();
-			environment->SetLoaderIOThreadID(std::this_thread::get_id());
+			environment->InitLoaderIOThreadID();
 			LOG_INFO("LoaderMgr IO Thread start!");
 			while (mgr->mRunning)
 			{
