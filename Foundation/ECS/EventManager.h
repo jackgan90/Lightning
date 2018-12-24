@@ -1,18 +1,20 @@
 #pragma once
-#include "IEventManager.h"
 #include "Singleton.h"
 #include "Container.h"
+#include "IEvent.h"
 
 namespace Lightning
 {
 	namespace Foundation
 	{
-		class EventManager : public IEventManager, public Singleton<EventManager>
+		using EventSubscriber = std::function<void(const IEvent&)>;
+		using EventSubscriberID = std::uint64_t;
+		class EventManager : public Singleton<EventManager>
 		{
 		public:
-			EventSubscriberID Subscribe(EventType eventType, std::function<void(const IEvent&)> subscriber)override;
-			void Unsubscribe(EventSubscriberID subscriberID)override;
-			void RaiseEvent(const IEvent& event)override;
+			EventSubscriberID Subscribe(EventType eventType, EventSubscriber subscriber);
+			void Unsubscribe(EventSubscriberID subscriberID);
+			void RaiseEvent(const IEvent& event);
 		private:
 			friend class Singleton<EventManager>;
 			EventManager();

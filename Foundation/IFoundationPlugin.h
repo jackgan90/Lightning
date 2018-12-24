@@ -1,6 +1,5 @@
 #pragma once
 #include "Logger.h"
-#include "ECS/IEventManager.h"
 #include "IPlugin.h"
 #include "IFileSystem.h"
 #include "IConfigManager.h"
@@ -26,7 +25,6 @@ namespace Lightning
 		{
 			virtual void INTERFACECALL InitLogger(const char* name, Foundation::Logger* logger) = 0;
 			virtual void INTERFACECALL FinalizeLogger(Foundation::Logger* logger) = 0;
-			virtual Foundation::IEventManager* INTERFACECALL GetEventManager() = 0;
 			virtual Foundation::IFileSystem* INTERFACECALL GetFileSystem() = 0;
 			virtual Foundation::IConfigManager* INTERFACECALL GetConfigManager() = 0;
 			virtual Foundation::IEnvironment* INTERFACECALL GetEnvironment() = 0;

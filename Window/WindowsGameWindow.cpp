@@ -11,34 +11,30 @@ namespace Lightning
 				CREATESTRUCT* pCS = reinterpret_cast<CREATESTRUCT*>(lParam);
 				LPVOID pThis = pCS->lpCreateParams;
 				SetWindowLongPtr(hwnd, 0, reinterpret_cast<LONG_PTR>(pThis));
-				auto pWindow = reinterpret_cast<WindowsGameWindow*>(pThis);
-				pWindow->mHwnd = hwnd;
+				auto window = reinterpret_cast<WindowsGameWindow*>(pThis);
+				window->mHwnd = hwnd;
+				window->OnCreated();
 				return TRUE;
 			}
-			auto pWindow = reinterpret_cast<WindowsGameWindow*>(GetWindowLongPtrW(hwnd, 0));
+			auto window = reinterpret_cast<WindowsGameWindow*>(GetWindowLongPtrW(hwnd, 0));
 			switch (uMsg)
 			{
 			case WM_SIZE:
 			{
 				RECT rect;
 				::GetClientRect(hwnd, &rect);
-				WindowResizeEvent event(pWindow);
-				event.width = rect.right - rect.left;
-				event.height = rect.bottom - rect.top;
-				pWindow->mEventMgr->RaiseEvent(event);
+				auto width = rect.right - rect.left;
+				auto height = rect.bottom - rect.top;
+				window->OnResize(std::size_t(width), std::size_t(height));
 				break;
 			}
 			case WM_MOUSEWHEEL:
 			{
-				MouseWheelEvent event(pWindow);
-				event.is_vertical = true;
-				event.wheel_delta = GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA;
-				pWindow->mEventMgr->RaiseEvent(event);
+				window->OnMouseWheel(GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA, true);
 				break;
 			}
 			case WM_KEYDOWN:
 			{
-				KeyEvent event(pWindow);
 				std::size_t code{ 0 };
 				if (wParam >= 'a' && wParam <= 'z')
 					code = wParam - 'a' + VK_A;
@@ -70,15 +66,12 @@ namespace Lightning
 				{
 					code |= VK_SHIFTBUTTON;
 				}
-				event.code = static_cast<VirtualKeyCode>(code);
-				pWindow->mEventMgr->RaiseEvent(event);
+				auto keyCode = static_cast<VirtualKeyCode>(code);
+				window->OnKeyDown(keyCode);
 				break;
 			}
 			case WM_RBUTTONDOWN:
 			{
-				MouseDownEvent event(pWindow);
-				event.x = LOWORD(lParam);
-				event.y = HIWORD(lParam);
 				std::size_t pressedKey = VK_MOUSERBUTTON;
 				if (wParam & MK_CONTROL)
 					pressedKey |= VK_CTRL;
@@ -88,15 +81,12 @@ namespace Lightning
 					pressedKey |= VK_MOUSEMBUTTON;
 				if (wParam & MK_SHIFT)
 					pressedKey |= VK_SHIFTBUTTON;
-				event.pressedKey = static_cast<VirtualKeyCode>(pressedKey);
-				pWindow->mEventMgr->RaiseEvent(event);
+				auto keyCode = static_cast<VirtualKeyCode>(pressedKey);
+				window->OnMouseDown(LOWORD(lParam), HIWORD(lParam), keyCode);
 				break;
 			}
 			case WM_MOUSEMOVE:
 			{
-				MouseMoveEvent event(pWindow);
-				event.x = LOWORD(lParam);
-				event.y = HIWORD(lParam);
 				std::size_t pressedKey{ 0 };
 				if (wParam & MK_CONTROL)
 					pressedKey |= VK_CTRL;
@@ -108,8 +98,8 @@ namespace Lightning
 					pressedKey |= VK_MOUSERBUTTON;
 				if (wParam & MK_SHIFT)
 					pressedKey |= VK_SHIFTBUTTON;
-				event.pressedKey = static_cast<VirtualKeyCode>(pressedKey);
-				pWindow->mEventMgr->RaiseEvent(event);
+				auto keyCode = static_cast<VirtualKeyCode>(pressedKey);
+				window->OnMouseMove(LOWORD(lParam), HIWORD(lParam), keyCode);
 				break;
 			}
 			case WM_CREATE:
@@ -203,9 +193,7 @@ namespace Lightning
 				}
 				else
 				{
-					WindowDestroyedEvent event(this);
-					event.exitCode = msg.wParam;
-					mEventMgr->RaiseEvent(event);
+					OnDestroy(int(msg.wParam));
 				}
 			}
 			else
@@ -222,5 +210,6 @@ namespace Lightning
 			UpdateWindow(mHwnd);
 			return true;
 		}
+
 	}
 }

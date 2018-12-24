@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include "Portable.h"
 
 namespace Lightning
 {
@@ -8,8 +9,8 @@ namespace Lightning
 		using EventType = std::uint64_t;
 		struct IEvent
 		{
-			virtual ~IEvent() = default;
-			virtual EventType TypeIdentifier()const = 0;
+			virtual INTERFACECALL ~IEvent() = default;
+			virtual EventType INTERFACECALL TypeIdentifier()const = 0;
 		};
 	}
 }

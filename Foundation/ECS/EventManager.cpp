@@ -9,7 +9,7 @@ namespace Lightning
 
 		}
 
-		EventSubscriberID EventManager::Subscribe(EventType eventType, std::function<void(const IEvent&)> subscriber)
+		EventSubscriberID EventManager::Subscribe(EventType eventType, EventSubscriber subscriber)
 		{
 			auto id = ++mCurrentID;
 			mEventTypes[id] = eventType;

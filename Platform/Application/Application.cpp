@@ -133,7 +133,6 @@ namespace Lightning
 			windowPlugin = Plugins::GetPlugin<Plugins::IWindowPlugin>(Plugins::gPluginMgr, "Window");
 			renderPlugin = Plugins::GetPlugin<Plugins::IRenderPlugin>(Plugins::gPluginMgr, "Render");
 			scenePlugin = Plugins::GetPlugin<Plugins::IScenePlugin>(Plugins::gPluginMgr, "Scene");
-			mEventMgr = foundationPlugin->GetEventManager();
 			static tbb::task_scheduler_init init(tbb::task_scheduler_init::deferred);
 			auto threadCount = foundationPlugin->GetConfigManager()->GetConfig().ThreadCount;
 			if (threadCount == 0)
@@ -144,8 +143,9 @@ namespace Lightning
 			{
 				init.initialize(threadCount);
 			}
-			auto window = windowPlugin->NewWindow();
-			mRenderer = renderPlugin->CreateRenderer(window);
+			mWindow = windowPlugin->NewWindow();
+			mWindow->RegisterEventReceiver(this);
+			mRenderer = renderPlugin->CreateRenderer(mWindow);
 			mRenderer->Start();
 			//Create a simple scene here just for test
 			auto sceneMgr = scenePlugin->GetSceneManager();
@@ -159,38 +159,58 @@ namespace Lightning
 			//camera->RotateTowards(Render::Vector3f(0.0f, 1.0f, -1.0f));
 
 			//End of scene creation
-			RegisterWindowHandlers();
-			window->Show(true);
-			window->Release();
+			mWindow->Show(true);
 			LOG_INFO("Application start successfully!");
 		}
 
 		void Application::OnQuit(int exitCode)
 		{
+			mWindow->UnregisterEventReceiver(this);
+			mWindow->Release();
 			mRunning = false;
 			mExitCode = exitCode;
 			auto sceneMgr = Plugins::GetPlugin<Plugins::IScenePlugin>(Plugins::gPluginMgr, "Scene")->GetSceneManager();
 			sceneMgr->DestroyAllScenes();
 			mRenderer->ShutDown();
-			for (auto subscriberID : mSubscriberIDs)
-			{
-				mEventMgr->Unsubscribe(subscriberID);
-			}
 			LOG_INFO("Application quit.");
 		}
 
-
-		void Application::RegisterWindowHandlers()
+		void Application::OnWindowCreated(IWindow* window)
 		{
-			auto subscriberId = WINDOW_MSG_CLASS_HANDLER(mEventMgr, WINDOW_IDLE_EVENT, OnWindowIdle);
-			mSubscriberIDs.insert(subscriberId);
-			subscriberId = mEventMgr->Subscribe(WINDOW_DESTROYED_EVENT, [this](const Foundation::IEvent& event) {
-				OnQuit(int(static_cast<const WindowDestroyedEvent&>(event).exitCode));
-			});
-			mSubscriberIDs.insert(subscriberId);
+
 		}
 
-		void Application::OnWindowIdle(const Foundation::IEvent& event)
+		void Application::OnWindowDestroy(IWindow* window, int exitCode)
+		{
+			OnQuit(mExitCode);
+		}
+
+		void Application::OnWindowIdle(IWindow* window)
+		{
+
+		}
+
+		void Application::OnWindowResize(IWindow* window, std::size_t width, std::size_t height)
+		{
+
+		}
+
+		void Application::OnWindowMouseWheel(IWindow* window, int delta, bool isVertical)
+		{
+
+		}
+
+		void Application::OnWindowKeyDown(IWindow* window, VirtualKeyCode keyCode)
+		{
+
+		}
+
+		void Application::OnWindowMouseDown(IWindow* window, VirtualKeyCode keyCode, std::size_t x, std::size_t y)
+		{
+
+		}
+
+		void Application::OnWindowMouseMove(IWindow* window, VirtualKeyCode keyCode, std::size_t x, std::size_t y)
 		{
 
 		}

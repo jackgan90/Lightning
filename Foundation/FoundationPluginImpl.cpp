@@ -1,6 +1,5 @@
 #include <memory>
 #include "IFoundationPlugin.h"
-#include "ECS/EventManager.h"
 #include "FileSystemFactory.h"
 #include "IPluginManager.h"
 #include "ConfigManager.h"
@@ -34,7 +33,6 @@ namespace Lightning
 			void INTERFACECALL Update()override;
 			void INTERFACECALL InitLogger(const char* name, Foundation::Logger* logger)override;
 			void INTERFACECALL FinalizeLogger(Foundation::Logger* logger)override;
-			Foundation::IEventManager* INTERFACECALL GetEventManager()override;
 			Foundation::IFileSystem* INTERFACECALL GetFileSystem()override;
 			Foundation::IConfigManager* INTERFACECALL GetConfigManager()override;
 			Foundation::IEnvironment* INTERFACECALL GetEnvironment()override;
@@ -77,11 +75,6 @@ namespace Lightning
 #else
 			logger->Init(name, mFileSink);
 #endif
-		}
-
-		Foundation::IEventManager* FoundationPluginImpl::GetEventManager()
-		{
-			return Foundation::EventManager::Instance();
 		}
 
 		Foundation::IFileSystem* FoundationPluginImpl::GetFileSystem()

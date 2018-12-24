@@ -2,6 +2,7 @@ project(Platform)
 message(STATUS "Configuring project Platform")
 
 set(APPLICATION_SUBSYSTEM_DIR "Application")
+set(EVENT_DIR ${CMAKE_SOURCE_DIR}/Foundation/ECS)
 
 set(PLUGIN_HEADERS	IPlatformPlugin.h)
 set(PLUGIN_SOURCES	PlatformPluginImpl.cpp)
@@ -11,6 +12,9 @@ set(APPLICATION_HEADERS		${APPLICATION_SUBSYSTEM_DIR}/IApplication.h
 							${APPLICATION_SUBSYSTEM_DIR}/ApplicationFactory.h)
 set(APPLICATION_SOURCES		${APPLICATION_SUBSYSTEM_DIR}/Application.cpp
 							${APPLICATION_SUBSYSTEM_DIR}/ApplicationFactory.cpp)
+
+set(EVENT_HEADERS			${EVENT_DIR}/EventManager.h)			
+set(EVENT_SOURCES			${EVENT_DIR}/EventManager.cpp)
 
 
 if(WIN32)
@@ -37,8 +41,12 @@ source_group("Plugin" FILES
 			${PLUGIN_HEADERS}
 			${PLUGIN_SOURCES})
 
-list(APPEND HEADERS ${APPLICATION_HEADERS} ${PLUGIN_HEADERS})
-list(APPEND SOURCES ${APPLICATION_SOURCES} ${PLUGIN_SOURCES})
+source_group("Events" FILES
+			${EVENT_HEADERS}
+			${EVENT_SOURCES})
+
+list(APPEND HEADERS ${APPLICATION_HEADERS} ${PLUGIN_HEADERS} ${EVENT_HEADERS})
+list(APPEND SOURCES ${APPLICATION_SOURCES} ${PLUGIN_SOURCES} ${EVENT_SOURCES})
 
 define_dll_export_macro(PLATFORM)
 

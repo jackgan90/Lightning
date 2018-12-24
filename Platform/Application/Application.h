@@ -1,19 +1,18 @@
 #pragma once
 #include <memory>
-#include "WindowEvents.h"
 #include "IWindow.h"
 #include "IApplication.h"
 #include "IRenderer.h"
-#include "ECS/IEventManager.h"
-#include "Container.h"
 
 namespace Lightning
 {
 	namespace App
 	{
 		using Render::IRenderer;
-		
-		class Application : public IApplication
+		using Window::IWindow;
+		using Window::IWindowEventReceiver;
+		using Window::VirtualKeyCode;
+		class Application : public IApplication, public IWindowEventReceiver
 		{
 		public:
 			Application();
@@ -22,16 +21,24 @@ namespace Lightning
 			void INTERFACECALL Start()override;
 			bool INTERFACECALL IsRunning() override{ return mRunning; }
 			int INTERFACECALL GetExitCode()const override{ return mExitCode; }
+
+			//IWindowEventReceiver
+			void INTERFACECALL OnWindowCreated(IWindow* window)override;
+			void INTERFACECALL OnWindowDestroy(IWindow* window, int exitCode)override;
+			void INTERFACECALL OnWindowIdle(IWindow* window)override;
+			void INTERFACECALL OnWindowResize(IWindow* window, std::size_t width, std::size_t height)override;
+			void INTERFACECALL OnWindowMouseWheel(IWindow* window, int delta, bool isVertical)override;
+			void INTERFACECALL OnWindowKeyDown(IWindow* window, VirtualKeyCode keyCode)override;
+			void INTERFACECALL OnWindowMouseDown(IWindow* window, VirtualKeyCode keyCode, std::size_t x, std::size_t y)override;
+			void INTERFACECALL OnWindowMouseMove(IWindow* window, VirtualKeyCode keyCode, std::size_t x, std::size_t y)override;
+
 		protected:
-			virtual void OnWindowIdle(const Foundation::IEvent& event);
-			virtual void RegisterWindowHandlers();
 			virtual void OnQuit(int exitCode);
 
 			IRenderer* mRenderer;
-			Foundation::IEventManager* mEventMgr;
+			IWindow* mWindow;
 			int mExitCode;
 			bool mRunning;
-			Foundation::Container::UnorderedSet<Foundation::EventSubscriberID> mSubscriberIDs;
 		};
 
 	}

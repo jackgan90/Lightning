@@ -20,6 +20,7 @@ add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
 include_directories( ${CMAKE_SOURCE_DIR}/Foundation
 					${CMAKE_SOURCE_DIR}/Render/Types
 					${CMAKE_SOURCE_DIR}/Foundation/Memory
+					${CMAKE_SOURCE_DIR}/PluginSystem
 					${LIGHTNING_DEPENDENCIES_DIR}/eigen
 					${Boost_INCLUDE_DIR}
 					${TBB_INCLUDE_DIR}

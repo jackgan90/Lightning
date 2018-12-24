@@ -16,7 +16,6 @@ set(ECS_HEADERS		ECS/Entity.h
 					ECS/Event.h
 					ECS/IEvent.h
 					ECS/EventManager.h
-					ECS/IEventManager.h
 					ECS/EntityManager.h
 					ECS/SystemManager.h)
 
