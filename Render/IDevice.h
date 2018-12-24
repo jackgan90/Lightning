@@ -14,14 +14,14 @@ namespace Lightning
 		//Avoid using template in cross module interfaces
 		struct IShaderCallback
 		{
-			virtual ~IShaderCallback() = default;
-			virtual void Execute(IShader*) = 0;
+			virtual INTERFACECALL ~IShaderCallback() = default;
+			virtual void INTERFACECALL Execute(IShader*) = 0;
 		};
 
 		struct ITextureCallback
 		{
-			virtual ~ITextureCallback() = default;
-			virtual void Execute(ITexture*) = 0;
+			virtual INTERFACECALL ~ITextureCallback() = default;
+			virtual void INTERFACECALL Execute(ITexture*) = 0;
 		};
 
 		struct IDevice

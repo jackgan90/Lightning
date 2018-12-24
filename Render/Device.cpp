@@ -44,7 +44,7 @@ namespace Lightning
 			struct ShaderLoaded : IShaderCallback
 			{
 				ShaderLoaded(IShaderCallback* callback):mCallback(callback){}
-				void Execute(IShader* shader)override
+				void INTERFACECALL Execute(IShader* shader)override
 				{
 					if (shader)
 						ShaderCache::Instance()->AddShader(shader);
@@ -77,7 +77,7 @@ namespace Lightning
 			struct TextureLoaded : ITextureCallback
 			{
 				TextureLoaded(const std::string& path, ITextureCallback* callback):mCallback(callback), mPath(path){}
-				void Execute(ITexture* texture)override
+				void INTERFACECALL Execute(ITexture* texture)override
 				{
 					if (texture)
 						TextureCache::Instance()->AddObject(mPath, texture);

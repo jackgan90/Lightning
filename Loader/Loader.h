@@ -37,9 +37,9 @@ namespace Lightning
 		class Loader : public ILoader, public Foundation::Singleton<Loader>
 		{
 		public:
-			void Finalize()override;
-			void Load(const char* path, ISerializer* ser)override;
-			~Loader()override;
+			void INTERFACECALL Finalize()override;
+			void INTERFACECALL Load(const char* path, ISerializer* ser)override;
+			INTERFACECALL ~Loader()override;
 		private:
 			friend class Foundation::Singleton<Loader>;
 			friend class DeserializeTask;
