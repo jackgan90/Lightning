@@ -10,10 +10,10 @@ namespace Lightning
 {
 	namespace Foundation
 	{
-		template<typename Derived, typename T>
+		template<typename Derived, typename KeyType, typename ObjectType>
 		class RefObjectCache : public Singleton<Derived>
 		{
-			static_assert(std::is_base_of<Plugins::IRefObject, T>::value, "T must be a subclass of IRefObject.");
+			static_assert(std::is_base_of<Plugins::IRefObject, ObjectType>::value, "T must be a subclass of IRefObject.");
 		public:
 			virtual ~RefObjectCache()
 			{
@@ -30,31 +30,31 @@ namespace Lightning
 				mObjects.clear();
 			}
 
-			T* GetObject(const std::string& name)
+			ObjectType* GetObject(const KeyType& key)
 			{
 				std::lock_guard<std::mutex> lock(mObjectMutex);
-				auto it = mObjects.find(name);
+				auto it = mObjects.find(key);
 				if (it != mObjects.end())
 					return it->second;
 				return nullptr;
 			}
 
-			bool AddObject(const std::string& name, T* object)
+			bool AddObject(const KeyType& key, ObjectType* object)
 			{
 				assert(object != nullptr && "Try to cache a null object!");
 				std::lock_guard<std::mutex> lock(mObjectMutex);
-				if (mObjects.find(name) == mObjects.end())
+				if (mObjects.find(key) == mObjects.end())
 				{
 					object->AddRef();
-					mObjects.emplace(name, object);
+					mObjects.emplace(key, object);
 					return true;
 				}
 				return false;
 			}
-			bool RemoveObject(const std::string& name)
+			bool RemoveObject(const KeyType& key)
 			{
 				std::lock_guard<std::mutex> lock(mObjectMutex);
-				auto it = mObjects.find(name);
+				auto it = mObjects.find(key);
 				if (it != mObjects.end())
 				{
 					it->second->Release();
@@ -66,7 +66,7 @@ namespace Lightning
 		protected:
 			friend class Singleton<Derived>;
 			RefObjectCache(){}
-			Container::UnorderedMap<std::string, T*> mObjects;
+			Container::UnorderedMap<KeyType, ObjectType*> mObjects;
 			std::mutex mObjectMutex;
 		};
 	}

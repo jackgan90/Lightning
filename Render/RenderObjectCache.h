@@ -7,12 +7,12 @@ namespace Lightning
 {
 	namespace Render
 	{
-		class TextureCache : public Foundation::RefObjectCache<TextureCache, ITexture>
+		class TextureCache : public Foundation::RefObjectCache<TextureCache, std::string, ITexture>
 		{
 
 		};
 
-		class ShaderCache : public Foundation::RefObjectCache<ShaderCache, IShader>
+		class ShaderCache : public Foundation::RefObjectCache<ShaderCache, std::string, IShader>
 		{
 		public:
 			IShader* GetShader(ShaderType type, const std::string& name, const IShaderMacros* macros);
