@@ -59,6 +59,8 @@ namespace Lightning
 
 		void GameWindow::OnResize(std::size_t width, std::size_t height)
 		{
+			mWidth = static_cast<std::uint32_t>(width);
+			mHeight = static_cast<std::uint32_t>(height);
 			DISPATCH_WINDOW_EVENT(OnWindowResize, width, height)
 		}
 

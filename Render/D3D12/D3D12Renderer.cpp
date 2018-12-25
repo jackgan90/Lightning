@@ -241,6 +241,39 @@ namespace Lightning
 			}
 		}
 
+		void D3D12Renderer::ApplyViewports(const Viewport* viewports, std::uint8_t viewportCount)
+		{
+			auto commandList = GetGraphicsCommandList();
+			auto D3D12Viewports = g_RenderAllocator.Allocate<D3D12_VIEWPORT>(viewportCount);
+			for (std::uint8_t i = 0;i < viewportCount; ++i)
+			{
+				auto& viewport = D3D12Viewports[i];
+				viewport.Width = viewports[i].width;
+				viewport.TopLeftX = viewports[i].left;
+				viewport.TopLeftY = viewports[i].top;
+				viewport.MinDepth = 0.0f;
+				viewport.MaxDepth = 1.0f;
+			}
+
+			commandList->RSSetViewports(viewportCount, D3D12Viewports);
+		}
+
+		void D3D12Renderer::ApplyScissorRects(const ScissorRect* scissorRects, std::uint8_t scissorRectCount)
+		{
+			auto commandList = GetGraphicsCommandList();
+			auto D3D12ScissorRects = g_RenderAllocator.Allocate<D3D12_RECT>(scissorRectCount);
+			for (std::uint8_t i = 0;i < scissorRectCount; ++i)
+			{
+				auto& scissorRect = D3D12ScissorRects[i];
+				scissorRect.left = scissorRects[i].left;
+				scissorRect.top = scissorRects[i].top;
+				scissorRect.right = scissorRects[i].left + scissorRects[i].width;
+				scissorRect.bottom = scissorRects[i].top + scissorRects[i].height;
+			}
+
+			commandList->RSSetScissorRects(scissorRectCount, D3D12ScissorRects);
+		}
+
 		void D3D12Renderer::BindGPUBuffer(std::uint8_t slot, IGPUBuffer* pBuffer)
 		{
 			if (!pBuffer)
@@ -585,16 +618,6 @@ namespace Lightning
 					constantBuffers += resource.buffers.size();
 			}
 			return constantBuffers;
-		}
-
-		void D3D12Renderer::ApplyViewports(const RectF*const* vps, std::size_t count, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
-		{
-
-		}
-
-		void D3D12Renderer::ApplyScissorRects(const RectF*const* scissorRects, std::size_t count, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
-		{
-
 		}
 
 		void D3D12Renderer::ApplyShader(IShader* pShader, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)

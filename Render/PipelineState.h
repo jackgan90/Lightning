@@ -203,12 +203,12 @@ namespace Lightning
 			GET_HASH_METHOD
 			void Reset()
 			{
-				left = top = width = height = .0f;
+				left = top = width = height = 0;
 			}
-			float left;
-			float top;
-			float width;
-			float height;
+			long left;
+			long top;
+			long width;
+			long height;
 		};
 		static_assert(std::is_pod<ScissorRect>::value, "ScissorRect is not a POD type.");
 

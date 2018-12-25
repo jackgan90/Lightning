@@ -40,6 +40,8 @@ namespace Lightning
 				const RectI* rects = nullptr, std::size_t rectCount = 0)override;
 			void INTERFACECALL ApplyRenderTargets(const IRenderTarget*const * renderTargets, std::uint8_t renderTargetCount, IDepthStencilBuffer* dsBuffer)override;
 			void INTERFACECALL ApplyPipelineState(const PipelineState& state)override;
+			void INTERFACECALL ApplyViewports(const Viewport* viewports, std::uint8_t viewportCount)override;
+			void INTERFACECALL ApplyScissorRects(const ScissorRect* scissorRects, std::uint8_t scissorRectCount)override;
 			void INTERFACECALL BindGPUBuffer(std::uint8_t slot, IGPUBuffer* buffer)override;
 			void INTERFACECALL Draw(const DrawParam& param)override;
 			ID3D12CommandQueue* GetCommandQueue();
@@ -74,8 +76,6 @@ namespace Lightning
 			void ApplyRasterizerState(const RasterizerState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			void ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			void ApplyDepthStencilState(const DepthStencilState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
-			void ApplyViewports(const RectF*const* vps, std::size_t count, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
-			void ApplyScissorRects(const RectF*const* scissorRects, std::size_t count, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			void ApplyShader(IShader* pShader, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			void UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::uint8_t  layoutCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			//Analyze shader root resources.
