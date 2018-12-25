@@ -8,7 +8,7 @@
 #include "IDepthStencilBuffer.h"
 #include "Color.h"
 #include "Math/Matrix.h"
-#include "RenderNode.h"
+#include "RenderUnit.h"
 #include "RenderPass.h"
 #include "IWindow.h"
 #include "Portable.h"
@@ -79,8 +79,8 @@ namespace Lightning
 			virtual std::uint64_t INTERFACECALL GetCurrentFrameCount()const = 0;
 			virtual std::size_t INTERFACECALL GetFrameResourceIndex()const = 0;
 			virtual void INTERFACECALL AddRenderPass(RenderPassType type) = 0;
-			//Commit a render node for rendering
-			virtual void INTERFACECALL CommitRenderNode(const RenderNode& node) = 0;
+			//Commit a render unit for rendering
+			virtual void INTERFACECALL CommitRenderUnit(const RenderUnit& unit) = 0;
 			//clear a specified render target,possibly parts of it defined by an array of rects
 			virtual void INTERFACECALL ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, 
 				const RectI* rects=nullptr, std::size_t rectCount = 0) = 0;

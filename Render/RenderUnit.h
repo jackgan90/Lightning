@@ -11,7 +11,7 @@ namespace Lightning
 	namespace Render
 	{
 		using namespace Foundation::Math;
-		struct RenderNode
+		struct RenderUnit
 		{
 			void Reset()
 			{
@@ -30,13 +30,13 @@ namespace Lightning
 			std::uint8_t renderTargetCount;	//valid render target count
 			IDepthStencilBuffer* depthStencilBuffer; //depth stencil buffer for this draw
 		};
-		static_assert(std::is_pod<RenderNode>::value, "RenderNode is not a POD type.");
-		//RenderQueue is a very important concept.Every drawable object will encode there data to a RenderNode struct.
+		static_assert(std::is_pod<RenderUnit>::value, "RenderUnit is not a POD type.");
+		//RenderQueue is a very important concept.Every drawable object will encode there data to a RenderUnit struct.
 		//After enqueue,the nodes remain unchangeable.The responsibility for render pass
-		//is to read node data from the queue and carry out different render algorithms.The data in this
+		//is to read unit data from the queue and carry out different render algorithms.The data in this
 		//queue won't be cleared until next time the renderer renders to the same swap chain,which ensures the 
-		//render resource validation during this frame(render resources won't be deleted because a render node
+		//render resource validation during this frame(render resources won't be deleted because a render unit
 		//holds all shared_ptr referring to them).
-		using RenderQueue = Foundation::Container::Vector<RenderNode>;
+		using RenderQueue = Foundation::Container::Vector<RenderUnit>;
 	}
 }

@@ -15,13 +15,13 @@ namespace Lightning
 			ForwardRenderPass():RenderPass(RenderPassType::FORWARD){}
 			//Apply is called by renderer once per frame.Subclasses should commit render resources to device in this method.
 			void Apply(RenderQueue& renderQueue)override;
-			void OnAddRenderNode(const RenderNode& node)override;
+			void OnAddRenderUnit(const RenderUnit& unit)override;
 			void OnFrameEnd()override;
 		protected:
 			void CommitBuffers(const Geometry& geometry);
-			void CommitPipelineStates(const RenderNode& node);
-			void CommitShaderParameters(const RenderNode& node);
-			void CommitSemanticUniforms(IShader* shader, const RenderNode& node);
+			void CommitPipelineStates(const RenderUnit& unit);
+			void CommitShaderParameters(const RenderUnit& unit);
+			void CommitSemanticUniforms(IShader* shader, const RenderUnit& unit);
 			void Draw(const Geometry& geometry);
 			void GetInputLayouts(const Geometry& geometry, VertexInputLayout* layouts, std::uint8_t& layoutCount);
 		};

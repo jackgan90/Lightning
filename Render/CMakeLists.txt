@@ -28,7 +28,7 @@ set(HEADERS IDevice.h
 			ForwardRenderPass.h
 			DeferedRenderPass.h
 			FrameMemoryAllocator.h
-			RenderNode.h
+			RenderUnit.h
 			RenderObjectCache.h)
 set(SOURCES Renderer.cpp
 			Device.cpp

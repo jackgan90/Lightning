@@ -19,25 +19,25 @@ namespace Lightning
 		{
 			if (renderQueue)
 			{
-				for (auto& node : *renderQueue)
+				for (auto& unit : *renderQueue)
 				{
-					node.material->Release();
-					if (node.geometry.ib)
+					unit.material->Release();
+					if (unit.geometry.ib)
 					{
-						node.geometry.ib->Release();
+						unit.geometry.ib->Release();
 					}
-					for (auto i = 0;i < Foundation::ArraySize(node.geometry.vbs);++i)
+					for (auto i = 0;i < Foundation::ArraySize(unit.geometry.vbs);++i)
 					{
-						if (node.geometry.vbs[i])
+						if (unit.geometry.vbs[i])
 						{
-							node.geometry.vbs[i]->Release();
+							unit.geometry.vbs[i]->Release();
 						}
 					}
-					if (node.depthStencilBuffer)
-						node.depthStencilBuffer->Release();
-					for (auto i = 0;i < node.renderTargetCount;++i)
+					if (unit.depthStencilBuffer)
+						unit.depthStencilBuffer->Release();
+					for (auto i = 0;i < unit.renderTargetCount;++i)
 					{
-						node.renderTargets[i]->Release();
+						unit.renderTargets[i]->Release();
 					}
 				}
 				renderQueue->clear();
@@ -194,39 +194,39 @@ namespace Lightning
 		}
 
 
-		void Renderer::CommitRenderNode(const RenderNode& node)
+		void Renderer::CommitRenderUnit(const RenderUnit& unit)
 		{
 			assert(mStarted && "Renderer must be started first.");
-			assert(node.material && "node must have a material!");
-			node.material->AddRef();
+			assert(unit.material && "unit must have a material!");
+			unit.material->AddRef();
 			bool hasIB = false;
 			bool hasVB = false;
-			if (node.geometry.ib)
+			if (unit.geometry.ib)
 			{
 				hasIB = true;
-				node.geometry.ib->AddRef();
+				unit.geometry.ib->AddRef();
 			}
-			for (auto i = 0;i < Foundation::ArraySize(node.geometry.vbs);++i)
+			for (auto i = 0;i < Foundation::ArraySize(unit.geometry.vbs);++i)
 			{
-				if (node.geometry.vbs[i])
+				if (unit.geometry.vbs[i])
 				{
-					node.geometry.vbs[i]->AddRef();
+					unit.geometry.vbs[i]->AddRef();
 					hasVB = true;
 				}
 
 			}
 			assert((hasVB || hasIB) && "vb or ib can not both be empty!");
-			if (node.depthStencilBuffer)
-				node.depthStencilBuffer->AddRef();
-			for (auto i = 0; i < node.renderTargetCount; ++i)
+			if (unit.depthStencilBuffer)
+				unit.depthStencilBuffer->AddRef();
+			for (auto i = 0; i < unit.renderTargetCount; ++i)
 			{
-				assert(node.renderTargets[i] && "renderTarget cannot be null!");
-				node.renderTargets[i]->AddRef();
+				assert(unit.renderTargets[i] && "renderTarget cannot be null!");
+				unit.renderTargets[i]->AddRef();
 			}
-			mCurrentFrameRenderQueue->push_back(node);
+			mCurrentFrameRenderQueue->push_back(unit);
 			for (auto& pass : mRenderPasses)
 			{
-				pass->OnAddRenderNode(node);
+				pass->OnAddRenderUnit(unit);
 			}
 		}
 

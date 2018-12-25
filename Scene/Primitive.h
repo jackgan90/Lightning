@@ -2,7 +2,7 @@
 #include <memory>
 #include <cstdint>
 #include "Container.h"
-#include "RenderNode.h"
+#include "RenderUnit.h"
 #include "IShader.h"
 #include "IPrimitive.h"
 #include "RefObject.h"
@@ -18,7 +18,7 @@ namespace Lightning
 			Primitive();
 			INTERFACECALL ~Primitive()override;
 			void INTERFACECALL Draw(IRenderer* renderer, const SceneRenderData& sceneRenderData) override;
-			PrimitiveType INTERFACECALL GetPrimitiveType()const override{ return mRenderNode.geometry.primType; }
+			PrimitiveType INTERFACECALL GetPrimitiveType()const override{ return mRenderUnit.geometry.primType; }
 			void INTERFACECALL SetWorldPosition(const Vector3f& pos) override{ mTransform.SetPosition(pos); }
 			Vector3f INTERFACECALL GetWorldPosition()const override{ return mTransform.GetPosition(); }
 			void INTERFACECALL SetWorldRotation(const Quaternionf& rot) override{ mTransform.SetRotation(rot); }
@@ -35,15 +35,15 @@ namespace Lightning
 			void INTERFACECALL SetSamplerState(const char* name, const SamplerState& state)override;
 			void INTERFACECALL SetShader(IShader* shader)override;
 		protected:
-			virtual void UpdateRenderNode(IRenderer*);
+			virtual void UpdateRenderUnit(IRenderer*);
 			virtual std::uint8_t *GetVertices() = 0;
 			virtual std::uint16_t *GetIndices() = 0;
 			virtual Vector3f GetScale() = 0;
 			virtual std::size_t GetVertexBufferSize() = 0;
 			virtual std::size_t GetIndexBufferSize() = 0;
-			Render::RenderNode mRenderNode;
+			Render::RenderUnit mRenderUnit;
 			Transformer mTransform;
-			bool mShouldUpdateRenderNode;
+			bool mShouldUpdateRenderUnit;
 			Color32 mColor;
 			std::string mTextureName;
 			ITexture* mTexture;
@@ -72,7 +72,7 @@ namespace Lightning
 		public:
 			Cube(float width = 1.0f, float height = 1.0f, float thickness = 1.0f);
 		protected:
-			void UpdateRenderNode(IRenderer*)override;
+			void UpdateRenderUnit(IRenderer*)override;
 			std::uint8_t *GetVertices() override { return sDataSource.vertices; }
 			std::uint16_t *GetIndices() override { return sDataSource.indices; }
 			Vector3f GetScale() override { return Vector3f{mWidth, mHeight, mThickness}; }

@@ -18,16 +18,16 @@ namespace Lightning
 				[&renderQueue, this](const tbb::blocked_range<std::size_t>& range) {
 				for (std::size_t i = range.begin(); i != range.end();++i)
 				{
-					const auto& node = renderQueue[i];
-					CommitShaderParameters(node);
-					CommitPipelineStates(node);
-					CommitBuffers(node.geometry);
-					Draw(node.geometry);
+					const auto& unit = renderQueue[i];
+					CommitShaderParameters(unit);
+					CommitPipelineStates(unit);
+					CommitBuffers(unit.geometry);
+					Draw(unit.geometry);
 				}
 			});
 		}
 
-		void ForwardRenderPass::OnAddRenderNode(const RenderNode& node)
+		void ForwardRenderPass::OnAddRenderUnit(const RenderUnit& unit)
 		{
 
 		}
@@ -36,70 +36,70 @@ namespace Lightning
 		{
 		}
 
-		void ForwardRenderPass::CommitPipelineStates(const RenderNode& node)
+		void ForwardRenderPass::CommitPipelineStates(const RenderUnit& unit)
 		{
 			PipelineState state;
 			state.Reset();
-			state.renderTargetCount = node.renderTargetCount;
+			state.renderTargetCount = unit.renderTargetCount;
 			auto renderer = Renderer::Instance();
 			auto pSwapChain = renderer->GetSwapChain();
-			for (auto i = 0;i < node.renderTargetCount;++i)
+			for (auto i = 0;i < unit.renderTargetCount;++i)
 			{
-				state.renderTargets[i] = node.renderTargets[i];
+				state.renderTargets[i] = unit.renderTargets[i];
 			}
-			if (node.material)
+			if (unit.material)
 			{
-				state.vs = node.material->GetShader(ShaderType::VERTEX);
-				state.fs = node.material->GetShader(ShaderType::FRAGMENT);
-				state.gs = node.material->GetShader(ShaderType::GEOMETRY);
-				state.hs = node.material->GetShader(ShaderType::TESSELATION_CONTROL);
-				state.ds = node.material->GetShader(ShaderType::TESSELATION_EVALUATION);
+				state.vs = unit.material->GetShader(ShaderType::VERTEX);
+				state.fs = unit.material->GetShader(ShaderType::FRAGMENT);
+				state.gs = unit.material->GetShader(ShaderType::GEOMETRY);
+				state.hs = unit.material->GetShader(ShaderType::TESSELATION_CONTROL);
+				state.ds = unit.material->GetShader(ShaderType::TESSELATION_EVALUATION);
 				for (auto i = 0;i < state.renderTargetCount;++i)
 				{
-					node.material->GetBlendState(state.blendStates[i]);
+					unit.material->GetBlendState(state.blendStates[i]);
 					if (state.blendStates[i].enable)
 					{
 						state.depthStencilState.depthWriteEnable = false;
 					}
 				}
 			}
-			state.primType = node.geometry.primType;
+			state.primType = unit.geometry.primType;
 			//TODO : Apply other pipeline states(blend state, rasterizer state etc)
 			
-			GetInputLayouts(node.geometry, state.inputLayouts, state.inputLayoutCount);
+			GetInputLayouts(unit.geometry, state.inputLayouts, state.inputLayoutCount);
 
-			if (node.depthStencilBuffer)
+			if (unit.depthStencilBuffer)
 			{
-				state.depthStencilState.bufferFormat = node.depthStencilBuffer->GetRenderFormat();
+				state.depthStencilState.bufferFormat = unit.depthStencilBuffer->GetRenderFormat();
 			}
-			renderer->ApplyRenderTargets(node.renderTargets, node.renderTargetCount, node.depthStencilBuffer);
+			renderer->ApplyRenderTargets(unit.renderTargets, unit.renderTargetCount, unit.depthStencilBuffer);
 			renderer->ApplyPipelineState(state);
 		}
 
-		void ForwardRenderPass::CommitShaderParameters(const RenderNode& node)
+		void ForwardRenderPass::CommitShaderParameters(const RenderUnit& unit)
 		{
-			if (!node.material)
+			if (!unit.material)
 				return;
 			static const ShaderType shaderTypes[] = { ShaderType::VERTEX, ShaderType::FRAGMENT, ShaderType::GEOMETRY,
 			ShaderType::TESSELATION_CONTROL, ShaderType::TESSELATION_EVALUATION };
 			auto renderer = Renderer::Instance();
 			for (auto shaderType : shaderTypes)
 			{
-				IShader* shader = node.material->GetShader(shaderType);
+				IShader* shader = unit.material->GetShader(shaderType);
 				if (shader)
 				{
-					auto parameterCount = node.material->GetParameterCount(shaderType);
+					auto parameterCount = unit.material->GetParameterCount(shaderType);
 					for (auto i = 0;i < parameterCount;++i)
 					{
-						auto parameter = node.material->GetParameter(shaderType, i);
+						auto parameter = unit.material->GetParameter(shaderType, i);
 						shader->SetParameter(parameter);
 					}
-					CommitSemanticUniforms(shader, node);
+					CommitSemanticUniforms(shader, unit);
 				}
 			}
 		}
 
-		void ForwardRenderPass::CommitSemanticUniforms(IShader* shader, const RenderNode& node)
+		void ForwardRenderPass::CommitSemanticUniforms(IShader* shader, const RenderUnit& unit)
 		{
 			auto renderer = Renderer::Instance();
 			RenderSemantics* semantics{ nullptr };
@@ -116,7 +116,7 @@ namespace Lightning
 				case RenderSemantics::WVP:
 				{
 					//We know that transform.ToMatrix4 may change it's internal matrix
-					auto wvp = node.projectionMatrix * node.viewMatrix * node.transform.matrix;
+					auto wvp = unit.projectionMatrix * unit.viewMatrix * unit.transform.matrix;
 					shader->SetParameter(&ShaderParameter(uniformName, wvp));
 					break;
 				}

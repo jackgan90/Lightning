@@ -26,10 +26,10 @@ namespace Lightning
 		using Render::ShaderParameter;
 		extern Plugins::IRenderPlugin* gRenderPlugin;
 
-		Primitive::Primitive():mShouldUpdateRenderNode(true)
+		Primitive::Primitive():mShouldUpdateRenderUnit(true)
 			,mColor{0, 0, 0, 255}, mTexture(nullptr)
 		{
-			mRenderNode.material = nullptr;
+			mRenderUnit.material = nullptr;
 		}
 
 		Primitive::~Primitive()
@@ -40,14 +40,14 @@ namespace Lightning
 			{
 				shader->Release();
 			}
-			if (mRenderNode.material)
-				mRenderNode.material->Release();
-			if (mRenderNode.geometry.ib)
-				mRenderNode.geometry.ib->Release();
-			for (auto i = 0; i < Foundation::ArraySize(mRenderNode.geometry.vbs);++i)
+			if (mRenderUnit.material)
+				mRenderUnit.material->Release();
+			if (mRenderUnit.geometry.ib)
+				mRenderUnit.geometry.ib->Release();
+			for (auto i = 0; i < Foundation::ArraySize(mRenderUnit.geometry.vbs);++i)
 			{
-				if(mRenderNode.geometry.vbs[i])
-					mRenderNode.geometry.vbs[i]->Release();
+				if(mRenderUnit.geometry.vbs[i])
+					mRenderUnit.geometry.vbs[i]->Release();
 			}
 		}
 
@@ -98,7 +98,7 @@ namespace Lightning
 					texture->AddRef();
 				mTextureName = name;
 				mTexture = texture;
-				mShouldUpdateRenderNode = true;
+				mShouldUpdateRenderUnit = true;
 			}
 		}
 
@@ -106,7 +106,7 @@ namespace Lightning
 		{
 			mSamplerStateName = name;
 			mSamplerState = state;
-			mShouldUpdateRenderNode = true;
+			mShouldUpdateRenderUnit = true;
 		}
 
 		void Primitive::SetShader(IShader* shader)
@@ -132,25 +132,25 @@ namespace Lightning
 
 		void Primitive::Draw(IRenderer* renderer, const SceneRenderData& sceneRenderData)
 		{
-			if (mShouldUpdateRenderNode)
+			if (mShouldUpdateRenderUnit)
 			{
-				UpdateRenderNode(renderer);
-				mShouldUpdateRenderNode = false;
+				UpdateRenderUnit(renderer);
+				mShouldUpdateRenderUnit = false;
 			}
 			auto swapChain = renderer->GetSwapChain();
 			auto defaultRT = swapChain->GetDefaultRenderTarget();
-			mRenderNode.renderTargets[0] = defaultRT;
-			mRenderNode.renderTargetCount = 1;
-			mRenderNode.depthStencilBuffer = renderer->GetDefaultDepthStencilBuffer();
+			mRenderUnit.renderTargets[0] = defaultRT;
+			mRenderUnit.renderTargetCount = 1;
+			mRenderUnit.depthStencilBuffer = renderer->GetDefaultDepthStencilBuffer();
 			if (sceneRenderData.camera)
 			{
-				mRenderNode.viewMatrix = sceneRenderData.camera->GetViewMatrix();
-				mRenderNode.projectionMatrix = sceneRenderData.camera->GetProjectionMatrix();
+				mRenderUnit.viewMatrix = sceneRenderData.camera->GetViewMatrix();
+				mRenderUnit.projectionMatrix = sceneRenderData.camera->GetProjectionMatrix();
 			}
-			renderer->CommitRenderNode(mRenderNode);
+			renderer->CommitRenderUnit(mRenderUnit);
 		}
 
-		void Primitive::UpdateRenderNode(IRenderer* renderer)
+		void Primitive::UpdateRenderUnit(IRenderer* renderer)
 		{
 			Render::VertexDescriptor descriptor;
 			auto& compPosition = descriptor.components[0];
@@ -167,28 +167,28 @@ namespace Lightning
 			compNormal.semantic = Render::RenderSemantics::NORMAL;
 			descriptor.componentCount = 2;
 
-			std::memset(mRenderNode.geometry.vbs, 0, sizeof(mRenderNode.geometry.vbs));
+			std::memset(mRenderUnit.geometry.vbs, 0, sizeof(mRenderUnit.geometry.vbs));
 			auto pDevice = renderer->GetDevice();
 			auto vbSize = GetVertexBufferSize();
 			auto ibSize = GetIndexBufferSize();
-			mRenderNode.geometry.vbs[0] = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(vbSize), descriptor);
-			mRenderNode.geometry.ib = pDevice->CreateIndexBuffer(static_cast<std::uint32_t>(ibSize), Render::IndexType::UINT16);
+			mRenderUnit.geometry.vbs[0] = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(vbSize), descriptor);
+			mRenderUnit.geometry.ib = pDevice->CreateIndexBuffer(static_cast<std::uint32_t>(ibSize), Render::IndexType::UINT16);
 			
 			
 			auto vertices = GetVertices();
 
 			auto indices = GetIndices();
 
-			auto mem = mRenderNode.geometry.vbs[0]->Lock(0, vbSize);
+			auto mem = mRenderUnit.geometry.vbs[0]->Lock(0, vbSize);
 			std::memcpy(mem, vertices, vbSize);
-			mRenderNode.geometry.vbs[0]->Unlock(0, vbSize);
+			mRenderUnit.geometry.vbs[0]->Unlock(0, vbSize);
 
-			mem = mRenderNode.geometry.ib->Lock(0, ibSize);
+			mem = mRenderUnit.geometry.ib->Lock(0, ibSize);
 			std::memcpy(mem, indices, ibSize);
-			mRenderNode.geometry.ib->Unlock(0, ibSize);
-			mRenderNode.geometry.primType = Render::PrimitiveType::TRIANGLE_LIST;
+			mRenderUnit.geometry.ib->Unlock(0, ibSize);
+			mRenderUnit.geometry.primType = Render::PrimitiveType::TRIANGLE_LIST;
 			
-			mRenderNode.material = gRenderPlugin->CreateMaterial();
+			mRenderUnit.material = gRenderPlugin->CreateMaterial();
 			IShader *vs{ nullptr }, *ps{ nullptr };
 			for (auto shader : mShaders)
 			{
@@ -196,32 +196,32 @@ namespace Lightning
 					vs = shader;
 				if (shader->GetType() == Render::ShaderType::FRAGMENT)
 					ps = shader;
-				mRenderNode.material->SetShader(shader);
+				mRenderUnit.material->SetShader(shader);
 			}
 			if (!vs)
 			{
 				vs = pDevice->GetDefaultShader(Render::ShaderType::VERTEX);
 				vs->AddRef();
 				mShaders.push_back(vs);
-				mRenderNode.material->SetShader(vs);
+				mRenderUnit.material->SetShader(vs);
 			}
 			if (!ps)
 			{
 				ps = pDevice->GetDefaultShader(Render::ShaderType::FRAGMENT);
 				ps->AddRef();
 				mShaders.push_back(ps);
-				mRenderNode.material->SetShader(ps);
+				mRenderUnit.material->SetShader(ps);
 			}
 			float a, r, g, b;
 			GetColor(a, r, g, b);
 			ShaderParameter paramColor("color", Vector4f{ r, g, b, a });
 			ShaderParameter paramLight("light", Vector3f{ 3, 3, 3 });
-			mRenderNode.material->SetParameter(Render::ShaderType::FRAGMENT, &paramColor);
-			mRenderNode.material->SetParameter(Render::ShaderType::FRAGMENT, &paramLight);
+			mRenderUnit.material->SetParameter(Render::ShaderType::FRAGMENT, &paramColor);
+			mRenderUnit.material->SetParameter(Render::ShaderType::FRAGMENT, &paramLight);
 
-			mRenderNode.material->EnableBlend(mColor.a != 0xff);
+			mRenderUnit.material->EnableBlend(mColor.a != 0xff);
 			mTransform.SetScale(GetScale());
-			mRenderNode.transform = mTransform.GetTransform();
+			mRenderUnit.transform = mTransform.GetTransform();
 		}
 
 		
@@ -271,9 +271,9 @@ namespace Lightning
 			assert(mWidth > 0 && mHeight > 0 && mThickness > 0 && "The size of the cube must be greater than 0!");
 		}
 
-		void Cube::UpdateRenderNode(IRenderer* renderer)
+		void Cube::UpdateRenderUnit(IRenderer* renderer)
 		{
-			Primitive::UpdateRenderNode(renderer);
+			Primitive::UpdateRenderUnit(renderer);
 			if (mTexture)
 			{
 				//generate uv
@@ -287,8 +287,8 @@ namespace Lightning
 				descriptor.componentCount = 1;
 				auto pDevice = renderer->GetDevice();
 				auto uvBufferSize = sizeof(Vector2f) * 8;
-				mRenderNode.geometry.vbs[1] = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(uvBufferSize), descriptor);
-				auto uv = reinterpret_cast<Vector2f*>(mRenderNode.geometry.vbs[1]->Lock(0, uvBufferSize));
+				mRenderUnit.geometry.vbs[1] = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(uvBufferSize), descriptor);
+				auto uv = reinterpret_cast<Vector2f*>(mRenderUnit.geometry.vbs[1]->Lock(0, uvBufferSize));
 				uv[0].x = 0.0f; uv[0].y = 0.0f; //right top front v0
 				uv[1].x = 1.0f; uv[1].y = 0.0f; //right top back v1
 				uv[2].x = 0.0f; uv[2].y = 1.0f; //right bottom front v2
@@ -297,7 +297,7 @@ namespace Lightning
 				uv[5].x = 0.0f; uv[5].y = 0.0f; //left top back v5
 				uv[6].x = 1.0f; uv[6].y = 1.0f; //left bottom front v6
 				uv[7].x = 0.0f; uv[7].y = 1.0f; //left bottom back v7
-				mRenderNode.geometry.vbs[1]->Unlock(0, uvBufferSize);
+				mRenderUnit.geometry.vbs[1]->Unlock(0, uvBufferSize);
 				//apply texture to material
 			}
 		}

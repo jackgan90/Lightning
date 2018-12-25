@@ -565,7 +565,7 @@ namespace Lightning
 		{
 			for (int i = firstRTIndex; i < firstRTIndex + stateCount;++i)
 			{
-				//TODO these values should be set based on render node status
+				//TODO these values should be set based on render unit status
 				desc.BlendState.AlphaToCoverageEnable = FALSE;
 				desc.BlendState.IndependentBlendEnable = FALSE;
 				D3D12_RENDER_TARGET_BLEND_DESC* pDesc = &desc.BlendState.RenderTarget[i];
