@@ -6,7 +6,6 @@ set(HEADERS IDevice.h
 			Device.h
 			ISwapChain.h
 			IRenderTarget.h
-			IrenderTargetManager.h
 			IDepthStencilBuffer.h
 			IRenderer.h
 			IRenderFence.h
@@ -100,7 +99,6 @@ if(LIGHTNING_USE_D3D12)
 						D3D12/D3D12SwapChain.h
 						D3D12/D3D12RenderTarget.h
 						D3D12/D3D12DepthStencilBuffer.h
-						D3D12/D3D12RenderTargetManager.h
 						D3D12/D3D12Renderer.h
 						D3D12/D3D12RenderFence.h
 						D3D12/D3D12DescriptorHeapManager.h
@@ -119,7 +117,6 @@ if(LIGHTNING_USE_D3D12)
 						D3D12/D3D12SwapChain.cpp
 						D3D12/D3D12RenderTarget.cpp
 						D3D12/D3D12DepthStencilBuffer.cpp
-						D3D12/D3D12RenderTargetManager.cpp
 						D3D12/D3D12Renderer.cpp
 						D3D12/D3D12RenderFence.cpp
 						D3D12/D3D12DescriptorHeapManager.cpp

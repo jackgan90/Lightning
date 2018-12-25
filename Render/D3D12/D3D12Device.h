@@ -2,13 +2,14 @@
 #include <d3d12.h>
 #include <dxgi1_4.h>
 #include <wrl\client.h>
-#include <memory>
+#include <atomic>
 #include "ThreadLocalSingleton.h"
 #include "Container.h"
 #include "Device.h"
 #include "FileSystem.h"
 #include "D3D12Shader.h"
 #include "D3D12CommandEncoder.h"
+#include "D3D12Texture.h"
 #include "D3D12StatefulResource.h"
 
 
@@ -29,6 +30,8 @@ namespace Lightning
 			IShader* INTERFACECALL CreateShader(ShaderType type, const char* shaderName, 
 				const char* const shaderSource, const IShaderMacros* macros)override;
 			ITexture* INTERFACECALL CreateTexture(const TextureDescriptor& descriptor, ISerializeBuffer* buffer)override;
+			IRenderTarget* INTERFACECALL CreateRenderTarget(ITexture* texture) override;
+			D3D12Texture* CreateTexture(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState);
 			//native device method wrapper start
 			D3D12StatefulResourcePtr CreateCommittedResource(
 				const D3D12_HEAP_PROPERTIES *pHeapProperties,
@@ -79,6 +82,7 @@ namespace Lightning
 			ID3D12GraphicsCommandList* GetGraphicsCommandList();
 			ComPtr<ID3D12Device> mDevice;
 			D3D_SHADER_MODEL mHighestShaderModel;
+			std::atomic<RenderTargetID> mCurrentRTID;
 		};
 	}
 }

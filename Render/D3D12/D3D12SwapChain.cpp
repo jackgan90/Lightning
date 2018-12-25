@@ -7,7 +7,6 @@
 #include "D3D12Renderer.h"
 #include "D3D12SwapChain.h"
 #include "D3D12RenderTarget.h"
-#include "D3D12RenderTargetManager.h"
 #include "D3D12DescriptorHeapManager.h"
 #include "IPluginManager.h"
 #include "IFoundationPlugin.h"
@@ -28,7 +27,7 @@ namespace Lightning
 		{
 			CreateNativeSwapChain(factory, pCommandQueue, window);
 			mSwapChain->GetDesc(&mDesc);
-			BindRenderTargets();
+			CreateRenderTargets();
 		}
 
 		void D3D12SwapChain::CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, Window::IWindow* pWindow)
@@ -80,6 +79,10 @@ namespace Lightning
 
 		D3D12SwapChain::~D3D12SwapChain()
 		{
+			for (auto renderTarget : mRenderTargets)
+			{
+				renderTarget->Release();
+			}
 		}
 
 		bool D3D12SwapChain::Present()
@@ -88,10 +91,10 @@ namespace Lightning
 			return SUCCEEDED(hr);
 		}
 
-		void D3D12SwapChain::BindRenderTargets()
+		void D3D12SwapChain::CreateRenderTargets()
 		{
 			ComPtr<ID3D12Resource> resources[RENDER_FRAME_COUNT];
-			auto rtMgr = D3D12RenderTargetManager::Instance();
+			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
 			for (int i = 0; i < RENDER_FRAME_COUNT; i++)
 			{
 				auto hr = mSwapChain->GetBuffer(i, IID_PPV_ARGS(&resources[i]));
@@ -99,10 +102,9 @@ namespace Lightning
 				{
 					throw SwapChainInitException("Failed to get d3d12 swap chain buffer.");
 				}
-				auto statefulResource = std::make_shared<D3D12StatefulResource>(resources[i], D3D12_RESOURCE_STATE_PRESENT);
-				auto renderTarget = rtMgr->CreateSwapChainRenderTarget(statefulResource, this);
-				mRenderTargets[i] = renderTarget->GetID();
-				renderTarget->Release();
+				auto texture = device->CreateTexture(resources[i], D3D12_RESOURCE_STATE_PRESENT);
+				mRenderTargets[i] = device->CreateRenderTarget(texture);
+				texture->Release();
 			}
 		}
 
@@ -113,7 +115,7 @@ namespace Lightning
 
 		IRenderTarget* D3D12SwapChain::GetDefaultRenderTarget()
 		{
-			return D3D12RenderTargetManager::Instance()->GetRenderTarget(mRenderTargets[GetCurrentBackBufferIndex()]);
+			return mRenderTargets[GetCurrentBackBufferIndex()];
 		}
 
 	}

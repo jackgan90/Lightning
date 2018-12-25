@@ -6,7 +6,6 @@
 #include "IDevice.h"
 #include "ISwapChain.h"
 #include "IDepthStencilBuffer.h"
-#include "IRenderTargetManager.h"
 #include "Color.h"
 #include "Math/Matrix.h"
 #include "RenderNode.h"

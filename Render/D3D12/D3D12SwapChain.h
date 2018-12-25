@@ -6,7 +6,6 @@
 #include <unordered_map>
 #include "ISwapChain.h"
 #include "IWindow.h"
-#include "D3D12RenderTargetManager.h"
 #include "D3D12TypeMapper.h"
 
 namespace Lightning
@@ -29,10 +28,10 @@ namespace Lightning
 			std::uint32_t INTERFACECALL GetCurrentBackBufferIndex()const override;
 			IRenderTarget* INTERFACECALL GetDefaultRenderTarget()override;
 		private:
-			void BindRenderTargets();
+			void CreateRenderTargets();
 			void CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, Window::IWindow* pWindow);
 			ComPtr<IDXGISwapChain3> mSwapChain;
-			RenderTargetID mRenderTargets[RENDER_FRAME_COUNT];
+			IRenderTarget* mRenderTargets[RENDER_FRAME_COUNT];
 			DXGI_SWAP_CHAIN_DESC mDesc;
 		};
 	}

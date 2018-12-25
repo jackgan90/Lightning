@@ -85,7 +85,6 @@ namespace Lightning
 		{
 			LOG_INFO("Start to clean up render resources.");
 			Renderer::ShutDown();
-			D3D12RenderTargetManager::Instance()->Clear();
 			D3D12DescriptorHeapManager::Instance()->Clear();
 			D3D12ConstantBufferManager::Instance()->Clear();
 			D3D12StatefulResourceManager::Instance()->Clear();
@@ -328,21 +327,15 @@ namespace Lightning
 			desc.PrimitiveTopologyType = D3D12TypeMapper::MapPrimitiveType(state.primType);
 			//TODO : should apply pipeline state based on PipelineState
 			desc.NumRenderTargets = state.renderTargetCount;
-			for (size_t i = 0; i < sizeof(desc.RTVFormats) / sizeof(DXGI_FORMAT); i++)
+			for (std::uint8_t i = 0; i < state.renderTargetCount; i++)
 			{
+				auto renderTexture = state.renderTargets[i]->GetTexture();
 				if (i == 0)
 				{
-					desc.SampleDesc.Count = state.renderTargets[i]->GetSampleCount();
-					desc.SampleDesc.Quality = state.renderTargets[i]->GetSampleQuality();
+					desc.SampleDesc.Count = renderTexture->GetMultiSampleCount();
+					desc.SampleDesc.Quality = renderTexture->GetMultiSampleQuality();
 				}
-				if (i < state.renderTargetCount)
-				{
-					desc.RTVFormats[i] = D3D12TypeMapper::MapRenderFormat(state.renderTargets[i]->GetRenderFormat());
-				}
-				else
-				{
-					desc.RTVFormats[i] = DXGI_FORMAT_UNKNOWN;
-				}
+				desc.RTVFormats[i] = D3D12TypeMapper::MapRenderFormat(renderTexture->GetRenderFormat());
 			}
 			desc.SampleMask = 0xfffffff;
 			auto device = static_cast<D3D12Device*>(mDevice.get());
@@ -764,7 +757,6 @@ namespace Lightning
 			renderTarget->TransitToRTState(lastCmdList);
 			renderTarget->TransitToPresentState(lastCmdList);
 
-			D3D12RenderTargetManager::Instance()->Synchronize();
 			D3D12StatefulResourceManager::Instance()->FixResourceStates(commandLists);
 
 			for (auto cmdList : commandLists)

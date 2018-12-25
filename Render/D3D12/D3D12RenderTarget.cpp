@@ -5,32 +5,33 @@ namespace Lightning
 {
 	namespace Render
 	{
-		D3D12RenderTarget::D3D12RenderTarget(const RenderTargetID rtID, const D3D12StatefulResourcePtr& resource, ISwapChain* pSwapChain)
-			:mResource(resource)
+		D3D12RenderTarget::D3D12RenderTarget(const RenderTargetID rtID, D3D12Texture* texture)
+			:mTexture(texture)
 			,mID(rtID)
 		{
+			assert(texture != nullptr && "The texture used to initialize render target cannot be nullptr!");
+			mTexture->AddRef();
 			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
-			mSampleCount = pSwapChain->GetSampleCount();
-			mSampleQuality = pSwapChain->GetSampleQuality();
-			mFormat = pSwapChain->GetRenderFormat();
 			mHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, false, 1, false);
+			auto resource = mTexture->GetResource();
 			device->CreateRenderTargetView(*resource, nullptr, mHeap->cpuHandle);
 		}
 
 		D3D12RenderTarget::~D3D12RenderTarget()
 		{
 			D3D12DescriptorHeapManager::Instance()->Deallocate(mHeap);
+			mTexture->Release();
 			mHeap = nullptr;
 		}
 
 		void D3D12RenderTarget::TransitToRTState(ID3D12GraphicsCommandList* commandList)
 		{
-			mResource->TransitTo(commandList, D3D12_RESOURCE_STATE_RENDER_TARGET);
+			mTexture->GetResource()->TransitTo(commandList, D3D12_RESOURCE_STATE_RENDER_TARGET);
 		}
 
 		void D3D12RenderTarget::TransitToPresentState(ID3D12GraphicsCommandList* commandList)
 		{
-			mResource->TransitTo(commandList, D3D12_RESOURCE_STATE_PRESENT);
+			mTexture->GetResource()->TransitTo(commandList, D3D12_RESOURCE_STATE_PRESENT);
 		}
 	}
 }

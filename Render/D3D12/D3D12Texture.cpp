@@ -1,6 +1,7 @@
 #include <d3dx12.h>
-#include "D3D12Texture.h"
 #include "Logger.h"
+#include "D3D12Device.h"
+#include "D3D12Texture.h"
 #include "D3D12Renderer.h"
 
 namespace Lightning
@@ -73,6 +74,13 @@ namespace Lightning
 				LOG_ERROR("Failed to create intermediate texture!");
 			}
 		}
+		
+		D3D12Texture::D3D12Texture(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState)
+			:mBuffer(nullptr), mCommitted(true)
+		{
+			mResource = std::make_shared<D3D12StatefulResource>(resource, initialState);
+			mDesc = resource->GetDesc();
+		}
 
 		D3D12Texture::~D3D12Texture()
 		{
@@ -104,6 +112,21 @@ namespace Lightning
 					mCommitted = true;
 				}
 			}
+		}
+
+		std::uint16_t D3D12Texture::GetMultiSampleCount()const
+		{
+			return static_cast<std::uint16_t>(mDesc.SampleDesc.Count);
+		}
+
+		std::uint16_t D3D12Texture::GetMultiSampleQuality()const
+		{
+			return static_cast<std::uint16_t>(mDesc.SampleDesc.Quality);
+		}
+
+		RenderFormat D3D12Texture::GetRenderFormat()const
+		{
+			return D3D12TypeMapper::MapRenderFormat(mDesc.Format);
 		}
 
 		std::uint16_t D3D12Texture::GetBitsPerPixel(DXGI_FORMAT format)

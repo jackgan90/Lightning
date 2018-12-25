@@ -48,6 +48,9 @@ namespace Lightning
 		struct ITexture : Plugins::IRefObject
 		{
 			virtual void INTERFACECALL Commit() = 0;
+			virtual std::uint16_t INTERFACECALL GetMultiSampleCount()const = 0;
+			virtual std::uint16_t INTERFACECALL GetMultiSampleQuality()const = 0;
+			virtual RenderFormat INTERFACECALL GetRenderFormat()const = 0;
 		};
 	}
 }

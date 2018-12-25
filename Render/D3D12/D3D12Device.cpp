@@ -72,7 +72,7 @@ namespace Lightning
 			"	return float4(color.rgb * diffuse, color.a) ;\n"
 			"}\n";
 		D3D12Device::D3D12Device(IDXGIFactory4* factory)
-			:Device()
+			:Device(), mCurrentRTID(1)
 		{
 			CreateNativeDevice(factory);
 			D3D12_FEATURE_DATA_SHADER_MODEL featureShaderModel;
@@ -167,6 +167,17 @@ namespace Lightning
 			desc.SampleDesc.Quality = descriptor.multiSampleQuality;
 			desc.Width = descriptor.width;
 			return NEW_REF_OBJ(D3D12Texture, desc, this, buffer);
+		}
+
+		D3D12Texture* D3D12Device::CreateTexture(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState)
+		{
+			return NEW_REF_OBJ(D3D12Texture, resource, initialState);
+		}
+
+		IRenderTarget* D3D12Device::CreateRenderTarget(ITexture* texture)
+		{
+			auto id = mCurrentRTID.fetch_add(1, std::memory_order_relaxed);
+			return NEW_REF_OBJ(D3D12RenderTarget, id, static_cast<D3D12Texture*>(texture));
 		}
 
 		ID3D12GraphicsCommandList* D3D12Device::GetGraphicsCommandList()
