@@ -28,7 +28,7 @@ namespace Lightning
 			Matrix4f projectionMatrix;//camera projection matrix
 			IRenderTarget* renderTargets[MAX_RENDER_TARGET_COUNT];	//render targets
 			std::uint8_t renderTargetCount;	//valid render target count
-			IDepthStencilBuffer* depthStencilBuffer;
+			IDepthStencilBuffer* depthStencilBuffer; //depth stencil buffer for this draw
 		};
 		static_assert(std::is_pod<RenderNode>::value, "RenderNode is not a POD type.");
 		//RenderQueue is a very important concept.Every drawable object will encode there data to a RenderNode struct.
