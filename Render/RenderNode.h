@@ -13,6 +13,14 @@ namespace Lightning
 		using namespace Foundation::Math;
 		struct RenderNode
 		{
+			void Reset()
+			{
+				geometry.Reset();
+				material = nullptr;
+				std::memset(renderTargets, 0, sizeof(renderTargets));
+				renderTargetCount = 0;
+				depthStencilBuffer = nullptr;
+			}
 			Geometry geometry;	//vb ib 
 			IMaterial* material;	//shader material attributes
 			Transform transform;		//position rotation scale
