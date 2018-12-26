@@ -193,7 +193,7 @@ namespace Lightning
 			}
 		}
 
-		void D3D12Renderer::ApplyRenderTargets(const IRenderTarget*const* renderTargets, std::uint8_t renderTargetCount, IDepthStencilBuffer* dsBuffer)
+		void D3D12Renderer::ApplyRenderTargets(const IRenderTarget*const* renderTargets, std::size_t renderTargetCount, IDepthStencilBuffer* dsBuffer)
 		{
 			assert(renderTargetCount <= MAX_RENDER_TARGET_COUNT);
 			auto commandList = GetGraphicsCommandList();
@@ -274,7 +274,7 @@ namespace Lightning
 			commandList->RSSetScissorRects(scissorRectCount, D3D12ScissorRects);
 		}
 
-		void D3D12Renderer::BindGPUBuffer(std::uint8_t slot, IGPUBuffer* pBuffer)
+		void D3D12Renderer::BindGPUBuffer(std::size_t slot, IGPUBuffer* pBuffer)
 		{
 			if (!pBuffer)
 				return;
@@ -286,7 +286,7 @@ namespace Lightning
 			{
 				D3D12_VERTEX_BUFFER_VIEW* bufferViews = g_RenderAllocator.Allocate<D3D12_VERTEX_BUFFER_VIEW>(1);
 				bufferViews[0] = static_cast<D3D12VertexBuffer*>(pBuffer)->GetBufferView();
-				commandList->IASetVertexBuffers(slot, 1, bufferViews);
+				commandList->IASetVertexBuffers(UINT(slot), 1, bufferViews);
 				break;
 			}
 			case GPUBufferType::INDEX:

@@ -1,42 +1,56 @@
 #pragma once
+#include "RefObject.h"
+#include "IRenderUnit.h"
 #include "Container.h"
-#include "Geometry.h"
-#include "IMaterial.h"
-#include "IRenderTarget.h"
-#include "IDepthStencilBuffer.h"
-#include "Transform.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		using namespace Foundation::Math;
-		struct RenderUnit
+		using Foundation::Container;
+		class RenderUnit : public IRenderUnit
 		{
-			void Reset()
-			{
-				geometry.Reset();
-				material = nullptr;
-				std::memset(renderTargets, 0, sizeof(renderTargets));
-				renderTargetCount = 0;
-				depthStencilBuffer = nullptr;
-			}
-			Geometry geometry;	//vb ib 
-			IMaterial* material;	//shader material attributes
-			Transform transform;		//position rotation scale
-			Matrix4f viewMatrix;		//camera view matrix
-			Matrix4f projectionMatrix;//camera projection matrix
-			IRenderTarget* renderTargets[MAX_RENDER_TARGET_COUNT];	//render targets
-			std::uint8_t renderTargetCount;	//valid render target count
-			IDepthStencilBuffer* depthStencilBuffer; //depth stencil buffer for this draw
+		public:
+			RenderUnit();
+			INTERFACECALL ~RenderUnit()override;
+			void INTERFACECALL SetPrimitiveType(PrimitiveType type)override;
+			PrimitiveType INTERFACECALL GetPrimitiveType()const override;
+			void INTERFACECALL SetIndexBuffer(IIndexBuffer* indexBuffer)override;
+			IIndexBuffer* INTERFACECALL GetIndexBuffer()const override;
+			void INTERFACECALL ClearVertexBuffers()override;
+			void INTERFACECALL SetVertexBuffer(std::size_t slot, IVertexBuffer* vertexBuffer)override;
+			std::size_t INTERFACECALL GetVertexBufferCount()const override;
+			void INTERFACECALL GetVertexBuffer(std::size_t index, std::size_t& slot, IVertexBuffer*& vertexBuffer)const override;
+			void INTERFACECALL SetMaterial(IMaterial* material)override;
+			IMaterial* INTERFACECALL GetMaterial()const override;
+			void INTERFACECALL SetTransform(const Transform& transform)override;
+			const Transform& INTERFACECALL GetTransform()const override;
+			void INTERFACECALL SetViewMatrix(const Matrix4f& matrix)override;
+			const Matrix4f& INTERFACECALL GetViewMatrix()const override;
+			void INTERFACECALL SetProjectionMatrix(const Matrix4f& matrix)override;
+			const Matrix4f& INTERFACECALL GetProjectionMatrix()const override;
+			void INTERFACECALL AddRenderTarget(IRenderTarget* renderTarget)override;
+			void INTERFACECALL RemoveRenderTarget(IRenderTarget* renderTarget)override;
+			IRenderTarget* INTERFACECALL GetRenderTarget(std::size_t index)const override;
+			std::size_t INTERFACECALL GetRenderTargetCount()const override;
+			void INTERFACECALL ClearRenderTargets()override;
+			void INTERFACECALL SetDepthStencilBuffer(IDepthStencilBuffer* depthStencilBuffer)override;
+			IDepthStencilBuffer* INTERFACECALL GetDepthStencilBuffer()const override;
+			void INTERFACECALL Reset()override;
+		private:
+			void DoReset();
+			void DoClearRenderTargets();
+			void DoClearVertexBuffers();
+			Container::UnorderedMap<std::size_t, IVertexBuffer*> mVertexBuffers;
+			IIndexBuffer* mIndexBuffer;
+			PrimitiveType mPrimitiveType;
+			IMaterial* mMaterial;	//shader material attributes
+			Transform mTransform;		//position rotation scale
+			Matrix4f mViewMatrix;		//camera view matrix
+			Matrix4f mProjectionMatrix;//camera projection matrix
+			Container::Vector<IRenderTarget*> mRenderTargets;//render targets
+			IDepthStencilBuffer* mDepthStencilBuffer; //depth stencil buffer for this draw
+			REF_OBJECT_OVERRIDE(RenderUnit)
 		};
-		static_assert(std::is_pod<RenderUnit>::value, "RenderUnit is not a POD type.");
-		//RenderQueue is a very important concept.Every drawable object will encode there data to a RenderUnit struct.
-		//After enqueue,the nodes remain unchangeable.The responsibility for render pass
-		//is to read unit data from the queue and carry out different render algorithms.The data in this
-		//queue won't be cleared until next time the renderer renders to the same swap chain,which ensures the 
-		//render resource validation during this frame(render resources won't be deleted because a render unit
-		//holds all shared_ptr referring to them).
-		using RenderQueue = Foundation::Container::Vector<RenderUnit>;
 	}
 }

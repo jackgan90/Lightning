@@ -6,6 +6,7 @@
 #include "FrameMemoryAllocator.h"
 #include "Serializers/ShaderSerializer.h"
 #include "Serializers/TextureSerializer.h"
+#include "RenderUnit.h"
 #include "Loader.h"
 
 namespace Lightning
@@ -19,26 +20,9 @@ namespace Lightning
 		{
 			if (renderQueue)
 			{
-				for (auto& unit : *renderQueue)
+				for (auto unit : *renderQueue)
 				{
-					unit.material->Release();
-					if (unit.geometry.ib)
-					{
-						unit.geometry.ib->Release();
-					}
-					for (auto i = 0;i < Foundation::ArraySize(unit.geometry.vbs);++i)
-					{
-						if (unit.geometry.vbs[i])
-						{
-							unit.geometry.vbs[i]->Release();
-						}
-					}
-					if (unit.depthStencilBuffer)
-						unit.depthStencilBuffer->Release();
-					for (auto i = 0;i < unit.renderTargetCount;++i)
-					{
-						unit.renderTargets[i]->Release();
-					}
+					unit->Release();
 				}
 				renderQueue->clear();
 			}
@@ -193,36 +177,15 @@ namespace Lightning
 			return mSwapChain.get();
 		}
 
-
-		void Renderer::CommitRenderUnit(const RenderUnit& unit)
+		IRenderUnit* Renderer::CreateRenderUnit()
 		{
-			assert(mStarted && "Renderer must be started first.");
-			assert(unit.material && "unit must have a material!");
-			unit.material->AddRef();
-			bool hasIB = false;
-			bool hasVB = false;
-			if (unit.geometry.ib)
-			{
-				hasIB = true;
-				unit.geometry.ib->AddRef();
-			}
-			for (auto i = 0;i < Foundation::ArraySize(unit.geometry.vbs);++i)
-			{
-				if (unit.geometry.vbs[i])
-				{
-					unit.geometry.vbs[i]->AddRef();
-					hasVB = true;
-				}
+			return NEW_REF_OBJ(RenderUnit);
+		}
 
-			}
-			assert((hasVB || hasIB) && "vb or ib can not both be empty!");
-			if (unit.depthStencilBuffer)
-				unit.depthStencilBuffer->AddRef();
-			for (auto i = 0; i < unit.renderTargetCount; ++i)
-			{
-				assert(unit.renderTargets[i] && "renderTarget cannot be null!");
-				unit.renderTargets[i]->AddRef();
-			}
+		void Renderer::CommitRenderUnit(IRenderUnit* unit)
+		{
+			assert(unit != nullptr && "Commit render unit cannot be nullptr!");
+			unit->AddRef();
 			mCurrentFrameRenderQueue->push_back(unit);
 			for (auto& pass : mRenderPasses)
 			{

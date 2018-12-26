@@ -2,7 +2,7 @@
 #include <memory>
 #include <cstdint>
 #include "Container.h"
-#include "RenderUnit.h"
+#include "IRenderUnit.h"
 #include "IShader.h"
 #include "IPrimitive.h"
 #include "RefObject.h"
@@ -18,7 +18,7 @@ namespace Lightning
 			Primitive();
 			INTERFACECALL ~Primitive()override;
 			void INTERFACECALL Draw(IRenderer* renderer, const SceneRenderData& sceneRenderData) override;
-			PrimitiveType INTERFACECALL GetPrimitiveType()const override{ return mRenderUnit.geometry.primType; }
+			PrimitiveType INTERFACECALL GetPrimitiveType()const override{ return mRenderUnit->GetPrimitiveType(); }
 			void INTERFACECALL SetWorldPosition(const Vector3f& pos) override{ mTransform.SetPosition(pos); }
 			Vector3f INTERFACECALL GetWorldPosition()const override{ return mTransform.GetPosition(); }
 			void INTERFACECALL SetWorldRotation(const Quaternionf& rot) override{ mTransform.SetRotation(rot); }
@@ -41,7 +41,7 @@ namespace Lightning
 			virtual Vector3f GetScale() = 0;
 			virtual std::size_t GetVertexBufferSize() = 0;
 			virtual std::size_t GetIndexBufferSize() = 0;
-			Render::RenderUnit mRenderUnit;
+			Render::IRenderUnit* mRenderUnit;
 			Transformer mTransform;
 			bool mShouldUpdateRenderUnit;
 			Color32 mColor;

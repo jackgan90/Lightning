@@ -18,16 +18,16 @@ namespace Lightning
 				[&renderQueue, this](const tbb::blocked_range<std::size_t>& range) {
 				for (std::size_t i = range.begin(); i != range.end();++i)
 				{
-					const auto& unit = renderQueue[i];
+					const auto unit = renderQueue[i];
 					CommitShaderParameters(unit);
 					CommitPipelineStates(unit);
-					CommitBuffers(unit.geometry);
-					Draw(unit.geometry);
+					CommitBuffers(unit);
+					Draw(unit);
 				}
 			});
 		}
 
-		void ForwardRenderPass::OnAddRenderUnit(const RenderUnit& unit)
+		void ForwardRenderPass::OnAddRenderUnit(const IRenderUnit* unit)
 		{
 
 		}
@@ -36,62 +36,65 @@ namespace Lightning
 		{
 		}
 
-		void ForwardRenderPass::CommitPipelineStates(const RenderUnit& unit)
+		void ForwardRenderPass::CommitPipelineStates(const IRenderUnit* unit)
 		{
 			PipelineState state;
 			state.Reset();
-			state.renderTargetCount = unit.renderTargetCount;
+			state.renderTargetCount = unit->GetRenderTargetCount();
 			auto renderer = Renderer::Instance();
 			auto pSwapChain = renderer->GetSwapChain();
-			for (auto i = 0;i < unit.renderTargetCount;++i)
+			for (auto i = 0;i < state.renderTargetCount;++i)
 			{
-				state.renderTargets[i] = unit.renderTargets[i];
+				state.renderTargets[i] = unit->GetRenderTarget(i);
 			}
-			if (unit.material)
+			auto material = unit->GetMaterial();
+			if (material)
 			{
-				state.vs = unit.material->GetShader(ShaderType::VERTEX);
-				state.fs = unit.material->GetShader(ShaderType::FRAGMENT);
-				state.gs = unit.material->GetShader(ShaderType::GEOMETRY);
-				state.hs = unit.material->GetShader(ShaderType::TESSELATION_CONTROL);
-				state.ds = unit.material->GetShader(ShaderType::TESSELATION_EVALUATION);
+				state.vs = material->GetShader(ShaderType::VERTEX);
+				state.fs = material->GetShader(ShaderType::FRAGMENT);
+				state.gs = material->GetShader(ShaderType::GEOMETRY);
+				state.hs = material->GetShader(ShaderType::TESSELATION_CONTROL);
+				state.ds = material->GetShader(ShaderType::TESSELATION_EVALUATION);
 				for (auto i = 0;i < state.renderTargetCount;++i)
 				{
-					unit.material->GetBlendState(state.blendStates[i]);
+					material->GetBlendState(state.blendStates[i]);
 					if (state.blendStates[i].enable)
 					{
 						state.depthStencilState.depthWriteEnable = false;
 					}
 				}
 			}
-			state.primType = unit.geometry.primType;
+			state.primType = unit->GetPrimitiveType();
 			//TODO : Apply other pipeline states(blend state, rasterizer state etc)
 			
-			GetInputLayouts(unit.geometry, state.inputLayouts, state.inputLayoutCount);
+			GetInputLayouts(unit, state.inputLayouts, state.inputLayoutCount);
 
-			if (unit.depthStencilBuffer)
+			auto depthStencilBuffer = unit->GetDepthStencilBuffer();
+			if (depthStencilBuffer)
 			{
-				state.depthStencilState.bufferFormat = unit.depthStencilBuffer->GetRenderFormat();
+				state.depthStencilState.bufferFormat = depthStencilBuffer->GetRenderFormat();
 			}
-			renderer->ApplyRenderTargets(unit.renderTargets, unit.renderTargetCount, unit.depthStencilBuffer);
+			renderer->ApplyRenderTargets(state.renderTargets, state.renderTargetCount, depthStencilBuffer);
 			renderer->ApplyPipelineState(state);
 		}
 
-		void ForwardRenderPass::CommitShaderParameters(const RenderUnit& unit)
+		void ForwardRenderPass::CommitShaderParameters(const IRenderUnit* unit)
 		{
-			if (!unit.material)
+			auto material = unit->GetMaterial();
+			if (!material)
 				return;
 			static const ShaderType shaderTypes[] = { ShaderType::VERTEX, ShaderType::FRAGMENT, ShaderType::GEOMETRY,
 			ShaderType::TESSELATION_CONTROL, ShaderType::TESSELATION_EVALUATION };
 			auto renderer = Renderer::Instance();
 			for (auto shaderType : shaderTypes)
 			{
-				IShader* shader = unit.material->GetShader(shaderType);
+				IShader* shader = material->GetShader(shaderType);
 				if (shader)
 				{
-					auto parameterCount = unit.material->GetParameterCount(shaderType);
+					auto parameterCount = material->GetParameterCount(shaderType);
 					for (auto i = 0;i < parameterCount;++i)
 					{
-						auto parameter = unit.material->GetParameter(shaderType, i);
+						auto parameter = material->GetParameter(shaderType, i);
 						shader->SetParameter(parameter);
 					}
 					CommitSemanticUniforms(shader, unit);
@@ -99,7 +102,7 @@ namespace Lightning
 			}
 		}
 
-		void ForwardRenderPass::CommitSemanticUniforms(IShader* shader, const RenderUnit& unit)
+		void ForwardRenderPass::CommitSemanticUniforms(IShader* shader, const IRenderUnit* unit)
 		{
 			auto renderer = Renderer::Instance();
 			RenderSemantics* semantics{ nullptr };
@@ -116,7 +119,7 @@ namespace Lightning
 				case RenderSemantics::WVP:
 				{
 					//We know that transform.ToMatrix4 may change it's internal matrix
-					auto wvp = unit.projectionMatrix * unit.viewMatrix * unit.transform.matrix;
+					auto wvp = unit->GetProjectionMatrix() * unit->GetViewMatrix() * unit->GetTransform().matrix;
 					shader->SetParameter(&ShaderParameter(uniformName, wvp));
 					break;
 				}
@@ -127,53 +130,59 @@ namespace Lightning
 			}
 		}
 
-		void ForwardRenderPass::GetInputLayouts(const Geometry& geometry, VertexInputLayout* layouts, std::uint8_t& layoutCount)
+		void ForwardRenderPass::GetInputLayouts(const IRenderUnit* unit, VertexInputLayout* layouts, std::size_t& layoutCount)
 		{
 			layoutCount = 0;
-			for (std::size_t i = 0;i < Foundation::ArraySize(geometry.vbs);i++)
+			auto vertexBufferCount = unit->GetVertexBufferCount();
+			for (std::size_t i = 0;i < vertexBufferCount;i++)
 			{
-				if (!geometry.vbs[i])
-					continue;
+				IVertexBuffer* vertexBuffer;
+				std::size_t slot;
+				unit->GetVertexBuffer(i, slot, vertexBuffer);
 				auto& layout = layouts[layoutCount];
 				layout.slot = static_cast<std::uint8_t>(i);
-				layout.componentCount = static_cast<std::uint8_t>(geometry.vbs[i]->GetVertexComponentCount());
+				layout.componentCount = static_cast<std::uint8_t>(vertexBuffer->GetVertexComponentCount());
 				assert(layout.componentCount <= MAX_INPUT_LAYOUT_COMPONENT_COUNT && "Input layout component count too large!");
 				if (layout.componentCount > 0)
 				{
 					for (std::size_t j = 0;j < layout.componentCount;++j)
 					{
-						layout.components[j] = geometry.vbs[i]->GetVertexComponent(j);
+						layout.components[j] = vertexBuffer->GetVertexComponent(j);
 					}
 				}
 				++layoutCount;
 			}
 		}
 
-		void ForwardRenderPass::CommitBuffers(const Geometry& geometry)
+		void ForwardRenderPass::CommitBuffers(const IRenderUnit* unit)
 		{
 			auto renderer = Renderer::Instance();
-			for (std::uint8_t i = 0; i < Foundation::ArraySize(geometry.vbs); i++)
+			auto vertexBufferCount = unit->GetVertexBufferCount();
+			for (std::uint8_t i = 0; i < vertexBufferCount; i++)
 			{
-				if (!geometry.vbs[i])
-					continue;
-				geometry.vbs[i]->Commit();
-				renderer->BindGPUBuffer(i, geometry.vbs[i]);
+				std::size_t slot;
+				IVertexBuffer* vertexBuffer;
+				unit->GetVertexBuffer(i, slot, vertexBuffer);
+				vertexBuffer->Commit();
+				renderer->BindGPUBuffer(slot, vertexBuffer);
 			}
-			if (geometry.ib)
+			auto indexBuffer = unit->GetIndexBuffer();
+			if (indexBuffer)
 			{
-				geometry.ib->Commit();
-				renderer->BindGPUBuffer(0, geometry.ib);
+				indexBuffer->Commit();
+				renderer->BindGPUBuffer(0, indexBuffer);
 			}
 		}
 
-		void ForwardRenderPass::Draw(const Geometry& geometry)
+		void ForwardRenderPass::Draw(const IRenderUnit* unit)
 		{
 			auto renderer = Renderer::Instance();
-			if (geometry.ib)
+			auto indexBuffer = unit->GetIndexBuffer();
+			if (indexBuffer)
 			{
 				DrawParam param{};
 				param.drawType = DrawType::Index;
-				param.indexCount = geometry.ib->GetIndexCount();
+				param.indexCount = indexBuffer->GetIndexCount();
 				param.instanceCount = 1;
 				renderer->Draw(param);
 			}

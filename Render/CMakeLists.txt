@@ -21,13 +21,13 @@ set(HEADERS IDevice.h
 			RendererFactory.h
 			IGPUBuffer.h
 			RenderConstants.h
-			Geometry.h
 			IMaterial.h
 			Material.h
 			RenderPass.h
 			ForwardRenderPass.h
 			DeferedRenderPass.h
 			FrameMemoryAllocator.h
+			IRenderUnit.h
 			RenderUnit.h
 			RenderObjectCache.h)
 set(SOURCES Renderer.cpp
@@ -36,12 +36,12 @@ set(SOURCES Renderer.cpp
 			IndexBuffer.cpp
 			RendererHelper.cpp
 			RendererFactory.cpp
-			Geometry.cpp
 			Material.cpp
 			RenderPass.cpp
 			ForwardRenderPass.cpp
 			FrameMemoryAllocator.cpp
 			DeferedRenderPass.cpp
+			RenderUnit.cpp
 			RenderObjectCache.cpp)
 
 set(TYPES_HEADERS	Types/Color.h

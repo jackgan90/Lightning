@@ -8,7 +8,7 @@
 #include "IDepthStencilBuffer.h"
 #include "Color.h"
 #include "Math/Matrix.h"
-#include "RenderUnit.h"
+#include "IRenderUnit.h"
 #include "RenderPass.h"
 #include "IWindow.h"
 #include "Portable.h"
@@ -79,19 +79,20 @@ namespace Lightning
 			virtual std::uint64_t INTERFACECALL GetCurrentFrameCount()const = 0;
 			virtual std::size_t INTERFACECALL GetFrameResourceIndex()const = 0;
 			virtual void INTERFACECALL AddRenderPass(RenderPassType type) = 0;
+			virtual IRenderUnit* INTERFACECALL CreateRenderUnit() = 0;
 			//Commit a render unit for rendering
-			virtual void INTERFACECALL CommitRenderUnit(const RenderUnit& unit) = 0;
+			virtual void INTERFACECALL CommitRenderUnit(IRenderUnit* unit) = 0;
 			//clear a specified render target,possibly parts of it defined by an array of rects
 			virtual void INTERFACECALL ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, 
 				const RectI* rects=nullptr, std::size_t rectCount = 0) = 0;
 			virtual void INTERFACECALL ClearDepthStencilBuffer(IDepthStencilBuffer* buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, 
 				const RectI* rects = nullptr, std::size_t rectCount = 0) = 0;
-			virtual void INTERFACECALL ApplyRenderTargets(const IRenderTarget*const * renderTargets, std::uint8_t renderTargetCount, IDepthStencilBuffer* dsBuffer) = 0;
+			virtual void INTERFACECALL ApplyRenderTargets(const IRenderTarget*const * renderTargets, std::size_t renderTargetCount, IDepthStencilBuffer* dsBuffer) = 0;
 			virtual void INTERFACECALL ApplyPipelineState(const PipelineState& state) = 0;
 			virtual void INTERFACECALL ApplyViewports(const Viewport* viewports, std::uint8_t viewportCount) = 0;
 			virtual void INTERFACECALL ApplyScissorRects(const ScissorRect* scissorRects, std::uint8_t scissorRectCount) = 0;
 			//bind pBuffer to a GPU slot(does not copy data,just binding), each invocation will override previous binding
-			virtual void INTERFACECALL BindGPUBuffer(std::uint8_t slot, IGPUBuffer* buffer) = 0;
+			virtual void INTERFACECALL BindGPUBuffer(std::size_t slot, IGPUBuffer* buffer) = 0;
 			//issue underlying draw call
 			virtual void INTERFACECALL Draw(const DrawParam& param) = 0;
 			//get near plane value corresponding to normalized device coordinate

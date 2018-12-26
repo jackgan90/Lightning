@@ -233,13 +233,13 @@ namespace Lightning
 			IShader* gs;
 			IShader* hs;
 			IShader* ds;
-			std::uint8_t inputLayoutCount;
+			std::size_t inputLayoutCount;
 			PrimitiveType primType;
 			RasterizerState rasterizerState;
 			DepthStencilState depthStencilState;
 			Viewport viewPort;
 			ScissorRect scissorRect;
-			std::uint8_t renderTargetCount;
+			std::size_t renderTargetCount;
 			//Don't try to reorder the following fields.array fields must be put to the end of struct
 			VertexInputLayout inputLayouts[MAX_INPUT_LAYOUT_COUNT];
 			BlendState blendStates[MAX_RENDER_TARGET_COUNT];

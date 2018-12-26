@@ -25,13 +25,13 @@ namespace Lightning
 			ForwardRenderPass::Apply(renderQueue);
 		}
 
-		void D3D12ForwardRenderPass::OnAddRenderUnit(const RenderUnit& unit)
+		void D3D12ForwardRenderPass::OnAddRenderUnit(const IRenderUnit* unit)
 		{
 			using ShaderContainer = Container::Vector<IShader*>;
 			static Foundation::ThreadLocalSingleton<ShaderContainer> shadersContainer;
 			auto& shaders = *shadersContainer;
 			shaders.clear();
-			GetMaterialShaders(unit.material, shaders);
+			GetMaterialShaders(unit->GetMaterial(), shaders);
 			std::for_each(shaders.begin(), shaders.end(), [this](IShader* shader) {
 				auto d3d12Shader = static_cast<D3D12Shader*>(shader);
 				mTotalConstantBufferSize += d3d12Shader->GetConstantBufferSize();
