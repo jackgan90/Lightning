@@ -1,9 +1,10 @@
 #pragma once
 #include "Container.h"
-#include "Geometry.h"
 #include "IMaterial.h"
 #include "IRenderTarget.h"
 #include "IDepthStencilBuffer.h"
+#include "IIndexBuffer.h"
+#include "IVertexBuffer.h"
 #include "Transform.h"
 
 namespace Lightning

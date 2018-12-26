@@ -43,6 +43,7 @@ namespace Lightning
 			state.renderTargetCount = unit->GetRenderTargetCount();
 			auto renderer = Renderer::Instance();
 			auto pSwapChain = renderer->GetSwapChain();
+			state.renderTargets = g_RenderAllocator.Allocate<IRenderTarget*>(state.renderTargetCount);
 			for (auto i = 0;i < state.renderTargetCount;++i)
 			{
 				state.renderTargets[i] = unit->GetRenderTarget(i);
@@ -55,6 +56,7 @@ namespace Lightning
 				state.gs = material->GetShader(ShaderType::GEOMETRY);
 				state.hs = material->GetShader(ShaderType::TESSELATION_CONTROL);
 				state.ds = material->GetShader(ShaderType::TESSELATION_EVALUATION);
+				state.blendStates = g_RenderAllocator.Allocate<BlendState>(state.renderTargetCount);
 				for (auto i = 0;i < state.renderTargetCount;++i)
 				{
 					material->GetBlendState(state.blendStates[i]);
@@ -130,27 +132,26 @@ namespace Lightning
 			}
 		}
 
-		void ForwardRenderPass::GetInputLayouts(const IRenderUnit* unit, VertexInputLayout* layouts, std::size_t& layoutCount)
+		void ForwardRenderPass::GetInputLayouts(const IRenderUnit* unit, VertexInputLayout*& layouts, std::size_t& layoutCount)
 		{
-			layoutCount = 0;
-			auto vertexBufferCount = unit->GetVertexBufferCount();
-			for (std::size_t i = 0;i < vertexBufferCount;i++)
+			layoutCount = unit->GetVertexBufferCount();
+			layouts = g_RenderAllocator.Allocate<VertexInputLayout>(layoutCount);
+			for (std::size_t i = 0;i < layoutCount;i++)
 			{
 				IVertexBuffer* vertexBuffer;
 				std::size_t slot;
 				unit->GetVertexBuffer(i, slot, vertexBuffer);
-				auto& layout = layouts[layoutCount];
-				layout.slot = static_cast<std::uint8_t>(i);
-				layout.componentCount = static_cast<std::uint8_t>(vertexBuffer->GetVertexComponentCount());
-				assert(layout.componentCount <= MAX_INPUT_LAYOUT_COMPONENT_COUNT && "Input layout component count too large!");
+				auto& layout = layouts[i];
+				layout.slot = slot;
+				layout.componentCount = vertexBuffer->GetVertexComponentCount();
 				if (layout.componentCount > 0)
 				{
+					layout.components = g_RenderAllocator.Allocate<VertexComponent>(layout.componentCount);
 					for (std::size_t j = 0;j < layout.componentCount;++j)
 					{
 						layout.components[j] = vertexBuffer->GetVertexComponent(j);
 					}
 				}
-				++layoutCount;
 			}
 		}
 

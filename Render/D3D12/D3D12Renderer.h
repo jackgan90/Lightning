@@ -74,10 +74,10 @@ namespace Lightning
 			PipelineStateRootSignature CreateAndCachePipelineState(const PipelineState& pState, std::size_t hashValue);
 			void BindShaderResources(const PipelineState& state);
 			void ApplyRasterizerState(const RasterizerState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
-			void ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
+			void ApplyBlendStates(std::size_t firstRTIndex, const BlendState* states, std::size_t stateCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			void ApplyDepthStencilState(const DepthStencilState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			void ApplyShader(IShader* pShader, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
-			void UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::uint8_t  layoutCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
+			void UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::size_t layoutCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			//Analyze shader root resources.
 			//Returns number of constant buffers used by this shader
 			std::size_t AnalyzeShaderRootResources(IShader *pShader, Container::UnorderedMap<ShaderType, Container::Vector<ShaderResourceHandle>>& resourceHandles);

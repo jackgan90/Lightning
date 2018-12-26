@@ -175,12 +175,13 @@ namespace Lightning
 			{
 				slot = 0;
 				componentCount = 0;
+				components = nullptr;
 				//Don't reset each components,because componentCount indicate the number of valid components is 0
 			}
-			std::uint8_t slot;
-			VertexComponent components[MAX_INPUT_LAYOUT_COMPONENT_COUNT];
+			std::size_t slot;
+			VertexComponent* components;
 			//Users of this struct should always check componentCount to ensure validation of components
-			std::uint8_t componentCount;
+			std::size_t componentCount;
 		};
 		static_assert(std::is_pod<VertexInputLayout>::value, "VertexInputLayout is not a POD type.");
 
@@ -227,6 +228,9 @@ namespace Lightning
 				scissorRect.Reset();
 
 				renderTargetCount = 0;
+				inputLayouts = nullptr;
+				blendStates = nullptr;
+				renderTargets = nullptr;
 			}
 			IShader* vs;
 			IShader* fs;
@@ -241,9 +245,9 @@ namespace Lightning
 			ScissorRect scissorRect;
 			std::size_t renderTargetCount;
 			//Don't try to reorder the following fields.array fields must be put to the end of struct
-			VertexInputLayout inputLayouts[MAX_INPUT_LAYOUT_COUNT];
-			BlendState blendStates[MAX_RENDER_TARGET_COUNT];
-			IRenderTarget* renderTargets[MAX_RENDER_TARGET_COUNT];
+			VertexInputLayout* inputLayouts;
+			BlendState* blendStates;
+			IRenderTarget** renderTargets;
 		};
 		static_assert(std::is_pod<PipelineState>::value, "PipelineState is not a POD type.");
 

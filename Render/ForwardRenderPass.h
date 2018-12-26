@@ -23,7 +23,7 @@ namespace Lightning
 			void CommitShaderParameters(const IRenderUnit* unit);
 			void CommitSemanticUniforms(IShader* shader, const IRenderUnit* unit);
 			void Draw(const IRenderUnit* unit);
-			void GetInputLayouts(const IRenderUnit* unit, VertexInputLayout* layouts, std::size_t& layoutCount);
+			void GetInputLayouts(const IRenderUnit* unit, VertexInputLayout*& layouts, std::size_t& layoutCount);
 		};
 	}
 }

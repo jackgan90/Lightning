@@ -195,7 +195,6 @@ namespace Lightning
 
 		void D3D12Renderer::ApplyRenderTargets(const IRenderTarget*const* renderTargets, std::size_t renderTargetCount, IDepthStencilBuffer* dsBuffer)
 		{
-			assert(renderTargetCount <= MAX_RENDER_TARGET_COUNT);
 			auto commandList = GetGraphicsCommandList();
 			//TODO : actually should set pipeline description based on PipelineState rather than set them here
 			auto rtvHandles = g_RenderAllocator.Allocate<D3D12_CPU_DESCRIPTOR_HANDLE>(renderTargetCount);
@@ -359,7 +358,7 @@ namespace Lightning
 			desc.pRootSignature = stateAndSignature.rootSignature.Get();
 			desc.PrimitiveTopologyType = D3D12TypeMapper::MapPrimitiveType(state.primType);
 			//TODO : should apply pipeline state based on PipelineState
-			desc.NumRenderTargets = state.renderTargetCount;
+			desc.NumRenderTargets = UINT(state.renderTargetCount);
 			for (std::uint8_t i = 0; i < state.renderTargetCount; i++)
 			{
 				auto renderTexture = state.renderTargets[i]->GetTexture();
@@ -560,10 +559,10 @@ namespace Lightning
 			pDesc->FrontCounterClockwise = state.frontFace == WindingOrder::COUNTER_CLOCKWISE;
 		}
 
-		void D3D12Renderer::ApplyBlendStates(const std::uint8_t firstRTIndex, const BlendState* states, const std::uint8_t stateCount, 
+		void D3D12Renderer::ApplyBlendStates(std::size_t firstRTIndex, const BlendState* states, std::size_t stateCount, 
 			D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
-			for (int i = firstRTIndex; i < firstRTIndex + stateCount;++i)
+			for (auto i = firstRTIndex; i < firstRTIndex + stateCount;++i)
 			{
 				//TODO these values should be set based on render unit status
 				desc.BlendState.AlphaToCoverageEnable = FALSE;
@@ -655,7 +654,7 @@ namespace Lightning
 			}
 		}
 
-		void D3D12Renderer::UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::uint8_t  layoutCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
+		void D3D12Renderer::UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::size_t layoutCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
 			D3D12_INPUT_LAYOUT_DESC& inputLayoutDesc = desc.InputLayout;
 			if (layoutCount == 0)
@@ -682,7 +681,7 @@ namespace Lightning
 					else
 						pInputElementDesc[i].AlignedByteOffset = component.offset;
 					pInputElementDesc[i].Format = D3D12TypeMapper::MapRenderFormat(component.format);
-					pInputElementDesc[i].InputSlot = inputLayout.slot;
+					pInputElementDesc[i].InputSlot = UINT(inputLayout.slot);
 					pInputElementDesc[i].InputSlotClass = component.isInstance ? \
 						D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA : D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 					pInputElementDesc[i].InstanceDataStepRate = component.isInstance ? component.instanceStepRate : 0;
