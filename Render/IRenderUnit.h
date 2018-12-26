@@ -44,6 +44,7 @@ namespace Lightning
 			virtual void INTERFACECALL SetDepthStencilBuffer(IDepthStencilBuffer* depthStencilBuffer) = 0;
 			virtual IDepthStencilBuffer* INTERFACECALL GetDepthStencilBuffer()const = 0;
 			virtual void INTERFACECALL Reset() = 0;
+			virtual IRenderUnit* INTERFACECALL Clone()const = 0;
 		};
 
 		//RenderQueue is a very important concept.Every drawable object will encode there data to a RenderUnit struct.

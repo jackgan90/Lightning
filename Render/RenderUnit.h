@@ -37,6 +37,7 @@ namespace Lightning
 			void INTERFACECALL SetDepthStencilBuffer(IDepthStencilBuffer* depthStencilBuffer)override;
 			IDepthStencilBuffer* INTERFACECALL GetDepthStencilBuffer()const override;
 			void INTERFACECALL Reset()override;
+			IRenderUnit* INTERFACECALL Clone()const override;
 		private:
 			void DoReset();
 			void DoClearRenderTargets();

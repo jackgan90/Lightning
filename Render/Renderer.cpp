@@ -185,7 +185,8 @@ namespace Lightning
 		void Renderer::CommitRenderUnit(IRenderUnit* unit)
 		{
 			assert(unit != nullptr && "Commit render unit cannot be nullptr!");
-			unit->AddRef();
+			unit = unit->Clone();
+			//unit->AddRef();
 			mCurrentFrameRenderQueue->push_back(unit);
 			for (auto& pass : mRenderPasses)
 			{

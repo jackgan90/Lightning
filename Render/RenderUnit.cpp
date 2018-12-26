@@ -196,6 +196,41 @@ namespace Lightning
 			DoReset();
 		}
 
+		IRenderUnit* RenderUnit::Clone()const
+		{
+			auto clonedUnit = static_cast<RenderUnit*>(NEW_REF_OBJ(RenderUnit));
+			clonedUnit->mPrimitiveType = mPrimitiveType;
+			clonedUnit->mTransform = mTransform;
+			clonedUnit->mViewMatrix = mViewMatrix;
+			clonedUnit->mProjectionMatrix = mProjectionMatrix;
+			clonedUnit->mIndexBuffer = mIndexBuffer;
+			if (clonedUnit->mIndexBuffer)
+			{
+				clonedUnit->mIndexBuffer->AddRef();
+			}
+			clonedUnit->mMaterial = mMaterial;
+			if (clonedUnit->mMaterial)
+			{
+				clonedUnit->mMaterial->AddRef();
+			}
+			clonedUnit->mDepthStencilBuffer = mDepthStencilBuffer;
+			if (clonedUnit->mDepthStencilBuffer)
+			{
+				clonedUnit->mDepthStencilBuffer->AddRef();
+			}
+			for (auto renderTarget : mRenderTargets)
+			{
+				renderTarget->AddRef();
+				clonedUnit->mRenderTargets.push_back(renderTarget);
+			}
+			for (auto it = mVertexBuffers.begin(); it != mVertexBuffers.end();++it)
+			{
+				it->second->AddRef();
+				clonedUnit->mVertexBuffers.emplace(it->first, it->second);
+			}
+			return clonedUnit;
+		}
+
 		void RenderUnit::DoReset()
 		{
 			DoClearVertexBuffers();
