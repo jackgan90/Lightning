@@ -143,14 +143,12 @@ namespace Lightning
 				unit->GetVertexBuffer(i, slot, vertexBuffer);
 				auto& layout = layouts[i];
 				layout.slot = slot;
-				layout.componentCount = vertexBuffer->GetVertexComponentCount();
+				auto& vertexDescriptor = vertexBuffer->GetVertexDescriptor();
+				layout.componentCount = vertexDescriptor.componentCount;
 				if (layout.componentCount > 0)
 				{
 					layout.components = g_RenderAllocator.Allocate<VertexComponent>(layout.componentCount);
-					for (std::size_t j = 0;j < layout.componentCount;++j)
-					{
-						layout.components[j] = vertexBuffer->GetVertexComponent(j);
-					}
+					std::memcpy(layout.components, vertexDescriptor.components, sizeof(VertexComponent) * layout.componentCount);
 				}
 			}
 		}

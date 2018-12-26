@@ -8,22 +8,26 @@ namespace Lightning
 	namespace Render
 	{
 		VertexBuffer::VertexBuffer(uint32_t bufferSize, const VertexDescriptor& descriptor)
-			: mVertexDescriptor(descriptor)
-			, mBufferSize(bufferSize)
+			: mBufferSize(bufferSize)
 			, mVertexSize(0)
 		{
+			//Copy VertexComponent array from descriptor.
+			mVertexDescriptor.components = nullptr;
+			mVertexDescriptor.componentCount = descriptor.componentCount;
+			if (mVertexDescriptor.componentCount > 0)
+			{
+				mVertexDescriptor.components = new VertexComponent[mVertexDescriptor.componentCount];
+				std::memcpy(mVertexDescriptor.components, descriptor.components, sizeof(VertexComponent) * mVertexDescriptor.componentCount);
+			}
 			CalculateVertexSize();
 		}
 
-		VertexComponent VertexBuffer::GetVertexComponent(size_t index)const
+		VertexBuffer::~VertexBuffer()
 		{
-			assert(index < mVertexDescriptor.componentCount);
-			return mVertexDescriptor.components[index];
-		}
-
-		std::size_t VertexBuffer::GetVertexComponentCount()const
-		{
-			return mVertexDescriptor.componentCount;
+			if (mVertexDescriptor.components)
+			{
+				delete[] mVertexDescriptor.components;
+			}
 		}
 
 		std::uint32_t VertexBuffer::GetVertexSize()const
@@ -39,9 +43,9 @@ namespace Lightning
 		void VertexBuffer::CalculateVertexSize()
 		{
 			mVertexSize = 0;
-			for (std::size_t i = 0;i < GetVertexComponentCount();++i)
+			for (std::size_t i = 0;i < mVertexDescriptor.componentCount;++i)
 			{
-				const auto component = GetVertexComponent(i);
+				const auto& component = mVertexDescriptor.components[i];
 				auto formatSize = GetVertexFormatSize(component.format);
 				assert(formatSize > 0 && "VertexFormat size must be positive.");
 				mVertexSize += formatSize;

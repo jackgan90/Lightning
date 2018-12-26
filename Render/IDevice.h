@@ -28,6 +28,9 @@ namespace Lightning
 		struct IDevice
 		{
 			virtual INTERFACECALL ~IDevice() = default;
+			//Note : Users must make sure the address pointed by descriptor.components is valid when call this method
+			//After CreateVertexBuffer returns,the users are free to deallocate memory.But keep in mind:don't free the
+			//memory during the inovcation.
 			virtual IVertexBuffer* INTERFACECALL CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor) = 0;
 			virtual IIndexBuffer* INTERFACECALL CreateIndexBuffer(std::uint32_t bufferSize, IndexType type) = 0;
 			virtual IShader* INTERFACECALL CreateShader(ShaderType type, const char* shaderName, 

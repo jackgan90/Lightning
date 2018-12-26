@@ -12,11 +12,10 @@ namespace Lightning
 		class VertexBuffer : public IVertexBuffer
 		{
 		public:
-			VertexComponent INTERFACECALL GetVertexComponent(size_t index)const override;
-			//get vertex attribute count associate with this vertex buffer
-			std::size_t INTERFACECALL GetVertexComponentCount()const override;
+			INTERFACECALL ~VertexBuffer()override;
 			//get vertex size in bytes
 			std::uint32_t INTERFACECALL GetVertexSize()const override;
+			const VertexDescriptor& INTERFACECALL GetVertexDescriptor()const override { return mVertexDescriptor; }
 			std::uint32_t INTERFACECALL GetBufferSize()const override;
 			//get the buffer type
 			GPUBufferType INTERFACECALL GetType()const override { return GPUBufferType::VERTEX; }

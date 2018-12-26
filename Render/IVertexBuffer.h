@@ -32,18 +32,16 @@ namespace Lightning
 
 		struct VertexDescriptor
 		{
-			VertexComponent components[MAX_INPUT_LAYOUT_COMPONENT_COUNT];
-			std::uint8_t componentCount;
+			VertexComponent* components;
+			std::size_t componentCount;
 		};
 		static_assert(std::is_pod<VertexDescriptor>::value, "VertexDescriptor is not a POD type.");
 
 		struct IVertexBuffer : IGPUBuffer
 		{
-			virtual VertexComponent INTERFACECALL GetVertexComponent(size_t index)const = 0;
-			//get vertex component count associate with this vertex buffer
-			virtual std::size_t INTERFACECALL GetVertexComponentCount()const = 0;
 			//get vertex size in bytes
 			virtual std::uint32_t INTERFACECALL GetVertexSize()const = 0;
+			virtual const VertexDescriptor& INTERFACECALL GetVertexDescriptor()const = 0;
 		};
 	}
 }

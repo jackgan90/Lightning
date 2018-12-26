@@ -149,23 +149,27 @@ namespace Lightning
 				mRenderUnit->Release();
 			mRenderUnit = renderer->CreateRenderUnit();
 			Render::VertexDescriptor descriptor;
-			auto& compPosition = descriptor.components[0];
+			Container::Vector<Render::VertexComponent> components;
+			Render::VertexComponent compPosition;
 			compPosition.format = Render::RenderFormat::R32G32B32_FLOAT;
 			compPosition.instanceStepRate = 0;
 			compPosition.isInstance = false;
 			compPosition.offset = 0;
 			compPosition.semantic = Render::RenderSemantics::POSITION;
-			auto& compNormal = descriptor.components[1];
+			components.push_back(compPosition);
+			Render::VertexComponent compNormal;
 			compNormal.format = Render::RenderFormat::R32G32B32_FLOAT;
 			compNormal.instanceStepRate = 0;
 			compNormal.isInstance = false;
 			compNormal.offset = sizeof(float) * 3;
 			compNormal.semantic = Render::RenderSemantics::NORMAL;
-			descriptor.componentCount = 2;
+			components.push_back(compNormal);
 
 			auto pDevice = renderer->GetDevice();
 			auto vbSize = GetVertexBufferSize();
 			auto ibSize = GetIndexBufferSize();
+			descriptor.components = &components[0];
+			descriptor.componentCount = components.size();
 			auto vertexBuffer = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(vbSize), descriptor);
 			mRenderUnit->SetVertexBuffer(0, vertexBuffer);
 			auto indexBuffer = pDevice->CreateIndexBuffer(static_cast<std::uint32_t>(ibSize), Render::IndexType::UINT16);
@@ -280,15 +284,18 @@ namespace Lightning
 			{
 				//generate uv
 				Render::VertexDescriptor descriptor;
-				auto& compTexcoord = descriptor.components[0];
+				Container::Vector<Render::VertexComponent> components;
+				Render::VertexComponent compTexcoord;
 				compTexcoord.format = Render::RenderFormat::R32G32_FLOAT;
 				compTexcoord.instanceStepRate = 0;
 				compTexcoord.isInstance = false;
 				compTexcoord.offset = 0;
 				compTexcoord.semantic = Render::RenderSemantics::TEXCOORD0;
-				descriptor.componentCount = 1;
+				components.push_back(compTexcoord);
 				auto pDevice = renderer->GetDevice();
 				auto uvBufferSize = sizeof(Vector2f) * 8;
+				descriptor.components = &components[0];
+				descriptor.componentCount = components.size();
 				auto vertexBuffer = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(uvBufferSize), descriptor);
 				mRenderUnit->SetVertexBuffer(1, vertexBuffer);
 				auto uv = reinterpret_cast<Vector2f*>(vertexBuffer->Lock(0, uvBufferSize));

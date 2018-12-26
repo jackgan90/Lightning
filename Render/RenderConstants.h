@@ -46,7 +46,6 @@ namespace Lightning
 		ENABLE_ENUM_BITMASK_OPERATORS(DepthStencilClearFlags)
 
 		constexpr std::uint8_t RENDER_FRAME_COUNT = 3;
-		constexpr std::uint8_t MAX_INPUT_LAYOUT_COMPONENT_COUNT = 8;
 		constexpr char* const DEFAULT_SHADER_ENTRY = "main";
 	}
 }
