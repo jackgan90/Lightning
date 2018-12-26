@@ -12,6 +12,12 @@ namespace Lightning
 	namespace Render
 	{
 		using namespace Foundation::Math;
+		//An IRenderUnit object is an object that encapsulates objects and states that are used to render a drawable object in a frame.
+		//It describers what needs to be passed to the downstream rendering pipeline.Users of this interface may change its state by calling 
+		//the Set/Get methods whatever they like
+		//as long as it is not committed.After the unit is committed,any further operations that potentially
+		//change the object is a no-no.Such behavior usually cause undesired outcome.So don't try to reuse it
+		//after the commitment.You'd better call Release() after calling IRenderer::CommitRenderUnit.
 		struct IRenderUnit : Plugins::IRefObject
 		{
 			virtual void INTERFACECALL SetPrimitiveType(PrimitiveType type) = 0;
