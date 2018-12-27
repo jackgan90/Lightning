@@ -240,7 +240,7 @@ namespace Lightning
 			}
 		}
 
-		void D3D12Renderer::ApplyViewports(const Viewport* viewports, std::uint8_t viewportCount)
+		void D3D12Renderer::ApplyViewports(const Viewport* viewports, std::size_t viewportCount)
 		{
 			auto commandList = GetGraphicsCommandList();
 			auto D3D12Viewports = g_RenderAllocator.Allocate<D3D12_VIEWPORT>(viewportCount);
@@ -248,6 +248,7 @@ namespace Lightning
 			{
 				auto& viewport = D3D12Viewports[i];
 				viewport.Width = viewports[i].width;
+				viewport.Height = viewports[i].height;
 				viewport.TopLeftX = viewports[i].left;
 				viewport.TopLeftY = viewports[i].top;
 				viewport.MinDepth = 0.0f;
@@ -257,7 +258,7 @@ namespace Lightning
 			commandList->RSSetViewports(viewportCount, D3D12Viewports);
 		}
 
-		void D3D12Renderer::ApplyScissorRects(const ScissorRect* scissorRects, std::uint8_t scissorRectCount)
+		void D3D12Renderer::ApplyScissorRects(const ScissorRect* scissorRects, std::size_t scissorRectCount)
 		{
 			auto commandList = GetGraphicsCommandList();
 			auto D3D12ScissorRects = g_RenderAllocator.Allocate<D3D12_RECT>(scissorRectCount);

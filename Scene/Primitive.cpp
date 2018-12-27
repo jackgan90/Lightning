@@ -130,11 +130,6 @@ namespace Lightning
 				UpdateRenderUnit(renderer);
 				mShouldUpdateRenderUnit = false;
 			}
-			auto swapChain = renderer->GetSwapChain();
-			auto defaultRT = swapChain->GetDefaultRenderTarget();
-			mRenderUnit->ClearRenderTargets();
-			mRenderUnit->AddRenderTarget(defaultRT);
-			mRenderUnit->SetDepthStencilBuffer(renderer->GetDefaultDepthStencilBuffer());
 			if (sceneRenderData.camera)
 			{
 				mRenderUnit->SetViewMatrix(sceneRenderData.camera->GetViewMatrix());

@@ -1,12 +1,20 @@
 #include <cassert>
 #include <algorithm>
+#include "Renderer.h"
 #include "RenderUnit.h"
+#undef min
+#undef max
 
 namespace Lightning
 {
 	namespace Render
 	{
-		RenderUnit::RenderUnit():mIndexBuffer(nullptr), mMaterial(nullptr), mDepthStencilBuffer(nullptr)
+		RenderUnit::RenderUnit()
+			: mIndexBuffer(nullptr)
+			, mMaterial(nullptr)
+			, mDepthStencilBuffer(nullptr)
+			, mCustomRenderTargets(false)
+			, mCustomDepthStencilBuffer(false)
 		{
 
 		}
@@ -146,12 +154,14 @@ namespace Lightning
 			auto it = std::find(mRenderTargets.cbegin(), mRenderTargets.cend(), renderTarget);
 			assert(it == mRenderTargets.end() && "duplicate render target found.");
 #endif
+			mCustomRenderTargets = true;
 			renderTarget->AddRef();
 			mRenderTargets.push_back(renderTarget);
 		}
 
 		void RenderUnit::RemoveRenderTarget(IRenderTarget* renderTarget)
 		{
+			assert(mCustomRenderTargets && "AddRenderTarget must be called prior to call RemoveRenderTarget.");
 			auto it = std::find(mRenderTargets.cbegin(), mRenderTargets.cend(), renderTarget);
 			if (it != mRenderTargets.end())
 			{
@@ -162,12 +172,21 @@ namespace Lightning
 
 		IRenderTarget* RenderUnit::GetRenderTarget(std::size_t index)const
 		{
+			if (!mCustomRenderTargets)
+			{
+				assert(index == 0 && "index exceed container size");
+				auto swapChain = Renderer::Instance()->GetSwapChain();
+				return swapChain->GetDefaultRenderTarget();
+			}
 			return mRenderTargets[index];
 		}
 
 		std::size_t RenderUnit::GetRenderTargetCount()const
 		{
-			return mRenderTargets.size();
+			if (mCustomRenderTargets)
+				return mRenderTargets.size();
+			else
+				return 1u;
 		}
 
 		void RenderUnit::ClearRenderTargets()
@@ -177,6 +196,7 @@ namespace Lightning
 
 		void RenderUnit::SetDepthStencilBuffer(IDepthStencilBuffer* depthStencilBuffer)
 		{
+			mCustomDepthStencilBuffer = true;
 			if (mDepthStencilBuffer == depthStencilBuffer)
 				return;
 			if (mDepthStencilBuffer)
@@ -188,6 +208,11 @@ namespace Lightning
 
 		IDepthStencilBuffer* RenderUnit::GetDepthStencilBuffer()const
 		{
+			if (!mCustomDepthStencilBuffer)
+			{
+				auto renderer = Renderer::Instance();
+				return renderer->GetDefaultDepthStencilBuffer();
+			}
 			return mDepthStencilBuffer;
 		}
 
@@ -204,6 +229,8 @@ namespace Lightning
 			clonedUnit->mViewMatrix = mViewMatrix;
 			clonedUnit->mProjectionMatrix = mProjectionMatrix;
 			clonedUnit->mIndexBuffer = mIndexBuffer;
+			clonedUnit->mCustomRenderTargets = mCustomRenderTargets;
+			clonedUnit->mCustomDepthStencilBuffer = mCustomDepthStencilBuffer;
 			if (clonedUnit->mIndexBuffer)
 			{
 				clonedUnit->mIndexBuffer->AddRef();
@@ -250,6 +277,8 @@ namespace Lightning
 			}
 			DoClearVertexBuffers();
 			DoClearRenderTargets();
+			mCustomDepthStencilBuffer = false;
+			mCustomRenderTargets = false;
 		}
 
 		void RenderUnit::DoClearRenderTargets()
@@ -259,6 +288,7 @@ namespace Lightning
 				renderTarget->Release();
 			}
 			mRenderTargets.clear();
+			mCustomRenderTargets = false;
 		}
 
 		void RenderUnit::DoClearVertexBuffers()

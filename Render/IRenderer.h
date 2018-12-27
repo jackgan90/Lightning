@@ -89,8 +89,8 @@ namespace Lightning
 				const RectI* rects = nullptr, std::size_t rectCount = 0) = 0;
 			virtual void INTERFACECALL ApplyRenderTargets(const IRenderTarget*const * renderTargets, std::size_t renderTargetCount, IDepthStencilBuffer* dsBuffer) = 0;
 			virtual void INTERFACECALL ApplyPipelineState(const PipelineState& state) = 0;
-			virtual void INTERFACECALL ApplyViewports(const Viewport* viewports, std::uint8_t viewportCount) = 0;
-			virtual void INTERFACECALL ApplyScissorRects(const ScissorRect* scissorRects, std::uint8_t scissorRectCount) = 0;
+			virtual void INTERFACECALL ApplyViewports(const Viewport* viewports, std::size_t viewportCount) = 0;
+			virtual void INTERFACECALL ApplyScissorRects(const ScissorRect* scissorRects, std::size_t scissorRectCount) = 0;
 			//bind pBuffer to a GPU slot(does not copy data,just binding), each invocation will override previous binding
 			virtual void INTERFACECALL BindGPUBuffer(std::size_t slot, IGPUBuffer* buffer) = 0;
 			//issue underlying draw call

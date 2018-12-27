@@ -40,8 +40,8 @@ namespace Lightning
 				const RectI* rects = nullptr, std::size_t rectCount = 0)override;
 			void INTERFACECALL ApplyRenderTargets(const IRenderTarget*const * renderTargets, std::size_t renderTargetCount, IDepthStencilBuffer* dsBuffer)override;
 			void INTERFACECALL ApplyPipelineState(const PipelineState& state)override;
-			void INTERFACECALL ApplyViewports(const Viewport* viewports, std::uint8_t viewportCount)override;
-			void INTERFACECALL ApplyScissorRects(const ScissorRect* scissorRects, std::uint8_t scissorRectCount)override;
+			void INTERFACECALL ApplyViewports(const Viewport* viewports, std::size_t viewportCount)override;
+			void INTERFACECALL ApplyScissorRects(const ScissorRect* scissorRects, std::size_t scissorRectCount)override;
 			void INTERFACECALL BindGPUBuffer(std::size_t slot, IGPUBuffer* buffer)override;
 			void INTERFACECALL Draw(const DrawParam& param)override;
 			ID3D12CommandQueue* GetCommandQueue();
