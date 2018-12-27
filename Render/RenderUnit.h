@@ -51,7 +51,7 @@ namespace Lightning
 			IDepthStencilBuffer* mDepthStencilBuffer; //depth stencil buffer for this draw
 			Container::Vector<IRenderTarget*> mRenderTargets;//render targets
 			Container::UnorderedMap<std::size_t, IVertexBuffer*> mVertexBuffers;
-			REF_OBJECT_OVERRIDE(RenderUnit)
+			REF_OBJECT_POOL_OVERRIDE(RenderUnit)
 		};
 	}
 }

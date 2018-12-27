@@ -214,6 +214,7 @@ void INTERFACECALL AddRef()override\
 	mRefCount.fetch_add(1, std::memory_order_relaxed);\
 }
 
+//For objects allocated with standard operator new
 #define REF_OBJECT_RELEASE_METHOD \
 bool INTERFACECALL Release()override\
 {\
@@ -221,6 +222,19 @@ bool INTERFACECALL Release()override\
 	if (oldRefCountBase == 1)\
 	{\
 		delete this;\
+		return true;\
+	}\
+	return false;\
+}
+
+//For objects allocated with a memory pool(Don't free memory on delete)
+#define REF_OBJECT_POOL_RELEASE_METHOD(ClassName) \
+bool INTERFACECALL Release()override\
+{\
+	auto oldRefCountBase = mRefCount.fetch_sub(1, std::memory_order_relaxed);\
+	if (oldRefCountBase == 1)\
+	{\
+		this->~##ClassName();\
 		return true;\
 	}\
 	return false;\
@@ -235,9 +249,16 @@ void* operator new(std::size_t size, const char* file, const char* typeName, int
 {\
 	return RefMonitor::Instance()->Allococate(size, file, typeName, line);\
 }\
+void* operator new(std::size_t size, void* p)\
+{\
+	return p;\
+}\
 void operator delete(void *p)\
 {\
 	RefMonitor::Instance()->Deallocate(p);\
+}\
+void operator delete(void *p, void*)\
+{\
 }\
 void operator delete(void *p, const char* file, const char* typeName, int line) \
 {\
@@ -254,10 +275,22 @@ ClassName& operator=(const ClassName&) = delete;
 
 #define REF_OBJECT_METHODS
 
+//Standard override,use for standard allocation
 #define REF_OBJECT_OVERRIDE(ClassName) \
 public:\
 REF_OBJECT_ADDREF_METHOD \
 REF_OBJECT_RELEASE_METHOD \
+REF_OBJECT_GETREFCOUNT_METHOD \
+REF_OBJECT_NEW_OVERRIDE \
+REF_OBJECT_DISABLE_COPY(ClassName) \
+private:\
+std::atomic<int> mRefCount{1};
+
+//Pool override, use for pool allocation
+#define REF_OBJECT_POOL_OVERRIDE(ClassName) \
+public:\
+REF_OBJECT_ADDREF_METHOD \
+REF_OBJECT_POOL_RELEASE_METHOD(ClassName) \
 REF_OBJECT_GETREFCOUNT_METHOD \
 REF_OBJECT_NEW_OVERRIDE \
 REF_OBJECT_DISABLE_COPY(ClassName) \

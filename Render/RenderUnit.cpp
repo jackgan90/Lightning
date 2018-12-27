@@ -1,11 +1,13 @@
 #include <cassert>
 #include <algorithm>
+#include <boost/pool/object_pool.hpp>
 #include "RenderUnit.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
+		extern thread_local boost::object_pool<RenderUnit> g_RenderUnitPool;
 		RenderUnit::RenderUnit():mIndexBuffer(nullptr), mMaterial(nullptr), mDepthStencilBuffer(nullptr)
 		{
 
@@ -198,7 +200,7 @@ namespace Lightning
 
 		IRenderUnit* RenderUnit::Clone()const
 		{
-			auto clonedUnit = static_cast<RenderUnit*>(NEW_REF_OBJ(RenderUnit));
+			auto clonedUnit = g_RenderUnitPool.construct();
 			clonedUnit->mPrimitiveType = mPrimitiveType;
 			clonedUnit->mTransform = mTransform;
 			clonedUnit->mViewMatrix = mViewMatrix;
@@ -233,7 +235,6 @@ namespace Lightning
 
 		void RenderUnit::DoReset()
 		{
-			DoClearVertexBuffers();
 			if (mIndexBuffer)
 			{
 				mIndexBuffer->Release();
@@ -244,12 +245,13 @@ namespace Lightning
 				mMaterial->Release();
 				mMaterial = nullptr;
 			}
-			DoClearRenderTargets();
 			if (mDepthStencilBuffer)
 			{
 				mDepthStencilBuffer->Release();
 				mDepthStencilBuffer = nullptr;
 			}
+			DoClearVertexBuffers();
+			DoClearRenderTargets();
 		}
 
 		void RenderUnit::DoClearRenderTargets()
