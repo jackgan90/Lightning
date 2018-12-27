@@ -42,6 +42,8 @@ namespace Lightning
 			void DoReset();
 			void DoClearRenderTargets();
 			void DoClearVertexBuffers();
+			//Destroy is only called by object_pool.Never invoke it manually.
+			void Destroy();
 			PrimitiveType mPrimitiveType;
 			Transform mTransform;		//position rotation scale
 			Matrix4f mViewMatrix;		//camera view matrix
@@ -51,7 +53,7 @@ namespace Lightning
 			IDepthStencilBuffer* mDepthStencilBuffer; //depth stencil buffer for this draw
 			Container::Vector<IRenderTarget*> mRenderTargets;//render targets
 			Container::UnorderedMap<std::size_t, IVertexBuffer*> mVertexBuffers;
-			REF_OBJECT_POOL_OVERRIDE(RenderUnit)
+			REF_OBJECT_POOL_OVERRIDE(RenderUnit, Destroy)
 		};
 	}
 }

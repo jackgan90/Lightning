@@ -228,13 +228,13 @@ bool INTERFACECALL Release()override\
 }
 
 //For objects allocated with a memory pool(Don't free memory on delete)
-#define REF_OBJECT_POOL_RELEASE_METHOD(ClassName) \
+#define REF_OBJECT_POOL_RELEASE_METHOD(ClassName, DeleteMethod) \
 bool INTERFACECALL Release()override\
 {\
 	auto oldRefCountBase = mRefCount.fetch_sub(1, std::memory_order_relaxed);\
 	if (oldRefCountBase == 1)\
 	{\
-		this->~##ClassName();\
+		this->##DeleteMethod();\
 		return true;\
 	}\
 	return false;\
@@ -287,10 +287,10 @@ private:\
 std::atomic<int> mRefCount{1};
 
 //Pool override, use for pool allocation
-#define REF_OBJECT_POOL_OVERRIDE(ClassName) \
+#define REF_OBJECT_POOL_OVERRIDE(ClassName, DeleteMethod) \
 public:\
 REF_OBJECT_ADDREF_METHOD \
-REF_OBJECT_POOL_RELEASE_METHOD(ClassName) \
+REF_OBJECT_POOL_RELEASE_METHOD(ClassName, DeleteMethod) \
 REF_OBJECT_GETREFCOUNT_METHOD \
 REF_OBJECT_NEW_OVERRIDE \
 REF_OBJECT_DISABLE_COPY(ClassName) \

@@ -271,5 +271,10 @@ namespace Lightning
 			}
 			mVertexBuffers.clear();
 		}
+
+		void RenderUnit::Destroy()
+		{
+			g_RenderUnitPool.destroy(this);
+		}
 	}
 }
