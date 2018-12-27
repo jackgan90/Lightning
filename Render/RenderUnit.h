@@ -1,4 +1,5 @@
 #pragma once
+#include <boost/pool/singleton_pool.hpp>
 #include "RefObject.h"
 #include "IRenderUnit.h"
 #include "Container.h"
@@ -55,5 +56,6 @@ namespace Lightning
 			Container::UnorderedMap<std::size_t, IVertexBuffer*> mVertexBuffers;
 			REF_OBJECT_POOL_OVERRIDE(RenderUnit, Destroy)
 		};
+		using RenderUnitPool = boost::singleton_pool<RenderUnit, sizeof(RenderUnit)>;
 	}
 }

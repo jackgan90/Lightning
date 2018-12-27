@@ -1,5 +1,4 @@
 #include <cassert>
-#include <boost/pool/object_pool.hpp>
 #include "Device.h"
 #include "Renderer.h"
 #include "ForwardRenderPass.h"
@@ -16,7 +15,6 @@ namespace Lightning
 	{
 		IRenderer* Renderer::sInstance{ nullptr };
 		FrameMemoryAllocator g_RenderAllocator;
-		thread_local boost::object_pool<RenderUnit> g_RenderUnitPool;
 		
 		void FrameResource::ReleaseRenderQueue()
 		{
@@ -181,7 +179,7 @@ namespace Lightning
 
 		IRenderUnit* Renderer::CreateRenderUnit()
 		{
-			return g_RenderUnitPool.construct();;
+			return new (RenderUnitPool::malloc()) RenderUnit;
 		}
 
 		void Renderer::CommitRenderUnit(IRenderUnit* unit)

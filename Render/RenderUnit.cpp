@@ -1,13 +1,11 @@
 #include <cassert>
 #include <algorithm>
-#include <boost/pool/object_pool.hpp>
 #include "RenderUnit.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		extern thread_local boost::object_pool<RenderUnit> g_RenderUnitPool;
 		RenderUnit::RenderUnit():mIndexBuffer(nullptr), mMaterial(nullptr), mDepthStencilBuffer(nullptr)
 		{
 
@@ -200,7 +198,7 @@ namespace Lightning
 
 		IRenderUnit* RenderUnit::Clone()const
 		{
-			auto clonedUnit = g_RenderUnitPool.construct();
+			auto clonedUnit = new (RenderUnitPool::malloc()) RenderUnit;
 			clonedUnit->mPrimitiveType = mPrimitiveType;
 			clonedUnit->mTransform = mTransform;
 			clonedUnit->mViewMatrix = mViewMatrix;
@@ -274,7 +272,8 @@ namespace Lightning
 
 		void RenderUnit::Destroy()
 		{
-			g_RenderUnitPool.destroy(this);
+			this->~RenderUnit();
+			RenderUnitPool::free(this);
 		}
 	}
 }
