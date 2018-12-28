@@ -7,6 +7,7 @@
 #ifdef LIGHTNING_WIN32
 #include "WindowsGameWindow.h"
 #endif
+#undef CreateWindow
 
 namespace Lightning
 {
@@ -18,7 +19,7 @@ namespace Lightning
 		public:
 			WindowPluginImpl(){}
 			INTERFACECALL ~WindowPluginImpl()override;
-			Window::IWindow* INTERFACECALL NewWindow()override;
+			Window::IWindow* INTERFACECALL CreateWindow()override;
 			void INTERFACECALL Update()override;
 			void INTERFACECALL OnCreated(IPluginManager*)override;
 		private:
@@ -52,7 +53,7 @@ namespace Lightning
 			}
 		}
 
-		Window::IWindow* WindowPluginImpl::NewWindow()
+		Window::IWindow* WindowPluginImpl::CreateWindow()
 		{
 #ifdef LIGHTNING_WIN32
 			auto window = NEW_REF_OBJ(Window::WindowsGameWindow);

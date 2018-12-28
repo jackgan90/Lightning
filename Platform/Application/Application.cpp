@@ -143,7 +143,7 @@ namespace Lightning
 			{
 				init.initialize(threadCount);
 			}
-			mWindow = windowPlugin->NewWindow();
+			mWindow = windowPlugin->CreateWindow();
 			mWindow->RegisterEventReceiver(this);
 			mRenderer = renderPlugin->CreateRenderer(mWindow);
 			mRenderer->Start();
