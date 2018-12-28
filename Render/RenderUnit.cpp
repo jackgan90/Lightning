@@ -9,12 +9,12 @@ namespace Lightning
 {
 	namespace Render
 	{
-		RenderUnit::VertexBufferAllocatorType RenderUnit::sVertexBufferAllocator;
+		//RenderUnit::VertexBufferAllocatorType RenderUnit::sVertexBufferAllocator;
 		RenderUnit::RenderUnit()
 			: mIndexBuffer(nullptr)
 			, mMaterial(nullptr)
 			, mDepthStencilBuffer(nullptr)
-			, mVertexBuffers(sVertexBufferAllocator)
+			/*, mVertexBuffers(sVertexBufferAllocator)*/
 			, mCustomRenderTargets(false)
 			, mCustomDepthStencilBuffer(false)
 			, mCustomViewport(false)
