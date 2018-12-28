@@ -311,20 +311,6 @@ namespace Lightning
 			}
 			else
 			{
-				D3D12_VIEWPORT	vp{};
-				vp.Width = 800;
-				vp.Height = 600;
-				vp.TopLeftX = 0;
-				vp.TopLeftY = 0;
-				vp.MinDepth = 0.0f;
-				vp.MaxDepth = 1.0f;
-
-				D3D12_RECT scissorRect;
-				scissorRect.left = scissorRect.top = 0;
-				scissorRect.right = 800;
-				scissorRect.bottom = 600;
-				commandList->RSSetScissorRects(1, &scissorRect);
-				commandList->RSSetViewports(1, &vp);
 				commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 				commandList->DrawIndexedInstanced(UINT(param.indexCount), UINT(param.instanceCount), 
 					UINT(param.firstIndex), UINT(param.baseIndex), UINT(param.baseInstance));

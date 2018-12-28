@@ -43,6 +43,10 @@ namespace Lightning
 			virtual std::size_t INTERFACECALL GetRenderTargetCount()const = 0;
 			virtual void INTERFACECALL SetDepthStencilBuffer(IDepthStencilBuffer* depthStencilBuffer) = 0;
 			virtual IDepthStencilBuffer* INTERFACECALL GetDepthStencilBuffer()const = 0;
+			//Viewport and scissorRect must be set atomic
+			virtual void INTERFACECALL AddViewportAndScissorRect(const Viewport& viewport, const ScissorRect& scissorRect) = 0;
+			virtual std::size_t INTERFACECALL GetViewportCount()const = 0;
+			virtual void INTERFACECALL GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const = 0;
 			virtual void INTERFACECALL Reset() = 0;
 			virtual IRenderUnit* INTERFACECALL Clone()const = 0;
 		};

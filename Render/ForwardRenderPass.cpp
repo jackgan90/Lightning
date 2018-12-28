@@ -78,6 +78,15 @@ namespace Lightning
 			}
 			renderer->ApplyRenderTargets(state.renderTargets, state.renderTargetCount, depthStencilBuffer);
 			renderer->ApplyPipelineState(state);
+			auto viewportCount = unit->GetViewportCount();
+			auto viewports = g_RenderAllocator.Allocate<Viewport>(viewportCount);
+			auto scissorRects = g_RenderAllocator.Allocate<ScissorRect>(viewportCount);
+			for (auto i = 0;i < viewportCount;++i)
+			{
+				unit->GetViewportAndScissorRect(i, viewports[i], scissorRects[i]);
+			}
+			renderer->ApplyViewports(viewports, viewportCount);
+			renderer->ApplyScissorRects(scissorRects, viewportCount);
 		}
 
 		void ForwardRenderPass::CommitShaderParameters(const IRenderUnit* unit)

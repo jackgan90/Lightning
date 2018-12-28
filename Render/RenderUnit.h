@@ -38,11 +38,20 @@ namespace Lightning
 			void INTERFACECALL SetDepthStencilBuffer(IDepthStencilBuffer* depthStencilBuffer)override;
 			IDepthStencilBuffer* INTERFACECALL GetDepthStencilBuffer()const override;
 			void INTERFACECALL Reset()override;
+			void INTERFACECALL AddViewportAndScissorRect(const Viewport& viewport, const ScissorRect& scissorRect)override;
+			std::size_t INTERFACECALL GetViewportCount()const override;
+			void INTERFACECALL GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const override;
 			IRenderUnit* INTERFACECALL Clone()const override;
 		private:
+			struct ViewportAndScissorRect
+			{
+				Viewport viewport;
+				ScissorRect scissorRect;
+			};
 			void DoReset();
 			void DoClearRenderTargets();
 			void DoClearVertexBuffers();
+			void DoClearViewportAndScissorRects();
 			//Destroy is only called by object_pool.Never invoke it manually.
 			void Destroy();
 			PrimitiveType mPrimitiveType;
@@ -54,8 +63,10 @@ namespace Lightning
 			IDepthStencilBuffer* mDepthStencilBuffer; //depth stencil buffer for this draw
 			Container::Vector<IRenderTarget*> mRenderTargets;//render targets
 			Container::UnorderedMap<std::size_t, IVertexBuffer*> mVertexBuffers;
+			Container::Vector<ViewportAndScissorRect> mViewportAndScissorRects;
 			bool mCustomRenderTargets;
 			bool mCustomDepthStencilBuffer;
+			bool mCustomViewport;
 			REF_OBJECT_POOL_OVERRIDE(RenderUnit, Destroy)
 		};
 		using RenderUnitPool = boost::singleton_pool<RenderUnit, sizeof(RenderUnit)>;

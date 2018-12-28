@@ -15,6 +15,7 @@ namespace Lightning
 			, mDepthStencilBuffer(nullptr)
 			, mCustomRenderTargets(false)
 			, mCustomDepthStencilBuffer(false)
+			, mCustomViewport(false)
 		{
 
 		}
@@ -215,6 +216,44 @@ namespace Lightning
 			}
 			return mDepthStencilBuffer;
 		}
+		void RenderUnit::AddViewportAndScissorRect(const Viewport& viewport, const ScissorRect& scissorRect)
+		{
+			mCustomViewport = true;
+			mViewportAndScissorRects.push_back({ viewport, scissorRect });
+		}
+
+		std::size_t RenderUnit::GetViewportCount()const
+		{
+			if (!mCustomViewport)
+				return std::size_t(1);
+			else
+				return mViewportAndScissorRects.size();
+		}
+
+		void RenderUnit::GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const
+		{
+			if (!mCustomViewport)
+			{
+				assert(index == 0 && "Default viewport and scissorRect count is 1.");
+				auto renderer = Renderer::Instance();
+				auto window = renderer->GetOutputWindow();
+				viewport.left = viewport.top = .0f;
+				viewport.width = static_cast<float>(window->GetWidth());
+				viewport.height = static_cast<float>(window->GetHeight());
+
+				scissorRect.left = static_cast<long>(viewport.left);
+				scissorRect.top = static_cast<long>(viewport.top);
+				scissorRect.width = static_cast<long>(viewport.width);
+				scissorRect.height = static_cast<long>(viewport.height);
+			}
+			else
+			{
+				assert(index < mViewportAndScissorRects.size() && "viewport index out of range.");
+				const auto& vs = mViewportAndScissorRects[index];
+				viewport = vs.viewport;
+				scissorRect = vs.scissorRect;
+			}
+		}
 
 		void RenderUnit::Reset()
 		{
@@ -231,6 +270,7 @@ namespace Lightning
 			clonedUnit->mIndexBuffer = mIndexBuffer;
 			clonedUnit->mCustomRenderTargets = mCustomRenderTargets;
 			clonedUnit->mCustomDepthStencilBuffer = mCustomDepthStencilBuffer;
+			clonedUnit->mCustomViewport = mCustomViewport;
 			if (clonedUnit->mIndexBuffer)
 			{
 				clonedUnit->mIndexBuffer->AddRef();
@@ -255,6 +295,10 @@ namespace Lightning
 				it->second->AddRef();
 				clonedUnit->mVertexBuffers.emplace(it->first, it->second);
 			}
+			for (const auto& vs : mViewportAndScissorRects)
+			{
+				clonedUnit->mViewportAndScissorRects.push_back(vs);
+			}
 			return clonedUnit;
 		}
 
@@ -277,8 +321,10 @@ namespace Lightning
 			}
 			DoClearVertexBuffers();
 			DoClearRenderTargets();
+			DoClearViewportAndScissorRects();
 			mCustomDepthStencilBuffer = false;
 			mCustomRenderTargets = false;
+			mCustomViewport = false;
 		}
 
 		void RenderUnit::DoClearRenderTargets()
@@ -298,6 +344,12 @@ namespace Lightning
 				it->second->Release();
 			}
 			mVertexBuffers.clear();
+		}
+
+		void RenderUnit::DoClearViewportAndScissorRects()
+		{
+			mViewportAndScissorRects.clear();
+			mCustomViewport = false;
 		}
 
 		void RenderUnit::Destroy()

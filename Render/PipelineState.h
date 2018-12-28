@@ -224,9 +224,6 @@ namespace Lightning
 				rasterizerState.Reset();
 				depthStencilState.Reset();
 
-				viewPort.Reset();
-				scissorRect.Reset();
-
 				renderTargetCount = 0;
 				inputLayouts = nullptr;
 				blendStates = nullptr;
@@ -241,8 +238,6 @@ namespace Lightning
 			PrimitiveType primType;
 			RasterizerState rasterizerState;
 			DepthStencilState depthStencilState;
-			Viewport viewPort;
-			ScissorRect scissorRect;
 			std::size_t renderTargetCount;
 			//Don't try to reorder the following fields.array fields must be put to the end of struct
 			VertexInputLayout* inputLayouts;
