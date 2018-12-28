@@ -1,5 +1,7 @@
 #pragma once
 #include <boost/pool/singleton_pool.hpp>
+#include <boost/pool/pool_alloc.hpp>
+#include <tbb/scalable_allocator.h>
 #include "RefObject.h"
 #include "IRenderUnit.h"
 #include "Container.h"
@@ -43,6 +45,9 @@ namespace Lightning
 			void INTERFACECALL GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const override;
 			IRenderUnit* INTERFACECALL Clone()const override;
 		private:
+			//using VertexBufferAllocatorType = boost::pool_allocator<std::pair<const std::size_t, IVertexBuffer*>>;
+			//using VertexBufferAllocatorType = std::allocator<std::pair<const std::size_t, IVertexBuffer*>>;
+			using VertexBufferAllocatorType = tbb::scalable_allocator<std::pair<const std::size_t, IVertexBuffer*>>;
 			struct ViewportAndScissorRect
 			{
 				Viewport viewport;
@@ -62,11 +67,14 @@ namespace Lightning
 			IMaterial* mMaterial;	//shader material attributes
 			IDepthStencilBuffer* mDepthStencilBuffer; //depth stencil buffer for this draw
 			Container::Vector<IRenderTarget*> mRenderTargets;//render targets
-			Container::UnorderedMap<std::size_t, IVertexBuffer*> mVertexBuffers;
 			Container::Vector<ViewportAndScissorRect> mViewportAndScissorRects;
+			//Container::UnorderedMap<std::size_t, IVertexBuffer*> mVertexBuffers;
+			std::unordered_map<std::size_t, IVertexBuffer*,
+				std::hash<std::size_t>, std::equal_to<std::size_t>, VertexBufferAllocatorType> mVertexBuffers;
 			bool mCustomRenderTargets;
 			bool mCustomDepthStencilBuffer;
 			bool mCustomViewport;
+			static VertexBufferAllocatorType sVertexBufferAllocator;
 			REF_OBJECT_POOL_OVERRIDE(RenderUnit, Destroy)
 		};
 		using RenderUnitPool = boost::singleton_pool<RenderUnit, sizeof(RenderUnit)>;

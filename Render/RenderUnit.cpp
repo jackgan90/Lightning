@@ -9,10 +9,12 @@ namespace Lightning
 {
 	namespace Render
 	{
+		RenderUnit::VertexBufferAllocatorType RenderUnit::sVertexBufferAllocator;
 		RenderUnit::RenderUnit()
 			: mIndexBuffer(nullptr)
 			, mMaterial(nullptr)
 			, mDepthStencilBuffer(nullptr)
+			, mVertexBuffers(sVertexBufferAllocator)
 			, mCustomRenderTargets(false)
 			, mCustomDepthStencilBuffer(false)
 			, mCustomViewport(false)
@@ -290,14 +292,14 @@ namespace Lightning
 				renderTarget->AddRef();
 				clonedUnit->mRenderTargets.push_back(renderTarget);
 			}
+			for (const auto& vs : mViewportAndScissorRects)
+			{
+				clonedUnit->mViewportAndScissorRects.push_back(vs);
+			}
 			for (auto it = mVertexBuffers.begin(); it != mVertexBuffers.end();++it)
 			{
 				it->second->AddRef();
 				clonedUnit->mVertexBuffers.emplace(it->first, it->second);
-			}
-			for (const auto& vs : mViewportAndScissorRects)
-			{
-				clonedUnit->mViewportAndScissorRects.push_back(vs);
 			}
 			return clonedUnit;
 		}
