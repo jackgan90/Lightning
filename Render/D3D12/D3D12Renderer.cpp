@@ -255,7 +255,7 @@ namespace Lightning
 				viewport.MaxDepth = 1.0f;
 			}
 
-			commandList->RSSetViewports(viewportCount, D3D12Viewports);
+			commandList->RSSetViewports(UINT(viewportCount), D3D12Viewports);
 		}
 
 		void D3D12Renderer::ApplyScissorRects(const ScissorRect* scissorRects, std::size_t scissorRectCount)
@@ -271,7 +271,7 @@ namespace Lightning
 				scissorRect.bottom = scissorRects[i].top + scissorRects[i].height;
 			}
 
-			commandList->RSSetScissorRects(scissorRectCount, D3D12ScissorRects);
+			commandList->RSSetScissorRects(UINT(scissorRectCount), D3D12ScissorRects);
 		}
 
 		void D3D12Renderer::BindGPUBuffer(std::size_t slot, IGPUBuffer* pBuffer)
