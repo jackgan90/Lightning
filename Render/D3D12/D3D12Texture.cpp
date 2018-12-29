@@ -10,11 +10,11 @@ namespace Lightning
 	{
 		using Loading::ISerializeBuffer;
 		D3D12Texture::D3D12Texture(const D3D12_RESOURCE_DESC& desc, D3D12Device* device, ISerializeBuffer* buffer)
-			:mDesc(mDesc), mBuffer(buffer), mCommitted(false)
+			:mCommitted(false), mDesc(desc), mBuffer(buffer), mDevice(device)
 		{
 			if (mBuffer)
 				mBuffer->AddRef();
-			mResource = device->CreateCommittedResource(
+			mResource = mDevice->CreateCommittedResource(
 				&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
 				D3D12_HEAP_FLAG_NONE,
 				&desc,
@@ -25,28 +25,17 @@ namespace Lightning
 				LOG_ERROR("Failed to create texture.");
 				return;
 			}
-			UINT64 uploadBufferSize{ 0 };
-			device->GetCopyableFootprints(&desc, 0, 1, 0, nullptr, nullptr, nullptr, &uploadBufferSize);
-			mIntermediateResource = device->CreateCommittedResource(
-				&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-				D3D12_HEAP_FLAG_NONE,
-				&CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize),
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				nullptr);
-			if (!mIntermediateResource)
-			{
-				LOG_ERROR("Failed to create intermediate texture!");
-			}
+			InitIntermediateResource();
 		}
 
 		D3D12Texture::D3D12Texture(const D3D12_RESOURCE_DESC& desc, D3D12Device* device, const float depth, const std::uint8_t stencil)
-			:mDesc(desc), mBuffer(nullptr), mCommitted(false)
+			:mCommitted(false), mDesc(desc), mBuffer(nullptr), mDevice(device)
 		{
 			D3D12_CLEAR_VALUE clearValue;
 			clearValue.Format = desc.Format;
 			clearValue.DepthStencil.Depth = depth;
 			clearValue.DepthStencil.Stencil = stencil;
-			mResource = device->CreateCommittedResource(
+			mResource = mDevice->CreateCommittedResource(
 				&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
 				D3D12_HEAP_FLAG_NONE,
 				&desc,
@@ -60,8 +49,8 @@ namespace Lightning
 			}
 		}
 		
-		D3D12Texture::D3D12Texture(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState)
-			:mBuffer(nullptr), mCommitted(true)
+		D3D12Texture::D3D12Texture(D3D12Device* device, const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState)
+			:mCommitted(true), mBuffer(nullptr), mDevice(device)
 		{
 			mResource = std::make_shared<D3D12StatefulResource>(resource, initialState);
 			mDesc = resource->GetDesc();
@@ -74,6 +63,22 @@ namespace Lightning
 			if (mBuffer)
 			{
 				mBuffer->Release();
+			}
+		}
+
+		void D3D12Texture::InitIntermediateResource()
+		{
+			UINT64 uploadBufferSize{ 0 };
+			mDevice->GetCopyableFootprints(&mDesc, 0, 1, 0, nullptr, nullptr, nullptr, &uploadBufferSize);
+			mIntermediateResource = mDevice->CreateCommittedResource(
+				&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+				D3D12_HEAP_FLAG_NONE,
+				&CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize),
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				nullptr);
+			if (!mIntermediateResource)
+			{
+				LOG_ERROR("Failed to create intermediate texture!");
 			}
 		}
 

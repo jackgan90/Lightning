@@ -23,6 +23,7 @@ namespace Lightning
 			void GetLocalStates(ID3D12GraphicsCommandList* cmdList, D3D12_RESOURCE_STATES& firstState, D3D12_RESOURCE_STATES& finalState);
 			D3D12_RESOURCE_STATES GetGlobalState()const { return mGlobalState.state; }
 			void UpdateGlobalState(D3D12_RESOURCE_STATES state) { mGlobalState.state = state; }
+			void Reset(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState);
 			ID3D12Resource* operator->()const { return mResource.Get();}
 			operator ID3D12Resource*()const{return mResource.Get();}
 		private:

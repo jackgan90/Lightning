@@ -184,7 +184,7 @@ namespace Lightning
 
 		D3D12Texture* D3D12Device::CreateTexture(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState)
 		{
-			return NEW_REF_OBJ(D3D12Texture, resource, initialState);
+			return NEW_REF_OBJ(D3D12Texture, this, resource, initialState);
 		}
 
 		IRenderTarget* D3D12Device::CreateRenderTarget(ITexture* texture)

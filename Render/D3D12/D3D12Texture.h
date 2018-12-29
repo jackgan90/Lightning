@@ -17,7 +17,7 @@ namespace Lightning
 			D3D12Texture(const D3D12_RESOURCE_DESC& desc, D3D12Device* device, Loading::ISerializeBuffer* buffer);
 			//Create for depth or stencil buffer
 			D3D12Texture(const D3D12_RESOURCE_DESC& desc, D3D12Device* device, const float depth, const std::uint8_t stencil);
-			D3D12Texture(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState);
+			D3D12Texture(D3D12Device* device, const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState);
 			~D3D12Texture()override;
 			void INTERFACECALL Commit()override;
 			std::uint16_t INTERFACECALL GetMultiSampleCount()const override;
@@ -29,11 +29,13 @@ namespace Lightning
 			static std::uint16_t GetBitsPerPixel(DXGI_FORMAT format);
 			static std::uint32_t GetBytesPerRow(DXGI_FORMAT format, std::uint32_t width);
 		private:
+			void InitIntermediateResource();
 			bool mCommitted;
 			D3D12_RESOURCE_DESC mDesc;
 			D3D12StatefulResourcePtr mResource;
 			D3D12StatefulResourcePtr mIntermediateResource;
 			Loading::ISerializeBuffer* mBuffer;
+			D3D12Device* mDevice;
 			std::mutex mCommitMutex;
 			REF_OBJECT_OVERRIDE(D3D12Texture)
 		};
