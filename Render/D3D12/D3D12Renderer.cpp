@@ -700,7 +700,21 @@ namespace Lightning
 
 		IDepthStencilBuffer* D3D12Renderer::CreateDepthStencilBuffer(std::uint32_t width, std::uint32_t height)
 		{
-			return NEW_REF_OBJ(D3D12DepthStencilBuffer, width, height);
+			TextureDescriptor descriptor;
+			descriptor.depth = 1;
+			descriptor.width = width;
+			descriptor.height = height;
+			descriptor.multiSampleCount = mSwapChain->GetMultiSampleCount();
+			descriptor.multiSampleQuality = mSwapChain->GetMultiSampleQuality();
+			descriptor.numberOfMipmaps = 1;
+			descriptor.type = TEXTURE_TYPE_2D;
+			descriptor.format = RenderFormat::D24_S8;
+			descriptor.depthClearValue = 1.0f;
+			descriptor.stencilClearValue = 0;
+			auto texture = mDevice->CreateTexture(descriptor, nullptr);
+			auto depthStencilBuffer = NEW_REF_OBJ(D3D12DepthStencilBuffer, static_cast<D3D12Texture*>(texture));
+			texture->Release();
+			return depthStencilBuffer;
 		}
 
 		RenderPass* D3D12Renderer::CreateRenderPass(RenderPassType type)

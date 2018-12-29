@@ -74,7 +74,8 @@ namespace Lightning
 			auto depthStencilBuffer = unit->GetDepthStencilBuffer();
 			if (depthStencilBuffer)
 			{
-				state.depthStencilState.bufferFormat = depthStencilBuffer->GetRenderFormat();
+				auto depthStencilTexture = depthStencilBuffer->GetTexture();
+				state.depthStencilState.bufferFormat = depthStencilTexture->GetRenderFormat();
 			}
 			renderer->ApplyRenderTargets(state.renderTargets, state.renderTargetCount, depthStencilBuffer);
 			renderer->ApplyPipelineState(state);

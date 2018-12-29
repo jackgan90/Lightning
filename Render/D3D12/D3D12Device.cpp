@@ -151,22 +151,35 @@ namespace Lightning
 			desc.Alignment = 0;
 			if (descriptor.type == TEXTURE_TYPE_1D_ARRAY || descriptor.type == TEXTURE_TYPE_2D_ARRAY)
 			{
-				desc.DepthOrArraySize = descriptor.arraySize;
+				desc.DepthOrArraySize = UINT16(descriptor.arraySize);
 			}
 			else
 			{
-				desc.DepthOrArraySize = descriptor.depth;
+				desc.DepthOrArraySize = UINT16(descriptor.depth);
 			}
 			desc.Dimension = D3D12TypeMapper::MapTextureType(descriptor.type);
 			desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 			desc.Format = D3D12TypeMapper::MapRenderFormat(descriptor.format);
-			desc.Height = descriptor.height;
+			desc.Height = UINT(descriptor.height);
 			desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-			desc.MipLevels = descriptor.numberOfMipmaps;
-			desc.SampleDesc.Count = descriptor.multiSampleCount;
-			desc.SampleDesc.Quality = descriptor.multiSampleQuality;
+			desc.MipLevels = UINT16(descriptor.numberOfMipmaps);
+			desc.SampleDesc.Count = UINT(descriptor.multiSampleCount);
+			desc.SampleDesc.Quality = UINT(descriptor.multiSampleQuality);
 			desc.Width = descriptor.width;
-			return NEW_REF_OBJ(D3D12Texture, desc, this, buffer);
+			if (desc.Format == DXGI_FORMAT_D32_FLOAT_S8X24_UINT ||
+				desc.Format == DXGI_FORMAT_D32_FLOAT ||
+				desc.Format == DXGI_FORMAT_D24_UNORM_S8_UINT ||
+				desc.Format == DXGI_FORMAT_D16_UNORM)
+			{
+				//depth stencil texture
+				desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+				return NEW_REF_OBJ(D3D12Texture, desc, this, descriptor.depthClearValue, descriptor.stencilClearValue);
+			}
+			else
+			{
+				//Non depth stencil texture
+				return NEW_REF_OBJ(D3D12Texture, desc, this, buffer);
+			}
 		}
 
 		D3D12Texture* D3D12Device::CreateTexture(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState)

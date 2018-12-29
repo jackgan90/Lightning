@@ -31,17 +31,19 @@ namespace Lightning
 				multiSampleQuality = 1;
 			}
 			TEXTURE_TYPE type;
-			std::uint16_t width;
-			std::uint16_t height;
+			std::size_t width;
+			std::size_t height;
 			union 
 			{
-				std::uint16_t depth;
-				std::uint16_t arraySize;
+				std::size_t depth;
+				std::size_t arraySize;
 			};
-			std::uint16_t numberOfMipmaps;
+			std::size_t numberOfMipmaps;
 			RenderFormat format;
-			std::uint16_t multiSampleCount;
-			std::uint16_t multiSampleQuality;
+			std::size_t multiSampleCount;
+			std::size_t multiSampleQuality;
+			float depthClearValue;
+			std::uint8_t stencilClearValue;
 		};
 		static_assert(std::is_pod<TextureDescriptor>::value, "TextureDescriptor is not a POD type.");
 
@@ -51,6 +53,8 @@ namespace Lightning
 			virtual std::uint16_t INTERFACECALL GetMultiSampleCount()const = 0;
 			virtual std::uint16_t INTERFACECALL GetMultiSampleQuality()const = 0;
 			virtual RenderFormat INTERFACECALL GetRenderFormat()const = 0;
+			virtual std::size_t INTERFACECALL GetWidth()const = 0;
+			virtual std::size_t INTERFACECALL GetHeight()const = 0;
 		};
 	}
 }

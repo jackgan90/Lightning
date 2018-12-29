@@ -39,11 +39,9 @@ namespace Lightning
 			}
 		}
 
-		D3D12Texture::D3D12Texture(const D3D12_RESOURCE_DESC& desc, D3D12Device* device, ISerializeBuffer* buffer, float depth, std::uint8_t stencil)
-			:mDesc(desc), mBuffer(buffer), mCommitted(false)
+		D3D12Texture::D3D12Texture(const D3D12_RESOURCE_DESC& desc, D3D12Device* device, const float depth, const std::uint8_t stencil)
+			:mDesc(desc), mBuffer(nullptr), mCommitted(false)
 		{
-			if (mBuffer)
-				mBuffer->AddRef();
 			D3D12_CLEAR_VALUE clearValue;
 			clearValue.Format = desc.Format;
 			clearValue.DepthStencil.Depth = depth;
@@ -52,26 +50,13 @@ namespace Lightning
 				&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
 				D3D12_HEAP_FLAG_NONE,
 				&desc,
-				D3D12_RESOURCE_STATE_COPY_DEST,
+				D3D12_RESOURCE_STATE_DEPTH_WRITE,
 				&clearValue);
 
 			if (!mResource)
 			{
-				LOG_ERROR("Failed to create texture.");
+				LOG_ERROR("Failed to depth texture.");
 				return;
-			}
-
-			UINT64 uploadBufferSize{ 0 };
-			device->GetCopyableFootprints(&desc, 0, 1, 0, nullptr, nullptr, nullptr, &uploadBufferSize);
-			mIntermediateResource = device->CreateCommittedResource(
-				&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-				D3D12_HEAP_FLAG_NONE,
-				&CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize),
-				D3D12_RESOURCE_STATE_GENERIC_READ,
-				nullptr);
-			if (!mIntermediateResource)
-			{
-				LOG_ERROR("Failed to create intermediate texture!");
 			}
 		}
 		
@@ -87,7 +72,9 @@ namespace Lightning
 			mResource.reset();
 			mIntermediateResource.reset();
 			if (mBuffer)
+			{
 				mBuffer->Release();
+			}
 		}
 
 		void D3D12Texture::Commit()
@@ -127,6 +114,16 @@ namespace Lightning
 		RenderFormat D3D12Texture::GetRenderFormat()const
 		{
 			return D3D12TypeMapper::MapRenderFormat(mDesc.Format);
+		}
+
+		std::size_t D3D12Texture::GetWidth()const
+		{
+			return mDesc.Width;
+		}
+
+		std::size_t D3D12Texture::GetHeight()const
+		{
+			return mDesc.Height;
 		}
 
 		std::uint16_t D3D12Texture::GetBitsPerPixel(DXGI_FORMAT format)

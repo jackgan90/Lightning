@@ -22,8 +22,8 @@ namespace Lightning
 			D3D12SwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* commandQueue, Window::IWindow* pWindow);
 			INTERFACECALL ~D3D12SwapChain()override;
 			bool INTERFACECALL Present()override;
-			std::uint32_t INTERFACECALL GetSampleCount()const override { return mDesc.SampleDesc.Count; }
-			int INTERFACECALL GetSampleQuality()const override { return mDesc.SampleDesc.Quality; }
+			std::size_t INTERFACECALL GetMultiSampleCount()const override { return mDesc.SampleDesc.Count; }
+			std::size_t INTERFACECALL GetMultiSampleQuality()const override { return mDesc.SampleDesc.Quality; }
 			RenderFormat INTERFACECALL GetRenderFormat()const override{ return D3D12TypeMapper::MapRenderFormat(mDesc.BufferDesc.Format); }
 			std::uint32_t INTERFACECALL GetCurrentBackBufferIndex()const override;
 			IRenderTarget* INTERFACECALL GetDefaultRenderTarget()override;
