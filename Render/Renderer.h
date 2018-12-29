@@ -66,7 +66,6 @@ namespace Lightning
 			virtual IDevice* CreateDevice() = 0;
 			//CreateSwapChain is called in Start,ensuring the device is already created
 			virtual ISwapChain* CreateSwapChain() = 0;
-			virtual IDepthStencilBuffer* CreateDepthStencilBuffer(std::uint32_t width, std::uint32_t height) = 0;
 			virtual RenderPass* CreateRenderPass(RenderPassType type);
 			void ApplyRenderPasses();
 			void GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name);

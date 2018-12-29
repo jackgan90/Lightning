@@ -31,6 +31,7 @@ namespace Lightning
 				const char* const shaderSource, const IShaderMacros* macros)override;
 			ITexture* INTERFACECALL CreateTexture(const TextureDescriptor& descriptor, ISerializeBuffer* buffer)override;
 			IRenderTarget* INTERFACECALL CreateRenderTarget(ITexture* texture) override;
+			IDepthStencilBuffer* INTERFACECALL CreateDepthStencilBuffer(ITexture* texture)override;
 			D3D12Texture* CreateTexture(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState);
 			//native device method wrapper start
 			D3D12StatefulResourcePtr CreateCommittedResource(

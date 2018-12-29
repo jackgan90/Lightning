@@ -229,8 +229,20 @@ namespace Lightning
 			for (size_t i = 0; i < RENDER_FRAME_COUNT; i++)
 			{
 				mFrameResources[i].fence = CreateRenderFence();
-				mFrameResources[i].defaultDepthStencilBuffer = 
-					CreateDepthStencilBuffer( mOutputWindow->GetWidth(), mOutputWindow->GetHeight());
+				TextureDescriptor descriptor;
+				descriptor.depth = 1;
+				descriptor.width = mOutputWindow->GetWidth();
+				descriptor.height = mOutputWindow->GetHeight();
+				descriptor.multiSampleCount = mSwapChain->GetMultiSampleCount();
+				descriptor.multiSampleQuality = mSwapChain->GetMultiSampleQuality();
+				descriptor.numberOfMipmaps = 1;
+				descriptor.type = TEXTURE_TYPE_2D;
+				descriptor.format = RenderFormat::D24_S8;
+				descriptor.depthClearValue = 1.0f;
+				descriptor.stencilClearValue = 0;
+				auto texture = mDevice->CreateTexture(descriptor, nullptr);
+				mFrameResources[i].defaultDepthStencilBuffer = mDevice->CreateDepthStencilBuffer(texture);
+				texture->Release();
 			}
 			mFrameResourceIndex = mSwapChain->GetCurrentBackBufferIndex();
 			AddRenderPass(RenderPassType::FORWARD);

@@ -193,6 +193,11 @@ namespace Lightning
 			return NEW_REF_OBJ(D3D12RenderTarget, id, static_cast<D3D12Texture*>(texture));
 		}
 
+		IDepthStencilBuffer* D3D12Device::CreateDepthStencilBuffer(ITexture* texture)
+		{
+			return NEW_REF_OBJ(D3D12DepthStencilBuffer, static_cast<D3D12Texture*>(texture));
+		}
+
 		ID3D12GraphicsCommandList* D3D12Device::GetGraphicsCommandList()
 		{
 			return static_cast<D3D12Renderer*>(Renderer::Instance())->GetGraphicsCommandList();

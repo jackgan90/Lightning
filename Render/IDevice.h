@@ -1,11 +1,11 @@
 #pragma once
-#include <functional>
 #include "IVertexBuffer.h"
 #include "IIndexBuffer.h"
 #include "IShader.h"
 #include "Texture/ITexture.h"
 #include "ISerializeBuffer.h"
 #include "IRenderTarget.h"
+#include "IDepthStencilBuffer.h"
 
 namespace Lightning
 {
@@ -36,6 +36,7 @@ namespace Lightning
 			virtual IShader* INTERFACECALL CreateShader(ShaderType type, const char* shaderName, 
 				const char* const shaderSource, const IShaderMacros* macros) = 0;
 			virtual IRenderTarget* INTERFACECALL CreateRenderTarget(ITexture* texture) = 0;
+			virtual IDepthStencilBuffer* INTERFACECALL CreateDepthStencilBuffer(ITexture* texture) = 0;
 			virtual void INTERFACECALL CreateShaderFromFile(ShaderType type, const char* const path, IShaderCallback* callback) = 0;
 			virtual ITexture* INTERFACECALL CreateTexture(const TextureDescriptor& descriptor, ISerializeBuffer* buffer) = 0;
 			virtual void INTERFACECALL CreateTextureFromFile(const char* const path, ITextureCallback* callback) = 0;
