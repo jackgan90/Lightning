@@ -31,6 +31,7 @@ namespace Lightning
 			void CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, Window::IWindow* pWindow);
 			ComPtr<IDXGISwapChain3> mSwapChain;
 			DXGI_SWAP_CHAIN_DESC mDesc;
+			std::uint32_t mCurrentBackBufferIndex;
 		};
 	}
 }

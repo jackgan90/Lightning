@@ -28,6 +28,7 @@ namespace Lightning
 		{
 			CreateNativeSwapChain(factory, pCommandQueue, window);
 			mSwapChain->GetDesc(&mDesc);
+			mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 			CreateRenderTargets();
 		}
 
@@ -88,6 +89,7 @@ namespace Lightning
 		bool D3D12SwapChain::Present()
 		{
 			HRESULT hr = mSwapChain->Present(0, 0);
+			mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 			return SUCCEEDED(hr);
 		}
 
@@ -111,12 +113,12 @@ namespace Lightning
 
 		std::uint32_t D3D12SwapChain::GetCurrentBackBufferIndex()const
 		{
-			return mSwapChain->GetCurrentBackBufferIndex();
+			return mCurrentBackBufferIndex;
 		}
 
 		IRenderTarget* D3D12SwapChain::GetDefaultRenderTarget()
 		{
-			return mRenderTargets[GetCurrentBackBufferIndex()];
+			return mRenderTargets[mCurrentBackBufferIndex];
 		}
 
 	}

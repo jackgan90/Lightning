@@ -132,8 +132,8 @@ namespace Lightning
 			WaitForPreviousFrame(false);
 			mFrameCount++;
 			mFrameResources[mFrameResourceIndex].OnFrameBegin();
-			ResetFrameRenderQueue();
 			OnFrameBegin();
+			ResetFrameRenderQueue();
 			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
 			ClearRenderTarget(defaultRenderTarget, mClearColor);
 			auto depthStencilBuffer = GetDefaultDepthStencilBuffer();
