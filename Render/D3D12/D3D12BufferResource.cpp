@@ -54,7 +54,9 @@ namespace Lightning
 			if(mBufferType == GPUBufferType::INDEX)
 				bufferState = D3D12_RESOURCE_STATE_INDEX_BUFFER;
 
-			auto commandList = static_cast<D3D12Renderer*>(Renderer::Instance())->GetGraphicsCommandList();
+			auto renderer = dynamic_cast<D3D12Renderer*>(Renderer::Instance());
+			assert(renderer != nullptr && "a D3D12Renderer is required.");
+			auto commandList = renderer->GetGraphicsCommandList();
 			mResource->TransitTo(commandList, D3D12_RESOURCE_STATE_COPY_DEST);
 			
 			commandList->CopyBufferRegion(

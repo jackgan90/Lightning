@@ -97,7 +97,9 @@ namespace Lightning
 					subresourceData.RowPitch = GetBytesPerRow(mDesc.Format, std::uint32_t(mDesc.Width));
 					subresourceData.SlicePitch = subresourceData.RowPitch * mDesc.Height;
 					
-					auto commandList = static_cast<D3D12Renderer*>(Renderer::Instance())->GetGraphicsCommandList();
+					auto D3DRenderer = dynamic_cast<D3D12Renderer*>(Renderer::Instance());
+					assert(D3DRenderer != nullptr && "A D3D12Renderer is required.");
+					auto commandList = D3DRenderer->GetGraphicsCommandList();
 					::UpdateSubresources(commandList, *mResource, *mIntermediateResource, 0, 0, 1, &subresourceData);
 					mBuffer->Release();
 					mBuffer = nullptr;

@@ -25,6 +25,7 @@ namespace Lightning
 			RenderFormat INTERFACECALL GetRenderFormat()const override;
 			std::size_t INTERFACECALL GetWidth()const override;
 			std::size_t INTERFACECALL GetHeight()const override;
+			D3D12Device* GetDevice()const { return mDevice; }
 			D3D12StatefulResourcePtr GetResource()const { return mResource; }
 			static std::uint16_t GetBitsPerPixel(DXGI_FORMAT format);
 			static std::uint32_t GetBytesPerRow(DXGI_FORMAT format, std::uint32_t width);

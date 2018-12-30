@@ -26,7 +26,7 @@ namespace Lightning
 			mHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_DSV, false, 1, false);
 
 
-			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
+			auto device = mTexture->GetDevice();
 
 			auto resource = mTexture->GetResource();
 			D3D12_DEPTH_STENCIL_VIEW_DESC dsvDesc{};

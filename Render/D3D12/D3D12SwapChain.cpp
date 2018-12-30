@@ -38,7 +38,8 @@ namespace Lightning
 			UINT sampleCount = 1;
 			bool msaaEnabled = false;
 			UINT qualityLevels = 0;
-			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
+			auto device = dynamic_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
+			assert(device != nullptr && "A D3D12Device is required.");
 			if (config.MSAAEnabled)
 			{
 				D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS msQualityLevels;
@@ -66,7 +67,9 @@ namespace Lightning
 			swapChainDesc.BufferDesc = bufferDesc;
 			swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 			swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-			auto hwnd = static_cast<WindowsGameWindow*>(pWindow)->GetWindowHandle();
+			auto gameWindow = dynamic_cast<WindowsGameWindow*>(pWindow);
+			assert(gameWindow != nullptr && "A WindowsGameWindow is required.");
+			auto hwnd = gameWindow->GetWindowHandle();
 			swapChainDesc.OutputWindow = hwnd;
 			swapChainDesc.SampleDesc = sampleDesc;
 			swapChainDesc.Windowed = TRUE;
@@ -91,7 +94,8 @@ namespace Lightning
 		void D3D12SwapChain::CreateRenderTargets()
 		{
 			ComPtr<ID3D12Resource> resources[RENDER_FRAME_COUNT];
-			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
+			auto device = dynamic_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
+			assert(device != nullptr && "A D3D12Device is required.");
 			for (int i = 0; i < RENDER_FRAME_COUNT; i++)
 			{
 				auto hr = mSwapChain->GetBuffer(i, IID_PPV_ARGS(&resources[i]));

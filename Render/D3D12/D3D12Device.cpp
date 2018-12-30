@@ -189,13 +189,17 @@ namespace Lightning
 
 		IRenderTarget* D3D12Device::CreateRenderTarget(ITexture* texture)
 		{
+			auto D3DTexture = dynamic_cast<D3D12Texture*>(texture);
+			assert(D3DTexture != nullptr && "A D3D12Texture is required!");
 			auto id = mCurrentRTID.fetch_add(1, std::memory_order_relaxed);
-			return NEW_REF_OBJ(D3D12RenderTarget, id, static_cast<D3D12Texture*>(texture));
+			return NEW_REF_OBJ(D3D12RenderTarget, id, D3DTexture);
 		}
 
 		IDepthStencilBuffer* D3D12Device::CreateDepthStencilBuffer(ITexture* texture)
 		{
-			return NEW_REF_OBJ(D3D12DepthStencilBuffer, static_cast<D3D12Texture*>(texture));
+			auto D3DTexture = dynamic_cast<D3D12Texture*>(texture);
+			assert(D3DTexture != nullptr && "A D3D12Texture is required.");
+			return NEW_REF_OBJ(D3D12DepthStencilBuffer, D3DTexture);
 		}
 
 		ID3D12GraphicsCommandList* D3D12Device::GetGraphicsCommandList()

@@ -23,13 +23,13 @@ namespace Lightning
 		template<typename T>
 		std::enable_if_t<std::is_base_of<IPlugin, T>::value, T*> LoadPlugin(IPluginManager* mgr,const std::string& pluginName)
 		{
-			return static_cast<T*>(mgr->LoadPlugin(pluginName.c_str()));
+			return dynamic_cast<T*>(mgr->LoadPlugin(pluginName.c_str()));
 		}
 		
 		template<typename T>
 		std::enable_if_t<std::is_base_of<IPlugin, T>::value, T*> GetPlugin(IPluginManager* mgr,const std::string& pluginName)
 		{
-			return static_cast<T*>(mgr->GetPlugin(pluginName.c_str()));
+			return dynamic_cast<T*>(mgr->GetPlugin(pluginName.c_str()));
 		}
 	}
 }

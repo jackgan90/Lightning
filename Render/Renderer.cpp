@@ -121,15 +121,7 @@ namespace Lightning
 		void Renderer::ResetFrameRenderQueue()
 		{
 			mFrameResources[mFrameResourceIndex].renderQueue = mCurrentFrameRenderQueue;
-			if (mRenderQueueIndex == RENDER_FRAME_COUNT)
-			{
-				mRenderQueueIndex = 0;
-			}
-			else
-			{
-				++mRenderQueueIndex;
-			}
-
+			mRenderQueueIndex = mRenderQueueIndex == RENDER_FRAME_COUNT ? 0 : ++mRenderQueueIndex;
 			mCurrentFrameRenderQueue = &mRenderQueues[mRenderQueueIndex];
 		}
 

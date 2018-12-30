@@ -114,7 +114,9 @@ namespace Lightning
 
 		IRenderFence* D3D12Renderer::CreateRenderFence()
 		{
-			return new D3D12RenderFence(static_cast<D3D12Device*>(mDevice.get()), 0);
+			auto D3DDevice = dynamic_cast<D3D12Device*>(mDevice.get());
+			assert(D3DDevice != nullptr && "A D3D12Device is required.");
+			return new D3D12RenderFence(D3DDevice, 0);
 		}
 
 		IDevice* D3D12Renderer::CreateDevice()
