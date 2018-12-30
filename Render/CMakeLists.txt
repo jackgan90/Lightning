@@ -3,35 +3,37 @@ message(STATUS "Configuring project Render")
 
 
 set(HEADERS IDevice.h
-			Device.h
 			ISwapChain.h
 			IRenderTarget.h
 			IDepthStencilBuffer.h
 			IRenderer.h
 			IRenderFence.h
-			Renderer.h
-			PipelineState.h
-			Semantics.h
 			IVertexBuffer.h
-			VertexBuffer.h
 			IIndexBuffer.h
 			IndexBuffer.h
+			IGPUBuffer.h
+			IMaterial.h
+			IRenderUnit.h
+			Device.h
+			Renderer.h
+			SwapChain.h
+			PipelineState.h
+			Semantics.h
+			VertexBuffer.h
 			RendererHelper.h
 			RenderException.h
 			RendererFactory.h
-			IGPUBuffer.h
 			RenderConstants.h
-			IMaterial.h
 			Material.h
 			RenderPass.h
 			ForwardRenderPass.h
 			DeferedRenderPass.h
 			FrameMemoryAllocator.h
-			IRenderUnit.h
 			RenderUnit.h
 			RenderObjectCache.h)
 set(SOURCES Renderer.cpp
 			Device.cpp
+			SwapChain.cpp
 			VertexBuffer.cpp
 			IndexBuffer.cpp
 			RendererHelper.cpp

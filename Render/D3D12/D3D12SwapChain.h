@@ -4,8 +4,7 @@
 #include <dxgi1_4.h>
 #include <wrl\client.h>
 #include <unordered_map>
-#include "ISwapChain.h"
-#include "IWindow.h"
+#include "SwapChain.h"
 #include "D3D12TypeMapper.h"
 
 namespace Lightning
@@ -14,7 +13,7 @@ namespace Lightning
 	{
 		using Microsoft::WRL::ComPtr;
 		class D3D12Renderer;
-		class D3D12SwapChain : public ISwapChain
+		class D3D12SwapChain : public SwapChain
 		{
 		public:
 			//we have to use raw pointer,because at the time the swap chain is created, D3D12Renderer is not constructed successfully yet
@@ -31,7 +30,6 @@ namespace Lightning
 			void CreateRenderTargets();
 			void CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, Window::IWindow* pWindow);
 			ComPtr<IDXGISwapChain3> mSwapChain;
-			IRenderTarget* mRenderTargets[RENDER_FRAME_COUNT];
 			DXGI_SWAP_CHAIN_DESC mDesc;
 		};
 	}

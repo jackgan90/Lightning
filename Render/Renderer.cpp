@@ -102,14 +102,6 @@ namespace Lightning
 			return info;
 		}
 
-		void Renderer::GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name)
-		{
-			auto it = mPipelineInputSemanticInfos.find(semantic);
-			assert(it != mPipelineInputSemanticInfos.end() && "Invalid semantic!");
-			index = it->second.index;
-			name = it->second.name;
-		}
-
 		void Renderer::ApplyRenderPasses()
 		{
 			for (auto& pass : mRenderPasses)
@@ -118,13 +110,16 @@ namespace Lightning
 			}
 		}
 
-		void Renderer::Render()
+		void Renderer::GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name)
 		{
-			if (!mStarted)
-				return;
-			WaitForPreviousFrame(false);
-			mFrameCount++;
-			mFrameResources[mFrameResourceIndex].OnFrameBegin();
+			auto it = mPipelineInputSemanticInfos.find(semantic);
+			assert(it != mPipelineInputSemanticInfos.end() && "Invalid semantic!");
+			index = it->second.index;
+			name = it->second.name;
+		}
+
+		void Renderer::ResetFrameRenderQueue()
+		{
 			mFrameResources[mFrameResourceIndex].renderQueue = mCurrentFrameRenderQueue;
 			if (mRenderQueueIndex == RENDER_FRAME_COUNT)
 			{
@@ -136,6 +131,16 @@ namespace Lightning
 			}
 
 			mCurrentFrameRenderQueue = &mRenderQueues[mRenderQueueIndex];
+		}
+
+		void Renderer::Render()
+		{
+			if (!mStarted)
+				return;
+			WaitForPreviousFrame(false);
+			mFrameCount++;
+			mFrameResources[mFrameResourceIndex].OnFrameBegin();
+			ResetFrameRenderQueue();
 			OnFrameBegin();
 			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
 			ClearRenderTarget(defaultRenderTarget, mClearColor);

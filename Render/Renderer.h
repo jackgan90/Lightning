@@ -69,6 +69,7 @@ namespace Lightning
 			virtual RenderPass* CreateRenderPass(RenderPassType type);
 			void ApplyRenderPasses();
 			void GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name);
+			void ResetFrameRenderQueue();
 			static IRenderer* sInstance;
 			std::uint64_t mFrameCount;
 			std::unique_ptr<IDevice> mDevice;

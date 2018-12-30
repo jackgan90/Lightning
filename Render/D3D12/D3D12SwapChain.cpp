@@ -24,6 +24,7 @@ namespace Lightning
 		using Window::GameWindow;
 		using Window::WindowsGameWindow;
 		D3D12SwapChain::D3D12SwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, Window::IWindow* window)
+			: SwapChain(window)
 		{
 			CreateNativeSwapChain(factory, pCommandQueue, window);
 			mSwapChain->GetDesc(&mDesc);
@@ -79,10 +80,6 @@ namespace Lightning
 
 		D3D12SwapChain::~D3D12SwapChain()
 		{
-			for (auto renderTarget : mRenderTargets)
-			{
-				renderTarget->Release();
-			}
 		}
 
 		bool D3D12SwapChain::Present()
