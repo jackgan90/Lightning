@@ -78,7 +78,7 @@ namespace Lightning
 #ifndef NDEBUG
 			InitDXGIDebug();
 #endif
-			REPORT_LIVE_OBJECTS;
+			ReportLiveObjects();
 		}
 
 		void D3D12Renderer::ShutDown()
@@ -98,7 +98,7 @@ namespace Lightning
 					encoder.Clear();
 				});
 			}
-			REPORT_LIVE_OBJECTS;
+			ReportLiveObjects();
 			LOG_INFO("Finished reporting live objects!");
 		}
 
@@ -109,7 +109,8 @@ namespace Lightning
 
 		ID3D12GraphicsCommandList* D3D12Renderer::GetGraphicsCommandList()
 		{
-			return mCmdEncoders[mFrameResourceIndex]->GetCommandList();
+			auto frameResourceIndex = GetFrameResourceIndex();
+			return mCmdEncoders[frameResourceIndex]->GetCommandList();
 		}
 
 		IRenderFence* D3D12Renderer::CreateRenderFence()
@@ -119,7 +120,7 @@ namespace Lightning
 			return new D3D12RenderFence(D3DDevice, 0);
 		}
 
-		IDevice* D3D12Renderer::CreateDevice()
+		Device* D3D12Renderer::CreateDevice()
 		{
 			auto device = new D3D12Device(mDXGIFactory.Get());
 			D3D12_COMMAND_QUEUE_DESC desc = {};
@@ -317,6 +318,16 @@ namespace Lightning
 				commandList->DrawIndexedInstanced(UINT(param.indexCount), UINT(param.instanceCount), 
 					UINT(param.firstIndex), UINT(param.baseIndex), UINT(param.baseInstance));
 			}
+		}
+
+		void D3D12Renderer::ReportLiveObjects()const
+		{
+#ifndef NDEBUG
+			if(mDXGIDebug) 
+			{
+				mDXGIDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);
+			}
+#endif
 		}
 
 		D3D12Renderer::PipelineStateRootSignature D3D12Renderer::CreateAndCachePipelineState(const PipelineState& state, std::size_t hashValue)
@@ -695,7 +706,7 @@ namespace Lightning
 
 
 
-		ISwapChain* D3D12Renderer::CreateSwapChain()
+		SwapChain* D3D12Renderer::CreateSwapChain()
 		{
 			return new D3D12SwapChain(mDXGIFactory.Get(), GetCommandQueue(), mOutputWindow);
 		}
@@ -735,14 +746,15 @@ namespace Lightning
 
 		void D3D12Renderer::OnFrameBegin()
 		{
-			mCmdEncoders[mFrameResourceIndex].for_each([](D3D12CommandEncoder& encoder) {
+			auto frameResourceIndex = GetFrameResourceIndex();
+			mCmdEncoders[frameResourceIndex].for_each([](D3D12CommandEncoder& encoder) {
 				encoder.Reset();
 			});
-			auto defaultRT = mSwapChain->GetDefaultRenderTarget();
+			auto defaultRT = mSwapChain->GetCurrentRenderTarget();
 			auto commandList = GetGraphicsCommandList();
 			static_cast<D3D12RenderTarget*>(defaultRT)->TransitToPresentState(commandList);
 			auto d3d12DSBuffer = static_cast<D3D12DepthStencilBuffer*>(
-				mFrameResources[mFrameResourceIndex].defaultDepthStencilBuffer);
+				mFrameResources[frameResourceIndex].defaultDepthStencilBuffer);
 			d3d12DSBuffer->TransitToState(commandList, D3D12_RESOURCE_STATE_COMMON);
 		}
 
@@ -753,10 +765,11 @@ namespace Lightning
 
 		void D3D12Renderer::OnFrameEnd()
 		{
-			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
+			auto frameResourceIndex = GetFrameResourceIndex();
+			auto defaultRenderTarget = mSwapChain->GetCurrentRenderTarget();
 			auto renderTarget = static_cast<D3D12RenderTarget*>(defaultRenderTarget);
 			Container::Vector<ID3D12CommandList*> commandLists;
-			mCmdEncoders[mFrameResourceIndex].for_each([&commandLists](D3D12CommandEncoder& encoder) {
+			mCmdEncoders[frameResourceIndex].for_each([&commandLists](D3D12CommandEncoder& encoder) {
 				commandLists.push_back(encoder.GetCommandList());
 			});
 			auto lastCmdList = static_cast<ID3D12GraphicsCommandList*>(commandLists.back());
@@ -773,7 +786,14 @@ namespace Lightning
 			commandQueue->ExecuteCommandLists(UINT(commandLists.size()), &commandLists[0]);
 		}
 
+		void D3D12Renderer::ResizeDepthStencilBuffer(IDepthStencilBuffer* depthStencilBuffer, 
+			std::size_t width, std::size_t height)
+		{
+			auto D3DDepthStencilBuffer = dynamic_cast<D3D12DepthStencilBuffer*>(depthStencilBuffer);
+			if (!D3DDepthStencilBuffer)
+				return;
 
-
+			D3DDepthStencilBuffer->Resize(width, height);
+		}
 	}
 }

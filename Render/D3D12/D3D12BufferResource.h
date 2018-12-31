@@ -17,7 +17,7 @@ namespace Lightning
 			void Unlock(std::size_t start, std::size_t size);
 			void Commit();
 			D3D12_GPU_VIRTUAL_ADDRESS GetGPUVirtualAddress()const { 
-				return (*mResource)->GetGPUVirtualAddress();
+				return mResource->GetResource()->GetGPUVirtualAddress();
 			}
 		private:
 			D3D12StatefulResourcePtr mIntermediateResource;

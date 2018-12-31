@@ -44,10 +44,10 @@ namespace Lightning
 				D3D12_RESOURCE_STATE_GENERIC_READ, nullptr);
 			static const CD3DX12_RANGE range(0, 0);
 			//map to process virtual memory on creation to prevent mapping every time change buffer content
-			(*bufferResource.resource)->Map(0, &range, &bufferResource.mapAddress);
+			bufferResource.resource->GetResource()->Map(0, &range, &bufferResource.mapAddress);
 			bufferResource.offset = 0;
 			bufferResource.size = resourceSize;
-			bufferResource.virtualAddress = (*bufferResource.resource)->GetGPUVirtualAddress();
+			bufferResource.virtualAddress = bufferResource.resource->GetResource()->GetGPUVirtualAddress();
 		}
 
 		D3D12ConstantBuffer D3D12ConstantBufferManager::AllocBuffer(std::size_t bufferSize)

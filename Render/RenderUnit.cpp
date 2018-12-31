@@ -179,7 +179,7 @@ namespace Lightning
 			{
 				assert(index == 0 && "index exceed container size");
 				auto swapChain = Renderer::Instance()->GetSwapChain();
-				return swapChain->GetDefaultRenderTarget();
+				return swapChain->GetCurrentRenderTarget();
 			}
 			return mRenderTargets[index];
 		}

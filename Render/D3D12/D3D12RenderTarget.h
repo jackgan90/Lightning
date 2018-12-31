@@ -24,6 +24,10 @@ namespace Lightning
 			const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle()const { return mHeap->gpuHandle; }
 			void TransitToRTState(ID3D12GraphicsCommandList* commandList);
 			void TransitToPresentState(ID3D12GraphicsCommandList* commandList);
+			//Reset the render target to invalid state(Release referenced D3D12 resources so that we can perform swap chain resize)
+			void Reset();
+			//Reset with an ID3D12Resource
+			void Reset(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES state);
 		private:
 			RenderTargetID mID;
 			D3D12Texture* mTexture;

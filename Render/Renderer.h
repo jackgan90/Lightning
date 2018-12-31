@@ -1,11 +1,12 @@
 #pragma once
-#include <memory>
 #include "Container.h"
 #include "IRenderer.h"
 #include "IRenderFence.h"
 #include "IFileSystem.h"
-#include "RenderPass.h"
 #include "IWindow.h"
+#include "RenderPass.h"
+#include "SwapChain.h"
+#include "Device.h"
 
 namespace Lightning
 {
@@ -60,34 +61,37 @@ namespace Lightning
 			virtual void OnFrameBegin() = 0;
 			virtual void OnFrameUpdate() = 0;
 			virtual void OnFrameEnd() = 0;
+			virtual void ResizeDepthStencilBuffer(IDepthStencilBuffer* depthStencilBuffer, std::size_t width, std::size_t height) = 0;
 			//CreateRenderFence is called in Start after the creation of device and swap chain
 			virtual IRenderFence* CreateRenderFence() = 0;
 			//CreateDevice is called first in Start
-			virtual IDevice* CreateDevice() = 0;
+			virtual Device* CreateDevice() = 0;
 			//CreateSwapChain is called in Start,ensuring the device is already created
-			virtual ISwapChain* CreateSwapChain() = 0;
+			virtual SwapChain* CreateSwapChain() = 0;
 			virtual RenderPass* CreateRenderPass(RenderPassType type);
+			virtual bool CheckIfDepthStencilBufferNeedsResize();
 			void ApplyRenderPasses();
 			void GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name);
 			void ResetFrameRenderQueue();
+			//Member fields
 			static IRenderer* sInstance;
-			std::uint64_t mFrameCount;
-			std::unique_ptr<IDevice> mDevice;
-			std::unique_ptr<ISwapChain> mSwapChain;
+			std::unique_ptr<Device> mDevice;
+			std::unique_ptr<SwapChain> mSwapChain;
 			Container::Vector<std::unique_ptr<RenderPass>> mRenderPasses;
-			std::size_t mFrameResourceIndex;
 			ColorF mClearColor;
 			FrameResource mFrameResources[RENDER_FRAME_COUNT];
-			std::size_t mRenderQueueIndex;
-			RenderQueue mRenderQueues[RENDER_FRAME_COUNT + 1];
-			RenderQueue* mCurrentFrameRenderQueue;
 			Window::IWindow* mOutputWindow;
-			bool mStarted;
 			Container::UnorderedMap<RenderSemantics, SemanticInfo> mPipelineInputSemanticInfos;
 			Container::UnorderedMap<std::string, RenderSemantics> mUniformToSemantics;
 			Container::UnorderedMap<RenderSemantics, const char*> mSemanticsToUniform;
 		private:
 			SemanticInfo ParsePipelineInputSemantics(const SemanticItem& item);
+			std::size_t mFrameResourceIndex;
+			bool mStarted;
+			std::uint64_t mFrameCount;
+			std::size_t mRenderQueueIndex;
+			RenderQueue mRenderQueues[RENDER_FRAME_COUNT + 1];
+			RenderQueue* mCurrentFrameRenderQueue;
 		};
 	}
 }

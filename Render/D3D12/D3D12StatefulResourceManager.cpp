@@ -50,7 +50,7 @@ namespace Lightning
 						D3D12_RESOURCE_BARRIER &barrier = desc;
 						desc.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 						desc.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-						barrier.Transition.pResource = *resource;
+						barrier.Transition.pResource = resource->GetResource();
 						barrier.Transition.StateBefore = globalState;
 						barrier.Transition.StateAfter = localFirstState;
 						barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;

@@ -32,6 +32,68 @@ namespace Lightning
 			CreateRenderTargets();
 		}
 
+		D3D12SwapChain::~D3D12SwapChain()
+		{
+		}
+
+		bool D3D12SwapChain::Present()
+		{
+			HRESULT hr = mSwapChain->Present(0, 0);
+			mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
+			return SUCCEEDED(hr);
+		}
+
+		std::uint32_t D3D12SwapChain::GetCurrentBackBufferIndex()const
+		{
+			return mCurrentBackBufferIndex;
+		}
+
+		IRenderTarget* D3D12SwapChain::GetCurrentRenderTarget()
+		{
+			return mRenderTargets[mCurrentBackBufferIndex];
+		}
+
+		void D3D12SwapChain::Resize(std::uint32_t width, std::uint32_t height)
+		{
+			for (auto renderTarget : mRenderTargets)
+			{
+				auto D3DRenderTarget = dynamic_cast<D3D12RenderTarget*>(renderTarget);
+				assert(D3DRenderTarget != nullptr && "A D3DRenderTarget is required.");
+				//Release reference to ID3D12Resource
+				D3DRenderTarget->Reset();
+			}
+			mSwapChain->ResizeBuffers(mDesc.BufferCount, width, height, mDesc.BufferDesc.Format, mDesc.Flags);
+			mDesc.BufferDesc.Width = width;
+			mDesc.BufferDesc.Height = height;
+			for (std::uint8_t i = 0;i < RENDER_FRAME_COUNT;++i)
+			{
+				auto D3DRenderTarget = static_cast<D3D12RenderTarget*>(mRenderTargets[i]);
+				ComPtr<ID3D12Resource> D3DResource;
+				auto hr = mSwapChain->GetBuffer(i, IID_PPV_ARGS(&D3DResource));
+				assert(SUCCEEDED(hr) && "Failed to get swap chain buffer.");
+				D3DRenderTarget->Reset(D3DResource, D3D12_RESOURCE_STATE_PRESENT);
+			}
+			mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
+		}
+
+		void D3D12SwapChain::CreateRenderTargets()
+		{
+			ComPtr<ID3D12Resource> resources[RENDER_FRAME_COUNT];
+			auto device = dynamic_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
+			assert(device != nullptr && "A D3D12Device is required.");
+			for (int i = 0; i < RENDER_FRAME_COUNT; i++)
+			{
+				auto hr = mSwapChain->GetBuffer(i, IID_PPV_ARGS(&resources[i]));
+				if (FAILED(hr))
+				{
+					throw SwapChainInitException("Failed to get d3d12 swap chain buffer.");
+				}
+				auto texture = device->CreateTexture(resources[i], D3D12_RESOURCE_STATE_PRESENT);
+				mRenderTargets[i] = device->CreateRenderTarget(texture);
+				texture->Release();
+			}
+		}
+
 		void D3D12SwapChain::CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, Window::IWindow* pWindow)
 		{
 			auto foundationPlugin = Plugins::GetPlugin<Plugins::IFoundationPlugin>(Plugins::gPluginMgr, "Foundation");
@@ -81,45 +143,5 @@ namespace Lightning
 			ComPtr<IDXGISwapChain3> swapChain;
 			tempSwapChain.As(&mSwapChain);
 		}
-
-		D3D12SwapChain::~D3D12SwapChain()
-		{
-		}
-
-		bool D3D12SwapChain::Present()
-		{
-			HRESULT hr = mSwapChain->Present(0, 0);
-			mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
-			return SUCCEEDED(hr);
-		}
-
-		void D3D12SwapChain::CreateRenderTargets()
-		{
-			ComPtr<ID3D12Resource> resources[RENDER_FRAME_COUNT];
-			auto device = dynamic_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
-			assert(device != nullptr && "A D3D12Device is required.");
-			for (int i = 0; i < RENDER_FRAME_COUNT; i++)
-			{
-				auto hr = mSwapChain->GetBuffer(i, IID_PPV_ARGS(&resources[i]));
-				if (FAILED(hr))
-				{
-					throw SwapChainInitException("Failed to get d3d12 swap chain buffer.");
-				}
-				auto texture = device->CreateTexture(resources[i], D3D12_RESOURCE_STATE_PRESENT);
-				mRenderTargets[i] = device->CreateRenderTarget(texture);
-				texture->Release();
-			}
-		}
-
-		std::uint32_t D3D12SwapChain::GetCurrentBackBufferIndex()const
-		{
-			return mCurrentBackBufferIndex;
-		}
-
-		IRenderTarget* D3D12SwapChain::GetDefaultRenderTarget()
-		{
-			return mRenderTargets[mCurrentBackBufferIndex];
-		}
-
 	}
 }

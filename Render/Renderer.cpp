@@ -102,6 +102,21 @@ namespace Lightning
 			return info;
 		}
 
+		bool Renderer::CheckIfDepthStencilBufferNeedsResize()
+		{
+			auto width = mOutputWindow->GetWidth();
+			auto height = mOutputWindow->GetHeight();
+			auto depthStencilBuffer = GetDefaultDepthStencilBuffer();
+			if (!depthStencilBuffer)
+				return false;
+			auto depthStencilTexture = depthStencilBuffer->GetTexture();
+			if (depthStencilTexture->GetWidth() != width || depthStencilTexture->GetHeight() != height)
+			{
+				return true;
+			}
+			return false;
+		}
+
 		void Renderer::ApplyRenderPasses()
 		{
 			for (auto& pass : mRenderPasses)
@@ -130,12 +145,25 @@ namespace Lightning
 			if (!mStarted)
 				return;
 			WaitForPreviousFrame(false);
+			if (CheckIfDepthStencilBufferNeedsResize() || mSwapChain->CheckIfBackBufferNeedsResize())
+			{
+				auto width = mOutputWindow->GetWidth();
+				auto height = mOutputWindow->GetHeight();
+				//Critical:must wait for previous frame finished.Because previous frames may reference the render target
+				//we are about to resize.
+				WaitForPreviousFrame(true);
+				for (std::uint8_t i = 0;i < RENDER_FRAME_COUNT;++i)
+				{
+					ResizeDepthStencilBuffer(mFrameResources[i].defaultDepthStencilBuffer, width, height);
+				}
+				mSwapChain->Resize(width, height);
+			}
 			mFrameCount++;
 			mFrameResources[mFrameResourceIndex].OnFrameBegin();
 			OnFrameBegin();
 			ResetFrameRenderQueue();
-			auto defaultRenderTarget = mSwapChain->GetDefaultRenderTarget();
-			ClearRenderTarget(defaultRenderTarget, mClearColor);
+			auto backBuffer = mSwapChain->GetCurrentRenderTarget();
+			ClearRenderTarget(backBuffer, mClearColor);
 			auto depthStencilBuffer = GetDefaultDepthStencilBuffer();
 			ClearDepthStencilBuffer(depthStencilBuffer, DepthStencilClearFlags::CLEAR_DEPTH | DepthStencilClearFlags::CLEAR_STENCIL,
 				depthStencilBuffer->GetDepthClearValue(), depthStencilBuffer->GetStencilClearValue(), nullptr);
@@ -150,7 +178,7 @@ namespace Lightning
 			mFrameResources[mFrameResourceIndex].frame = mFrameCount;
 			fence->SetTargetValue(mFrameCount);
 			mSwapChain->Present();
-			mFrameResourceIndex = mSwapChain->GetCurrentBackBufferIndex();
+			mFrameResourceIndex = (mFrameResourceIndex + 1) % RENDER_FRAME_COUNT;
 			g_RenderAllocator.FinishFrame(mFrameCount);
 		}
 
@@ -241,7 +269,7 @@ namespace Lightning
 				mFrameResources[i].defaultDepthStencilBuffer = mDevice->CreateDepthStencilBuffer(texture);
 				texture->Release();
 			}
-			mFrameResourceIndex = mSwapChain->GetCurrentBackBufferIndex();
+			mFrameResourceIndex = 0;
 			AddRenderPass(RenderPassType::FORWARD);
 			mStarted = true;
 		}

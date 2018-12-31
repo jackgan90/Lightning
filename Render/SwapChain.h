@@ -11,7 +11,7 @@ namespace Lightning
 		public:
 			SwapChain(Window::IWindow* outputWindow);
 			~SwapChain();
-			virtual void OnFrameBegin();
+			virtual bool CheckIfBackBufferNeedsResize();
 		protected:
 			IRenderTarget* mRenderTargets[RENDER_FRAME_COUNT];
 			Window::IWindow* mOutputWindow;

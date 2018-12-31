@@ -14,12 +14,6 @@
 #include "D3D12DepthStencilBuffer.h"
 #include "D3D12CommandEncoder.h"
 
-#ifndef NDEBUG
-#define REPORT_LIVE_OBJECTS if(mDXGIDebug) {mDXGIDebug->ReportLiveObjects(DXGI_DEBUG_ALL, DXGI_DEBUG_RLO_ALL);}
-#else
-#define REPORT_LIVE_OBJECTS
-#endif
-
 namespace Lightning
 {
 	namespace Render
@@ -44,15 +38,18 @@ namespace Lightning
 			void INTERFACECALL ApplyScissorRects(const ScissorRect* scissorRects, std::size_t scissorRectCount)override;
 			void INTERFACECALL BindGPUBuffer(std::size_t slot, IGPUBuffer* buffer)override;
 			void INTERFACECALL Draw(const DrawParam& param)override;
+			//For debug
+			void ReportLiveObjects()const;
 			ID3D12CommandQueue* GetCommandQueue();
 			ID3D12GraphicsCommandList* GetGraphicsCommandList();
 		protected:
 			void OnFrameBegin()override;
 			void OnFrameUpdate()override;
 			void OnFrameEnd()override;
+			void ResizeDepthStencilBuffer(IDepthStencilBuffer* depthStencilBuffer, std::size_t width, std::size_t height)override;
 			IRenderFence* CreateRenderFence()override;
-			IDevice* CreateDevice()override;
-			ISwapChain* CreateSwapChain()override;
+			Device* CreateDevice()override;
+			SwapChain* CreateSwapChain()override;
 			RenderPass* CreateRenderPass(RenderPassType type)override;
 		private:
 			struct PipelineStateRootSignature

@@ -10,7 +10,9 @@ namespace Lightning
 		D3D12StatefulResource::D3D12StatefulResource(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState)
 			:mResource(resource)
 		{
-			Reset(resource, initialState);
+			mDesc = mResource->GetDesc();
+			mGlobalState.state = initialState;
+			mGlobalState.lastAccessFrame = Renderer::Instance()->GetCurrentFrameCount();
 		}
 
 		D3D12StatefulResource::~D3D12StatefulResource()
@@ -54,11 +56,28 @@ namespace Lightning
 			finalState = mLocalStates[cmdList].state;
 		}
 
+		void D3D12StatefulResource::Reset(const D3D12StatefulResourcePtr& other)
+		{
+			Reset(other->mResource, other->mGlobalState.state);
+		}
+
 		void D3D12StatefulResource::Reset(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState)
 		{
+			if (resource)
+			{
+				mResource = resource;
+				mDesc = mResource->GetDesc();
+				MutexLock lock(mtxLocalStates);
+				mGlobalState.state = initialState;
+				mGlobalState.lastAccessFrame = Renderer::Instance()->GetCurrentFrameCount();
+				mLocalStates.clear();
+			}
+		}
+
+		void D3D12StatefulResource::Reset()
+		{
+			mResource.Reset();
 			MutexLock lock(mtxLocalStates);
-			mGlobalState.state = initialState;
-			mGlobalState.lastAccessFrame = Renderer::Instance()->GetCurrentFrameCount();
 			mLocalStates.clear();
 		}
 	}

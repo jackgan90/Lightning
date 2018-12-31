@@ -28,7 +28,7 @@ namespace Lightning
 			if (mLockedPtr)
 				return nullptr;
 			static const D3D12_RANGE readRange{0, 0};
-			(*mIntermediateResource)->Map(0, &readRange, &mLockedPtr);
+			mIntermediateResource->GetResource()->Map(0, &readRange, &mLockedPtr);
 			return reinterpret_cast<std::uint8_t*>(mLockedPtr) + start;
 		}
 
@@ -42,7 +42,7 @@ namespace Lightning
 			if (end > mDirtyRange.End)
 				mDirtyRange.End = end;
 			D3D12_RANGE dirtyRange{start, start + size};
-			(*mIntermediateResource)->Unmap(0, &dirtyRange);
+			mIntermediateResource->GetResource()->Unmap(0, &dirtyRange);
 			mLockedPtr = nullptr;
 		}
 
@@ -60,7 +60,7 @@ namespace Lightning
 			mResource->TransitTo(commandList, D3D12_RESOURCE_STATE_COPY_DEST);
 			
 			commandList->CopyBufferRegion(
-				(*mResource), mDirtyRange.Begin, (*mIntermediateResource), mDirtyRange.Begin, mDirtyRange.End - mDirtyRange.Begin);
+				mResource->GetResource(), mDirtyRange.Begin, mIntermediateResource->GetResource(), mDirtyRange.Begin, mDirtyRange.End - mDirtyRange.Begin);
 
 			mResource->TransitTo(commandList, bufferState);
 			mDirtyRange.Begin = mDirtyRange.End = 0;
