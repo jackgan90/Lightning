@@ -74,72 +74,6 @@ namespace Lightning
 			sInstance = nullptr;
 		}
 
-		Renderer::SemanticInfo Renderer::ParsePipelineInputSemantics(const SemanticItem& item)
-		{
-			SemanticInfo info;
-			const std::string fullName(item.name);
-			int i = static_cast<int>(fullName.length() - 1);
-			std::string indexString;
-			for (;i >= 0;--i)
-			{
-				if (fullName[i] >= '0' && fullName[i] <= '9')
-					indexString += fullName[i];
-				else
-					break;
-			}
-			assert(indexString.length() < fullName.length() && "Semantic name error!A semantic name cannot be comprised of digits only!");
-			if (indexString.length() > 0)
-			{
-				std::reverse(indexString.begin(), indexString.end());
-				info.index = std::stoi(indexString);
-			}
-			else
-			{
-				info.index = 0;
-			}
-			info.rawName = fullName;
-			info.name = fullName.substr(0, i + 1);
-			return info;
-		}
-
-		bool Renderer::CheckIfDepthStencilBufferNeedsResize()
-		{
-			auto width = mOutputWindow->GetWidth();
-			auto height = mOutputWindow->GetHeight();
-			auto depthStencilBuffer = GetDefaultDepthStencilBuffer();
-			if (!depthStencilBuffer)
-				return false;
-			auto depthStencilTexture = depthStencilBuffer->GetTexture();
-			if (depthStencilTexture->GetWidth() != width || depthStencilTexture->GetHeight() != height)
-			{
-				return true;
-			}
-			return false;
-		}
-
-		void Renderer::ApplyRenderPasses()
-		{
-			for (auto& pass : mRenderPasses)
-			{
-				pass->Apply(*mFrameResources[mFrameResourceIndex].renderQueue);
-			}
-		}
-
-		void Renderer::GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name)
-		{
-			auto it = mPipelineInputSemanticInfos.find(semantic);
-			assert(it != mPipelineInputSemanticInfos.end() && "Invalid semantic!");
-			index = it->second.index;
-			name = it->second.name;
-		}
-
-		void Renderer::ResetFrameRenderQueue()
-		{
-			mFrameResources[mFrameResourceIndex].renderQueue = mCurrentFrameRenderQueue;
-			mRenderQueueIndex = mRenderQueueIndex == RENDER_FRAME_COUNT ? 0 : ++mRenderQueueIndex;
-			mCurrentFrameRenderQueue = &mRenderQueues[mRenderQueueIndex];
-		}
-
 		void Renderer::Render()
 		{
 			if (!mStarted)
@@ -182,16 +116,6 @@ namespace Lightning
 			g_RenderAllocator.FinishFrame(mFrameCount);
 		}
 
-		void Renderer::SetClearColor(float r, float g, float b, float a)
-		{
-			mClearColor = ColorF{r, g, b, a};
-		}
-
-		std::uint64_t Renderer::GetCurrentFrameCount()const
-		{
-			return mFrameCount;
-		}
-
 		IDevice* Renderer::GetDevice()
 		{
 			return mDevice.get();
@@ -200,6 +124,54 @@ namespace Lightning
 		ISwapChain* Renderer::GetSwapChain()
 		{
 			return mSwapChain.get();
+		}
+
+		bool Renderer::CheckIfDepthStencilBufferNeedsResize()
+		{
+			auto width = mOutputWindow->GetWidth();
+			auto height = mOutputWindow->GetHeight();
+			auto depthStencilBuffer = GetDefaultDepthStencilBuffer();
+			if (!depthStencilBuffer)
+				return false;
+			auto depthStencilTexture = depthStencilBuffer->GetTexture();
+			if (depthStencilTexture->GetWidth() != width || depthStencilTexture->GetHeight() != height)
+			{
+				return true;
+			}
+			return false;
+		}
+
+		void Renderer::ApplyRenderPasses()
+		{
+			for (auto& pass : mRenderPasses)
+			{
+				pass->Apply(*mFrameResources[mFrameResourceIndex].renderQueue);
+			}
+		}
+
+		void Renderer::GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name)
+		{
+			auto it = mPipelineInputSemanticInfos.find(semantic);
+			assert(it != mPipelineInputSemanticInfos.end() && "Invalid semantic!");
+			index = it->second.index;
+			name = it->second.name;
+		}
+
+		void Renderer::ResetFrameRenderQueue()
+		{
+			mFrameResources[mFrameResourceIndex].renderQueue = mCurrentFrameRenderQueue;
+			mRenderQueueIndex = mRenderQueueIndex == RENDER_FRAME_COUNT ? 0 : ++mRenderQueueIndex;
+			mCurrentFrameRenderQueue = &mRenderQueues[mRenderQueueIndex];
+		}
+
+		void Renderer::SetClearColor(float r, float g, float b, float a)
+		{
+			mClearColor = ColorF{r, g, b, a};
+		}
+
+		std::uint64_t Renderer::GetCurrentFrameCount()const
+		{
+			return mFrameCount;
 		}
 
 		IRenderUnit* Renderer::CreateRenderUnit()
@@ -339,6 +311,34 @@ namespace Lightning
 				frameResource.fence->WaitForTarget();
 				g_RenderAllocator.ReleaseFramesBefore(frameResource.frame);
 			}
+		}
+
+		Renderer::SemanticInfo Renderer::ParsePipelineInputSemantics(const SemanticItem& item)
+		{
+			SemanticInfo info;
+			const std::string fullName(item.name);
+			int i = static_cast<int>(fullName.length() - 1);
+			std::string indexString;
+			for (;i >= 0;--i)
+			{
+				if (fullName[i] >= '0' && fullName[i] <= '9')
+					indexString += fullName[i];
+				else
+					break;
+			}
+			assert(indexString.length() < fullName.length() && "Semantic name error!A semantic name cannot be comprised of digits only!");
+			if (indexString.length() > 0)
+			{
+				std::reverse(indexString.begin(), indexString.end());
+				info.index = std::stoi(indexString);
+			}
+			else
+			{
+				info.index = 0;
+			}
+			info.rawName = fullName;
+			info.name = fullName.substr(0, i + 1);
+			return info;
 		}
 	}
 }

@@ -50,12 +50,6 @@ namespace Lightning
 			RenderSemantics INTERFACECALL GetUniformSemantic(const char* uniform_name)override;
 			const char* INTERFACECALL GetUniformName(RenderSemantics semantic)override;
 		protected:
-			struct SemanticInfo
-			{
-				std::string rawName;
-				std::string name;
-				SemanticIndex index;
-			};
 			Renderer(Window::IWindow* window);
 			void WaitForPreviousFrame(bool waitAll);
 			virtual void OnFrameBegin() = 0;
@@ -73,6 +67,13 @@ namespace Lightning
 			void ApplyRenderPasses();
 			void GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name);
 			void ResetFrameRenderQueue();
+		protected:
+			struct SemanticInfo
+			{
+				std::string rawName;
+				std::string name;
+				SemanticIndex index;
+			};
 			//Member fields
 			static IRenderer* sInstance;
 			std::unique_ptr<Device> mDevice;
