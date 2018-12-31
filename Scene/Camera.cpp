@@ -98,7 +98,7 @@ namespace Lightning
 		{
 			if (std::abs(aspectRatio - mAspectRatio) < EPSILON)
 				return;
-			mAspectRatio = DegreesToRadians(aspectRatio);
+			mAspectRatio = aspectRatio;
 			UpdateProjectionMatrix();
 		}
 
@@ -182,6 +182,18 @@ namespace Lightning
 			Vector4f dir{direction.x, direction.y, direction.z, 0.0f};
 			auto res = mViewMatrix * dir;
 			return Vector3f{ res.x, res.y, res.z };
+		}
+
+		void Camera::Update(IRenderer* renderer)
+		{
+			auto window = renderer->GetOutputWindow();
+			if (window)
+			{
+				auto width = window->GetWidth();
+				auto height = window->GetHeight();
+				auto aspectRatio = float(width) / height;
+				SetAspectRatio(aspectRatio);
+			}
 		}
 	}
 }

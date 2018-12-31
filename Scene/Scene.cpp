@@ -30,6 +30,10 @@ namespace Lightning
 		void Scene::Update()
 		{
 			auto renderer = gRenderPlugin->GetRenderer();
+			if (mActiveCamera)
+			{
+				mActiveCamera->Update(renderer);
+			}
 			for (auto& drawable : mDrawables)
 			{
 				drawable->Draw(renderer, mRenderData);

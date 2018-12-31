@@ -1,6 +1,7 @@
 #pragma once
 #include "Math/Quaternion.h"
 #include "Portable.h"
+#include "IRenderer.h"
 
 namespace Lightning
 {
@@ -9,6 +10,7 @@ namespace Lightning
 		using Foundation::Math::Matrix4f;
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Quaternionf;
+		using Render::IRenderer;
 
 		enum class CameraType
 		{
@@ -44,6 +46,7 @@ namespace Lightning
 			virtual Vector3f INTERFACECALL GetForward()const = 0;
 			virtual void INTERFACECALL SetRotation(const Quaternionf& rotation) = 0;
 			virtual Quaternionf INTERFACECALL GetRotation()const = 0;
+			virtual void INTERFACECALL Update(IRenderer*) = 0;
 		};
 	}
 }

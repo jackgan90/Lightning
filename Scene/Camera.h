@@ -44,6 +44,7 @@ namespace Lightning
 			Vector3f INTERFACECALL GetForward()const override{ return mTransformer.Forward(); }
 			void INTERFACECALL SetRotation(const Quaternionf& rotation) override;
 			Quaternionf INTERFACECALL GetRotation()const override{ return mTransformer.GetRotation(); }
+			void INTERFACECALL Update(IRenderer*)override;
 		protected:
 			void UpdateViewMatrix();
 			void UpdateProjectionMatrix();
