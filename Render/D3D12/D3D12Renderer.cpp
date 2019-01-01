@@ -475,29 +475,29 @@ namespace Lightning
 		void D3D12Renderer::BindShaderResources(const PipelineState& state)
 		{
 			std::size_t constantBuffers{ 0 };
-			using ResourceContainer = Container::UnorderedMap<ShaderType, Container::Vector<ShaderResourceHandle>>;
-			static Foundation::ThreadLocalSingleton<ResourceContainer> container;
-			auto& boundResources = *container;
-			boundResources.clear();
+			using ShaderResourceHandles = Container::UnorderedMap<ShaderType, Container::Vector<ShaderResourceHandle>>;
+			static Foundation::ThreadLocalSingleton<ShaderResourceHandles> resourceHandleInstances;
+			auto& resourceHandles = *resourceHandleInstances;
+			resourceHandles.clear();
 			if (state.vs)
 			{
-				constantBuffers += AnalyzeShaderRootResources(state.vs, boundResources);
+				constantBuffers += AnalyzeShaderRootResources(state.vs, resourceHandles);
 			}
 			if (state.fs)
 			{
-				constantBuffers += AnalyzeShaderRootResources(state.fs, boundResources);
+				constantBuffers += AnalyzeShaderRootResources(state.fs, resourceHandles);
 			}
 			if (state.gs)
 			{
-				constantBuffers += AnalyzeShaderRootResources(state.gs, boundResources);
+				constantBuffers += AnalyzeShaderRootResources(state.gs, resourceHandles);
 			}
 			if (state.hs)
 			{
-				constantBuffers += AnalyzeShaderRootResources(state.hs, boundResources);
+				constantBuffers += AnalyzeShaderRootResources(state.hs, resourceHandles);
 			}
 			if (state.ds)
 			{
-				constantBuffers += AnalyzeShaderRootResources(state.ds, boundResources);
+				constantBuffers += AnalyzeShaderRootResources(state.ds, resourceHandles);
 			}
 			Container::Vector<ID3D12DescriptorHeap*> descriptorHeaps;
 			if (constantBuffers > 0)
@@ -507,7 +507,7 @@ namespace Lightning
 				CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(constantHeap->cpuHandle);
 				CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(constantHeap->gpuHandle);
 				auto device = static_cast<D3D12Device*>(mDevice.get());
-				for (auto it = boundResources.begin(); it != boundResources.end();++it)
+				for (auto it = resourceHandles.begin(); it != resourceHandles.end();++it)
 				{
 					for (auto& resourceHandle : it->second)
 					{
@@ -535,12 +535,12 @@ namespace Lightning
 				commandList->SetDescriptorHeaps(UINT(descriptorHeaps.size()), &descriptorHeaps[0]);
 			}
 			UINT rootParameterIndex{ 0 };
-			for (const auto& pair : boundResources)
+			for (const auto& resourceHandle : resourceHandles)
 			{
-				for (std::size_t i = 0;i < pair.second.size();++i)
+				for (std::size_t i = 0;i < resourceHandle.second.size();++i)
 				{
-					const auto& resource = pair.second[i].resource;
-					const auto& handle = pair.second[i].handle;
+					const auto& resource = resourceHandle.second[i].resource;
+					const auto& handle = resourceHandle.second[i].handle;
 					if (resource.type == D3D12RootResourceType::ConstantBuffers)
 					{
 						commandList->SetGraphicsRootDescriptorTable(rootParameterIndex, handle);
