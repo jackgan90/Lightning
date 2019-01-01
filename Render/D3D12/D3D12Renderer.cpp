@@ -537,10 +537,11 @@ namespace Lightning
 			UINT rootParameterIndex{ 0 };
 			for (const auto& resourceHandle : resourceHandles)
 			{
-				for (std::size_t i = 0;i < resourceHandle.second.size();++i)
+				auto& shaderResourceHandle = resourceHandle.second;
+				for (std::size_t i = 0;i < shaderResourceHandle.size();++i)
 				{
-					const auto& resource = resourceHandle.second[i].resource;
-					const auto& handle = resourceHandle.second[i].handle;
+					const auto& resource = shaderResourceHandle[i].resource;
+					const auto& handle = shaderResourceHandle[i].handle;
 					if (resource.type == D3D12RootResourceType::ConstantBuffers)
 					{
 						commandList->SetGraphicsRootDescriptorTable(rootParameterIndex, handle);
