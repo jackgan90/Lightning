@@ -535,7 +535,7 @@ namespace Lightning
 				commandList->SetDescriptorHeaps(UINT(descriptorHeaps.size()), &descriptorHeaps[0]);
 			}
 			UINT rootParameterIndex{ 0 };
-			static ShaderType shaderTypes[] = { ShaderType::VERTEX, ShaderType::FRAGMENT, ShaderType::GEOMETRY,
+			const static ShaderType shaderTypes[] = { ShaderType::VERTEX, ShaderType::FRAGMENT, ShaderType::GEOMETRY,
 			ShaderType::TESSELATION_CONTROL, ShaderType::TESSELATION_EVALUATION };
 			//Have to ensure iterate with the same order as root parameters.
 			for (auto shaderType : shaderTypes)
