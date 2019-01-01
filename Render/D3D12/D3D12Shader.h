@@ -36,8 +36,6 @@ namespace Lightning
 		class D3D12Shader : public Shader
 		{
 		public:
-			friend class D3D12Device;
-			friend class D3D12ShaderManager;
 			D3D12Shader(D3D_SHADER_MODEL shaderModel, ShaderType type, const std::string& name, const char* const shaderSource);
 			INTERFACECALL ~D3D12Shader()override;
 			const IShaderMacros* INTERFACECALL GetMacros()const override;
@@ -52,6 +50,13 @@ namespace Lightning
 			const Container::Vector<D3D12RootBoundResource>& GetRootBoundResources();
 			UINT GetConstantBufferCount();
 			UINT GetConstantBufferSize();
+		private:
+			void GetShaderModelString(char* buf);
+			void CompileImpl();
+			D3D12_SHADER_VISIBILITY GetParameterVisibility()const;
+			void UpdateRootBoundResources();
+			void InitConstantBufferRootParameter(ID3D12ShaderReflection*, 
+				const Container::UnorderedMap<std::string, D3D12_SHADER_INPUT_BIND_DESC>&);
 		private:
 			struct ParameterInfo
 			{
@@ -75,12 +80,7 @@ namespace Lightning
 				std::uint8_t *mConstantBuffer;
 				std::size_t mBufferSize;
 			};
-			void GetShaderModelString(char* buf);
-			void CompileImpl();
-			D3D12_SHADER_VISIBILITY GetParameterVisibility()const;
-			void UpdateRootBoundResources();
-			void InitConstantBufferRootParameter(ID3D12ShaderReflection*, 
-				const Container::UnorderedMap<std::string, D3D12_SHADER_INPUT_BIND_DESC>&);
+		private:
 			ComPtr<ID3D10Blob> mByteCode;
 			D3D12_SHADER_DESC mDesc;
 			Container::UnorderedMap<std::string, ParameterInfo> mParameters;
