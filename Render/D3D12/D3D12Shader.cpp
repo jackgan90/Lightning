@@ -93,7 +93,6 @@ namespace Lightning
 
 		D3D12Shader::~D3D12Shader()
 		{
-			mParameters.clear();
 			mByteCode.Reset();
 		}
 
