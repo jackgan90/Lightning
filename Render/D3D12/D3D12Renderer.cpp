@@ -535,17 +535,24 @@ namespace Lightning
 				commandList->SetDescriptorHeaps(UINT(descriptorHeaps.size()), &descriptorHeaps[0]);
 			}
 			UINT rootParameterIndex{ 0 };
-			for (const auto& resourceHandle : resourceHandles)
+			static ShaderType shaderTypes[] = { ShaderType::VERTEX, ShaderType::FRAGMENT, ShaderType::GEOMETRY,
+			ShaderType::TESSELATION_CONTROL, ShaderType::TESSELATION_EVALUATION };
+			//Have to ensure iterate with the same order as root parameters.
+			for (auto shaderType : shaderTypes)
 			{
-				auto& shaderResourceHandleList = resourceHandle.second;
-				for (std::size_t i = 0;i < shaderResourceHandleList.size();++i)
+				auto it = resourceHandles.find(shaderType);
+				if (it != resourceHandles.end())
 				{
-					const auto& resource = shaderResourceHandleList[i].resource;
-					const auto& handle = shaderResourceHandleList[i].handle;
-					if (resource.type == D3D12RootResourceType::ConstantBuffers)
+					auto& shaderResourceHandleList = it->second;
+					for (const auto& shaderResourceHandle : shaderResourceHandleList)
 					{
-						commandList->SetGraphicsRootDescriptorTable(rootParameterIndex, handle);
-						++rootParameterIndex;
+						const auto& resource = shaderResourceHandle.resource;
+						const auto& handle = shaderResourceHandle.handle;
+						if (resource.type == D3D12RootResourceType::ConstantBuffers)
+						{
+							commandList->SetGraphicsRootDescriptorTable(rootParameterIndex, handle);
+							++rootParameterIndex;
+						}
 					}
 				}
 			}
