@@ -81,11 +81,11 @@ namespace Lightning
 			WaitForPreviousFrame(false);
 			if (CheckIfDepthStencilBufferNeedsResize() || mSwapChain->CheckIfBackBufferNeedsResize())
 			{
-				auto width = mOutputWindow->GetWidth();
-				auto height = mOutputWindow->GetHeight();
 				//Critical:must wait for previous frame finished.Because previous frames may reference the render target
 				//we are about to resize.
 				WaitForPreviousFrame(true);
+				auto width = mOutputWindow->GetWidth();
+				auto height = mOutputWindow->GetHeight();
 				for (std::uint8_t i = 0;i < RENDER_FRAME_COUNT;++i)
 				{
 					ResizeDepthStencilBuffer(mFrameResources[i].defaultDepthStencilBuffer, width, height);

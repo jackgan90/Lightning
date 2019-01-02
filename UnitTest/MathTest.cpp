@@ -69,13 +69,12 @@ namespace
 		REQUIRE(v7 == v5);
 
 
-		Vector3f v10;
+		//Vector3f v10;
 		//REQUIRE(v10[0] == Approx(1.0f));
 		//REQUIRE(v10[1] == Approx(2.0f));
 		//REQUIRE(v10[2] == Approx(3.0f));
 
 
-		Vector3f v11;
 
 		Vector3f v13{ 3.0f, 4.0f, 5.0f };
 		Vector4f v15{v13.x, v13.y, v13.z, 0};
