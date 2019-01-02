@@ -57,9 +57,28 @@ namespace Lightning
 				//Release reference to ID3D12Resource
 				D3DRenderTarget->Reset();
 			}
-			mSwapChain->ResizeBuffers(mDesc.BufferCount, width, height, mDesc.BufferDesc.Format, mDesc.Flags);
+			auto oldBackBufferIndex = static_cast<std::uint8_t>(mSwapChain->GetCurrentBackBufferIndex());
 			mDesc.BufferDesc.Width = width;
 			mDesc.BufferDesc.Height = height;
+			mSwapChain->ResizeBuffers(mDesc.BufferCount, mDesc.BufferDesc.Width, mDesc.BufferDesc.Height, mDesc.BufferDesc.Format, mDesc.Flags);
+
+			mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
+			if (oldBackBufferIndex != mCurrentBackBufferIndex)
+			{
+				IRenderTarget* oldRenderTargets[RENDER_FRAME_COUNT];
+				std::memcpy(oldRenderTargets, mRenderTargets, sizeof(mRenderTargets));
+				auto i{ 0 };
+				for (;i < RENDER_FRAME_COUNT - oldBackBufferIndex;++i)
+				{
+					mRenderTargets[i] = oldRenderTargets[oldBackBufferIndex + i];
+				}
+				auto j{ 0 };
+				for (;i < RENDER_FRAME_COUNT;++i)
+				{
+					mRenderTargets[i] = oldRenderTargets[j++];
+				}
+			}
+
 			for (std::uint8_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
 				auto D3DRenderTarget = static_cast<D3D12RenderTarget*>(mRenderTargets[i]);
@@ -67,23 +86,6 @@ namespace Lightning
 				auto hr = mSwapChain->GetBuffer(i, IID_PPV_ARGS(&D3DResource));
 				assert(SUCCEEDED(hr) && "Failed to get swap chain buffer.");
 				D3DRenderTarget->Reset(D3DResource, D3D12_RESOURCE_STATE_PRESENT);
-			}
-			mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
-			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			if (frameResourceIndex != mCurrentBackBufferIndex)
-			{
-				IRenderTarget* oldRenderTargets[RENDER_FRAME_COUNT];
-				std::memcpy(oldRenderTargets, mRenderTargets, sizeof(mRenderTargets));
-				auto i{ 0 };
-				for (;i < RENDER_FRAME_COUNT - frameResourceIndex;++i)
-				{
-					mRenderTargets[i] = oldRenderTargets[frameResourceIndex + i];
-				}
-				auto j{ 0 };
-				for (;i < RENDER_FRAME_COUNT;++i)
-				{
-					mRenderTargets[i] = oldRenderTargets[j++];
-				}
 			}
 		}
 

@@ -291,24 +291,24 @@ namespace Lightning
 
 		void Renderer::WaitForPreviousFrame(bool waitAll)
 		{
-			static Container::Vector<UINT> bufferIndice;
-			bufferIndice.clear();
+			static Container::Vector<std::size_t> resourceIndice;
+			resourceIndice.clear();
 			if (!waitAll)
 			{
-				bufferIndice.push_back(mFrameResourceIndex);
+				resourceIndice.push_back(mFrameResourceIndex);
 			}
 			else
 			{
 				for (std::uint32_t i = 0;i < RENDER_FRAME_COUNT;++i)
 				{
-					bufferIndice.push_back(i);
+					resourceIndice.push_back(i);
 					//explicit signal to prevent release assert
 					mFrameResources[i].fence->SetTargetValue(mFrameResources[i].fence->GetTargetValue() + 1);
 				}
 			}
-			for (const auto& bufferIndex : bufferIndice)
+			for (auto resourceIndex : resourceIndice)
 			{
-				auto& frameResource = mFrameResources[bufferIndex];
+				auto& frameResource = mFrameResources[resourceIndex];
 				frameResource.fence->WaitForTarget();
 				frameResource.ReleaseRenderQueue();
 				g_RenderAllocator.ReleaseFramesBefore(frameResource.frame);

@@ -768,9 +768,9 @@ namespace Lightning
 			mCmdEncoders[frameResourceIndex].for_each([](D3D12CommandEncoder& encoder) {
 				encoder.Reset();
 			});
-			auto defaultRT = mSwapChain->GetCurrentRenderTarget();
+			auto currentRenderTarget = mSwapChain->GetCurrentRenderTarget();
 			auto commandList = GetGraphicsCommandList();
-			static_cast<D3D12RenderTarget*>(defaultRT)->TransitToPresentState(commandList);
+			static_cast<D3D12RenderTarget*>(currentRenderTarget)->TransitToPresentState(commandList);
 			auto d3d12DSBuffer = static_cast<D3D12DepthStencilBuffer*>(
 				mFrameResources[frameResourceIndex].defaultDepthStencilBuffer);
 			d3d12DSBuffer->TransitToState(commandList, D3D12_RESOURCE_STATE_COMMON);
@@ -784,8 +784,8 @@ namespace Lightning
 		void D3D12Renderer::OnFrameEnd()
 		{
 			auto frameResourceIndex = GetFrameResourceIndex();
-			auto defaultRenderTarget = mSwapChain->GetCurrentRenderTarget();
-			auto renderTarget = static_cast<D3D12RenderTarget*>(defaultRenderTarget);
+			auto currentRenderTarget = mSwapChain->GetCurrentRenderTarget();
+			auto renderTarget = static_cast<D3D12RenderTarget*>(currentRenderTarget);
 			static Container::Vector<ID3D12CommandList*> commandLists;
 			commandLists.clear();
 			Container::Vector<ID3D12CommandList*>* pCommandLists = &commandLists;
