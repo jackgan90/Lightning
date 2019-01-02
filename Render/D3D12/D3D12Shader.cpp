@@ -112,7 +112,31 @@ namespace Lightning
 			return mConstantBuffer;
 		}
 
-		Container::Vector<D3D12RootBoundResource>& D3D12Shader::ShaderResourceProxy::GetRootBoundResources()
+		void D3D12Shader::ShaderResourceProxy::ClearBoundResources()
+		{
+			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
+			mRootBoundResources[frameResourceIndex].clear();
+		}
+
+		void D3D12Shader::ShaderResourceProxy::BeginUpdateResource(D3D12RootResourceType resourceType)
+		{
+			mCurrentResource.type = resourceType;
+			if (resourceType == D3D12RootResourceType::ConstantBuffers)
+				mCurrentResource.buffers.clear();
+		}
+
+		void D3D12Shader::ShaderResourceProxy::EndUpdateResource()
+		{
+			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
+			mRootBoundResources[frameResourceIndex].push_back(mCurrentResource);
+		}
+
+		void D3D12Shader::ShaderResourceProxy::AddConstantBuffer(const D3D12ConstantBuffer& constantBuffer)
+		{
+			mCurrentResource.buffers.push_back(constantBuffer);
+		}
+
+		const Container::Vector<D3D12RootBoundResource>& D3D12Shader::ShaderResourceProxy::GetRootBoundResources()
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			return mRootBoundResources[resourceIndex];
@@ -213,19 +237,17 @@ namespace Lightning
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto ptr = mResourceProxy->GetConstantBuffer(mTotalConstantBufferSize);
-			auto& rootBoundResources = mResourceProxy->GetRootBoundResources();
-			rootBoundResources.clear();
-			D3D12RootBoundResource boundResource;
-			boundResource.type = D3D12RootResourceType::ConstantBuffers;
+			mResourceProxy->ClearBoundResources();
+			mResourceProxy->BeginUpdateResource(D3D12RootResourceType::ConstantBuffers);
 			for (std::size_t i = 0;i < mDesc.ConstantBuffers;++i)
 			{
 				auto bufferSize = mConstantBufferInfo[i].size;
 				auto cbuffer = D3D12ConstantBufferManager::Instance()->AllocBuffer(bufferSize);
 				std::memcpy(cbuffer.userMemory, ptr + mConstantBufferInfo[i].offset, bufferSize);
 
-				boundResource.buffers.push_back(cbuffer);
+				mResourceProxy->AddConstantBuffer(cbuffer);
 			}
-			rootBoundResources.push_back(boundResource);
+			mResourceProxy->EndUpdateResource();
 		}
 
 		const Container::Vector<D3D12_ROOT_PARAMETER>& D3D12Shader::GetRootParameters()const

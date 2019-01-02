@@ -73,10 +73,17 @@ namespace Lightning
 			public:
 				ShaderResourceProxy();
 				std::uint8_t* GetConstantBuffer(std::size_t size);
-				Container::Vector<D3D12RootBoundResource>& GetRootBoundResources();
+				void ClearBoundResources();
+				//Must be called at the start of resource update
+				void BeginUpdateResource(D3D12RootResourceType resourceType);
+				//Must be called on resource update end.It's a counterpart of BeginUpdateResource
+				void EndUpdateResource();
+				void AddConstantBuffer(const D3D12ConstantBuffer& constantBuffer);
+				const Container::Vector<D3D12RootBoundResource>& GetRootBoundResources();
 				~ShaderResourceProxy();
 			private:
 				Container::Vector<D3D12RootBoundResource> mRootBoundResources[RENDER_FRAME_COUNT];
+				D3D12RootBoundResource mCurrentResource;
 				std::uint8_t *mConstantBuffer;
 				std::size_t mBufferSize;
 			};
