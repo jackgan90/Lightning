@@ -12,43 +12,47 @@ namespace Lightning
 	namespace Render
 	{
 		using namespace Foundation::Math;
+		//An immutable render unit.The unit is read-only,used for committed render unit.
+		struct IImmutableRenderUnit : Plugins::IRefObject
+		{
+			virtual PrimitiveType INTERFACECALL GetPrimitiveType()const = 0;
+			virtual IIndexBuffer* INTERFACECALL GetIndexBuffer()const = 0;
+			virtual std::size_t INTERFACECALL GetVertexBufferCount()const = 0;
+			virtual void INTERFACECALL GetVertexBuffer(std::size_t index, std::size_t& slot, IVertexBuffer*& vertexBuffer)const = 0;
+			virtual IMaterial* INTERFACECALL GetMaterial()const = 0;
+			virtual const Transform& INTERFACECALL GetTransform()const = 0;
+			virtual const Matrix4f& INTERFACECALL GetViewMatrix()const = 0;
+			virtual const Matrix4f& INTERFACECALL GetProjectionMatrix()const = 0;
+			virtual IRenderTarget* INTERFACECALL GetRenderTarget(std::size_t index)const = 0;
+			virtual std::size_t INTERFACECALL GetRenderTargetCount()const = 0;
+			virtual IDepthStencilBuffer* INTERFACECALL GetDepthStencilBuffer()const = 0;
+			virtual std::size_t INTERFACECALL GetViewportCount()const = 0;
+			virtual void INTERFACECALL GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const = 0;
+		};
 		//An IRenderUnit object is an object that encapsulates objects and states that are used to render a drawable object in a frame.
 		//It describers what needs to be passed to the downstream rendering pipeline.Users of this interface may change its state by calling 
 		//the Set/Get methods whatever they like
 		//as long as it is not committed.After the unit is committed,any further operations that potentially
 		//change the object is a no-no.Such behavior usually cause undesired outcome.So don't try to reuse it
 		//after the commitment.You'd better call Release() after calling IRenderer::CommitRenderUnit.
-		struct IRenderUnit : Plugins::IRefObject
+		struct IRenderUnit : IImmutableRenderUnit
 		{
 			virtual void INTERFACECALL SetPrimitiveType(PrimitiveType type) = 0;
-			virtual PrimitiveType INTERFACECALL GetPrimitiveType()const = 0;
 			virtual void INTERFACECALL SetIndexBuffer(IIndexBuffer* indexBuffer) = 0;
-			virtual IIndexBuffer* INTERFACECALL GetIndexBuffer()const = 0;
 			virtual void INTERFACECALL ClearVertexBuffers() = 0;
 			virtual void INTERFACECALL SetVertexBuffer(std::size_t slot, IVertexBuffer* vertexBuffer) = 0;
-			virtual std::size_t INTERFACECALL GetVertexBufferCount()const = 0;
-			virtual void INTERFACECALL GetVertexBuffer(std::size_t index, std::size_t& slot, IVertexBuffer*& vertexBuffer)const = 0;
 			virtual void INTERFACECALL SetMaterial(IMaterial* material) = 0;
-			virtual IMaterial* INTERFACECALL GetMaterial()const = 0;
 			virtual void INTERFACECALL SetTransform(const Transform& transform) = 0;
-			virtual const Transform& INTERFACECALL GetTransform()const = 0;
 			virtual void INTERFACECALL SetViewMatrix(const Matrix4f& matrix) = 0;
-			virtual const Matrix4f& INTERFACECALL GetViewMatrix()const = 0;
 			virtual void INTERFACECALL SetProjectionMatrix(const Matrix4f& matrix) = 0;
-			virtual const Matrix4f& INTERFACECALL GetProjectionMatrix()const = 0;
 			virtual void INTERFACECALL AddRenderTarget(IRenderTarget* renderTarget) = 0;
 			virtual void INTERFACECALL RemoveRenderTarget(IRenderTarget* renderTarget) = 0;
-			virtual IRenderTarget* INTERFACECALL GetRenderTarget(std::size_t index)const = 0;
 			virtual void INTERFACECALL ClearRenderTargets() = 0;
-			virtual std::size_t INTERFACECALL GetRenderTargetCount()const = 0;
 			virtual void INTERFACECALL SetDepthStencilBuffer(IDepthStencilBuffer* depthStencilBuffer) = 0;
-			virtual IDepthStencilBuffer* INTERFACECALL GetDepthStencilBuffer()const = 0;
 			//Viewport and scissorRect must be set atomic
 			virtual void INTERFACECALL AddViewportAndScissorRect(const Viewport& viewport, const ScissorRect& scissorRect) = 0;
-			virtual std::size_t INTERFACECALL GetViewportCount()const = 0;
-			virtual void INTERFACECALL GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const = 0;
 			virtual void INTERFACECALL Reset() = 0;
-			virtual IRenderUnit* INTERFACECALL Clone()const = 0;
+			virtual IImmutableRenderUnit* INTERFACECALL Clone()const = 0;
 		};
 
 		//RenderQueue is a very important concept.Every drawable object will encode there data to a RenderUnit struct.
@@ -57,6 +61,6 @@ namespace Lightning
 		//queue won't be cleared until next time the renderer renders to the same swap chain,which ensures the 
 		//render resource validation during this frame(render resources won't be deleted because a render unit
 		//holds all shared_ptr referring to them).
-		using RenderQueue = Foundation::Container::Vector<IRenderUnit*>;
+		using RenderQueue = Foundation::Container::Vector<IImmutableRenderUnit*>;
 	}
 }

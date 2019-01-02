@@ -25,7 +25,7 @@ namespace Lightning
 			ForwardRenderPass::Apply(renderQueue);
 		}
 
-		void D3D12ForwardRenderPass::OnAddRenderUnit(const IRenderUnit* unit)
+		void D3D12ForwardRenderPass::OnAddRenderUnit(const IImmutableRenderUnit* unit)
 		{
 			using ShaderContainer = Container::Vector<IShader*>;
 			static Foundation::ThreadLocalSingleton<ShaderContainer> shadersContainer;

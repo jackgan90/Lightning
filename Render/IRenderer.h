@@ -81,7 +81,7 @@ namespace Lightning
 			virtual void INTERFACECALL AddRenderPass(RenderPassType type) = 0;
 			virtual IRenderUnit* INTERFACECALL CreateRenderUnit() = 0;
 			//Commit a render unit for rendering
-			virtual void INTERFACECALL CommitRenderUnit(IRenderUnit* unit) = 0;
+			virtual void INTERFACECALL CommitRenderUnit(const IRenderUnit* unit) = 0;
 			//clear a specified render target,possibly parts of it defined by an array of rects
 			virtual void INTERFACECALL ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, 
 				const RectI* rects=nullptr, std::size_t rectCount = 0) = 0;

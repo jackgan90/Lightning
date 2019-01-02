@@ -27,7 +27,7 @@ namespace Lightning
 			});
 		}
 
-		void ForwardRenderPass::OnAddRenderUnit(const IRenderUnit* unit)
+		void ForwardRenderPass::OnAddRenderUnit(const IImmutableRenderUnit* unit)
 		{
 
 		}
@@ -36,7 +36,7 @@ namespace Lightning
 		{
 		}
 
-		void ForwardRenderPass::CommitPipelineStates(const IRenderUnit* unit)
+		void ForwardRenderPass::CommitPipelineStates(const IImmutableRenderUnit* unit)
 		{
 			PipelineState state;
 			state.Reset();
@@ -90,7 +90,7 @@ namespace Lightning
 			renderer->ApplyScissorRects(scissorRects, viewportCount);
 		}
 
-		void ForwardRenderPass::CommitShaderParameters(const IRenderUnit* unit)
+		void ForwardRenderPass::CommitShaderParameters(const IImmutableRenderUnit* unit)
 		{
 			auto material = unit->GetMaterial();
 			if (!material)
@@ -114,7 +114,7 @@ namespace Lightning
 			}
 		}
 
-		void ForwardRenderPass::CommitSemanticUniforms(IShader* shader, const IRenderUnit* unit)
+		void ForwardRenderPass::CommitSemanticUniforms(IShader* shader, const IImmutableRenderUnit* unit)
 		{
 			auto renderer = Renderer::Instance();
 			RenderSemantics* semantics{ nullptr };
@@ -142,7 +142,7 @@ namespace Lightning
 			}
 		}
 
-		void ForwardRenderPass::GetInputLayouts(const IRenderUnit* unit, VertexInputLayout*& layouts, std::size_t& layoutCount)
+		void ForwardRenderPass::GetInputLayouts(const IImmutableRenderUnit* unit, VertexInputLayout*& layouts, std::size_t& layoutCount)
 		{
 			layoutCount = unit->GetVertexBufferCount();
 			layouts = g_RenderAllocator.Allocate<VertexInputLayout>(layoutCount);
@@ -163,7 +163,7 @@ namespace Lightning
 			}
 		}
 
-		void ForwardRenderPass::CommitBuffers(const IRenderUnit* unit)
+		void ForwardRenderPass::CommitBuffers(const IImmutableRenderUnit* unit)
 		{
 			auto renderer = Renderer::Instance();
 			auto vertexBufferCount = unit->GetVertexBufferCount();
@@ -183,7 +183,7 @@ namespace Lightning
 			}
 		}
 
-		void ForwardRenderPass::Draw(const IRenderUnit* unit)
+		void ForwardRenderPass::Draw(const IImmutableRenderUnit* unit)
 		{
 			auto renderer = Renderer::Instance();
 			auto indexBuffer = unit->GetIndexBuffer();

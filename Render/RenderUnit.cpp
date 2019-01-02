@@ -262,7 +262,7 @@ namespace Lightning
 			DoReset();
 		}
 
-		IRenderUnit* RenderUnit::Clone()const
+		IImmutableRenderUnit* RenderUnit::Clone()const
 		{
 			auto clonedUnit = new (RenderUnitPool::malloc()) RenderUnit;
 			clonedUnit->mPrimitiveType = mPrimitiveType;

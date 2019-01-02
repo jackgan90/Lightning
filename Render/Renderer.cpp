@@ -179,15 +179,15 @@ namespace Lightning
 			return new (RenderUnitPool::malloc()) RenderUnit;
 		}
 
-		void Renderer::CommitRenderUnit(IRenderUnit* unit)
+		void Renderer::CommitRenderUnit(const IRenderUnit* unit)
 		{
 			assert(unit != nullptr && "Commit render unit cannot be nullptr!");
-			unit = unit->Clone();
+			auto immutableUnit = unit->Clone();
 			//unit->AddRef();
-			mCurrentFrameRenderQueue->push_back(unit);
+			mCurrentFrameRenderQueue->push_back(immutableUnit);
 			for (auto& pass : mRenderPasses)
 			{
-				pass->OnAddRenderUnit(unit);
+				pass->OnAddRenderUnit(immutableUnit);
 			}
 		}
 

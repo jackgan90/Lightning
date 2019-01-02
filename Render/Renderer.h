@@ -38,7 +38,7 @@ namespace Lightning
 			std::uint64_t INTERFACECALL GetCurrentFrameCount()const override;
 			void INTERFACECALL SetClearColor(float r, float g, float b, float a)override;
 			IRenderUnit* INTERFACECALL CreateRenderUnit()override;
-			void INTERFACECALL CommitRenderUnit(IRenderUnit* item)override;
+			void INTERFACECALL CommitRenderUnit(const IRenderUnit* item)override;
 			//TODO there can be multiple render passes in effect simultaneously,should change it
 			void INTERFACECALL AddRenderPass(RenderPassType type)override;
 			std::size_t INTERFACECALL GetFrameResourceIndex()const override;

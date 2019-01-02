@@ -10,7 +10,7 @@ namespace Lightning
 		public:
 			D3D12ForwardRenderPass();
 			void Apply(RenderQueue&)override;
-			void OnAddRenderUnit(const IRenderUnit* unit)override;
+			void OnAddRenderUnit(const IImmutableRenderUnit* unit)override;
 			void OnFrameEnd()override;
 		private:
 			void GetMaterialShaders(IMaterial* material, Container::Vector<IShader*>& shaders);

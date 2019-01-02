@@ -14,6 +14,7 @@ namespace Lightning
 		{
 		public:
 			void Notify(ID3D12GraphicsCommandList* cmdList, D3D12StatefulResource* resource);
+			//Thread unsafe
 			void FixResourceStates(Container::Vector<ID3D12CommandList*>& commandLists);
 			void Clear();
 		private:

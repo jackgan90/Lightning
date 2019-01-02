@@ -10,7 +10,7 @@ namespace Lightning
 
 		}
 
-		void DeferedRenderPass::OnAddRenderUnit(const IRenderUnit* unit)
+		void DeferedRenderPass::OnAddRenderUnit(const IImmutableRenderUnit* unit)
 		{
 
 		}

@@ -33,7 +33,8 @@ namespace Lightning
 			MutexLock lock(mtxResources);
 			std::size_t i{ 0 };
 			mEncoderIndex = 0;
-			Container::Vector<D3D12_RESOURCE_BARRIER> barrierDescs;
+			static Container::Vector<D3D12_RESOURCE_BARRIER> barrierDescs;
+			barrierDescs.clear();
 			while (i < commandLists.size())
 			{
 				barrierDescs.clear();
