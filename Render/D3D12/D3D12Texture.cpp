@@ -1,8 +1,10 @@
 #include <d3dx12.h>
+#include <algorithm>
 #include "Logger.h"
 #include "D3D12Device.h"
 #include "D3D12Texture.h"
 #include "D3D12Renderer.h"
+#undef max
 
 namespace Lightning
 {
@@ -149,8 +151,8 @@ namespace Lightning
 			//Because there may still be reference to the old one.
 			//Create new one and replace old one with newly created resource
 			D3D12_RESOURCE_DESC desc(mResource->GetDesc());
-			desc.Width = width;
-			desc.Height = UINT(height);
+			desc.Width = std::max(std::size_t(1), width);
+			desc.Height = UINT(std::max(std::size_t(1), height));
 			auto newResource = mDevice->CreateCommittedResource(
 				&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
 				D3D12_HEAP_FLAG_NONE,
