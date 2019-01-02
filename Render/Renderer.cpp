@@ -30,7 +30,7 @@ namespace Lightning
 
 		void FrameResource::OnFrameBegin()
 		{
-			ReleaseRenderQueue();
+			//ReleaseRenderQueue();
 		}
 
 		void FrameResource::Release()
@@ -310,6 +310,7 @@ namespace Lightning
 			{
 				auto& frameResource = mFrameResources[bufferIndex];
 				frameResource.fence->WaitForTarget();
+				frameResource.ReleaseRenderQueue();
 				g_RenderAllocator.ReleaseFramesBefore(frameResource.frame);
 			}
 		}

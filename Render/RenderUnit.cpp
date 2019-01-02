@@ -2,6 +2,8 @@
 #include <algorithm>
 #include "Renderer.h"
 #include "RenderUnit.h"
+#include "ImmutableRenderUnit.h"
+#include "FrameMemoryAllocator.h"
 #undef min
 #undef max
 
@@ -9,6 +11,7 @@ namespace Lightning
 {
 	namespace Render
 	{
+		extern FrameMemoryAllocator g_RenderAllocator;
 		//RenderUnit::VertexBufferAllocatorType RenderUnit::sVertexBufferAllocator;
 		RenderUnit::RenderUnit()
 			: mIndexBuffer(nullptr)
@@ -264,42 +267,57 @@ namespace Lightning
 
 		IImmutableRenderUnit* RenderUnit::Clone()const
 		{
-			auto clonedUnit = new (RenderUnitPool::malloc()) RenderUnit;
-			clonedUnit->mPrimitiveType = mPrimitiveType;
-			clonedUnit->mTransform = mTransform;
-			clonedUnit->mViewMatrix = mViewMatrix;
-			clonedUnit->mProjectionMatrix = mProjectionMatrix;
-			clonedUnit->mIndexBuffer = mIndexBuffer;
-			clonedUnit->mCustomRenderTargets = mCustomRenderTargets;
-			clonedUnit->mCustomDepthStencilBuffer = mCustomDepthStencilBuffer;
-			clonedUnit->mCustomViewport = mCustomViewport;
+			auto clonedUnit = new (ImmutableRenderUnitPool::malloc()) ImmutableRenderUnit;
+			clonedUnit->mPrimitiveType = GetPrimitiveType();
+			clonedUnit->mTransform = GetTransform();
+			clonedUnit->mViewMatrix = GetViewMatrix();
+			clonedUnit->mProjectionMatrix = GetProjectionMatrix();
+
+			clonedUnit->mIndexBuffer = GetIndexBuffer();
 			if (clonedUnit->mIndexBuffer)
 			{
 				clonedUnit->mIndexBuffer->AddRef();
 			}
-			clonedUnit->mMaterial = mMaterial;
+
+			clonedUnit->mMaterial = GetMaterial();
 			if (clonedUnit->mMaterial)
 			{
 				clonedUnit->mMaterial->AddRef();
 			}
-			clonedUnit->mDepthStencilBuffer = mDepthStencilBuffer;
+
+			clonedUnit->mDepthStencilBuffer = GetDepthStencilBuffer();
 			if (clonedUnit->mDepthStencilBuffer)
 			{
 				clonedUnit->mDepthStencilBuffer->AddRef();
 			}
-			for (auto renderTarget : mRenderTargets)
+
+			clonedUnit->mRenderTargetCount = GetRenderTargetCount();
+			clonedUnit->mRenderTargets = g_RenderAllocator.Allocate
+				<IRenderTarget*>(clonedUnit->mRenderTargetCount);
+			for (auto i = 0;i < clonedUnit->mRenderTargetCount;++i)
 			{
+				auto renderTarget = GetRenderTarget(i);
 				renderTarget->AddRef();
-				clonedUnit->mRenderTargets.push_back(renderTarget);
+				clonedUnit->mRenderTargets[i] = renderTarget;
 			}
-			for (const auto& vs : mViewportAndScissorRects)
+
+			clonedUnit->mViewportCount = GetViewportCount();
+			clonedUnit->mViewportAndScissorRects = g_RenderAllocator.Allocate 
+				<ImmutableRenderUnit::ViewportAndScissorRect>(clonedUnit->mViewportCount);
+			for (auto i = 0;i < clonedUnit->mViewportCount;++i)
 			{
-				clonedUnit->mViewportAndScissorRects.push_back(vs);
+				GetViewportAndScissorRect(i, clonedUnit->mViewportAndScissorRects[i].viewport
+					, clonedUnit->mViewportAndScissorRects[i].scissorRect);
 			}
-			for (auto it = mVertexBuffers.begin(); it != mVertexBuffers.end();++it)
+
+			clonedUnit->mVertexBufferCount = GetVertexBufferCount();
+			clonedUnit->mVertexBuffers = g_RenderAllocator.Allocate
+				<ImmutableRenderUnit::VertexBufferSlot>(clonedUnit->mVertexBufferCount);
+			for (auto i = 0;i < clonedUnit->mVertexBufferCount;++i)
 			{
-				it->second->AddRef();
-				clonedUnit->mVertexBuffers.emplace(it->first, it->second);
+				GetVertexBuffer(i, clonedUnit->mVertexBuffers[i].slot, 
+					clonedUnit->mVertexBuffers[i].vertexBuffer);
+				clonedUnit->mVertexBuffers[i].vertexBuffer->AddRef();
 			}
 			return clonedUnit;
 		}

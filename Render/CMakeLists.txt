@@ -30,6 +30,7 @@ set(HEADERS IDevice.h
 			DeferedRenderPass.h
 			FrameMemoryAllocator.h
 			RenderUnit.h
+			ImmutableRenderUnit.h
 			RenderObjectCache.h)
 set(SOURCES Renderer.cpp
 			Device.cpp
@@ -44,6 +45,7 @@ set(SOURCES Renderer.cpp
 			FrameMemoryAllocator.cpp
 			DeferedRenderPass.cpp
 			RenderUnit.cpp
+			ImmutableRenderUnit.cpp
 			RenderObjectCache.cpp)
 
 set(TYPES_HEADERS	Types/Color.h
