@@ -295,7 +295,7 @@ namespace Lightning
 			bufferIndice.clear();
 			if (!waitAll)
 			{
-				bufferIndice.push_back(mSwapChain->GetCurrentBackBufferIndex());
+				bufferIndice.push_back(mFrameResourceIndex);
 			}
 			else
 			{

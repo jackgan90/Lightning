@@ -27,15 +27,14 @@ namespace Lightning
 
 		bool SwapChain::CheckIfBackBufferNeedsResize()
 		{
-			auto width = mOutputWindow->GetWidth();
-			auto height = mOutputWindow->GetHeight();
-			auto bufferIndex = GetCurrentBackBufferIndex();
-			auto renderTarget = mRenderTargets[bufferIndex];
+			auto renderTarget = GetCurrentRenderTarget();
 			if (!renderTarget)
 				return false;
 			auto renderTexture = renderTarget->GetTexture();
 			if (!renderTexture)
 				return false;
+			auto width = mOutputWindow->GetWidth();
+			auto height = mOutputWindow->GetHeight();
 			if (width != renderTexture->GetWidth() || height != renderTexture->GetHeight())
 			{
 				return true;

@@ -15,7 +15,6 @@ namespace Lightning
 			virtual std::size_t INTERFACECALL GetMultiSampleCount()const = 0;
 			virtual std::size_t INTERFACECALL GetMultiSampleQuality()const = 0;
 			virtual RenderFormat INTERFACECALL GetRenderFormat()const = 0;
-			virtual std::uint32_t INTERFACECALL GetCurrentBackBufferIndex()const = 0;
 			//get corresponding render target
 			virtual IRenderTarget* INTERFACECALL GetCurrentRenderTarget() = 0;
 		};

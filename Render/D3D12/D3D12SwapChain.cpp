@@ -43,11 +43,6 @@ namespace Lightning
 			return SUCCEEDED(hr);
 		}
 
-		std::uint32_t D3D12SwapChain::GetCurrentBackBufferIndex()const
-		{
-			return mCurrentBackBufferIndex;
-		}
-
 		IRenderTarget* D3D12SwapChain::GetCurrentRenderTarget()
 		{
 			return mRenderTargets[mCurrentBackBufferIndex];
@@ -74,6 +69,22 @@ namespace Lightning
 				D3DRenderTarget->Reset(D3DResource, D3D12_RESOURCE_STATE_PRESENT);
 			}
 			mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
+			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
+			if (frameResourceIndex != mCurrentBackBufferIndex)
+			{
+				IRenderTarget* oldRenderTargets[RENDER_FRAME_COUNT];
+				std::memcpy(oldRenderTargets, mRenderTargets, sizeof(mRenderTargets));
+				auto i{ 0 };
+				for (;i < RENDER_FRAME_COUNT - frameResourceIndex;++i)
+				{
+					mRenderTargets[i] = oldRenderTargets[frameResourceIndex + i];
+				}
+				auto j{ 0 };
+				for (;i < RENDER_FRAME_COUNT;++i)
+				{
+					mRenderTargets[i] = oldRenderTargets[j++];
+				}
+			}
 		}
 
 		void D3D12SwapChain::CreateRenderTargets()
