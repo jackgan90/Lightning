@@ -478,7 +478,11 @@ namespace Lightning
 			using ShaderResourceHandles = Container::UnorderedMap<ShaderType, Container::Vector<ShaderResourceHandle>>;
 			static Foundation::ThreadLocalSingleton<ShaderResourceHandles> resourceHandleInstances;
 			auto& resourceHandles = *resourceHandleInstances;
-			resourceHandles.clear();
+			for (auto it = resourceHandles.begin(); it != resourceHandles.end();++it)
+			{
+				it->second.clear();
+			}
+			//resourceHandles.clear();
 			if (state.vs)
 			{
 				constantBuffers += AnalyzeShaderRootResources(state.vs, resourceHandles);
@@ -499,7 +503,10 @@ namespace Lightning
 			{
 				constantBuffers += AnalyzeShaderRootResources(state.ds, resourceHandles);
 			}
-			Container::Vector<ID3D12DescriptorHeap*> descriptorHeaps;
+			using DescriptorHeapLists = Foundation::ThreadLocalSingleton<Container::Vector<ID3D12DescriptorHeap*>>;
+			static DescriptorHeapLists descriptorHeapLists;
+			auto& descriptorHeaps = *descriptorHeapLists;
+			descriptorHeaps.clear();
 			if (constantBuffers > 0)
 			{
 				auto constantHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
@@ -779,9 +786,11 @@ namespace Lightning
 			auto frameResourceIndex = GetFrameResourceIndex();
 			auto defaultRenderTarget = mSwapChain->GetCurrentRenderTarget();
 			auto renderTarget = static_cast<D3D12RenderTarget*>(defaultRenderTarget);
-			Container::Vector<ID3D12CommandList*> commandLists;
-			mCmdEncoders[frameResourceIndex].for_each([&commandLists](D3D12CommandEncoder& encoder) {
-				commandLists.push_back(encoder.GetCommandList());
+			static Container::Vector<ID3D12CommandList*> commandLists;
+			commandLists.clear();
+			Container::Vector<ID3D12CommandList*>* pCommandLists = &commandLists;
+			mCmdEncoders[frameResourceIndex].for_each([pCommandLists](D3D12CommandEncoder& encoder) {
+				pCommandLists->push_back(encoder.GetCommandList());
 			});
 			auto lastCmdList = static_cast<ID3D12GraphicsCommandList*>(commandLists.back());
 			renderTarget->TransitToRTState(lastCmdList);

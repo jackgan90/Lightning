@@ -51,9 +51,11 @@ namespace Lightning
 			const char* INTERFACECALL GetUniformName(RenderSemantics semantic)override;
 		protected:
 			Renderer(Window::IWindow* window);
+			//Thread unsafe ,must ensure there's no concurrent execution
 			void WaitForPreviousFrame(bool waitAll);
 			virtual void OnFrameBegin() = 0;
 			virtual void OnFrameUpdate() = 0;
+			//Thread unsafe, cannot run parallel
 			virtual void OnFrameEnd() = 0;
 			virtual void ResizeDepthStencilBuffer(IDepthStencilBuffer* depthStencilBuffer, std::size_t width, std::size_t height) = 0;
 			//CreateRenderFence is called in Start after the creation of device and swap chain

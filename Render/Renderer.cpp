@@ -291,7 +291,8 @@ namespace Lightning
 
 		void Renderer::WaitForPreviousFrame(bool waitAll)
 		{
-			Container::Vector<UINT> bufferIndice;
+			static Container::Vector<UINT> bufferIndice;
+			bufferIndice.clear();
 			if (!waitAll)
 			{
 				bufferIndice.push_back(mSwapChain->GetCurrentBackBufferIndex());
