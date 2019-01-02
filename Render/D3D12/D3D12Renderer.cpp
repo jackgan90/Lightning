@@ -515,8 +515,9 @@ namespace Lightning
 						if (resource.type == D3D12RootResourceType::ConstantBuffers)
 						{
 							resourceHandle.handle = gpuHandle;
-							for (auto& cbuffer : resource.buffers)
+							for (auto i = 0;i < resource.bufferCount;++i)
 							{
+								const auto& cbuffer = resource.buffers[i];
 								D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
 								cbvDesc.BufferLocation = cbuffer.virtualAdress;
 								cbvDesc.SizeInBytes = UINT(cbuffer.size);
@@ -618,11 +619,13 @@ namespace Lightning
 			Container::UnorderedMap<ShaderType, Container::Vector<D3D12Renderer::ShaderResourceHandle>>& resourceHandles)
 		{
 			std::size_t constantBuffers{ 0 };
-			for (const auto& resource : static_cast<D3D12Shader*>(pShader)->GetRootBoundResources())
+			auto D3DShader = static_cast<D3D12Shader*>(pShader);
+			auto boundResources = D3DShader->GetRootBoundResources();
+			for (auto i = 0;i < D3DShader->GetRootParameterCount();++i)
 			{
-				resourceHandles[pShader->GetType()].emplace_back(resource);
-				if (resource.type == D3D12RootResourceType::ConstantBuffers)
-					constantBuffers += resource.buffers.size();
+				resourceHandles[pShader->GetType()].emplace_back(boundResources[i]);
+				if (boundResources[i].type == D3D12RootResourceType::ConstantBuffers)
+					constantBuffers += boundResources[i].bufferCount;
 			}
 			return constantBuffers;
 		}

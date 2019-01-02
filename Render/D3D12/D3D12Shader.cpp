@@ -96,9 +96,35 @@ namespace Lightning
 			mByteCode.Reset();
 		}
 
-		D3D12Shader::ShaderResourceProxy::ShaderResourceProxy():mConstantBuffer(nullptr), mBufferSize(0)
+		D3D12Shader::ShaderResourceProxy::ShaderResourceProxy()
+			:mConstantBuffer(nullptr), mBufferSize(0)
+			, mRootResourceCount(0)
+			, mCurrentResourceIndex(0), mCurrentBufferIndex(0)
+			, mInit(false)
 		{
+			std::memset(mRootBoundResources, 0, sizeof(mRootBoundResources));
 		}
+
+		D3D12Shader::ShaderResourceProxy::~ShaderResourceProxy()
+		{
+			if (mConstantBuffer)
+			{
+				delete[] mConstantBuffer;
+			}
+			for (std::uint8_t i = 0;i < RENDER_FRAME_COUNT;++i)
+			{
+				if (mRootBoundResources[i])
+				{
+					for (auto j = 0;j < mRootResourceCount;++j)
+					{
+						if (mRootBoundResources[i][j].buffers)
+							delete[] mRootBoundResources[i][j].buffers;
+					}
+					delete[] mRootBoundResources[i];
+				}
+			}
+		}
+
 
 		std::uint8_t* D3D12Shader::ShaderResourceProxy::GetConstantBuffer(std::size_t size)
 		{
@@ -112,40 +138,64 @@ namespace Lightning
 			return mConstantBuffer;
 		}
 
-		void D3D12Shader::ShaderResourceProxy::ClearBoundResources()
+		void D3D12Shader::ShaderResourceProxy::Init(
+			std::size_t totalCount, std::size_t constantBufferCount)
 		{
-			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			mRootBoundResources[frameResourceIndex].clear();
+			if (mInit)
+				return;
+			mRootResourceCount = totalCount;
+			if (mRootResourceCount == 0)
+			{
+				mInit = true;
+				return;
+			}
+			for (std::uint8_t i = 0;i < RENDER_FRAME_COUNT;++i)
+			{
+				mRootBoundResources[i] = new D3D12RootBoundResource[mRootResourceCount];
+				for (auto j = 0;j < mRootResourceCount;++j)
+				{
+					if (j == 0 && constantBufferCount > 0)	//All of the constant buffers are in root parameter 0
+					{
+						mRootBoundResources[i][j].buffers = new D3D12ConstantBuffer[constantBufferCount];
+						mRootBoundResources[i][j].bufferCount = constantBufferCount;
+					}
+					else
+					{
+						mRootBoundResources[i][j].buffers = nullptr;
+						mRootBoundResources[i][j].bufferCount = 0;
+					}
+				}
+			}
+			mInit = true;
 		}
 
 		void D3D12Shader::ShaderResourceProxy::BeginUpdateResource(D3D12RootResourceType resourceType)
 		{
-			mCurrentResource.type = resourceType;
+			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			if (resourceType == D3D12RootResourceType::ConstantBuffers)
-				mCurrentResource.buffers.clear();
+			{
+				mCurrentResourceIndex = 0;
+				mCurrentBufferIndex = 0;
+			}
+			mRootBoundResources[frameResourceIndex][mCurrentResourceIndex].type = resourceType;
 		}
 
 		void D3D12Shader::ShaderResourceProxy::EndUpdateResource()
 		{
-			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			mRootBoundResources[frameResourceIndex].push_back(mCurrentResource);
+
 		}
 
 		void D3D12Shader::ShaderResourceProxy::AddConstantBuffer(const D3D12ConstantBuffer& constantBuffer)
 		{
-			mCurrentResource.buffers.push_back(constantBuffer);
+			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
+			auto& boundResource = mRootBoundResources[frameResourceIndex];
+			boundResource[mCurrentResourceIndex].buffers[mCurrentBufferIndex++] = constantBuffer;
 		}
 
-		const Container::Vector<D3D12RootBoundResource>& D3D12Shader::ShaderResourceProxy::GetRootBoundResources()
+		const D3D12RootBoundResource* D3D12Shader::ShaderResourceProxy::GetRootBoundResources()
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			return mRootBoundResources[resourceIndex];
-		}
-
-		D3D12Shader::ShaderResourceProxy::~ShaderResourceProxy()
-		{
-			if (mConstantBuffer)
-				delete[] mConstantBuffer;
 		}
 
 
@@ -235,9 +285,9 @@ namespace Lightning
 
 		void D3D12Shader::UpdateRootBoundResources()
 		{
+			mResourceProxy->Init(GetRootParameterCount(), mConstantBufferInfo.size());
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto ptr = mResourceProxy->GetConstantBuffer(mTotalConstantBufferSize);
-			mResourceProxy->ClearBoundResources();
 			mResourceProxy->BeginUpdateResource(D3D12RootResourceType::ConstantBuffers);
 			for (std::size_t i = 0;i < mDesc.ConstantBuffers;++i)
 			{
@@ -261,7 +311,7 @@ namespace Lightning
 		}
 
 
-		const Container::Vector<D3D12RootBoundResource>& D3D12Shader::GetRootBoundResources()
+		const D3D12RootBoundResource* D3D12Shader::GetRootBoundResources()
 		{
 			UpdateRootBoundResources();
 			return mResourceProxy->GetRootBoundResources();

@@ -29,7 +29,8 @@ namespace Lightning
 		struct D3D12RootBoundResource
 		{
 			D3D12RootResourceType type;
-			Container::Vector<D3D12ConstantBuffer> buffers;
+			D3D12ConstantBuffer* buffers;
+			std::size_t bufferCount;
 		};
 
 		//Thread unsafe
@@ -47,7 +48,7 @@ namespace Lightning
 			SIZE_T GetByteCodeBufferSize()const;
 			const Container::Vector<D3D12_ROOT_PARAMETER>& GetRootParameters()const;
 			std::size_t GetRootParameterCount()const;
-			const Container::Vector<D3D12RootBoundResource>& GetRootBoundResources();
+			const D3D12RootBoundResource* GetRootBoundResources();
 			UINT GetConstantBufferCount();
 			UINT GetConstantBufferSize();
 		private:
@@ -72,20 +73,23 @@ namespace Lightning
 			{
 			public:
 				ShaderResourceProxy();
+				~ShaderResourceProxy();
 				std::uint8_t* GetConstantBuffer(std::size_t size);
-				void ClearBoundResources();
+				void Init(std::size_t totalCount, std::size_t constantBufferCount);
 				//Must be called at the start of resource update
 				void BeginUpdateResource(D3D12RootResourceType resourceType);
 				//Must be called on resource update end.It's a counterpart of BeginUpdateResource
 				void EndUpdateResource();
 				void AddConstantBuffer(const D3D12ConstantBuffer& constantBuffer);
-				const Container::Vector<D3D12RootBoundResource>& GetRootBoundResources();
-				~ShaderResourceProxy();
+				const D3D12RootBoundResource* GetRootBoundResources();
 			private:
-				Container::Vector<D3D12RootBoundResource> mRootBoundResources[RENDER_FRAME_COUNT];
-				D3D12RootBoundResource mCurrentResource;
+				D3D12RootBoundResource* mRootBoundResources[RENDER_FRAME_COUNT];
 				std::uint8_t *mConstantBuffer;
 				std::size_t mBufferSize;
+				std::size_t mRootResourceCount;
+				std::size_t mCurrentResourceIndex;
+				std::size_t mCurrentBufferIndex;
+				bool mInit;
 			};
 		private:
 			ComPtr<ID3D10Blob> mByteCode;
