@@ -522,7 +522,7 @@ namespace Lightning
 						if (resource.type == D3D12RootResourceType::ConstantBuffers)
 						{
 							resourceHandle.handle = gpuHandle;
-							for (auto i = 0;i < resource.bufferCount;++i)
+							for (auto i = 0;i < resource.count;++i)
 							{
 								const auto& cbuffer = resource.buffers[i];
 								D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
@@ -632,7 +632,7 @@ namespace Lightning
 			{
 				resourceHandles[pShader->GetType()].emplace_back(boundResources[i]);
 				if (boundResources[i].type == D3D12RootResourceType::ConstantBuffers)
-					constantBuffers += boundResources[i].bufferCount;
+					constantBuffers += boundResources[i].count;
 			}
 			return constantBuffers;
 		}

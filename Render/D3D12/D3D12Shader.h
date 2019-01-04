@@ -6,6 +6,8 @@
 #include "Container.h"
 #include "D3D12ConstantBufferManager.h"
 #include "D3D12DescriptorHeapManager.h"
+#include "D3D12Texture.h"
+#include "Texture/Sampler.h"
 #include "Shader.h"
 
 namespace Lightning
@@ -14,9 +16,11 @@ namespace Lightning
 	{
 		using Microsoft::WRL::ComPtr;
 		using Foundation::Container;
-		enum class D3D12RootResourceType
+		enum class D3D12RootResourceType : std::uint8_t
 		{
 			ConstantBuffers,
+			Textures,
+			Samplers
 		};
 
 		struct D3D12Constant32BitValue
@@ -29,8 +33,13 @@ namespace Lightning
 		struct D3D12RootBoundResource
 		{
 			D3D12RootResourceType type;
-			D3D12ConstantBuffer* buffers;
-			std::size_t bufferCount;
+			union
+			{
+				D3D12ConstantBuffer* buffers;
+				D3D12Texture** textures;
+				SamplerState* samplerStates;
+			};
+			std::size_t count;
 		};
 
 		//Thread unsafe
@@ -58,6 +67,8 @@ namespace Lightning
 			void UpdateRootBoundResources();
 			void InitConstantBufferRootParameter(ID3D12ShaderReflection*, 
 				const Container::UnorderedMap<std::string, D3D12_SHADER_INPUT_BIND_DESC>&);
+			void InitTextureRootParameter(const Container::UnorderedMap<std::string, D3D12_SHADER_INPUT_BIND_DESC>&);
+			void InitSamplerStateParameter(const Container::UnorderedMap<std::string, D3D12_SHADER_INPUT_BIND_DESC>&);
 		private:
 			struct ParameterInfo
 			{
@@ -75,7 +86,7 @@ namespace Lightning
 				ShaderResourceProxy();
 				~ShaderResourceProxy();
 				std::uint8_t* GetConstantBuffer(std::size_t size);
-				void Init(std::size_t totalCount, std::size_t constantBufferCount);
+				void Init(std::size_t totalCount, std::size_t constantBufferCount, std::size_t textureCount, std::size_t samplerStateCount);
 				//Must be called at the start of resource update
 				void BeginUpdateResource(D3D12RootResourceType resourceType);
 				//Must be called on resource update end.It's a counterpart of BeginUpdateResource
@@ -99,11 +110,13 @@ namespace Lightning
 			//each offset corresponds to mIntermediateBuffer
 			Container::UnorderedMap<std::size_t, ConstantBufferInfo> mConstantBufferInfo;
 			Container::Vector<D3D12_DESCRIPTOR_RANGE> mDescriptorRanges;
-			UINT mTotalConstantBufferSize;
 			//buffer used to cache constant buffer value
 			Foundation::ThreadLocalSingleton<ShaderResourceProxy> mResourceProxy;
 			Container::Vector<RenderSemantics> mUniformSemantics;
 			D3D_SHADER_MODEL mShaderModel;
+			UINT mTotalConstantBufferSize;
+			UINT mTextureParameterCount;
+			UINT mSamplerStateParamCount;
 		};
 	}
 }

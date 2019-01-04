@@ -63,7 +63,8 @@ namespace Lightning
 				Scene::IPrimitive* prim;
 			};
 			
-			device->CreateShaderFromFile(Render::ShaderType::VERTEX, "default.vs", new test(cube));*/
+			device->CreateShaderFromFile(Render::ShaderType::VERTEX, "texture_map.vs", new test(cube));
+			device->CreateShaderFromFile(Render::ShaderType::FRAGMENT, "texture_map.ps", new test(cube));*/
 
 
 			//device->CreateShaderFromFile(Render::ShaderType::FRAGMENT, "texture_map.ps", new test(cube));

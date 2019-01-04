@@ -23,7 +23,6 @@ namespace Lightning
 
 		class D3D12ConstantBufferManager : public Foundation::Singleton<D3D12ConstantBufferManager>
 		{
-			friend class Foundation::Singleton<D3D12ConstantBufferManager>;
 		public:
 			~D3D12ConstantBufferManager();
 			//Thread unsafe
@@ -37,6 +36,7 @@ namespace Lightning
 				return (size + (alignment - 1)) & ~(alignment - 1);
 			}
 		private:
+			friend class Foundation::Singleton<D3D12ConstantBufferManager>;
 			struct BufferResource
 			{
 				D3D12StatefulResourcePtr resource;

@@ -20,6 +20,7 @@ namespace Lightning
 		D3D12Shader::D3D12Shader(D3D_SHADER_MODEL shaderModel, ShaderType type, const std::string& name, const char* const shaderSource):
 			Shader(type, name, shaderSource)
 			, mShaderModel(shaderModel), mTotalConstantBufferSize(0)
+			, mTextureParameterCount(0), mSamplerStateParamCount(0)
 		{
 			assert(shaderSource);
 			CompileImpl();
@@ -33,10 +34,9 @@ namespace Lightning
 				shaderReflection->GetResourceBindingDesc(i, &bindDesc);
 				inputBindDescs[bindDesc.Name] = bindDesc;
 			}
-			//create heap descriptor(samplers excluded)
 			InitConstantBufferRootParameter(shaderReflection.Get(), inputBindDescs);
-			//TODO : should create sampler descriptor heap
-			//TODO initialize other shader resource
+			InitTextureRootParameter(inputBindDescs);
+			InitSamplerStateParameter(inputBindDescs);
 		}
 
 		void D3D12Shader::InitConstantBufferRootParameter(
@@ -91,6 +91,60 @@ namespace Lightning
 			}
 		}
 
+		void D3D12Shader::InitTextureRootParameter(
+			const Container::UnorderedMap<std::string, D3D12_SHADER_INPUT_BIND_DESC>& inputBindDescs)
+		{
+			auto resourceCount = mDescriptorRanges.size();
+			for (auto it = inputBindDescs.cbegin(); it != inputBindDescs.cend();++it)
+			{
+				const auto& desc = it->second;
+				if (desc.Type == D3D_SIT_TEXTURE)
+				{
+					D3D12_DESCRIPTOR_RANGE range;
+					range.BaseShaderRegister = desc.BindPoint;
+					range.NumDescriptors = 1;
+					range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+					range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+					range.RegisterSpace = desc.Space;
+					mDescriptorRanges.push_back(range);
+					++mTextureParameterCount;
+				}
+			}
+			if (mTextureParameterCount > 0)
+			{
+				CD3DX12_ROOT_PARAMETER textureParameter;
+				textureParameter.InitAsDescriptorTable(mTextureParameterCount, &mDescriptorRanges[resourceCount], GetParameterVisibility());
+				mRootParameters.push_back(textureParameter);
+			}
+		}
+
+		void D3D12Shader::InitSamplerStateParameter(
+			const Container::UnorderedMap<std::string, D3D12_SHADER_INPUT_BIND_DESC>& inputBindDescs)
+		{
+			auto resourceCount = mDescriptorRanges.size();
+			for (auto it = inputBindDescs.cbegin(); it != inputBindDescs.cend();++it)
+			{
+				const auto& desc = it->second;
+				if (desc.Type == D3D_SIT_SAMPLER)
+				{
+					D3D12_DESCRIPTOR_RANGE range;
+					range.BaseShaderRegister = desc.BindPoint;
+					range.NumDescriptors = 1;
+					range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+					range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
+					range.RegisterSpace = desc.Space;
+					mDescriptorRanges.push_back(range);
+					++mSamplerStateParamCount;
+				}
+			}
+			if (mSamplerStateParamCount > 0)
+			{
+				CD3DX12_ROOT_PARAMETER samplerParameter;
+				samplerParameter.InitAsDescriptorTable(mSamplerStateParamCount, &mDescriptorRanges[resourceCount], GetParameterVisibility());
+				mRootParameters.push_back(samplerParameter);
+			}
+		}
+
 		D3D12Shader::~D3D12Shader()
 		{
 			mByteCode.Reset();
@@ -139,7 +193,8 @@ namespace Lightning
 		}
 
 		void D3D12Shader::ShaderResourceProxy::Init(
-			std::size_t totalCount, std::size_t constantBufferCount)
+			std::size_t totalCount, std::size_t constantBufferCount, 
+			std::size_t textureCount, std::size_t samplerStateCount)
 		{
 			if (mInit)
 				return;
@@ -152,17 +207,27 @@ namespace Lightning
 			for (std::uint8_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
 				mRootBoundResources[i] = new D3D12RootBoundResource[mRootResourceCount];
+				//root bound resource types are sorted in ConstantBuffer-Texture-SamplerState order.
 				for (auto j = 0;j < mRootResourceCount;++j)
 				{
-					if (j == 0 && constantBufferCount > 0)	//All of the constant buffers are in root parameter 0
+					if (j < constantBufferCount)	//All of the constant buffers are in root parameter 0
 					{
 						mRootBoundResources[i][j].buffers = new D3D12ConstantBuffer[constantBufferCount];
-						mRootBoundResources[i][j].bufferCount = constantBufferCount;
+						mRootBoundResources[i][j].count = constantBufferCount;
+					}
+					else if(j < textureCount)
+					{
+						mRootBoundResources[i][j].textures = new D3D12Texture*[textureCount];
+						mRootBoundResources[i][j].count = textureCount;
+					}
+					else if (j < samplerStateCount)
+					{
+						mRootBoundResources[i][j].samplerStates = new SamplerState[samplerStateCount];
+						mRootBoundResources[i][j].count = samplerStateCount;
 					}
 					else
 					{
-						mRootBoundResources[i][j].buffers = nullptr;
-						mRootBoundResources[i][j].bufferCount = 0;
+						assert(0 && "Wrong root resource count.");
 					}
 				}
 			}
@@ -285,7 +350,8 @@ namespace Lightning
 
 		void D3D12Shader::UpdateRootBoundResources()
 		{
-			mResourceProxy->Init(GetRootParameterCount(), mConstantBufferInfo.size());
+			mResourceProxy->Init(GetRootParameterCount(), mConstantBufferInfo.size(), 
+				mTextureParameterCount, mSamplerStateParamCount);
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto ptr = mResourceProxy->GetConstantBuffer(mTotalConstantBufferSize);
 			mResourceProxy->BeginUpdateResource(D3D12RootResourceType::ConstantBuffers);
