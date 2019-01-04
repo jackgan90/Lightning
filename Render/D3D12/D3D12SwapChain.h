@@ -25,7 +25,7 @@ namespace Lightning
 			std::size_t INTERFACECALL GetMultiSampleQuality()const override { return mDesc.SampleDesc.Quality; }
 			RenderFormat INTERFACECALL GetRenderFormat()const override{ return D3D12TypeMapper::MapRenderFormat(mDesc.BufferDesc.Format); }
 			IRenderTarget* INTERFACECALL GetCurrentRenderTarget()override;
-			void INTERFACECALL Resize(std::uint32_t width, std::uint32_t height)override;
+			void INTERFACECALL Resize(std::size_t width, std::size_t height)override;
 		private:
 			void CreateRenderTargets();
 			void CreateNativeSwapChain(IDXGIFactory4* factory, ID3D12CommandQueue* pCommandQueue, Window::IWindow* pWindow);

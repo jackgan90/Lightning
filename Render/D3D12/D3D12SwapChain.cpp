@@ -48,7 +48,7 @@ namespace Lightning
 			return mRenderTargets[mCurrentBackBufferIndex];
 		}
 
-		void D3D12SwapChain::Resize(std::uint32_t width, std::uint32_t height)
+		void D3D12SwapChain::Resize(std::size_t width, std::size_t height)
 		{
 			for (auto renderTarget : mRenderTargets)
 			{
@@ -58,9 +58,16 @@ namespace Lightning
 				D3DRenderTarget->Reset();
 			}
 			auto oldBackBufferIndex = static_cast<std::uint8_t>(mSwapChain->GetCurrentBackBufferIndex());
-			mDesc.BufferDesc.Width = width;
-			mDesc.BufferDesc.Height = height;
+			mDesc.BufferDesc.Width = static_cast<UINT>(width);
+			mDesc.BufferDesc.Height = static_cast<UINT>(height);
+			if (mDesc.BufferDesc.Width == 0)
+				mDesc.BufferDesc.Width = 8;
+			if (mDesc.BufferDesc.Height == 0)
+				mDesc.BufferDesc.Height = 8;
 			mSwapChain->ResizeBuffers(mDesc.BufferCount, mDesc.BufferDesc.Width, mDesc.BufferDesc.Height, mDesc.BufferDesc.Format, mDesc.Flags);
+			//ResizeBuffers may adjust the buffer size to a proper size if width and height
+			//have irrational values.For example 0,so we get the desc again
+			mSwapChain->GetDesc(&mDesc);
 
 			mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 			if (oldBackBufferIndex != mCurrentBackBufferIndex)
