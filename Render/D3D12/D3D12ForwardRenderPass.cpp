@@ -44,8 +44,8 @@ namespace Lightning
 			auto vs = material->GetShader(ShaderType::VERTEX);
 			auto fs = material->GetShader(ShaderType::FRAGMENT);
 			auto gs = material->GetShader(ShaderType::GEOMETRY);
-			auto hs = material->GetShader(ShaderType::TESSELATION_CONTROL);
-			auto ds = material->GetShader(ShaderType::TESSELATION_EVALUATION);
+			auto hs = material->GetShader(ShaderType::HULL);
+			auto ds = material->GetShader(ShaderType::DOMAIN);
 			if (vs)
 				shaders.push_back(vs);
 			if (fs)

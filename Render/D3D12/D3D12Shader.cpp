@@ -403,9 +403,9 @@ namespace Lightning
 				return D3D12_SHADER_VISIBILITY_PIXEL;
 			case ShaderType::GEOMETRY:
 				return D3D12_SHADER_VISIBILITY_GEOMETRY;
-			case ShaderType::TESSELATION_CONTROL:
+			case ShaderType::HULL:
 				return D3D12_SHADER_VISIBILITY_HULL;
-			case ShaderType::TESSELATION_EVALUATION:
+			case ShaderType::DOMAIN:
 				return D3D12_SHADER_VISIBILITY_DOMAIN;
 			default:
 				return D3D12_SHADER_VISIBILITY_ALL;
@@ -421,9 +421,9 @@ namespace Lightning
 				ss << "ps_";
 			else if (ShaderType::GEOMETRY == mType)
 				ss << "gs_";
-			else if (ShaderType::TESSELATION_CONTROL == mType)
+			else if (ShaderType::HULL == mType)
 				ss << "hs_";
-			else if (ShaderType::TESSELATION_EVALUATION == mType)
+			else if (ShaderType::DOMAIN == mType)
 				ss << "ds_";
 
 			if (D3D_SHADER_MODEL_5_1 == mShaderModel)

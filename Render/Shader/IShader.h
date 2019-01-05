@@ -9,6 +9,7 @@
 #include "IRefObject.h"
 #include "IShaderParameter.h"
 #include "IShaderMacros.h"
+#undef DOMAIN
 
 namespace Lightning
 {
@@ -22,11 +23,12 @@ namespace Lightning
 
 		enum class ShaderType
 		{
-			VERTEX = 1,
+			VERTEX = 0,
 			FRAGMENT,
 			GEOMETRY,
-			TESSELATION_CONTROL, //hull shader
-			TESSELATION_EVALUATION	//domain shader
+			HULL, //hull shader
+			DOMAIN,	//domain shader
+			SHADER_TYPE_NUM
 		};
 
 		struct IShader :  Plugins::IRefObject

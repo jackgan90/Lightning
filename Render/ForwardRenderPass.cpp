@@ -54,8 +54,8 @@ namespace Lightning
 				state.vs = material->GetShader(ShaderType::VERTEX);
 				state.fs = material->GetShader(ShaderType::FRAGMENT);
 				state.gs = material->GetShader(ShaderType::GEOMETRY);
-				state.hs = material->GetShader(ShaderType::TESSELATION_CONTROL);
-				state.ds = material->GetShader(ShaderType::TESSELATION_EVALUATION);
+				state.hs = material->GetShader(ShaderType::HULL);
+				state.ds = material->GetShader(ShaderType::DOMAIN);
 				state.blendStates = g_RenderAllocator.Allocate<BlendState>(state.renderTargetCount);
 				for (auto i = 0;i < state.renderTargetCount;++i)
 				{
@@ -96,7 +96,7 @@ namespace Lightning
 			if (!material)
 				return;
 			static const ShaderType shaderTypes[] = { ShaderType::VERTEX, ShaderType::FRAGMENT, ShaderType::GEOMETRY,
-			ShaderType::TESSELATION_CONTROL, ShaderType::TESSELATION_EVALUATION };
+			ShaderType::HULL, ShaderType::DOMAIN };
 			auto renderer = Renderer::Instance();
 			for (auto shaderType : shaderTypes)
 			{

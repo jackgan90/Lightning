@@ -429,10 +429,10 @@ namespace Lightning
 				case ShaderType::GEOMETRY:
 					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 					break;
-				case ShaderType::TESSELATION_CONTROL:		//hull
+				case ShaderType::HULL:		//hull
 					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS;
 					break;
-				case ShaderType::TESSELATION_EVALUATION:	//domain
+				case ShaderType::DOMAIN:	//domain
 					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS;
 					break;
 				}
@@ -544,7 +544,7 @@ namespace Lightning
 			}
 			UINT rootParameterIndex{ 0 };
 			const static ShaderType shaderTypes[] = { ShaderType::VERTEX, ShaderType::FRAGMENT, ShaderType::GEOMETRY,
-			ShaderType::TESSELATION_CONTROL, ShaderType::TESSELATION_EVALUATION };
+			ShaderType::HULL, ShaderType::DOMAIN };
 			//Have to ensure iterate with the same order as root parameters.
 			for (auto shaderType : shaderTypes)
 			{
@@ -658,11 +658,11 @@ namespace Lightning
 					desc.GS.pShaderBytecode = byteCode;
 					desc.GS.BytecodeLength = byteCodeLength;
 					break;
-				case ShaderType::TESSELATION_CONTROL:
+				case ShaderType::HULL:
 					desc.HS.pShaderBytecode = byteCode;
 					desc.HS.BytecodeLength = byteCodeLength;
 					break;
-				case ShaderType::TESSELATION_EVALUATION:
+				case ShaderType::DOMAIN:
 					desc.DS.pShaderBytecode = byteCode;
 					desc.DS.BytecodeLength = byteCodeLength;
 					break;
