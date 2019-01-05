@@ -63,6 +63,15 @@ namespace Lightning
 				D3D12RootBoundResource resource;
 				D3D12_GPU_DESCRIPTOR_HANDLE handle;
 			};
+			//enumerate_thread_specific cannot return array objects.Wrap array in a class.
+			struct ShaderResourceHandles
+			{
+				Container::Vector<ShaderResourceHandle> Array[std::size_t(ShaderType::SHADER_TYPE_NUM)];
+				Container::Vector<ShaderResourceHandle>& At(ShaderType shaderType)
+				{
+					return Array[static_cast<std::size_t>(shaderType)];
+				}
+			};
 			using PipelineCacheMap = Container::UnorderedMap<std::size_t, PipelineStateRootSignature>;
 			using RootSignatureMap = Container::UnorderedMap<std::size_t, ComPtr<ID3D12RootSignature>>;
 
@@ -76,7 +85,7 @@ namespace Lightning
 			void UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::size_t layoutCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			//Analyze shader root resources.
 			//Returns number of constant buffers used by this shader
-			std::size_t AnalyzeShaderRootResources(IShader *pShader, Container::UnorderedMap<ShaderType, Container::Vector<ShaderResourceHandle>>& resourceHandles);
+			std::size_t AnalyzeShaderRootResources(IShader *pShader, Container::Vector<ShaderResourceHandle>& resourceHandles);
 
 			ComPtr<IDXGIFactory4> mDXGIFactory;
 			ComPtr<ID3D12CommandQueue> mCommandQueue;

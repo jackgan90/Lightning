@@ -21,7 +21,7 @@ namespace Lightning
 			ShaderCompileException(const char*const w):RendererException(w){}
 		};
 
-		enum class ShaderType
+		enum class ShaderType : std::uint8_t
 		{
 			VERTEX = 0,
 			FRAGMENT,
