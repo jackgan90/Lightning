@@ -477,51 +477,62 @@ namespace Lightning
 			const static ShaderType shaderTypes[] = { ShaderType::VERTEX, ShaderType::FRAGMENT, ShaderType::GEOMETRY,
 			ShaderType::HULL, ShaderType::DOMAIN };
 			std::size_t constantBuffers{ 0 };
-			static Foundation::ThreadLocalSingleton<ShaderResourceHandles> resourceHandleInstances;
-			auto& resourceHandles = *resourceHandleInstances;
-			for (auto i = 0;i < Foundation::ArraySize(resourceHandles.Array);++i)
+			static Foundation::ThreadLocalSingleton<ShaderRootBoundResources> TLShaderRootBoundResources;
+			auto& shaderRootBoundResources = *TLShaderRootBoundResources;
+			for (auto i = 0;i < Foundation::ArraySize(shaderRootBoundResources.Array);++i)
 			{
-				resourceHandles.Array[i].clear();
+				shaderRootBoundResources.Array[i].clear();
 			}
 			if (state.vs)
 			{
-				constantBuffers += AnalyzeShaderRootResources(state.vs, resourceHandles.At(ShaderType::VERTEX));
+				constantBuffers += AnalyzeShaderRootResources(state.vs, shaderRootBoundResources.At(ShaderType::VERTEX));
 			}
 			if (state.fs)
 			{
-				constantBuffers += AnalyzeShaderRootResources(state.fs, resourceHandles.At(ShaderType::FRAGMENT));
+				constantBuffers += AnalyzeShaderRootResources(state.fs, shaderRootBoundResources.At(ShaderType::FRAGMENT));
 			}
 			if (state.gs)
 			{
-				constantBuffers += AnalyzeShaderRootResources(state.gs, resourceHandles.At(ShaderType::GEOMETRY));
+				constantBuffers += AnalyzeShaderRootResources(state.gs, shaderRootBoundResources.At(ShaderType::GEOMETRY));
 			}
 			if (state.hs)
 			{
-				constantBuffers += AnalyzeShaderRootResources(state.hs, resourceHandles.At(ShaderType::HULL));
+				constantBuffers += AnalyzeShaderRootResources(state.hs, shaderRootBoundResources.At(ShaderType::HULL));
 			}
 			if (state.ds)
 			{
-				constantBuffers += AnalyzeShaderRootResources(state.ds, resourceHandles.At(ShaderType::DOMAIN));
+				constantBuffers += AnalyzeShaderRootResources(state.ds, shaderRootBoundResources.At(ShaderType::DOMAIN));
 			}
 			using DescriptorHeapLists = Foundation::ThreadLocalSingleton<Container::Vector<ID3D12DescriptorHeap*>>;
 			static DescriptorHeapLists descriptorHeapLists;
 			auto& descriptorHeaps = *descriptorHeapLists;
 			descriptorHeaps.clear();
+			UINT rootParameterIndex{ 0 };
+			auto commandList = GetGraphicsCommandList();
+			//decide how many descriptor heaps are required and set heaps in one shot.Bind corresponding handles in descriptor heaps later.
+			DescriptorHeap* constantHeap(nullptr);
 			if (constantBuffers > 0)
 			{
-				auto constantHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+				constantHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 					true, UINT(constantBuffers), true);
+				descriptorHeaps.push_back(D3D12DescriptorHeapManager::Instance()->GetHeap(constantHeap).Get());
+			}
+			if (!descriptorHeaps.empty())
+			{
+				commandList->SetDescriptorHeaps(UINT(descriptorHeaps.size()), &descriptorHeaps[0]);
+			}
+			if (constantHeap)
+			{
 				CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(constantHeap->cpuHandle);
 				CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(constantHeap->gpuHandle);
 				auto device = static_cast<D3D12Device*>(mDevice.get());
 				for (auto shaderType : shaderTypes)
 				{
-					for (auto& resourceHandle : resourceHandles.At(shaderType))
+					for (auto& resource : shaderRootBoundResources.At(shaderType))
 					{
-						auto& resource = resourceHandle.resource;
 						if (resource.type == D3D12RootResourceType::ConstantBuffers)
 						{
-							resourceHandle.handle = gpuHandle;
+							commandList->SetGraphicsRootDescriptorTable(rootParameterIndex++, gpuHandle);
 							for (auto i = 0;i < resource.count;++i)
 							{
 								const auto& cbuffer = resource.buffers[i];
@@ -535,28 +546,6 @@ namespace Lightning
 						}
 					}
 				}
-				descriptorHeaps.push_back(D3D12DescriptorHeapManager::Instance()->GetHeap(constantHeap).Get());
-			}
-			auto commandList = GetGraphicsCommandList();
-			if (!descriptorHeaps.empty())
-			{
-				commandList->SetDescriptorHeaps(UINT(descriptorHeaps.size()), &descriptorHeaps[0]);
-			}
-			UINT rootParameterIndex{ 0 };
-			//Have to ensure iterate with the same order as root parameters.
-			for (auto shaderType : shaderTypes)
-			{
-				for (const auto& resourceHandle : resourceHandles.At(shaderType))
-				{
-					const auto& resource = resourceHandle.resource;
-					const auto& handle = resourceHandle.handle;
-					if (resource.type == D3D12RootResourceType::ConstantBuffers)
-					{
-						commandList->SetGraphicsRootDescriptorTable(rootParameterIndex, handle);
-						++rootParameterIndex;
-					}
-				}
-				
 			}
 		}
 
@@ -617,14 +606,14 @@ namespace Lightning
 
 
 		std::size_t D3D12Renderer::AnalyzeShaderRootResources(IShader *pShader, 
-			Container::Vector<D3D12Renderer::ShaderResourceHandle>& resourceHandles)
+			Container::Vector<D3D12RootBoundResource>& resources)
 		{
 			std::size_t constantBuffers{ 0 };
 			auto D3DShader = static_cast<D3D12Shader*>(pShader);
 			auto boundResources = D3DShader->GetRootBoundResources();
 			for (auto i = 0;i < D3DShader->GetRootParameterCount();++i)
 			{
-				resourceHandles.emplace_back(boundResources[i]);
+				resources.emplace_back(boundResources[i]);
 				if (boundResources[i].type == D3D12RootResourceType::ConstantBuffers)
 					constantBuffers += boundResources[i].count;
 			}
