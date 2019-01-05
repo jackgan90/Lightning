@@ -2,7 +2,7 @@
 #include "Renderer.h"
 #include "D3D12ConstantBufferManager.h"
 #include "D3D12DescriptorHeapManager.h"
-#include "ThreadLocalSingleton.h"
+#include "ThreadLocalObject.h"
 #include "D3D12Shader.h"
 
 namespace Lightning
@@ -28,7 +28,7 @@ namespace Lightning
 		void D3D12ForwardRenderPass::OnAddRenderUnit(const IImmutableRenderUnit* unit)
 		{
 			using ShaderContainer = Container::Vector<IShader*>;
-			static Foundation::ThreadLocalSingleton<ShaderContainer> shadersContainer;
+			static Foundation::ThreadLocalObject<ShaderContainer> shadersContainer;
 			auto& shaders = *shadersContainer;
 			shaders.clear();
 			GetMaterialShaders(unit->GetMaterial(), shaders);

@@ -6,7 +6,7 @@
 #include <wrl\client.h>
 #include <atomic>
 #include "Container.h"
-#include "ThreadLocalSingleton.h"
+#include "ThreadLocalObject.h"
 #include "Singleton.h"
 #include "D3D12Device.h"
 

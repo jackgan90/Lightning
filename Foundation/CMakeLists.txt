@@ -44,7 +44,7 @@ set(HEADERS	Common.h
 			TimerManager.h
 			Container.h
 			EnumOperation.h
-			ThreadLocalSingleton.h
+			ThreadLocalObject.h
 			IEnvironment.h
 			Environment.h
 			SystemPriority.h

@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <thread>
 #include "Container.h"
-#include "ThreadLocalSingleton.h"
+#include "ThreadLocalObject.h"
 
 namespace Lightning
 {
@@ -68,7 +68,7 @@ namespace Lightning
 				std::size_t mFrameSize;
 				Foundation::Container::Deque<FrameMarker> mFrameMarkers;
 			};
-			Foundation::ThreadLocalSingleton<Foundation::Container::Vector<RingBuffer>> mBuffers;
+			Foundation::ThreadLocalObject<Foundation::Container::Vector<RingBuffer>> mBuffers;
 		};
 	}
 }

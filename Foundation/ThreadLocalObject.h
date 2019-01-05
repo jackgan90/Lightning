@@ -7,7 +7,7 @@ namespace Lightning
 	namespace Foundation
 	{
 		template<typename T>
-		class ThreadLocalSingleton
+		class ThreadLocalObject
 		{
 		public:
 			using type = typename tbb::enumerable_thread_specific<T>;

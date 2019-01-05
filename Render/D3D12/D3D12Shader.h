@@ -2,7 +2,7 @@
 #include <d3d12.h>
 #include <wrl/client.h>
 #include <d3dcompiler.h>
-#include "ThreadLocalSingleton.h"
+#include "ThreadLocalObject.h"
 #include "Container.h"
 #include "D3D12ConstantBufferManager.h"
 #include "D3D12DescriptorHeapManager.h"
@@ -111,7 +111,7 @@ namespace Lightning
 			Container::UnorderedMap<std::size_t, ConstantBufferInfo> mConstantBufferInfo;
 			Container::Vector<D3D12_DESCRIPTOR_RANGE> mDescriptorRanges;
 			//buffer used to cache constant buffer value
-			Foundation::ThreadLocalSingleton<ShaderResourceProxy> mResourceProxy;
+			Foundation::ThreadLocalObject<ShaderResourceProxy> mResourceProxy;
 			Container::Vector<RenderSemantics> mUniformSemantics;
 			D3D_SHADER_MODEL mShaderModel;
 			UINT mTotalConstantBufferSize;

@@ -5,7 +5,7 @@
 #include <memory>
 #include "boost/noncopyable.hpp"
 #include "Container.h"
-#include "ThreadLocalSingleton.h"
+#include "ThreadLocalObject.h"
 #include "tbb/spin_mutex.h"
 
 namespace Lightning

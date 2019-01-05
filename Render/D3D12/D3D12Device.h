@@ -3,7 +3,7 @@
 #include <dxgi1_4.h>
 #include <wrl\client.h>
 #include <atomic>
-#include "ThreadLocalSingleton.h"
+#include "ThreadLocalObject.h"
 #include "Container.h"
 #include "Device.h"
 #include "FileSystem.h"

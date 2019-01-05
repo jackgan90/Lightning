@@ -477,7 +477,7 @@ namespace Lightning
 			const static ShaderType shaderTypes[] = { ShaderType::VERTEX, ShaderType::FRAGMENT, ShaderType::GEOMETRY,
 			ShaderType::HULL, ShaderType::DOMAIN };
 			std::size_t constantBuffers{ 0 };
-			static Foundation::ThreadLocalSingleton<ShaderRootBoundResources> TLShaderRootBoundResources;
+			static Foundation::ThreadLocalObject<ShaderRootBoundResources> TLShaderRootBoundResources;
 			auto& shaderRootBoundResources = *TLShaderRootBoundResources;
 			for (auto i = 0;i < Foundation::ArraySize(shaderRootBoundResources.Array);++i)
 			{
@@ -503,7 +503,7 @@ namespace Lightning
 			{
 				constantBuffers += AnalyzeShaderRootResources(state.ds, shaderRootBoundResources.At(ShaderType::DOMAIN));
 			}
-			using DescriptorHeapLists = Foundation::ThreadLocalSingleton<Container::Vector<ID3D12DescriptorHeap*>>;
+			using DescriptorHeapLists = Foundation::ThreadLocalObject<Container::Vector<ID3D12DescriptorHeap*>>;
 			static DescriptorHeapLists descriptorHeapLists;
 			auto& descriptorHeaps = *descriptorHeapLists;
 			descriptorHeaps.clear();
