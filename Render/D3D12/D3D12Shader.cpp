@@ -507,8 +507,12 @@ namespace Lightning
 				std::memcpy(compileErrorBuffer, errorLog->GetBufferPointer(), compileErrorBufferSize);
 				compileErrorBuffer[compileErrorBufferSize] = 0;
 				ss << compileErrorBuffer;
-				LOG_ERROR("%s", ss.str().c_str());
+				LOG_ERROR("{0}", ss.str().c_str());
 				throw ShaderCompileException("Failed to compile shader!");
+			}
+			else
+			{
+				LOG_INFO("Succeeded compiling shader {0}", mName);
 			}
 		}
 	}
