@@ -42,18 +42,14 @@ namespace Lightning
 			mShaders.clear();
 		}
 
-		void D3D12ShaderGroup::Commit()
+		void D3D12ShaderGroup::CommitDescriptorHeaps(ID3D12GraphicsCommandList* commandList, DescriptorHeap*& constantHeap)
 		{
-			auto renderer = static_cast<D3D12Renderer*>(Renderer::Instance());
-			auto device = static_cast<D3D12Device*>(renderer->GetDevice());
-			auto commandList = renderer->GetGraphicsCommandList();
-			auto frameResourceIndex = renderer->GetFrameResourceIndex();
 			using DescriptorHeapLists = Foundation::ThreadLocalObject<Container::Vector<ID3D12DescriptorHeap*>>;
 			static DescriptorHeapLists descriptorHeapLists;
 			auto& descriptorHeaps = *descriptorHeapLists;
 			descriptorHeaps.clear();
 			//the heap to store CBVs SRVs UAVs
-			DescriptorHeap* constantHeap{ nullptr };
+			constantHeap = nullptr;
 			if (mConstantBufferCount + mTextureCount > 0)
 			{
 				constantHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
@@ -64,6 +60,11 @@ namespace Lightning
 			{
 				commandList->SetDescriptorHeaps(UINT(descriptorHeaps.size()), &descriptorHeaps[0]);
 			}
+		}
+
+		void D3D12ShaderGroup::CommitDescriptorTables(ID3D12GraphicsCommandList* commandList, DescriptorHeap* constantHeap)
+		{
+			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
 			UINT rootParameterIndex{ 0 };
 			CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle;
 			CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle;
@@ -94,6 +95,15 @@ namespace Lightning
 					}
 				}
 			}
+		}
+
+		void D3D12ShaderGroup::Commit()
+		{
+			auto renderer = static_cast<D3D12Renderer*>(Renderer::Instance());
+			auto commandList = renderer->GetGraphicsCommandList();
+			DescriptorHeap* constantHeap{ nullptr };
+			CommitDescriptorHeaps(commandList, constantHeap);
+			CommitDescriptorTables(commandList, constantHeap);
 		}
 
 		std::size_t D3D12ShaderGroup::GetHash()const

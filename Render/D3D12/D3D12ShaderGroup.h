@@ -22,6 +22,8 @@ namespace Lightning
 		private:
 			//Thread unsafe
 			void Destroy();
+			void CommitDescriptorHeaps(ID3D12GraphicsCommandList* commandList, DescriptorHeap*& constantHeap);
+			void CommitDescriptorTables(ID3D12GraphicsCommandList* commandList, DescriptorHeap* constantHeap);
 		private:
 			Container::Vector<D3D12Shader*> mShaders;
 			ComPtr<ID3D12RootSignature> mRootSignature;
