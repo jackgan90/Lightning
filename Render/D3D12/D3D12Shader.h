@@ -57,7 +57,9 @@ namespace Lightning
 			const Container::Vector<D3D12_ROOT_PARAMETER>& GetRootParameters()const;
 			std::size_t GetRootParameterCount()const;
 			const D3D12RootBoundResource* GetRootBoundResources();
-			UINT GetConstantBufferCount();
+			UINT GetConstantBufferCount()const;
+			UINT GetTextureCount()const;
+			UINT GetSamplerStateCount()const;
 			UINT GetConstantBufferSize();
 		private:
 			void GetShaderModelString(char* buf);

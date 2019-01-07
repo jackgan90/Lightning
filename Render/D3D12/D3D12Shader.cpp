@@ -383,9 +383,19 @@ namespace Lightning
 			return mResourceProxy->GetRootBoundResources();
 		}
 
-		UINT D3D12Shader::GetConstantBufferCount()
+		UINT D3D12Shader::GetConstantBufferCount()const
 		{
 			return mDesc.ConstantBuffers;
+		}
+
+		UINT D3D12Shader::GetTextureCount()const
+		{
+			return mTextureParameterCount;
+		}
+
+		UINT D3D12Shader::GetSamplerStateCount()const
+		{
+			return mSamplerStateParamCount;
 		}
 
 		UINT D3D12Shader::GetConstantBufferSize()

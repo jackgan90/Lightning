@@ -51,7 +51,7 @@ namespace Lightning
 			SwapChain* CreateSwapChain()override;
 			RenderPass* CreateRenderPass(RenderPassType type)override;
 		private:
-			struct PipelineStateRootSignature
+			struct PipelineCacheObject
 			{
 				ComPtr<ID3D12PipelineState> pipelineState;
 				ComPtr<ID3D12RootSignature> rootSignature;
@@ -65,11 +65,11 @@ namespace Lightning
 					return Array[static_cast<std::size_t>(shaderType)];
 				}
 			};
-			using PipelineCacheMap = Container::UnorderedMap<std::size_t, PipelineStateRootSignature>;
+			using PipelineCacheMap = Container::UnorderedMap<std::size_t, PipelineCacheObject>;
 			using RootSignatureMap = Container::UnorderedMap<std::size_t, ComPtr<ID3D12RootSignature>>;
 
 			ComPtr<ID3D12RootSignature> GetRootSignature(const Container::Vector<IShader*>& shaders);
-			PipelineStateRootSignature CreateAndCachePipelineState(const PipelineState& pState, std::size_t hashValue);
+			PipelineCacheObject CreateAndCachePipelineState(const PipelineState& pState, std::size_t hashValue);
 			void BindShaderResources(const PipelineState& state);
 			void ApplyRasterizerState(const RasterizerState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			void ApplyBlendStates(std::size_t firstRTIndex, const BlendState* states, std::size_t stateCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);

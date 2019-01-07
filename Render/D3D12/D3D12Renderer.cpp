@@ -212,7 +212,6 @@ namespace Lightning
 
 		void D3D12Renderer::ApplyPipelineState(const PipelineState& state)
 		{
-			PipelineStateRootSignature stateAndSignature;
 			auto hashValue = std::hash<PipelineState>{}(state);
 			PipelineCacheMap::iterator it = mPipelineCache.end();
 			bool createNewPSO{ true };
@@ -225,20 +224,21 @@ namespace Lightning
 				}
 			}
 
+			PipelineCacheObject cacheObject;
 			if(createNewPSO)
 			{
-				stateAndSignature = CreateAndCachePipelineState(state, hashValue);
+				cacheObject = CreateAndCachePipelineState(state, hashValue);
 			}
 			else
 			{
-				stateAndSignature = it->second;
+				cacheObject = it->second;
 			}
 
 			auto commandList = GetGraphicsCommandList();
-			commandList->SetPipelineState(stateAndSignature.pipelineState.Get());
-			if (stateAndSignature.rootSignature)
+			commandList->SetPipelineState(cacheObject.pipelineState.Get());
+			if (cacheObject.rootSignature)
 			{
-				commandList->SetGraphicsRootSignature(stateAndSignature.rootSignature.Get());
+				commandList->SetGraphicsRootSignature(cacheObject.rootSignature.Get());
 				BindShaderResources(state);
 			}
 		}
@@ -330,32 +330,42 @@ namespace Lightning
 #endif
 		}
 
-		D3D12Renderer::PipelineStateRootSignature D3D12Renderer::CreateAndCachePipelineState(const PipelineState& state, std::size_t hashValue)
+		D3D12Renderer::PipelineCacheObject D3D12Renderer::CreateAndCachePipelineState(const PipelineState& state, std::size_t hashValue)
 		{
-			PipelineStateRootSignature stateAndSignature;
+			PipelineCacheObject cacheObject;
 			D3D12_GRAPHICS_PIPELINE_STATE_DESC desc{};
 			ApplyRasterizerState(state.rasterizerState, desc);
 			ApplyBlendStates(0, state.blendStates, state.renderTargetCount, desc);
 			ApplyDepthStencilState(state.depthStencilState, desc);
 			Container::Vector<IShader*> shaders;
-			ApplyShader(state.vs, desc);
-			ApplyShader(state.fs, desc);
-			ApplyShader(state.gs, desc);
-			ApplyShader(state.hs, desc);
-			ApplyShader(state.ds, desc);
 			if (state.vs)
+			{
+				ApplyShader(state.vs, desc);
 				shaders.push_back(state.vs);
+			}
 			if (state.fs)
+			{
+				ApplyShader(state.fs, desc);
 				shaders.push_back(state.fs);
+			}
 			if (state.gs)
+			{
+				ApplyShader(state.gs, desc);
 				shaders.push_back(state.gs);
+			}
 			if (state.hs)
+			{
+				ApplyShader(state.hs, desc);
 				shaders.push_back(state.hs);
+			}
 			if (state.ds)
+			{
+				ApplyShader(state.ds, desc);
 				shaders.push_back(state.ds);
+			}
 			UpdatePSOInputLayout(state.inputLayouts, state.inputLayoutCount, desc);
-			stateAndSignature.rootSignature = GetRootSignature(shaders);
-			desc.pRootSignature = stateAndSignature.rootSignature.Get();
+			cacheObject.rootSignature = GetRootSignature(shaders);
+			desc.pRootSignature = cacheObject.rootSignature.Get();
 			desc.PrimitiveTopologyType = D3D12TypeMapper::MapPrimitiveType(state.primType);
 			//TODO : should apply pipeline state based on PipelineState
 			desc.NumRenderTargets = UINT(state.renderTargetCount);
@@ -371,22 +381,26 @@ namespace Lightning
 			}
 			desc.SampleMask = 0xfffffff;
 			auto device = static_cast<D3D12Device*>(mDevice.get());
-			stateAndSignature.pipelineState = device->CreateGraphicsPipelineState(&desc);
-			if (!stateAndSignature.pipelineState)
+			cacheObject.pipelineState = device->CreateGraphicsPipelineState(&desc);
+			if (!cacheObject.pipelineState)
 			{
 				LOG_ERROR("Failed to apply pipeline state!");
-				return stateAndSignature;
+				return cacheObject;
 			} 
 			{
 				MutexLock lock(mtxPipelineCache);
 				//Must check again because other threads may create the same pipeline state object simultaneously
 				auto it = mPipelineCache.find(hashValue);
 				if (it == mPipelineCache.end())
-					mPipelineCache.emplace(hashValue, stateAndSignature);
+				{
+					mPipelineCache.emplace(hashValue, cacheObject);
+				}
 				else
-					stateAndSignature = it->second;
+				{
+					cacheObject = it->second;
+				}
 			}
-			return stateAndSignature;
+			return cacheObject;
 		}
 
 		ComPtr<ID3D12RootSignature> D3D12Renderer::GetRootSignature(const Container::Vector<IShader*>& shaders)
@@ -622,36 +636,33 @@ namespace Lightning
 
 		void D3D12Renderer::ApplyShader(IShader* pShader, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
-			if (pShader)
+			auto d3d12shader = static_cast<D3D12Shader*>(pShader);
+			auto byteCode = d3d12shader->GetByteCodeBuffer();
+			auto byteCodeLength = d3d12shader->GetByteCodeBufferSize();
+			switch (pShader->GetType())
 			{
-				auto d3d12shader = static_cast<D3D12Shader*>(pShader);
-				auto byteCode = d3d12shader->GetByteCodeBuffer();
-				auto byteCodeLength = d3d12shader->GetByteCodeBufferSize();
-				switch (pShader->GetType())
-				{
-				case ShaderType::VERTEX:
-					desc.VS.pShaderBytecode = byteCode;
-					desc.VS.BytecodeLength = byteCodeLength;
-					break;
-				case ShaderType::FRAGMENT:
-					desc.PS.pShaderBytecode = byteCode;
-					desc.PS.BytecodeLength = byteCodeLength;
-					break;
-				case ShaderType::GEOMETRY:
-					desc.GS.pShaderBytecode = byteCode;
-					desc.GS.BytecodeLength = byteCodeLength;
-					break;
-				case ShaderType::HULL:
-					desc.HS.pShaderBytecode = byteCode;
-					desc.HS.BytecodeLength = byteCodeLength;
-					break;
-				case ShaderType::DOMAIN:
-					desc.DS.pShaderBytecode = byteCode;
-					desc.DS.BytecodeLength = byteCodeLength;
-					break;
-				default:
-					break;
-				}
+			case ShaderType::VERTEX:
+				desc.VS.pShaderBytecode = byteCode;
+				desc.VS.BytecodeLength = byteCodeLength;
+				break;
+			case ShaderType::FRAGMENT:
+				desc.PS.pShaderBytecode = byteCode;
+				desc.PS.BytecodeLength = byteCodeLength;
+				break;
+			case ShaderType::GEOMETRY:
+				desc.GS.pShaderBytecode = byteCode;
+				desc.GS.BytecodeLength = byteCodeLength;
+				break;
+			case ShaderType::HULL:
+				desc.HS.pShaderBytecode = byteCode;
+				desc.HS.BytecodeLength = byteCodeLength;
+				break;
+			case ShaderType::DOMAIN:
+				desc.DS.pShaderBytecode = byteCode;
+				desc.DS.BytecodeLength = byteCodeLength;
+				break;
+			default:
+				break;
 			}
 		}
 
