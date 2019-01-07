@@ -57,17 +57,7 @@ namespace Lightning
 				ComPtr<ID3D12PipelineState> pipelineState;
 				std::shared_ptr<D3D12ShaderGroup> shaderGroup;
 			};
-			//enumerate_thread_specific cannot return array objects.Wrap array in a class.
-			struct ShaderRootBoundResources
-			{
-				Container::Vector<D3D12RootBoundResource> Array[std::size_t(ShaderType::SHADER_TYPE_NUM)];
-				Container::Vector<D3D12RootBoundResource>& At(ShaderType shaderType)
-				{
-					return Array[static_cast<std::size_t>(shaderType)];
-				}
-			};
 			using PipelineCacheMap = Container::UnorderedMap<std::size_t, PipelineCacheObject>;
-			using RootSignatureMap = Container::UnorderedMap<std::size_t, ComPtr<ID3D12RootSignature>>;
 
 			PipelineCacheObject CreateAndCachePipelineState(const PipelineState& pState, std::size_t hashValue);
 			void ApplyRasterizerState(const RasterizerState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
@@ -75,9 +65,6 @@ namespace Lightning
 			void ApplyDepthStencilState(const DepthStencilState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			void ApplyShader(IShader* pShader, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			void UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::size_t layoutCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
-			//Analyze shader root resources.
-			//Returns number of constant buffers used by this shader
-			std::size_t AnalyzeShaderRootResources(IShader *pShader, Container::Vector<D3D12RootBoundResource>& resourceHandles);
 
 			ComPtr<IDXGIFactory4> mDXGIFactory;
 			ComPtr<ID3D12CommandQueue> mCommandQueue;

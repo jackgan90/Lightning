@@ -457,22 +457,6 @@ namespace Lightning
 			desc.DSVFormat = D3D12TypeMapper::MapRenderFormat(state.bufferFormat);
 		}
 
-
-		std::size_t D3D12Renderer::AnalyzeShaderRootResources(IShader *pShader, 
-			Container::Vector<D3D12RootBoundResource>& resources)
-		{
-			std::size_t constantBuffers{ 0 };
-			auto D3DShader = static_cast<D3D12Shader*>(pShader);
-			auto boundResources = D3DShader->GetRootBoundResources();
-			for (auto i = 0;i < D3DShader->GetRootParameterCount();++i)
-			{
-				resources.emplace_back(boundResources[i]);
-				if (boundResources[i].type == D3D12RootResourceType::ConstantBuffers)
-					constantBuffers += boundResources[i].count;
-			}
-			return constantBuffers;
-		}
-
 		void D3D12Renderer::ApplyShader(IShader* pShader, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
 			auto d3d12shader = static_cast<D3D12Shader*>(pShader);
