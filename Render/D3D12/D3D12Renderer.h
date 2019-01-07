@@ -12,6 +12,7 @@
 #include "D3D12SwapChain.h"
 #include "D3D12DepthStencilBuffer.h"
 #include "D3D12CommandEncoder.h"
+#include "D3D12ShaderGroup.h"
 
 namespace Lightning
 {
@@ -54,7 +55,7 @@ namespace Lightning
 			struct PipelineCacheObject
 			{
 				ComPtr<ID3D12PipelineState> pipelineState;
-				ComPtr<ID3D12RootSignature> rootSignature;
+				std::shared_ptr<D3D12ShaderGroup> shaderGroup;
 			};
 			//enumerate_thread_specific cannot return array objects.Wrap array in a class.
 			struct ShaderRootBoundResources
@@ -68,9 +69,7 @@ namespace Lightning
 			using PipelineCacheMap = Container::UnorderedMap<std::size_t, PipelineCacheObject>;
 			using RootSignatureMap = Container::UnorderedMap<std::size_t, ComPtr<ID3D12RootSignature>>;
 
-			ComPtr<ID3D12RootSignature> GetRootSignature(const Container::Vector<IShader*>& shaders);
 			PipelineCacheObject CreateAndCachePipelineState(const PipelineState& pState, std::size_t hashValue);
-			void BindShaderResources(const PipelineState& state);
 			void ApplyRasterizerState(const RasterizerState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			void ApplyBlendStates(std::size_t firstRTIndex, const BlendState* states, std::size_t stateCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			void ApplyDepthStencilState(const DepthStencilState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
@@ -84,7 +83,6 @@ namespace Lightning
 			ComPtr<ID3D12CommandQueue> mCommandQueue;
 			Foundation::ThreadLocalObject<D3D12CommandEncoder> mCmdEncoders[RENDER_FRAME_COUNT];
 			PipelineCacheMap mPipelineCache;
-			RootSignatureMap mRootSignatures;
 #ifndef NDEBUG
 			ComPtr<ID3D12Debug> mD3D12Debug;
 			ComPtr<ID3D12Debug1> mD3D12Debug1;

@@ -91,7 +91,6 @@ namespace Lightning
 			mCommandQueue.Reset();
 			mDXGIFactory.Reset();
 			mPipelineCache.clear();
-			mRootSignatures.clear();
 			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
 				mCmdEncoders[i].for_each([](D3D12CommandEncoder& encoder) {
@@ -236,10 +235,11 @@ namespace Lightning
 
 			auto commandList = GetGraphicsCommandList();
 			commandList->SetPipelineState(cacheObject.pipelineState.Get());
-			if (cacheObject.rootSignature)
+			auto rootSignature = cacheObject.shaderGroup->GetRootSignature().Get();
+			if (rootSignature)
 			{
-				commandList->SetGraphicsRootSignature(cacheObject.rootSignature.Get());
-				BindShaderResources(state);
+				commandList->SetGraphicsRootSignature(rootSignature);
+				cacheObject.shaderGroup->Commit();
 			}
 		}
 
@@ -333,39 +333,38 @@ namespace Lightning
 		D3D12Renderer::PipelineCacheObject D3D12Renderer::CreateAndCachePipelineState(const PipelineState& state, std::size_t hashValue)
 		{
 			PipelineCacheObject cacheObject;
+			cacheObject.shaderGroup = std::make_shared<D3D12ShaderGroup>();
 			D3D12_GRAPHICS_PIPELINE_STATE_DESC desc{};
 			ApplyRasterizerState(state.rasterizerState, desc);
 			ApplyBlendStates(0, state.blendStates, state.renderTargetCount, desc);
 			ApplyDepthStencilState(state.depthStencilState, desc);
-			Container::Vector<IShader*> shaders;
 			if (state.vs)
 			{
 				ApplyShader(state.vs, desc);
-				shaders.push_back(state.vs);
+				cacheObject.shaderGroup->AddShader(static_cast<D3D12Shader*>(state.vs));
 			}
 			if (state.fs)
 			{
 				ApplyShader(state.fs, desc);
-				shaders.push_back(state.fs);
+				cacheObject.shaderGroup->AddShader(static_cast<D3D12Shader*>(state.fs));
 			}
 			if (state.gs)
 			{
 				ApplyShader(state.gs, desc);
-				shaders.push_back(state.gs);
+				cacheObject.shaderGroup->AddShader(static_cast<D3D12Shader*>(state.gs));
 			}
 			if (state.hs)
 			{
 				ApplyShader(state.hs, desc);
-				shaders.push_back(state.hs);
+				cacheObject.shaderGroup->AddShader(static_cast<D3D12Shader*>(state.hs));
 			}
 			if (state.ds)
 			{
 				ApplyShader(state.ds, desc);
-				shaders.push_back(state.ds);
+				cacheObject.shaderGroup->AddShader(static_cast<D3D12Shader*>(state.ds));
 			}
 			UpdatePSOInputLayout(state.inputLayouts, state.inputLayoutCount, desc);
-			cacheObject.rootSignature = GetRootSignature(shaders);
-			desc.pRootSignature = cacheObject.rootSignature.Get();
+			desc.pRootSignature = cacheObject.shaderGroup->CreateRootSignature().Get();
 			desc.PrimitiveTopologyType = D3D12TypeMapper::MapPrimitiveType(state.primType);
 			//TODO : should apply pipeline state based on PipelineState
 			desc.NumRenderTargets = UINT(state.renderTargetCount);
@@ -401,166 +400,6 @@ namespace Lightning
 				}
 			}
 			return cacheObject;
-		}
-
-		ComPtr<ID3D12RootSignature> D3D12Renderer::GetRootSignature(const Container::Vector<IShader*>& shaders)
-		{	
-			//TODO : according to MSDN,pipeline state object can have 0 shader bound.But I found if I omit vertex shader
-			//,the pipeline state creation will fail.Need to find the reason
-			size_t seed = 0;
-			boost::hash_combine(seed, shaders.size());
-			for (const auto& s : shaders)
-			{
-				boost::hash_combine(seed, s->GetHash());
-			}
-
-			{
-				MutexLock lock(mtxRootSignature);
-				auto it = mRootSignatures.find(seed);
-				if (it != mRootSignatures.end())
-					return it->second;
-			}
-
-			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-			Container::Vector<D3D12_ROOT_PARAMETER> cbParameters;
-			D3D12_ROOT_SIGNATURE_FLAGS flags = 
-				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | 
-				D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS |
-				D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS | 
-				D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
-				D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
-				D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS;
-			for (std::size_t i = 0;i < shaders.size();++i)
-			{
-				switch (shaders[i]->GetType())
-				{
-				case ShaderType::VERTEX:
-					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS;
-					break;
-				case ShaderType::FRAGMENT:
-					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
-					break;
-				case ShaderType::GEOMETRY:
-					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
-					break;
-				case ShaderType::HULL:		//hull
-					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS;
-					break;
-				case ShaderType::DOMAIN:	//domain
-					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS;
-					break;
-				}
-				const auto& parameters = static_cast<D3D12Shader*>(shaders[i])->GetRootParameters();
-				cbParameters.insert(cbParameters.end(), parameters.begin(), parameters.end());
-			}
-			D3D12_ROOT_PARAMETER* pParameters = cbParameters.empty() ? nullptr : &cbParameters[0];
-			rootSignatureDesc.Init(UINT(cbParameters.size()), pParameters, 0, nullptr, flags);
-
-			ComPtr<ID3DBlob> signature;
-			auto hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, nullptr);
-			if (FAILED(hr))
-			{
-				return ComPtr<ID3D12RootSignature>();
-			}
-
-			ComPtr<ID3D12RootSignature> rootSignature;
-			auto device = static_cast<D3D12Device*>(mDevice.get());
-			rootSignature = device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize());
-			if (!rootSignature)
-			{
-				return rootSignature;
-			}
-
-			{
-				MutexLock lock(mtxRootSignature);
-				auto it = mRootSignatures.find(seed);
-				if (it == mRootSignatures.end())
-				{
-					mRootSignatures[seed] = rootSignature;
-				}
-				else
-				{
-					rootSignature = it->second;
-				}
-			}
-			return rootSignature;
-		}
-
-		void D3D12Renderer::BindShaderResources(const PipelineState& state)
-		{
-			const static ShaderType shaderTypes[] = { ShaderType::VERTEX, ShaderType::FRAGMENT, ShaderType::GEOMETRY,
-			ShaderType::HULL, ShaderType::DOMAIN };
-			std::size_t constantBuffers{ 0 };
-			static Foundation::ThreadLocalObject<ShaderRootBoundResources> TLShaderRootBoundResources;
-			auto& shaderRootBoundResources = *TLShaderRootBoundResources;
-			for (auto i = 0;i < Foundation::ArraySize(shaderRootBoundResources.Array);++i)
-			{
-				shaderRootBoundResources.Array[i].clear();
-			}
-			if (state.vs)
-			{
-				constantBuffers += AnalyzeShaderRootResources(state.vs, shaderRootBoundResources.At(ShaderType::VERTEX));
-			}
-			if (state.fs)
-			{
-				constantBuffers += AnalyzeShaderRootResources(state.fs, shaderRootBoundResources.At(ShaderType::FRAGMENT));
-			}
-			if (state.gs)
-			{
-				constantBuffers += AnalyzeShaderRootResources(state.gs, shaderRootBoundResources.At(ShaderType::GEOMETRY));
-			}
-			if (state.hs)
-			{
-				constantBuffers += AnalyzeShaderRootResources(state.hs, shaderRootBoundResources.At(ShaderType::HULL));
-			}
-			if (state.ds)
-			{
-				constantBuffers += AnalyzeShaderRootResources(state.ds, shaderRootBoundResources.At(ShaderType::DOMAIN));
-			}
-			using DescriptorHeapLists = Foundation::ThreadLocalObject<Container::Vector<ID3D12DescriptorHeap*>>;
-			static DescriptorHeapLists descriptorHeapLists;
-			auto& descriptorHeaps = *descriptorHeapLists;
-			descriptorHeaps.clear();
-			UINT rootParameterIndex{ 0 };
-			auto commandList = GetGraphicsCommandList();
-			//decide how many descriptor heaps are required and set heaps in one shot.Bind corresponding handles in descriptor heaps later.
-			DescriptorHeap* constantHeap(nullptr);
-			if (constantBuffers > 0)
-			{
-				constantHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-					true, UINT(constantBuffers), true);
-				descriptorHeaps.push_back(D3D12DescriptorHeapManager::Instance()->GetHeap(constantHeap).Get());
-			}
-			if (!descriptorHeaps.empty())
-			{
-				commandList->SetDescriptorHeaps(UINT(descriptorHeaps.size()), &descriptorHeaps[0]);
-			}
-			if (constantHeap)
-			{
-				CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(constantHeap->cpuHandle);
-				CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(constantHeap->gpuHandle);
-				auto device = static_cast<D3D12Device*>(mDevice.get());
-				for (auto shaderType : shaderTypes)
-				{
-					for (auto& resource : shaderRootBoundResources.At(shaderType))
-					{
-						if (resource.type == D3D12RootResourceType::ConstantBuffers)
-						{
-							commandList->SetGraphicsRootDescriptorTable(rootParameterIndex++, gpuHandle);
-							for (auto i = 0;i < resource.count;++i)
-							{
-								const auto& cbuffer = resource.buffers[i];
-								D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
-								cbvDesc.BufferLocation = cbuffer.virtualAdress;
-								cbvDesc.SizeInBytes = UINT(cbuffer.size);
-								device->CreateConstantBufferView(&cbvDesc, cpuHandle);
-								cpuHandle.Offset(constantHeap->incrementSize);
-								gpuHandle.Offset(constantHeap->incrementSize);
-							}
-						}
-					}
-				}
-			}
 		}
 
 		void D3D12Renderer::ApplyRasterizerState(const RasterizerState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)

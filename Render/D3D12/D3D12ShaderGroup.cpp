@@ -1,5 +1,6 @@
 #include "D3D12Renderer.h"
 #include "D3D12ShaderGroup.h"
+#include "D3D12DescriptorHeapManager.h"
 
 namespace Lightning
 {
@@ -31,21 +32,6 @@ namespace Lightning
 
 		void D3D12ShaderGroup::Destroy()
 		{
-			for (auto& descriptorArray : mDescriptorHeaps)
-			{
-				descriptorArray.for_each([](DescriptorHeapArray& descriptorHeaps) {
-					for (auto i = 0;i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES; ++i)
-					{
-						if (descriptorHeaps.heaps[i])
-						{
-							D3D12DescriptorHeapManager::Instance()->Deallocate(descriptorHeaps.heaps[i]);
-							descriptorHeaps.heaps[i] = nullptr;
-						}
-					}
-					descriptorHeaps.heapList.clear();
-				});
-			}
-
 			for (auto shader : mShaders)
 			{
 				shader->Release();
@@ -62,32 +48,21 @@ namespace Lightning
 			auto device = static_cast<D3D12Device*>(renderer->GetDevice());
 			auto commandList = renderer->GetGraphicsCommandList();
 			auto frameResourceIndex = renderer->GetFrameResourceIndex();
-			auto& descriptorHeaps = *mDescriptorHeaps[frameResourceIndex];
+			using DescriptorHeapLists = Foundation::ThreadLocalObject<Container::Vector<ID3D12DescriptorHeap*>>;
+			static DescriptorHeapLists descriptorHeapLists;
+			auto& descriptorHeaps = *descriptorHeapLists;
+			descriptorHeaps.clear();
 			//the heap to store CBVs SRVs UAVs
 			DescriptorHeap* constantHeap{ nullptr };
 			if (mConstantBufferCount + mTextureCount > 0)
 			{
-				constantHeap = descriptorHeaps.heaps[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV];
-				if (!constantHeap)
-				{
-					constantHeap = D3D12DescriptorHeapManager::Instance()->Allocate(
-						D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, true, UINT(mConstantBufferCount + mTextureCount), false);
-					descriptorHeaps.heaps[D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV] = constantHeap;
-				}
+				constantHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+					true, UINT(mConstantBufferCount + mTextureCount), true);
+				descriptorHeaps.push_back(D3D12DescriptorHeapManager::Instance()->GetHeap(constantHeap).Get());
 			}
-			descriptorHeaps.heapList.clear();
-			for (auto heap : descriptorHeaps.heaps)
+			if (!descriptorHeaps.empty())
 			{
-				if (heap)
-				{
-					descriptorHeaps.heapList.push_back(
-						D3D12DescriptorHeapManager::Instance()->GetHeap(heap).Get()
-					);
-				}
-			}
-			if (!descriptorHeaps.heapList.empty())
-			{
-				commandList->SetDescriptorHeaps(UINT(descriptorHeaps.heapList.size()), &descriptorHeaps.heapList[0]);
+				commandList->SetDescriptorHeaps(UINT(descriptorHeaps.size()), &descriptorHeaps[0]);
 			}
 			UINT rootParameterIndex{ 0 };
 			CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle;
@@ -119,6 +94,66 @@ namespace Lightning
 					}
 				}
 			}
+		}
+
+		std::size_t D3D12ShaderGroup::GetHash()const
+		{
+			size_t seed = 0;
+			boost::hash_combine(seed, mShaders.size());
+			for (const auto& s : mShaders)
+			{
+				boost::hash_combine(seed, s->GetHash());
+			}
+			return seed;
+		}
+
+		ComPtr<ID3D12RootSignature> D3D12ShaderGroup::CreateRootSignature()
+		{
+			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
+			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
+			Container::Vector<D3D12_ROOT_PARAMETER> rootParameters;
+			D3D12_ROOT_SIGNATURE_FLAGS flags = 
+				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | 
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS | 
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+				D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS;
+			for (std::size_t i = 0;i < mShaders.size();++i)
+			{
+				switch (mShaders[i]->GetType())
+				{
+				case ShaderType::VERTEX:
+					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS;
+					break;
+				case ShaderType::FRAGMENT:
+					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+					break;
+				case ShaderType::GEOMETRY:
+					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
+					break;
+				case ShaderType::HULL:		//hull
+					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS;
+					break;
+				case ShaderType::DOMAIN:	//domain
+					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS;
+					break;
+				}
+				const auto& parameters = static_cast<D3D12Shader*>(mShaders[i])->GetRootParameters();
+				rootParameters.insert(rootParameters.end(), parameters.begin(), parameters.end());
+			}
+			D3D12_ROOT_PARAMETER* pParameters = rootParameters.empty() ? nullptr : &rootParameters[0];
+			rootSignatureDesc.Init(UINT(rootParameters.size()), pParameters, 0, nullptr, flags);
+
+			ComPtr<ID3DBlob> signature;
+			auto hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, nullptr);
+			if (FAILED(hr))
+			{
+				return ComPtr<ID3D12RootSignature>();
+			}
+
+			mRootSignature = device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize());
+			return mRootSignature;
 		}
 	}
 }

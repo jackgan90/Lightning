@@ -108,6 +108,7 @@ if(LIGHTNING_USE_D3D12)
 						D3D12/D3D12DescriptorHeapManager.h
 						D3D12/D3D12TypeMapper.h
 						D3D12/D3D12Shader.h
+						D3D12/D3D12ShaderGroup.h
 						D3D12/D3D12BufferResource.h
 						D3D12/D3D12VertexBuffer.h
 						D3D12/D3D12IndexBuffer.h
@@ -125,6 +126,7 @@ if(LIGHTNING_USE_D3D12)
 						D3D12/D3D12RenderFence.cpp
 						D3D12/D3D12DescriptorHeapManager.cpp
 						D3D12/D3D12Shader.cpp
+						D3D12/D3D12ShaderGroup.cpp
 						D3D12/D3D12BufferResource.cpp
 						D3D12/D3D12VertexBuffer.cpp
 						D3D12/D3D12IndexBuffer.cpp
