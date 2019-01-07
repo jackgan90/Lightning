@@ -68,7 +68,7 @@ namespace Lightning
 			virtual bool CheckIfDepthStencilBufferNeedsResize();
 			void ApplyRenderPasses();
 			void GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name);
-			void ResetFrameRenderQueue();
+			void SwitchRenderQueue();
 		protected:
 			struct SemanticInfo
 			{

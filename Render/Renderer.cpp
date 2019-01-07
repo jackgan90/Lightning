@@ -83,7 +83,7 @@ namespace Lightning
 			mFrameCount++;
 			mFrameResources[mFrameResourceIndex].OnFrameBegin();
 			OnFrameBegin();
-			ResetFrameRenderQueue();
+			SwitchRenderQueue();
 			auto backBuffer = mSwapChain->GetCurrentRenderTarget();
 			ClearRenderTarget(backBuffer, mClearColor);
 			auto depthStencilBuffer = GetDefaultDepthStencilBuffer();
@@ -145,7 +145,7 @@ namespace Lightning
 			name = it->second.name;
 		}
 
-		void Renderer::ResetFrameRenderQueue()
+		void Renderer::SwitchRenderQueue()
 		{
 			mFrameResources[mFrameResourceIndex].renderQueue = mCurrentFrameRenderQueue;
 			mRenderQueueIndex = mRenderQueueIndex == RENDER_FRAME_COUNT ? 0 : ++mRenderQueueIndex;
