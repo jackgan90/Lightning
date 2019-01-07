@@ -16,7 +16,6 @@ namespace Lightning
 
 		void D3D12ForwardRenderPass::Apply(RenderQueue& renderQueue)
 		{
-			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			if(mTotalConstantBufferSize > 0)
 				D3D12ConstantBufferManager::Instance()->Reserve(mTotalConstantBufferSize);
 			if(mTotalConstantBuffers)
