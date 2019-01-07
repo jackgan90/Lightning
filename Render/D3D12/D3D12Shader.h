@@ -5,7 +5,6 @@
 #include "ThreadLocalObject.h"
 #include "Container.h"
 #include "D3D12ConstantBufferManager.h"
-#include "D3D12DescriptorHeapManager.h"
 #include "D3D12Texture.h"
 #include "Texture/Sampler.h"
 #include "Shader.h"

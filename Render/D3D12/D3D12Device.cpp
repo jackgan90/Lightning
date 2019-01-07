@@ -15,7 +15,6 @@
 #include "Logger.h"
 #include "ConfigManager.h"
 #include "FrameMemoryAllocator.h"
-#include "D3D12DescriptorHeapManager.h"
 #include "D3D12ConstantBufferManager.h"
 #include "tbb/spin_mutex.h"
 

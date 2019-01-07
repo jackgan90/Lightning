@@ -1,6 +1,5 @@
 #include <d3dx12.h>
 #include "D3D12DepthStencilBuffer.h"
-#include "D3D12DescriptorHeapManager.h"
 #include "D3D12TypeMapper.h"
 #include "Renderer.h"
 

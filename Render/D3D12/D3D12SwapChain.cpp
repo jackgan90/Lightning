@@ -7,7 +7,6 @@
 #include "D3D12Renderer.h"
 #include "D3D12SwapChain.h"
 #include "D3D12RenderTarget.h"
-#include "D3D12DescriptorHeapManager.h"
 #include "IPluginManager.h"
 #include "IFoundationPlugin.h"
 
