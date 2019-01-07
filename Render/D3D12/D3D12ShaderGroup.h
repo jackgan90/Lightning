@@ -15,7 +15,7 @@ namespace Lightning
 			//Add a shader to this group,thread unsafe
 			void AddShader(D3D12Shader* shader);
 			//Commit all shaders managed by this group.Basically just commit all shader parameters.
-			void Commit();
+			void Commit(ID3D12GraphicsCommandList* commandList);
 			std::size_t GetHash()const;
 			ComPtr<ID3D12RootSignature> CreateRootSignature();
 			ComPtr<ID3D12RootSignature> GetRootSignature()const { return mRootSignature; }

@@ -239,7 +239,7 @@ namespace Lightning
 			if (rootSignature)
 			{
 				commandList->SetGraphicsRootSignature(rootSignature);
-				cacheObject.shaderGroup->Commit();
+				cacheObject.shaderGroup->Commit(commandList);
 			}
 		}
 

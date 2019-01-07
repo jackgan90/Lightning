@@ -201,11 +201,6 @@ namespace Lightning
 			return NEW_REF_OBJ(D3D12DepthStencilBuffer, D3DTexture);
 		}
 
-		ID3D12GraphicsCommandList* D3D12Device::GetGraphicsCommandList()
-		{
-			return static_cast<D3D12Renderer*>(Renderer::Instance())->GetGraphicsCommandList();
-		}
-
 		//native device method wrappers begin
 		D3D12StatefulResourcePtr D3D12Device::CreateCommittedResource(
 			const D3D12_HEAP_PROPERTIES *pHeapProperties,

@@ -97,10 +97,9 @@ namespace Lightning
 			}
 		}
 
-		void D3D12ShaderGroup::Commit()
+		void D3D12ShaderGroup::Commit(ID3D12GraphicsCommandList* commandList)
 		{
 			auto renderer = static_cast<D3D12Renderer*>(Renderer::Instance());
-			auto commandList = renderer->GetGraphicsCommandList();
 			DescriptorHeap* constantHeap{ nullptr };
 			CommitDescriptorHeaps(commandList, constantHeap);
 			CommitDescriptorTables(commandList, constantHeap);

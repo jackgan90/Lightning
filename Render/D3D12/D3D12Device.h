@@ -79,7 +79,6 @@ namespace Lightning
 		private:
 			//if parameter pState is nullptr,this method will create a default pipeline state
 			void CreateNativeDevice(IDXGIFactory4* factory);
-			ID3D12GraphicsCommandList* GetGraphicsCommandList();
 			ComPtr<ID3D12Device> mDevice;
 			D3D_SHADER_MODEL mHighestShaderModel;
 			std::atomic<RenderTargetID> mCurrentRTID;
