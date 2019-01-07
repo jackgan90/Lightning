@@ -88,6 +88,7 @@ namespace Lightning
 			Container::UnorderedMap<std::string, RenderSemantics> mUniformToSemantics;
 			Container::UnorderedMap<RenderSemantics, const char*> mSemanticsToUniform;
 		private:
+			void HandleWindowResize();
 			SemanticInfo ParsePipelineInputSemantics(const SemanticItem& item);
 			std::size_t mFrameResourceIndex;
 			bool mStarted;

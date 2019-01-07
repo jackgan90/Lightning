@@ -79,25 +79,7 @@ namespace Lightning
 			if (!mStarted)
 				return;
 			WaitForPreviousFrame(false);
-			if (CheckIfDepthStencilBufferNeedsResize() || mSwapChain->CheckIfBackBufferNeedsResize())
-			{
-				//Critical:must wait for previous frame finished.Because previous frames may reference the render target
-				//we are about to resize.
-				WaitForPreviousFrame(true);
-				std::size_t width = mOutputWindow->GetWidth();
-				std::size_t height = mOutputWindow->GetHeight();
-				//Resize swap chain first.Because width and height may be zero,which cause swap chain
-				//resize to a default size.And we base on this size to resize depth stencil buffer.
-				mSwapChain->Resize(width, height);
-				auto renderTarget = mSwapChain->GetCurrentRenderTarget();
-				auto renderTexture = renderTarget->GetTexture();
-				width = renderTexture->GetWidth();
-				height = renderTexture->GetHeight();
-				for (std::uint8_t i = 0;i < RENDER_FRAME_COUNT;++i)
-				{
-					ResizeDepthStencilBuffer(mFrameResources[i].defaultDepthStencilBuffer, width, height);
-				}
-			}
+			HandleWindowResize();
 			mFrameCount++;
 			mFrameResources[mFrameResourceIndex].OnFrameBegin();
 			OnFrameBegin();
@@ -347,6 +329,29 @@ namespace Lightning
 			info.rawName = fullName;
 			info.name = fullName.substr(0, i + 1);
 			return info;
+		}
+
+		void Renderer::HandleWindowResize()
+		{
+			if (CheckIfDepthStencilBufferNeedsResize() || mSwapChain->CheckIfBackBufferNeedsResize())
+			{
+				//Critical:must wait for previous frame finished.Because previous frames may reference the render target
+				//we are about to resize.
+				WaitForPreviousFrame(true);
+				std::size_t width = mOutputWindow->GetWidth();
+				std::size_t height = mOutputWindow->GetHeight();
+				//Resize swap chain first.Because width and height may be zero,which cause swap chain
+				//resize to a default size.And we base on this size to resize depth stencil buffer.
+				mSwapChain->Resize(width, height);
+				auto renderTarget = mSwapChain->GetCurrentRenderTarget();
+				auto renderTexture = renderTarget->GetTexture();
+				width = renderTexture->GetWidth();
+				height = renderTexture->GetHeight();
+				for (std::uint8_t i = 0;i < RENDER_FRAME_COUNT;++i)
+				{
+					ResizeDepthStencilBuffer(mFrameResources[i].defaultDepthStencilBuffer, width, height);
+				}
+			}
 		}
 	}
 }
