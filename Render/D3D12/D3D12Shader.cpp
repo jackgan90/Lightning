@@ -208,27 +208,26 @@ namespace Lightning
 			{
 				mRootBoundResources[i] = new D3D12RootBoundResource[mRootResourceCount];
 				//root bound resource types are sorted in ConstantBuffer-Texture-SamplerState order.
-				for (auto j = 0;j < mRootResourceCount;++j)
+				auto j = 0;
+				if (constantBufferCount > 0)
 				{
-					if (j < constantBufferCount)	//All of the constant buffers are in root parameter 0
-					{
-						mRootBoundResources[i][j].buffers = new D3D12ConstantBuffer[constantBufferCount];
-						mRootBoundResources[i][j].count = constantBufferCount;
-					}
-					else if(j < textureCount)
-					{
-						mRootBoundResources[i][j].textures = new D3D12Texture*[textureCount];
-						mRootBoundResources[i][j].count = textureCount;
-					}
-					else if (j < samplerStateCount)
-					{
-						mRootBoundResources[i][j].samplerStates = new SamplerState[samplerStateCount];
-						mRootBoundResources[i][j].count = samplerStateCount;
-					}
-					else
-					{
-						assert(0 && "Wrong root resource count.");
-					}
+					mRootBoundResources[i][j].buffers = new D3D12ConstantBuffer[constantBufferCount];
+					mRootBoundResources[i][j].count = constantBufferCount;
+					++j;
+				}
+
+				if (textureCount > 0)
+				{
+					mRootBoundResources[i][j].textures = new D3D12Texture*[textureCount];
+					mRootBoundResources[i][j].count = textureCount;
+					++j;
+				}
+
+				if (samplerStateCount > 0)
+				{
+					mRootBoundResources[i][j].samplerStates = new SamplerState[samplerStateCount];
+					mRootBoundResources[i][j].count = samplerStateCount;
+					++j;
 				}
 			}
 			mInit = true;
