@@ -221,7 +221,7 @@ namespace Lightning
 				descriptor.multiSampleCount = mSwapChain->GetMultiSampleCount();
 				descriptor.multiSampleQuality = mSwapChain->GetMultiSampleQuality();
 				descriptor.numberOfMipmaps = 1;
-				descriptor.type = TEXTURE_TYPE_2D;
+				descriptor.dimension = TEXTURE_DIMENSION_2D;
 				descriptor.format = RenderFormat::D24_S8;
 				descriptor.depthClearValue = 1.0f;
 				descriptor.stencilClearValue = 0;

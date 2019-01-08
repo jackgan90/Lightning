@@ -148,7 +148,7 @@ namespace Lightning
 		{
 			D3D12_RESOURCE_DESC desc{};
 			desc.Alignment = 0;
-			if (descriptor.type == TEXTURE_TYPE_1D_ARRAY || descriptor.type == TEXTURE_TYPE_2D_ARRAY)
+			if (descriptor.dimension == TEXTURE_DIMENSION_1D_ARRAY || descriptor.dimension == TEXTURE_DIMENSION_2D_ARRAY)
 			{
 				desc.DepthOrArraySize = UINT16(descriptor.arraySize);
 			}
@@ -156,7 +156,7 @@ namespace Lightning
 			{
 				desc.DepthOrArraySize = UINT16(descriptor.depth);
 			}
-			desc.Dimension = D3D12TypeMapper::MapTextureType(descriptor.type);
+			desc.Dimension = D3D12TypeMapper::MapTextureDimension(descriptor.dimension);
 			desc.Flags = D3D12_RESOURCE_FLAG_NONE;
 			desc.Format = D3D12TypeMapper::MapRenderFormat(descriptor.format);
 			desc.Height = UINT(descriptor.height);
@@ -237,6 +237,14 @@ namespace Lightning
 			D3D12_CPU_DESCRIPTOR_HANDLE DestDescriptor)
 		{
 			mDevice->CreateConstantBufferView(pDesc, DestDescriptor);
+		}
+
+		void D3D12Device::CreateShaderResourceView(
+			ID3D12Resource *pResource,
+			const D3D12_SHADER_RESOURCE_VIEW_DESC *pDesc,
+			D3D12_CPU_DESCRIPTOR_HANDLE DestDescriptor)
+		{
+			mDevice->CreateShaderResourceView(pResource, pDesc, DestDescriptor);
 		}
 
 		UINT D3D12Device::GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE DescriptorHeapType)

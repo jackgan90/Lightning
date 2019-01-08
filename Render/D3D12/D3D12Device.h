@@ -50,6 +50,10 @@ namespace Lightning
 			void CreateConstantBufferView( 
 				const D3D12_CONSTANT_BUFFER_VIEW_DESC *pDesc,
 				D3D12_CPU_DESCRIPTOR_HANDLE DestDescriptor);
+			void CreateShaderResourceView( 
+				ID3D12Resource *pResource,
+				const D3D12_SHADER_RESOURCE_VIEW_DESC *pDesc,
+				D3D12_CPU_DESCRIPTOR_HANDLE DestDescriptor);
 			UINT GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE DescriptorHeapType);
 			ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap( const D3D12_DESCRIPTOR_HEAP_DESC *pDescriptorHeapDesc);
 			ComPtr<ID3D12CommandAllocator> CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE type);

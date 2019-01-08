@@ -8,21 +8,21 @@ namespace Lightning
 {
 	namespace Render
 	{
-		enum TEXTURE_TYPE
+		enum TextureDimension
 		{
-			TEXTURE_TYPE_1D = 0,
-			TEXTURE_TYPE_1D_ARRAY,
-			TEXTURE_TYPE_2D,
-			TEXTURE_TYPE_2D_ARRAY,
-			TEXTURE_TYPE_3D,
-			TEXTURE_TYPE_NUM
+			TEXTURE_DIMENSION_1D = 0,
+			TEXTURE_DIMENSION_1D_ARRAY,
+			TEXTURE_DIMENSION_2D,
+			TEXTURE_DIMENSION_2D_ARRAY,
+			TEXTURE_DIMENSION_3D,
+			TEXTURE_DIMENSION_NUM
 		};
 
 		struct TextureDescriptor
 		{
 			void Reset()
 			{
-				type = TEXTURE_TYPE_2D;
+				dimension = TEXTURE_DIMENSION_2D;
 				width = height = 0;
 				depth = 0;
 				numberOfMipmaps = 1;
@@ -30,7 +30,7 @@ namespace Lightning
 				multiSampleCount = 1;
 				multiSampleQuality = 1;
 			}
-			TEXTURE_TYPE type;
+			TextureDimension dimension;
 			std::size_t width;
 			std::size_t height;
 			union 

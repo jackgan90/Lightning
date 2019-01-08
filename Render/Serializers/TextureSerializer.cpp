@@ -28,7 +28,7 @@ namespace Lightning
 				descriptor.multiSampleCount = 1;
 				descriptor.multiSampleQuality = 1;
 				descriptor.numberOfMipmaps = 1;
-				descriptor.type = TEXTURE_TYPE_2D;
+				descriptor.dimension = TEXTURE_DIMENSION_2D;
 				descriptor.width = FreeImage_GetWidth(mBitmap);
 			}
 

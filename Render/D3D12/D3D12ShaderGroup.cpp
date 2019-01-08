@@ -1,5 +1,6 @@
 #include "D3D12Renderer.h"
 #include "D3D12ShaderGroup.h"
+#include "D3D12TypeMapper.h"
 #include "D3D12DescriptorHeapManager.h"
 
 namespace Lightning
@@ -79,7 +80,7 @@ namespace Lightning
 				for (auto i = 0;i < shader->GetRootParameterCount();++i)
 				{
 					const auto& resource = boundResources[i];
-					if (boundResources[i].type == D3D12RootResourceType::ConstantBuffers)
+					if (resource.type == D3D12RootResourceType::ConstantBuffers)
 					{
 						commandList->SetGraphicsRootDescriptorTable(rootParameterIndex++, gpuHandle);
 						for (auto i = 0;i < resource.count;++i)
@@ -91,6 +92,16 @@ namespace Lightning
 							device->CreateConstantBufferView(&cbvDesc, cpuHandle);
 							cpuHandle.Offset(constantHeap->incrementSize);
 							gpuHandle.Offset(constantHeap->incrementSize);
+						}
+					}
+					else if (resource.type == D3D12RootResourceType::Textures)
+					{
+						commandList->SetGraphicsRootDescriptorTable(rootParameterIndex++, gpuHandle);
+						for (auto i = 0;i < resource.count;++i)
+						{
+							D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+							auto textureFormat = resource.textures[i]->GetRenderFormat();
+							srvDesc.Format = D3D12TypeMapper::MapRenderFormat(textureFormat);
 						}
 					}
 				}
