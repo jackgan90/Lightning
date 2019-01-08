@@ -85,6 +85,35 @@ namespace Lightning
 			}
 		}
 
+		TextureDimension D3D12Texture::GetDimension()const
+		{
+			const auto& desc = mResource->GetDesc();
+			if (desc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE1D)
+			{
+				if (desc.DepthOrArraySize > 1)
+				{
+					return TEXTURE_DIMENSION_1D_ARRAY;
+				}
+				else
+				{
+					return TEXTURE_DIMENSION_1D;
+				}
+			}
+
+			if (desc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE2D)
+			{
+				if (desc.DepthOrArraySize > 1)
+				{
+					return TEXTURE_DIMENSION_2D_ARRAY;
+				}
+				else
+				{
+					return TEXTURE_DIMENSION_2D;
+				}
+			}
+			return TEXTURE_DIMENSION_3D;
+		}
+
 		void D3D12Texture::Commit()
 		{
 			if (mCommitted)
@@ -140,6 +169,12 @@ namespace Lightning
 		{
 			const auto& desc = mResource->GetDesc();
 			return desc.Height;
+		}
+
+		std::size_t D3D12Texture::GetDepth()const
+		{
+			const auto& desc = mResource->GetDesc();
+			return desc.DepthOrArraySize;
 		}
 
 		void D3D12Texture::Resize(std::size_t width, std::size_t height)

@@ -102,6 +102,15 @@ namespace Lightning
 							D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
 							auto textureFormat = resource.textures[i]->GetRenderFormat();
 							srvDesc.Format = D3D12TypeMapper::MapRenderFormat(textureFormat);
+							bool isMultiSampled = resource.textures[i]->GetMultiSampleCount() > 1;
+							auto textureDimension = resource.textures[i]->GetDimension();
+							srvDesc.ViewDimension = D3D12TypeMapper::MapSRVDimension(textureDimension, isMultiSampled);
+							srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+							//TODO : specify union member value of srvDesc corresponding to texture dimension
+							auto D3DResource = resource.textures[i]->GetResource()->GetResource();
+							device->CreateShaderResourceView(D3DResource, &srvDesc, cpuHandle);
+							cpuHandle.Offset(constantHeap->incrementSize);
+							gpuHandle.Offset(constantHeap->incrementSize);
 						}
 					}
 				}

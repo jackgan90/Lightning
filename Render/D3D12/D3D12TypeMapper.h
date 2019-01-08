@@ -205,9 +205,9 @@ namespace Lightning
 				}
 			}
 
-			static D3D12_RESOURCE_DIMENSION MapTextureDimension(TextureDimension type)
+			static D3D12_RESOURCE_DIMENSION MapTextureDimension(TextureDimension dimension)
 			{
-				switch (type)
+				switch (dimension)
 				{
 				case TEXTURE_DIMENSION_1D:
 					return D3D12_RESOURCE_DIMENSION_TEXTURE1D;
@@ -221,6 +221,43 @@ namespace Lightning
 					return D3D12_RESOURCE_DIMENSION_TEXTURE3D;
 				default:
 					return D3D12_RESOURCE_DIMENSION_UNKNOWN;
+				}
+			}
+
+			static D3D12_SRV_DIMENSION MapSRVDimension(TextureDimension dimension, bool multisample)
+			{
+				switch (dimension)
+				{
+				case TEXTURE_DIMENSION_1D:
+					return D3D12_SRV_DIMENSION_TEXTURE1D;
+				case TEXTURE_DIMENSION_1D_ARRAY:
+					return D3D12_SRV_DIMENSION_TEXTURE1DARRAY;
+				case TEXTURE_DIMENSION_2D:
+				{
+					if (multisample)
+					{
+						return D3D12_SRV_DIMENSION_TEXTURE2DMS;
+					}
+					else
+					{
+						return D3D12_SRV_DIMENSION_TEXTURE2D;
+					}
+				}
+				case TEXTURE_DIMENSION_2D_ARRAY:
+				{
+					if (multisample)
+					{
+						return D3D12_SRV_DIMENSION_TEXTURE2DMSARRAY;
+					}
+					else
+					{
+						return D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
+					}
+				}
+				case TEXTURE_DIMENSION_3D:
+					return D3D12_SRV_DIMENSION_TEXTURE3D;
+				default:
+					return D3D12_SRV_DIMENSION_UNKNOWN;
 				}
 			}
 		};

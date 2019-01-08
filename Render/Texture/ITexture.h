@@ -49,12 +49,15 @@ namespace Lightning
 
 		struct ITexture : Plugins::IRefObject
 		{
+			virtual TextureDimension INTERFACECALL GetDimension()const = 0;
 			virtual void INTERFACECALL Commit() = 0;
 			virtual std::uint16_t INTERFACECALL GetMultiSampleCount()const = 0;
 			virtual std::uint16_t INTERFACECALL GetMultiSampleQuality()const = 0;
 			virtual RenderFormat INTERFACECALL GetRenderFormat()const = 0;
 			virtual std::size_t INTERFACECALL GetWidth()const = 0;
 			virtual std::size_t INTERFACECALL GetHeight()const = 0;
+			//If this texture is a 3D texture, returns the depth,otherwise returns array size
+			virtual std::size_t INTERFACECALL GetDepth()const = 0;
 		};
 	}
 }
