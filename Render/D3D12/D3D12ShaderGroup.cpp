@@ -43,7 +43,8 @@ namespace Lightning
 			mShaders.clear();
 		}
 
-		void D3D12ShaderGroup::CommitDescriptorHeaps(ID3D12GraphicsCommandList* commandList, DescriptorHeap*& constantHeap)
+		void D3D12ShaderGroup::CommitDescriptorHeaps(ID3D12GraphicsCommandList* commandList, 
+			DescriptorHeap*& constantHeap, DescriptorHeap*& samplerHeap)
 		{
 			using DescriptorHeapLists = Foundation::ThreadLocalObject<Container::Vector<ID3D12DescriptorHeap*>>;
 			static DescriptorHeapLists descriptorHeapLists;
@@ -51,11 +52,18 @@ namespace Lightning
 			descriptorHeaps.clear();
 			//the heap to store CBVs SRVs UAVs
 			constantHeap = nullptr;
+			samplerHeap = nullptr;
 			if (mConstantBufferCount + mTextureCount > 0)
 			{
 				constantHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 					true, UINT(mConstantBufferCount + mTextureCount), true);
 				descriptorHeaps.push_back(D3D12DescriptorHeapManager::Instance()->GetHeap(constantHeap).Get());
+			}
+			if (mSamplerStateCount > 0)
+			{
+				samplerHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER,
+					true, UINT(mSamplerStateCount), true);
+				descriptorHeaps.push_back(D3D12DescriptorHeapManager::Instance()->GetHeap(samplerHeap).Get());
 			}
 			if (!descriptorHeaps.empty())
 			{
@@ -63,16 +71,22 @@ namespace Lightning
 			}
 		}
 
-		void D3D12ShaderGroup::CommitDescriptorTables(ID3D12GraphicsCommandList* commandList, DescriptorHeap* constantHeap)
+		void D3D12ShaderGroup::CommitDescriptorTables(ID3D12GraphicsCommandList* commandList
+			, DescriptorHeap* constantHeap, DescriptorHeap* samplerHeap)
 		{
 			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
 			UINT rootParameterIndex{ 0 };
-			CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle;
-			CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle;
+			CD3DX12_CPU_DESCRIPTOR_HANDLE constantCPUHandle, samplerCPUHandle;
+			CD3DX12_GPU_DESCRIPTOR_HANDLE constantGPUHandle, samplerGPUHandle;
 			if (constantHeap)
 			{
-				cpuHandle = constantHeap->cpuHandle;
-				gpuHandle = constantHeap->gpuHandle;
+				constantCPUHandle = constantHeap->CPUHandle;
+				constantGPUHandle = constantHeap->GPUHandle;
+			}
+			if (samplerHeap)
+			{
+				samplerCPUHandle = samplerHeap->CPUHandle;
+				samplerGPUHandle = samplerHeap->GPUHandle;
 			}
 			for (auto shader : mShaders)
 			{
@@ -82,47 +96,88 @@ namespace Lightning
 					const auto& resource = boundResources[i];
 					if (resource.type == D3D12RootResourceType::ConstantBuffers)
 					{
-						commandList->SetGraphicsRootDescriptorTable(rootParameterIndex++, gpuHandle);
-						for (auto i = 0;i < resource.count;++i)
-						{
-							const auto& cbuffer = resource.buffers[i];
-							D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
-							cbvDesc.BufferLocation = cbuffer.virtualAdress;
-							cbvDesc.SizeInBytes = UINT(cbuffer.size);
-							device->CreateConstantBufferView(&cbvDesc, cpuHandle);
-							cpuHandle.Offset(constantHeap->incrementSize);
-							gpuHandle.Offset(constantHeap->incrementSize);
-						}
+						CommitConstantBufferDescriptorTable(commandList, rootParameterIndex++,
+							resource, device, constantCPUHandle, constantGPUHandle, constantHeap->incrementSize);
 					}
 					else if (resource.type == D3D12RootResourceType::Textures)
 					{
-						commandList->SetGraphicsRootDescriptorTable(rootParameterIndex++, gpuHandle);
-						for (auto i = 0;i < resource.count;++i)
-						{
-							D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
-							auto textureFormat = resource.textures[i]->GetRenderFormat();
-							srvDesc.Format = D3D12TypeMapper::MapRenderFormat(textureFormat);
-							bool isMultiSampled = resource.textures[i]->GetMultiSampleCount() > 1;
-							auto textureDimension = resource.textures[i]->GetDimension();
-							srvDesc.ViewDimension = D3D12TypeMapper::MapSRVDimension(textureDimension, isMultiSampled);
-							srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-							//TODO : specify union member value of srvDesc corresponding to texture dimension
-							auto D3DResource = resource.textures[i]->GetResource()->GetResource();
-							device->CreateShaderResourceView(D3DResource, &srvDesc, cpuHandle);
-							cpuHandle.Offset(constantHeap->incrementSize);
-							gpuHandle.Offset(constantHeap->incrementSize);
-						}
+						CommitTextureDescriptorTable(commandList, rootParameterIndex,
+							resource, device, constantCPUHandle, constantGPUHandle, constantHeap->incrementSize);
+					}
+					else if (resource.type == D3D12RootResourceType::Samplers)
+					{
+						CommitSamplerDescriptorTable(commandList, rootParameterIndex,
+							resource, device, samplerCPUHandle, samplerGPUHandle, samplerHeap->incrementSize);
 					}
 				}
+			}
+		}
+
+		void D3D12ShaderGroup::CommitConstantBufferDescriptorTable(
+			ID3D12GraphicsCommandList* commandList
+			, UINT rootParameterIndex
+			, const D3D12RootBoundResource& resource
+			, D3D12Device* device
+			, CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuHandle
+			, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuHandle
+			, UINT incrementSize)
+		{
+			commandList->SetGraphicsRootDescriptorTable(rootParameterIndex, gpuHandle);
+			for (auto i = 0;i < resource.count;++i)
+			{
+				const auto& cbuffer = resource.buffers[i];
+				D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc{};
+				cbvDesc.BufferLocation = cbuffer.virtualAdress;
+				cbvDesc.SizeInBytes = UINT(cbuffer.size);
+				device->CreateConstantBufferView(&cbvDesc, cpuHandle);
+				cpuHandle.Offset(incrementSize);
+				gpuHandle.Offset(incrementSize);
+			}
+		}
+
+		void D3D12ShaderGroup::CommitTextureDescriptorTable(ID3D12GraphicsCommandList* commandList, UINT rootParameterIndex,
+			const D3D12RootBoundResource& resource, D3D12Device* device,
+			CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuHandle, UINT incrementSize)
+		{
+			commandList->SetGraphicsRootDescriptorTable(rootParameterIndex, gpuHandle);
+			for (auto i = 0;i < resource.count;++i)
+			{
+				D3D12_SHADER_RESOURCE_VIEW_DESC srvDesc{};
+				auto textureFormat = resource.textures[i]->GetRenderFormat();
+				srvDesc.Format = D3D12TypeMapper::MapRenderFormat(textureFormat);
+				bool isMultiSampled = resource.textures[i]->GetMultiSampleCount() > 1;
+				auto textureDimension = resource.textures[i]->GetDimension();
+				srvDesc.ViewDimension = D3D12TypeMapper::MapSRVDimension(textureDimension, isMultiSampled);
+				srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+				//TODO : specify union member value of srvDesc corresponding to texture dimension
+				auto D3DResource = resource.textures[i]->GetResource()->GetResource();
+				device->CreateShaderResourceView(D3DResource, &srvDesc, cpuHandle);
+				cpuHandle.Offset(incrementSize);
+				gpuHandle.Offset(incrementSize);
+			}
+		}
+
+		void D3D12ShaderGroup::CommitSamplerDescriptorTable(ID3D12GraphicsCommandList* commandList, UINT rootParameterIndex,
+			const D3D12RootBoundResource& resource, D3D12Device* device,
+			CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuHandle, UINT incrementSize)
+		{
+			commandList->SetGraphicsRootDescriptorTable(rootParameterIndex, gpuHandle);
+			for (auto i = 0;i < resource.count;++i)
+			{
+				D3D12_SAMPLER_DESC D3D12SamplerState;
+				D3D12TypeMapper::MapSamplerDesc(resource.samplerStates[i], D3D12SamplerState);
+				device->CreateSampler(&D3D12SamplerState, cpuHandle);
+				cpuHandle.Offset(incrementSize);
+				gpuHandle.Offset(incrementSize);
 			}
 		}
 
 		void D3D12ShaderGroup::Commit(ID3D12GraphicsCommandList* commandList)
 		{
 			auto renderer = static_cast<D3D12Renderer*>(Renderer::Instance());
-			DescriptorHeap* constantHeap{ nullptr };
-			CommitDescriptorHeaps(commandList, constantHeap);
-			CommitDescriptorTables(commandList, constantHeap);
+			DescriptorHeap* constantHeap{ nullptr }, *samplerHeap{ nullptr };
+			CommitDescriptorHeaps(commandList, constantHeap, samplerHeap);
+			CommitDescriptorTables(commandList, constantHeap, samplerHeap);
 		}
 
 		std::size_t D3D12ShaderGroup::GetHash()const

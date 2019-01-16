@@ -17,8 +17,8 @@ namespace Lightning
 		using Foundation::Container;
 		struct DescriptorHeap
 		{
-			D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle;
-			D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle;
+			D3D12_CPU_DESCRIPTOR_HANDLE CPUHandle;
+			D3D12_GPU_DESCRIPTOR_HANDLE GPUHandle;
 			UINT incrementSize;
 			//offset from heap start.Measured in number of descriptors offset,not byte
 			//UINT offsetInDescriptors;

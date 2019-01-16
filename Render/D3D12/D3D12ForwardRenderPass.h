@@ -16,6 +16,7 @@ namespace Lightning
 			void GetMaterialShaders(IMaterial* material, Container::Vector<IShader*>& shaders);
 			std::size_t mTotalConstantBufferSize;
 			std::uint32_t mTotalConstantBuffers;
+			std::uint32_t mTotalSamplerStates;
 		};
 	}
 }

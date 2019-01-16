@@ -14,7 +14,7 @@ namespace Lightning
 			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
 			mHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, false, 1, false);
 			auto resource = mTexture->GetResource();
-			device->CreateRenderTargetView(resource->GetResource(), nullptr, mHeap->cpuHandle);
+			device->CreateRenderTargetView(resource->GetResource(), nullptr, mHeap->CPUHandle);
 		}
 
 		D3D12RenderTarget::~D3D12RenderTarget()
@@ -57,7 +57,7 @@ namespace Lightning
 			}
 			mHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, false, 1, false);
 			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
-			device->CreateRenderTargetView(resource.Get(), nullptr, mHeap->cpuHandle);
+			device->CreateRenderTargetView(resource.Get(), nullptr, mHeap->CPUHandle);
 		}
 	}
 }

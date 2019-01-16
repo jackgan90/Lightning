@@ -78,16 +78,16 @@ namespace Lightning
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto i = shaderVisible ? 1 : 0;
 			auto& frameHeap = mFrameHeaps[resourceIndex][type][i];
-			CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(frameHeap.heapStore->cpuHandle);
-			CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(frameHeap.heapStore->gpuHandle);
+			CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(frameHeap.heapStore->CPUHandle);
+			CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(frameHeap.heapStore->GPUHandle);
 			auto offset = frameHeap.offset.fetch_add(count, std::memory_order_relaxed);
 			cpuHandle.Offset(offset * frameHeap.heapStore->incrementSize);
 			gpuHandle.Offset(offset * frameHeap.heapStore->incrementSize);
 			
 			auto handleIndex = frameHeap.allocCount.fetch_add(1, std::memory_order_relaxed);
 			auto heap = &frameHeap.handles[handleIndex];
-			heap->cpuHandle = cpuHandle;
-			heap->gpuHandle = gpuHandle;
+			heap->CPUHandle = cpuHandle;
+			heap->GPUHandle = gpuHandle;
 			heap->incrementSize = frameHeap.heapStore->incrementSize;
 			heap->pStore = frameHeap.heapStore;
 			return heap;
@@ -131,8 +131,8 @@ namespace Lightning
 			}
 			heapStore->freeDescriptors = descriptorCount;
 			heapStore->freeIntervals.emplace_back(std::make_tuple(0, descriptorCount));
-			heapStore->cpuHandle = heapStore->heap->GetCPUDescriptorHandleForHeapStart();
-			heapStore->gpuHandle = heapStore->heap->GetGPUDescriptorHandleForHeapStart();
+			heapStore->CPUHandle = heapStore->heap->GetCPUDescriptorHandleForHeapStart();
+			heapStore->GPUHandle = heapStore->heap->GetGPUDescriptorHandleForHeapStart();
 			heapStore->incrementSize = GetIncrementSize(type);
 			
 			GetTupleElement<0>(res) =  true;
@@ -183,12 +183,12 @@ namespace Lightning
 					GetTupleElement<0>(res) = true;
 					auto pHeapEx = new DescriptorHeapEx;
 					GetTupleElement<1>(res) = pHeapEx;
-					CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(heapStore->cpuHandle);
-					CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(heapStore->gpuHandle);
+					CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(heapStore->CPUHandle);
+					CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(heapStore->GPUHandle);
 					cpuHandle.Offset(left * heapStore->incrementSize);
 					gpuHandle.Offset(left * heapStore->incrementSize);
-					pHeapEx->cpuHandle = cpuHandle;
-					pHeapEx->gpuHandle = gpuHandle;
+					pHeapEx->CPUHandle = cpuHandle;
+					pHeapEx->GPUHandle = gpuHandle;
 					pHeapEx->incrementSize = heapStore->incrementSize;
 					//pHeapEx->offsetInDescriptors = GetTupleElement<0>(interval);
 					pHeapEx->interval = interval;

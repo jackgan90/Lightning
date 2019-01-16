@@ -22,8 +22,18 @@ namespace Lightning
 		private:
 			//Thread unsafe
 			void Destroy();
-			void CommitDescriptorHeaps(ID3D12GraphicsCommandList* commandList, DescriptorHeap*& constantHeap);
-			void CommitDescriptorTables(ID3D12GraphicsCommandList* commandList, DescriptorHeap* constantHeap);
+			void CommitDescriptorHeaps(ID3D12GraphicsCommandList* commandList, DescriptorHeap*& constantHeap, DescriptorHeap*& samplerHeap);
+			void CommitDescriptorTables(ID3D12GraphicsCommandList* commandList, DescriptorHeap* constantHeap, DescriptorHeap* samplerHeap);
+			void CommitConstantBufferDescriptorTable(ID3D12GraphicsCommandList* commandList, UINT rootParameterIndex,
+				const D3D12RootBoundResource& resource, D3D12Device* device,
+				CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuHandle, UINT incrementSize);
+			void CommitTextureDescriptorTable(ID3D12GraphicsCommandList* commandList, UINT rootParameterIndex,
+				const D3D12RootBoundResource& resource, D3D12Device* device,
+				CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuHandle, UINT incrementSize);
+			void CommitSamplerDescriptorTable(ID3D12GraphicsCommandList* commandList, UINT rootParameterIndex,
+				const D3D12RootBoundResource& resource, D3D12Device* device,
+				CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuHandle, UINT incrementSize);
+			
 		private:
 			Container::Vector<D3D12Shader*> mShaders;
 			ComPtr<ID3D12RootSignature> mRootSignature;

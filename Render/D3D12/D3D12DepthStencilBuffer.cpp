@@ -29,7 +29,7 @@ namespace Lightning
 			dsvDesc.Format = D3D12TypeMapper::MapRenderFormat(mTexture->GetRenderFormat());
 			dsvDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
 			dsvDesc.Flags = D3D12_DSV_FLAG_NONE;
-			device->CreateDepthStencilView(resource->GetResource(), &dsvDesc, mHeap->cpuHandle);
+			device->CreateDepthStencilView(resource->GetResource(), &dsvDesc, mHeap->CPUHandle);
 		}
 
 		D3D12DepthStencilBuffer::~D3D12DepthStencilBuffer()

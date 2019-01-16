@@ -20,8 +20,8 @@ namespace Lightning
 			INTERFACECALL ~D3D12RenderTarget()override;
 			RenderTargetID INTERFACECALL GetID() const override { return mID; }
 			ITexture* INTERFACECALL GetTexture()const override { return mTexture; };
-			const D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return mHeap->cpuHandle; }
-			const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle()const { return mHeap->gpuHandle; }
+			const D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return mHeap->CPUHandle; }
+			const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle()const { return mHeap->GPUHandle; }
 			void TransitToRTState(ID3D12GraphicsCommandList* commandList);
 			void TransitToPresentState(ID3D12GraphicsCommandList* commandList);
 			//Reset the render target to invalid state(Release referenced D3D12 resources so that we can perform swap chain resize)

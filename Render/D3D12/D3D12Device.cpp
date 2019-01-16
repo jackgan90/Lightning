@@ -296,6 +296,11 @@ namespace Lightning
 			return fence;
 		}
 
+		void D3D12Device::CreateSampler(const D3D12_SAMPLER_DESC* pDesc, D3D12_CPU_DESCRIPTOR_HANDLE DestDescriptor)
+		{
+			mDevice->CreateSampler(pDesc, DestDescriptor);
+		}
+
 		ComPtr<ID3D12PipelineState> D3D12Device::CreateGraphicsPipelineState(const D3D12_GRAPHICS_PIPELINE_STATE_DESC *pDesc)
 		{
 			ComPtr<ID3D12PipelineState> pipelineState;

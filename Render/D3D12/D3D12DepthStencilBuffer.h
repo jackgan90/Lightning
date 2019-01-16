@@ -24,7 +24,7 @@ namespace Lightning
 			ITexture* INTERFACECALL GetTexture()const override { return mTexture; }
 			//Resize the depth stencil buffer.Only use to resize built-in depth stencil buffer on window resize.
 			void Resize(std::size_t width, std::size_t height);
-			D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return mHeap->cpuHandle; }
+			D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return mHeap->CPUHandle; }
 			void TransitToState(ID3D12GraphicsCommandList* commandList, D3D12_RESOURCE_STATES state);
 		private:
 			void CreateDepthStencilView();

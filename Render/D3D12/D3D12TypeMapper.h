@@ -3,6 +3,7 @@
 #include "PipelineState.h"
 #include "IndexBuffer.h"
 #include "ITexture.h"
+#include "Sampler.h"
 
 namespace Lightning
 {
@@ -259,6 +260,11 @@ namespace Lightning
 				default:
 					return D3D12_SRV_DIMENSION_UNKNOWN;
 				}
+			}
+
+			static void MapSamplerDesc(const SamplerState& state, D3D12_SAMPLER_DESC& D3DState)
+			{
+
 			}
 		};
 	}
