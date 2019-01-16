@@ -165,7 +165,18 @@ namespace Lightning
 			for (auto i = 0;i < resource.count;++i)
 			{
 				D3D12_SAMPLER_DESC D3D12SamplerState;
-				D3D12TypeMapper::MapSamplerDesc(resource.samplerStates[i], D3D12SamplerState);
+				const auto& samplerState = resource.samplerStates[i];
+				D3D12SamplerState.AddressU = D3D12TypeMapper::MapAddressMode(samplerState.addressU);
+				D3D12SamplerState.AddressV = D3D12TypeMapper::MapAddressMode(samplerState.addressV);
+				D3D12SamplerState.AddressW = D3D12TypeMapper::MapAddressMode(samplerState.addressW);
+				std::memcpy(D3D12SamplerState.BorderColor, samplerState.borderColor, sizeof(samplerState.borderColor));
+				//TODO : figure out the real meaning of ComparisionFunc for D3D12_SAMPLER_DESC
+				D3D12SamplerState.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+				D3D12SamplerState.Filter = D3D12TypeMapper::MapSamplerFilterMode(samplerState.filterMode);
+				D3D12SamplerState.MaxAnisotropy = samplerState.maxAnisotropy;
+				D3D12SamplerState.MaxLOD = samplerState.maxLOD;
+				D3D12SamplerState.MinLOD = samplerState.minLOD;
+				D3D12SamplerState.MipLODBias = samplerState.mipLODBias;
 				device->CreateSampler(&D3D12SamplerState, cpuHandle);
 				cpuHandle.Offset(incrementSize);
 				gpuHandle.Offset(incrementSize);

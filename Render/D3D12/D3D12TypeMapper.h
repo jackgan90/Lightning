@@ -262,9 +262,38 @@ namespace Lightning
 				}
 			}
 
-			static void MapSamplerDesc(const SamplerState& state, D3D12_SAMPLER_DESC& D3DState)
+			static D3D12_FILTER MapSamplerFilterMode(SamplerFilterMode mode)
 			{
+				switch (mode)
+				{
+				case SamplerFilterMode::Point:
+					return D3D12_FILTER_MIN_MAG_MIP_POINT;
+				case SamplerFilterMode::Linear:
+					return D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+				case SamplerFilterMode::Trilinear:
+					return D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+				case SamplerFilterMode::Anisotropic:
+					return D3D12_FILTER_ANISOTROPIC;
+				default:
+					return D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+				}
+			}
 
+			static D3D12_TEXTURE_ADDRESS_MODE MapAddressMode(AddressMode mode)
+			{
+				switch (mode)
+				{
+				case AddressMode::Wrap:
+					return D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+				case AddressMode::Mirror:
+					return D3D12_TEXTURE_ADDRESS_MODE_MIRROR;
+				case AddressMode::Clamp:
+					return D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+				case AddressMode::Border:
+					return D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+				default:
+					return D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+				}
 			}
 		};
 	}
