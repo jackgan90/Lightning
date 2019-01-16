@@ -63,8 +63,8 @@ namespace Lightning
 						D3D12_SHADER_VARIABLE_DESC shaderVarDesc;
 						variableRefl->GetDesc(&shaderVarDesc);
 						ParameterInfo info;
-						info.bufferIndex = i;
-						info.offsetInBuffer = shaderVarDesc.StartOffset;
+						info.index = i;
+						info.offset = shaderVarDesc.StartOffset;
 						mParameters[shaderVarDesc.Name] = info;
 						auto semantic = renderer->GetUniformSemantic(shaderVarDesc.Name);
 						if (semantic != RenderSemantics::UNKNOWN)
@@ -107,6 +107,9 @@ namespace Lightning
 					range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 					range.RegisterSpace = desc.Space;
 					mDescriptorRanges.push_back(range);
+					ParameterInfo paramInfo;
+					paramInfo.index = mTextureParameterCount;
+					mParameters[desc.Name] = paramInfo;
 					++mTextureParameterCount;
 				}
 			}
@@ -134,6 +137,9 @@ namespace Lightning
 					range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
 					range.RegisterSpace = desc.Space;
 					mDescriptorRanges.push_back(range);
+					ParameterInfo paramInfo;
+					paramInfo.index = mSamplerStateParamCount;
+					mParameters[desc.Name] = paramInfo;
 					++mSamplerStateParamCount;
 				}
 			}
@@ -262,6 +268,17 @@ namespace Lightning
 			return mRootBoundResources[resourceIndex];
 		}
 
+		void D3D12Shader::ShaderResourceProxy::SetTexture(UINT index, D3D12Texture* texture)
+		{
+			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
+			mRootBoundResources[resourceIndex]->textures[index] = texture;
+		}
+
+		void D3D12Shader::ShaderResourceProxy::SetSamplerState(UINT index, const SamplerState& samplerState)
+		{
+			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
+			mRootBoundResources[resourceIndex]->samplerStates[index] = samplerState;
+		}
 
 		const IShaderMacros* D3D12Shader::GetMacros()const
 		{
@@ -304,24 +321,28 @@ namespace Lightning
 			assert(it != mParameters.end());
 			std::size_t size{ 0 };
 			auto parameterBuffer = parameter->Buffer(size);
+			InitResourceProxy();
 			if (parameterType == ShaderParameterType::TEXTURE)
 			{
 				auto texture = const_cast<ITexture*>(reinterpret_cast<const ITexture*>(parameterBuffer));
 				assert(texture != nullptr && "Encounter null texture!");
 				texture->Commit();
+				mResourceProxy->SetTexture(it->second.index, static_cast<D3D12Texture*>(texture));
 				return true;
 			}
 			else if (parameterType == ShaderParameterType::SAMPLER)
 			{
+				auto pSamplerState = reinterpret_cast<const SamplerState*>(parameter->Buffer(size));
+				mResourceProxy->SetSamplerState(it->second.index, *pSamplerState);
 			}
 			else
 			{
 				if (parameterBuffer)
 				{
-					const auto& bindingInfo = it->second;
+					const auto& paramInfo = it->second;
 					std::uint8_t *p = mResourceProxy->GetConstantBuffer(mTotalConstantBufferSize);
-					std::uint8_t *buffer = p + mConstantBufferInfo[bindingInfo.bufferIndex].offset;
-					std::memcpy(buffer + bindingInfo.offsetInBuffer, parameterBuffer, size);
+					std::uint8_t *buffer = p + mConstantBufferInfo[paramInfo.index].offset;
+					std::memcpy(buffer + paramInfo.offset, parameterBuffer, size);
 					return true;
 				}
 			}
@@ -347,10 +368,15 @@ namespace Lightning
 			*semantics = &mUniformSemantics[0];
 		}
 
-		void D3D12Shader::UpdateRootBoundResources()
+		void D3D12Shader::InitResourceProxy()
 		{
 			mResourceProxy->Init(GetRootParameterCount(), mConstantBufferInfo.size(), 
 				mTextureParameterCount, mSamplerStateParamCount);
+		}
+
+		void D3D12Shader::UpdateRootBoundResources()
+		{
+			InitResourceProxy();
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto ptr = mResourceProxy->GetConstantBuffer(mTotalConstantBufferSize);
 			mResourceProxy->BeginUpdateResource(D3D12RootResourceType::ConstantBuffers);

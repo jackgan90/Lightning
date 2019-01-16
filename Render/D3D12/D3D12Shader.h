@@ -73,8 +73,8 @@ namespace Lightning
 		private:
 			struct ParameterInfo
 			{
-				UINT bufferIndex;
-				UINT offsetInBuffer;
+				UINT index;
+				UINT offset;
 			};
 			struct ConstantBufferInfo
 			{
@@ -94,6 +94,8 @@ namespace Lightning
 				void EndUpdateResource();
 				void AddConstantBuffer(const D3D12ConstantBuffer& constantBuffer);
 				const D3D12RootBoundResource* GetRootBoundResources();
+				void SetTexture(UINT index, D3D12Texture* texture);
+				void SetSamplerState(UINT index, const SamplerState& samplerState);
 			private:
 				D3D12RootBoundResource* mRootBoundResources[RENDER_FRAME_COUNT];
 				std::uint8_t *mConstantBuffer;
@@ -103,6 +105,8 @@ namespace Lightning
 				std::size_t mCurrentBufferIndex;
 				bool mInit;
 			};
+		private:
+			void InitResourceProxy();
 		private:
 			ComPtr<ID3D10Blob> mByteCode;
 			D3D12_SHADER_DESC mDesc;
