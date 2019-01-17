@@ -134,6 +134,7 @@ namespace Lightning
 					assert(D3DRenderer != nullptr && "A D3D12Renderer is required.");
 					auto commandList = D3DRenderer->GetGraphicsCommandList();
 					::UpdateSubresources(commandList, mResource->GetResource(), mIntermediateResource->GetResource(), 0, 0, 1, &subresourceData);
+					mResource->TransitTo(commandList, D3D12_RESOURCE_STATE_GENERIC_READ);
 					mBuffer->Release();
 					mBuffer = nullptr;
 					mCommitted = true;
