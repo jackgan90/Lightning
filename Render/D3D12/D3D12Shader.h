@@ -100,7 +100,10 @@ namespace Lightning
 				D3D12RootBoundResource* mRootBoundResources[RENDER_FRAME_COUNT];
 				std::uint8_t *mConstantBuffer;
 				ConstantBufferInfos* mConstantBufferInfos;
-				std::size_t mRootResourceCount;
+				std::size_t mResourceCount;
+				int mConstantBufferResourceIndex;
+				int mTextureResourceIndex;
+				int mSamplerResourceIndex;
 				bool mInit;
 			};
 		private:

@@ -165,7 +165,8 @@ namespace Lightning
 
 		D3D12Shader::ShaderResourceProxy::ShaderResourceProxy()
 			:mConstantBuffer(nullptr)
-			, mRootResourceCount(0), mConstantBufferInfos(nullptr)
+			, mResourceCount(0), mConstantBufferInfos(nullptr)
+			, mConstantBufferResourceIndex(-1), mTextureResourceIndex(-1), mSamplerResourceIndex(-1)
 			, mInit(false)
 		{
 			std::memset(mRootBoundResources, 0, sizeof(mRootBoundResources));
@@ -181,7 +182,7 @@ namespace Lightning
 			{
 				if (mRootBoundResources[i])
 				{
-					for (auto j = 0;j < mRootResourceCount;++j)
+					for (auto j = 0;j < mResourceCount;++j)
 					{
 						if (mRootBoundResources[i][j].buffers)
 							delete[] mRootBoundResources[i][j].buffers;
@@ -207,8 +208,8 @@ namespace Lightning
 				return;
 			mConstantBufferInfos = constantBufferInfos;
 			auto constantBufferCount = constantBufferInfos->size();
-			mRootResourceCount = constantBufferCount + textureCount + samplerStateCount;
-			if (mRootResourceCount == 0)
+			mResourceCount = constantBufferCount + textureCount + samplerStateCount;
+			if (mResourceCount == 0)
 			{
 				mInit = true;
 				return;
@@ -219,13 +220,14 @@ namespace Lightning
 			}
 			for (std::uint8_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
-				mRootBoundResources[i] = new D3D12RootBoundResource[mRootResourceCount];
+				mRootBoundResources[i] = new D3D12RootBoundResource[mResourceCount];
 				//root bound resource types are sorted in ConstantBuffer-Texture-SamplerState order.
 				auto j = 0;
 				if (constantBufferCount > 0)
 				{
 					mRootBoundResources[i][j].buffers = new D3D12ConstantBuffer[constantBufferCount];
 					mRootBoundResources[i][j].count = constantBufferCount;
+					mConstantBufferResourceIndex = j;
 					++j;
 				}
 
@@ -233,6 +235,7 @@ namespace Lightning
 				{
 					mRootBoundResources[i][j].textures = new D3D12Texture*[textureCount];
 					mRootBoundResources[i][j].count = textureCount;
+					mTextureResourceIndex = j;
 					++j;
 				}
 
@@ -244,6 +247,7 @@ namespace Lightning
 					{
 						mRootBoundResources[i][j].samplerStates[k].Reset();
 					}
+					mSamplerResourceIndex = j;
 					++j;
 				}
 			}
@@ -260,18 +264,33 @@ namespace Lightning
 		{
 			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto& boundResource = mRootBoundResources[frameResourceIndex];
-			auto& bufferInfos = *mConstantBufferInfos;
-			if (!bufferInfos.empty())
+			auto resourceIndex = 0;
+			if (mConstantBufferInfos)
 			{
-				boundResource[0].type = D3D12RootResourceType::ConstantBuffers;
-			}
-			for (std::size_t i = 0;i < bufferInfos.size();++i)
-			{
-				auto bufferSize = bufferInfos[i].size;
-				auto cbuffer = D3D12ConstantBufferManager::Instance()->AllocBuffer(bufferSize);
-				std::memcpy(cbuffer.userMemory, mConstantBuffer + bufferInfos[i].offset, bufferSize);
+				auto& bufferInfos = *mConstantBufferInfos;
+				if (!bufferInfos.empty())
+				{
+					boundResource[resourceIndex].type = D3D12RootResourceType::ConstantBuffers;
+					for (auto i = 0; i < bufferInfos.size(); ++i)
+					{
+						auto bufferSize = bufferInfos[i].size;
+						auto cbuffer = D3D12ConstantBufferManager::Instance()->AllocBuffer(bufferSize);
+						std::memcpy(cbuffer.userMemory, mConstantBuffer + bufferInfos[i].offset, bufferSize);
 
-				boundResource[0].buffers[i] = cbuffer;
+						boundResource[resourceIndex].buffers[i] = cbuffer;
+					}
+					++resourceIndex;
+				}
+			}
+			if (mTextureResourceIndex >= 0)
+			{
+				boundResource[resourceIndex].type = D3D12RootResourceType::Textures;
+				++resourceIndex;
+			}
+			if (mSamplerResourceIndex >= 0)
+			{
+				boundResource[resourceIndex].type = D3D12RootResourceType::Samplers;
+				++resourceIndex;
 			}
 		}
 
@@ -283,13 +302,15 @@ namespace Lightning
 		void D3D12Shader::ShaderResourceProxy::SetTexture(UINT index, D3D12Texture* texture)
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			mRootBoundResources[resourceIndex]->textures[index] = texture;
+			auto& boundResource = mRootBoundResources[resourceIndex];
+			boundResource[mTextureResourceIndex].textures[index] = texture;
 		}
 
 		void D3D12Shader::ShaderResourceProxy::SetSamplerState(UINT index, const SamplerState& samplerState)
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			mRootBoundResources[resourceIndex]->samplerStates[index] = samplerState;
+			auto& boundResource = mRootBoundResources[resourceIndex];
+			boundResource[mSamplerResourceIndex].samplerStates[index] = samplerState;
 		}
 
 		const IShaderMacros* D3D12Shader::GetMacros()const
