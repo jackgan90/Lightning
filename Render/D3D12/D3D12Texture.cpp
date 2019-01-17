@@ -23,7 +23,7 @@ namespace Lightning
 				&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
 				D3D12_HEAP_FLAG_NONE,
 				&desc,
-				D3D12_RESOURCE_STATE_COPY_DEST,
+				D3D12_RESOURCE_STATE_GENERIC_READ,
 				nullptr);
 			if (!mResource)
 			{
@@ -133,6 +133,7 @@ namespace Lightning
 					auto D3DRenderer = dynamic_cast<D3D12Renderer*>(Renderer::Instance());
 					assert(D3DRenderer != nullptr && "A D3D12Renderer is required.");
 					auto commandList = D3DRenderer->GetGraphicsCommandList();
+					mResource->TransitTo(commandList, D3D12_RESOURCE_STATE_COPY_DEST);
 					::UpdateSubresources(commandList, mResource->GetResource(), mIntermediateResource->GetResource(), 0, 0, 1, &subresourceData);
 					mResource->TransitTo(commandList, D3D12_RESOURCE_STATE_GENERIC_READ);
 					mBuffer->Release();
