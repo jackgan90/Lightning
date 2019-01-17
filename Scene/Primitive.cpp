@@ -299,14 +299,14 @@ namespace Lightning
 				auto vertexBuffer = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(uvBufferSize), descriptor);
 				mRenderUnit->SetVertexBuffer(1, vertexBuffer);
 				auto uv = reinterpret_cast<Vector2f*>(vertexBuffer->Lock(0, uvBufferSize));
-				uv[0].x = 0.0f; uv[0].y = 0.0f; //right top front v0
-				uv[1].x = 1.0f; uv[1].y = 0.0f; //right top back v1
-				uv[2].x = 0.0f; uv[2].y = 1.0f; //right bottom front v2
-				uv[3].x = 1.0f; uv[3].y = 1.0f; //right bottom back v3
-				uv[4].x = 1.0f; uv[4].y = 0.0f; //left top front v4
-				uv[5].x = 0.0f; uv[5].y = 0.0f; //left top back v5
-				uv[6].x = 1.0f; uv[6].y = 1.0f; //left bottom front v6
-				uv[7].x = 0.0f; uv[7].y = 1.0f; //left bottom back v7
+				uv[0].x = 0.5f; uv[0].y = 0.0f; //right top front v0
+				uv[1].x = 0.5f; uv[1].y = 1.0f; //right top back v1
+				uv[2].x = 0.5f; uv[2].y = 0.3333f; //right bottom front v2
+				uv[3].x = 0.5f; uv[3].y = 0.66667f; //right bottom back v3
+				uv[4].x = 0.25f; uv[4].y = 0.0f; //left top front v4
+				uv[5].x = 0.25f; uv[5].y = 1.0f; //left top back v5
+				uv[6].x = 0.25f; uv[6].y = 0.3333f; //left bottom front v6
+				uv[7].x = 0.25f; uv[7].y = 0.66667f; //left bottom back v7
 				vertexBuffer->Unlock(0, uvBufferSize);
 				vertexBuffer->Release();
 				//apply texture to material

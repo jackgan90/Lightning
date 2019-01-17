@@ -43,9 +43,9 @@ namespace Lightning
 			
 			auto cube = scenePlugin->CreateCube(1.0f, 1.0f, 1.0f);
 			Render::Color32 color;
-			color.r = 0;
+			color.r = 255;
 			color.g = 255;
-			color.b = 0;
+			color.b = 255;
 			color.a = 255;
 			cube->SetColor(color);
 			//scene->AddDrawable(cube);
