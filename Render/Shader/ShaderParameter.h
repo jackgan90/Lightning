@@ -23,7 +23,15 @@ namespace Lightning
 			ShaderParameter(const char* n, const SamplerState& _state) :mName(n), mType(ShaderParameterType::SAMPLER) { samplerState = _state; }
 			ShaderParameter(const char* n, ShaderParameterType type, const void* buffer, std::size_t bufferSize) : mName(n), mType(type)
 			{
-				std::memcpy(&f, buffer, bufferSize);
+				if (type == ShaderParameterType::TEXTURE)
+				{
+					assert(bufferSize == sizeof(texture) && "BufferSize mismatched.");
+					texture = const_cast<ITexture*>(reinterpret_cast<const ITexture*>(buffer));
+				}
+				else
+				{
+					std::memcpy(&f, buffer, bufferSize);
+				}
 			}
 			const char* INTERFACECALL GetName()const override
 			{
@@ -57,8 +65,10 @@ namespace Lightning
 					size = sizeof(m4);
 					return &m4;
 				case ShaderParameterType::TEXTURE:
+					size = sizeof(texture);
 					return texture;
 				case ShaderParameterType::SAMPLER:
+					size = sizeof(samplerState);
 					return &samplerState;
 				default:
 					break;

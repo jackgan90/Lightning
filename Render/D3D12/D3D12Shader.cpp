@@ -233,6 +233,10 @@ namespace Lightning
 				{
 					mRootBoundResources[i][j].samplerStates = new SamplerState[samplerStateCount];
 					mRootBoundResources[i][j].count = samplerStateCount;
+					for (auto k = 0;k < samplerStateCount;++k)
+					{
+						mRootBoundResources[i][j].samplerStates[k].Reset();
+					}
 					++j;
 				}
 			}
@@ -334,6 +338,7 @@ namespace Lightning
 			{
 				auto pSamplerState = reinterpret_cast<const SamplerState*>(parameter->Buffer(size));
 				mResourceProxy->SetSamplerState(it->second.index, *pSamplerState);
+				return true;
 			}
 			else
 			{

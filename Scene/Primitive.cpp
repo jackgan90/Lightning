@@ -217,6 +217,11 @@ namespace Lightning
 			ShaderParameter paramLight("light", Vector3f{ 3, 3, 3 });
 			material->SetParameter(Render::ShaderType::FRAGMENT, &paramColor);
 			material->SetParameter(Render::ShaderType::FRAGMENT, &paramLight);
+			if (mTexture)
+			{
+				ShaderParameter paramTexture(mTextureName.c_str(), mTexture);
+				material->SetParameter(Render::ShaderType::FRAGMENT, &paramTexture);
+			}
 
 			material->EnableBlend(mColor.a != 0xff);
 			mRenderUnit->SetMaterial(material);

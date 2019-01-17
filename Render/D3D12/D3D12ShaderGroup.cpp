@@ -1,3 +1,4 @@
+#include "Logger.h"
 #include "D3D12Renderer.h"
 #include "D3D12ShaderGroup.h"
 #include "D3D12TypeMapper.h"
@@ -241,9 +242,15 @@ namespace Lightning
 			rootSignatureDesc.Init(UINT(rootParameters.size()), pParameters, 0, nullptr, flags);
 
 			ComPtr<ID3DBlob> signature;
-			auto hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, nullptr);
+			ComPtr<ID3DBlob> error;
+			auto hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
 			if (FAILED(hr))
 			{
+				if (error)
+				{
+					auto buffer = static_cast<char*>(error->GetBufferPointer());
+					LOG_ERROR("Failed to serialize root signature,reason : {0}.", buffer);
+				}
 				return ComPtr<ID3D12RootSignature>();
 			}
 

@@ -56,6 +56,7 @@ namespace Lightning
 				auto parameterType = parameter->GetType();
 				std::size_t bufferSize;
 				auto buffer = parameter->Buffer(bufferSize);
+				assert(bufferSize > 0 && "Invalid parameter type.");
 				it->second.parameters.push_back(ShaderParameter(parameterName, parameterType, buffer, bufferSize));
 				return true;
 			}

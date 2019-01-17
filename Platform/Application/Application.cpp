@@ -40,7 +40,7 @@ namespace Lightning
 		void GenerateSceneObjects(ISceneManager* sceneMgr, Plugins::IScenePlugin* scenePlugin)
 		{
 			auto scene = sceneMgr->GetForegroundScene();
-			/*
+			
 			auto cube = scenePlugin->CreateCube(1.0f, 1.0f, 1.0f);
 			Render::Color32 color;
 			color.r = 0;
@@ -48,8 +48,8 @@ namespace Lightning
 			color.b = 0;
 			color.a = 255;
 			cube->SetColor(color);
-			scene->AddDrawable(cube);
-			cube->Release();
+			//scene->AddDrawable(cube);
+			//cube->Release();
 			auto renderer = renderPlugin->GetRenderer();
 			auto device = renderer->GetDevice();
 			struct test : Render::IShaderCallback
@@ -62,13 +62,27 @@ namespace Lightning
 				}
 				Scene::IPrimitive* prim;
 			};
+
+			struct test1 : Render::ITextureCallback
+			{
+				test1(Scene::IScene* _scene, Scene::IPrimitive* p) : scene(_scene), prim(p){}
+				void Execute(Render::ITexture* texture)override
+				{
+					prim->SetTexture("tex", texture);
+					scene->AddDrawable(prim);
+					prim->Release();
+					delete this;
+				}
+				Scene::IPrimitive* prim;
+				Scene::IScene* scene;
+			};
 			
 			device->CreateShaderFromFile(Render::ShaderType::VERTEX, "texture_map.vs", new test(cube));
-			device->CreateShaderFromFile(Render::ShaderType::FRAGMENT, "texture_map.ps", new test(cube));*/
+			device->CreateShaderFromFile(Render::ShaderType::FRAGMENT, "texture_map.ps", new test(cube));
 
-
+			device->CreateTextureFromFile("Purged_One_Human_Jumper.jpg", new test1(scene, cube));
 			//device->CreateShaderFromFile(Render::ShaderType::FRAGMENT, "texture_map.ps", new test(cube));
-			
+			/*
 			static std::random_device rd;
 			static std::mt19937 mt(rd());
 			static std::uniform_real_distribution<float> rDist(-2, 2);
@@ -108,7 +122,7 @@ namespace Lightning
 				p->SetWorldRotation(Transformer::RandomRotation());
 				scene->AddDrawable(p);
 				p->Release();
-			}
+			}*/
 		}
 		//For test only end
 
