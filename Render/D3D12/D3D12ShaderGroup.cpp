@@ -102,12 +102,12 @@ namespace Lightning
 					}
 					else if (resource.type == D3D12RootResourceType::Textures)
 					{
-						CommitTextureDescriptorTable(commandList, rootParameterIndex,
+						CommitTextureDescriptorTable(commandList, rootParameterIndex++,
 							resource, device, constantCPUHandle, constantGPUHandle, constantHeap->incrementSize);
 					}
 					else if (resource.type == D3D12RootResourceType::Samplers)
 					{
-						CommitSamplerDescriptorTable(commandList, rootParameterIndex,
+						CommitSamplerDescriptorTable(commandList, rootParameterIndex++,
 							resource, device, samplerCPUHandle, samplerGPUHandle, samplerHeap->incrementSize);
 					}
 				}
