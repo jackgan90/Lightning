@@ -81,28 +81,26 @@ namespace Lightning
 				UINT offset;
 				UINT size;
 			};
+			using ConstantBufferInfos = Container::UnorderedMap<std::size_t, ConstantBufferInfo>;
 			class ShaderResourceProxy
 			{
 			public:
 				ShaderResourceProxy();
 				~ShaderResourceProxy();
-				std::uint8_t* GetConstantBuffer(std::size_t size);
-				void Init(std::size_t totalCount, std::size_t constantBufferCount, std::size_t textureCount, std::size_t samplerStateCount);
+				std::uint8_t* GetConstantBuffer();
+				void Init(ConstantBufferInfos* constantBufferInfos, std::size_t textureCount
+					, std::size_t samplerStateCount, std::size_t constantBufferSize);
 				//Must be called at the start of resource update
-				void BeginUpdateResource(D3D12RootResourceType resourceType);
-				//Must be called on resource update end.It's a counterpart of BeginUpdateResource
-				void EndUpdateResource();
-				void AddConstantBuffer(const D3D12ConstantBuffer& constantBuffer);
 				const D3D12RootBoundResource* GetRootBoundResources();
+				void CommitResources();
+				void SetConstantBuffer(std::size_t offset, const void* buffer, std::size_t size);
 				void SetTexture(UINT index, D3D12Texture* texture);
 				void SetSamplerState(UINT index, const SamplerState& samplerState);
 			private:
 				D3D12RootBoundResource* mRootBoundResources[RENDER_FRAME_COUNT];
 				std::uint8_t *mConstantBuffer;
-				std::size_t mBufferSize;
+				ConstantBufferInfos* mConstantBufferInfos;
 				std::size_t mRootResourceCount;
-				std::size_t mCurrentResourceIndex;
-				std::size_t mCurrentBufferIndex;
 				bool mInit;
 			};
 		private:
@@ -113,7 +111,7 @@ namespace Lightning
 			Container::UnorderedMap<std::string, ParameterInfo> mParameters;
 			Container::Vector<D3D12_ROOT_PARAMETER> mRootParameters;
 			//each offset corresponds to mIntermediateBuffer
-			Container::UnorderedMap<std::size_t, ConstantBufferInfo> mConstantBufferInfo;
+			ConstantBufferInfos mConstantBufferInfo;
 			Container::Vector<D3D12_DESCRIPTOR_RANGE> mDescriptorRanges;
 			//buffer used to cache constant buffer value
 			Foundation::ThreadLocalObject<ShaderResourceProxy> mResourceProxy;

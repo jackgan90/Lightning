@@ -164,9 +164,8 @@ namespace Lightning
 		}
 
 		D3D12Shader::ShaderResourceProxy::ShaderResourceProxy()
-			:mConstantBuffer(nullptr), mBufferSize(0)
-			, mRootResourceCount(0)
-			, mCurrentResourceIndex(0), mCurrentBufferIndex(0)
+			:mConstantBuffer(nullptr)
+			, mRootResourceCount(0), mConstantBufferInfos(nullptr)
 			, mInit(false)
 		{
 			std::memset(mRootBoundResources, 0, sizeof(mRootBoundResources));
@@ -193,29 +192,30 @@ namespace Lightning
 		}
 
 
-		std::uint8_t* D3D12Shader::ShaderResourceProxy::GetConstantBuffer(std::size_t size)
+		std::uint8_t* D3D12Shader::ShaderResourceProxy::GetConstantBuffer()
 		{
-			if (mConstantBuffer && mBufferSize >= size)
-				return mConstantBuffer;
-			if (mConstantBuffer)
-				delete[] mConstantBuffer;
-			mConstantBuffer = new std::uint8_t[size];
-			mBufferSize = size;
-
 			return mConstantBuffer;
 		}
 
 		void D3D12Shader::ShaderResourceProxy::Init(
-			std::size_t totalCount, std::size_t constantBufferCount, 
-			std::size_t textureCount, std::size_t samplerStateCount)
+			ConstantBufferInfos* constantBufferInfos, 
+			std::size_t textureCount, 
+			std::size_t samplerStateCount, 
+			std::size_t constantBufferSize)
 		{
 			if (mInit)
 				return;
-			mRootResourceCount = totalCount;
+			mConstantBufferInfos = constantBufferInfos;
+			auto constantBufferCount = constantBufferInfos->size();
+			mRootResourceCount = constantBufferCount + textureCount + samplerStateCount;
 			if (mRootResourceCount == 0)
 			{
 				mInit = true;
 				return;
+			}
+			if(constantBufferSize > 0)
+			{
+				mConstantBuffer = new std::uint8_t[constantBufferSize];
 			}
 			for (std::uint8_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
@@ -250,33 +250,34 @@ namespace Lightning
 			mInit = true;
 		}
 
-		void D3D12Shader::ShaderResourceProxy::BeginUpdateResource(D3D12RootResourceType resourceType)
-		{
-			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			if (resourceType == D3D12RootResourceType::ConstantBuffers)
-			{
-				mCurrentResourceIndex = 0;
-				mCurrentBufferIndex = 0;
-			}
-			mRootBoundResources[frameResourceIndex][mCurrentResourceIndex].type = resourceType;
-		}
-
-		void D3D12Shader::ShaderResourceProxy::EndUpdateResource()
-		{
-
-		}
-
-		void D3D12Shader::ShaderResourceProxy::AddConstantBuffer(const D3D12ConstantBuffer& constantBuffer)
-		{
-			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			auto& boundResource = mRootBoundResources[frameResourceIndex];
-			boundResource[mCurrentResourceIndex].buffers[mCurrentBufferIndex++] = constantBuffer;
-		}
-
 		const D3D12RootBoundResource* D3D12Shader::ShaderResourceProxy::GetRootBoundResources()
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			return mRootBoundResources[resourceIndex];
+		}
+
+		void D3D12Shader::ShaderResourceProxy::CommitResources()
+		{
+			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
+			auto& boundResource = mRootBoundResources[frameResourceIndex];
+			auto& bufferInfos = *mConstantBufferInfos;
+			if (!bufferInfos.empty())
+			{
+				boundResource[0].type = D3D12RootResourceType::ConstantBuffers;
+			}
+			for (std::size_t i = 0;i < bufferInfos.size();++i)
+			{
+				auto bufferSize = bufferInfos[i].size;
+				auto cbuffer = D3D12ConstantBufferManager::Instance()->AllocBuffer(bufferSize);
+				std::memcpy(cbuffer.userMemory, mConstantBuffer + bufferInfos[i].offset, bufferSize);
+
+				boundResource[0].buffers[i] = cbuffer;
+			}
+		}
+
+		void D3D12Shader::ShaderResourceProxy::SetConstantBuffer(std::size_t offset, const void* buffer, std::size_t size)
+		{
+			std::memcpy(mConstantBuffer + offset, buffer, size);
 		}
 
 		void D3D12Shader::ShaderResourceProxy::SetTexture(UINT index, D3D12Texture* texture)
@@ -352,9 +353,8 @@ namespace Lightning
 				if (parameterBuffer)
 				{
 					const auto& paramInfo = it->second;
-					std::uint8_t *p = mResourceProxy->GetConstantBuffer(mTotalConstantBufferSize);
-					std::uint8_t *buffer = p + mConstantBufferInfo[paramInfo.index].offset;
-					std::memcpy(buffer + paramInfo.offset, parameterBuffer, size);
+					auto offset = mConstantBufferInfo[paramInfo.index].offset + paramInfo.offset;
+					mResourceProxy->SetConstantBuffer(offset, parameterBuffer, size);
 					return true;
 				}
 			}
@@ -382,25 +382,14 @@ namespace Lightning
 
 		void D3D12Shader::InitResourceProxy()
 		{
-			mResourceProxy->Init(GetRootParameterCount(), mConstantBufferInfo.size(), 
-				mTextureParameterCount, mSamplerStateParamCount);
+			mResourceProxy->Init(&mConstantBufferInfo, 
+				mTextureParameterCount, mSamplerStateParamCount, mTotalConstantBufferSize);
 		}
 
 		void D3D12Shader::UpdateRootBoundResources()
 		{
 			InitResourceProxy();
-			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			auto ptr = mResourceProxy->GetConstantBuffer(mTotalConstantBufferSize);
-			mResourceProxy->BeginUpdateResource(D3D12RootResourceType::ConstantBuffers);
-			for (std::size_t i = 0;i < mDesc.ConstantBuffers;++i)
-			{
-				auto bufferSize = mConstantBufferInfo[i].size;
-				auto cbuffer = D3D12ConstantBufferManager::Instance()->AllocBuffer(bufferSize);
-				std::memcpy(cbuffer.userMemory, ptr + mConstantBufferInfo[i].offset, bufferSize);
-
-				mResourceProxy->AddConstantBuffer(cbuffer);
-			}
-			mResourceProxy->EndUpdateResource();
+			mResourceProxy->CommitResources();
 		}
 
 		const Container::Vector<D3D12_ROOT_PARAMETER>& D3D12Shader::GetRootParameters()const
