@@ -27,6 +27,7 @@ namespace Lightning
 			std::size_t INTERFACECALL GetWidth()const override;
 			std::size_t INTERFACECALL GetHeight()const override;
 			std::size_t INTERFACECALL GetDepth()const override;
+			std::size_t INTERFACECALL GetMipmapLevels()const override;
 			D3D12Device* GetDevice()const { return mDevice; }
 			D3D12StatefulResourcePtr GetResource()const { return mResource; }
 			float GetDepthClearValue()const { return mClearValue.DepthStencil.Depth; }

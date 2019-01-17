@@ -150,7 +150,7 @@ namespace Lightning
 				auto textureDimension = resource.textures[i]->GetDimension();
 				srvDesc.ViewDimension = D3D12TypeMapper::MapSRVDimension(textureDimension, isMultiSampled);
 				srvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-				//TODO : specify union member value of srvDesc corresponding to texture dimension
+				SetSRVTextureParams(srvDesc, resource.textures[i]);
 				auto D3DResource = resource.textures[i]->GetResource()->GetResource();
 				device->CreateShaderResourceView(D3DResource, &srvDesc, cpuHandle);
 				cpuHandle.Offset(incrementSize);
@@ -256,6 +256,16 @@ namespace Lightning
 
 			mRootSignature = device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize());
 			return mRootSignature;
+		}
+
+		void D3D12ShaderGroup::SetSRVTextureParams(D3D12_SHADER_RESOURCE_VIEW_DESC& desc, D3D12Texture* texture)
+		{
+			auto dimension = texture->GetDimension();
+			if (dimension == TEXTURE_DIMENSION_2D)
+			{
+				desc.Texture2D.MipLevels = UINT(texture->GetMipmapLevels());
+				desc.Texture2D.MostDetailedMip = 0;
+			}
 		}
 	}
 }

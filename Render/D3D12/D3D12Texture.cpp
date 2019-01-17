@@ -177,6 +177,12 @@ namespace Lightning
 			return desc.DepthOrArraySize;
 		}
 
+		std::size_t D3D12Texture::GetMipmapLevels()const
+		{
+			const auto& desc = mResource->GetDesc();
+			return desc.MipLevels;
+		}
+
 		void D3D12Texture::Resize(std::size_t width, std::size_t height)
 		{
 			assert(mBuffer == nullptr && "Only textures with null serialized buffer is allowed to be resized.");

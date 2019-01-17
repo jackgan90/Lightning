@@ -58,6 +58,7 @@ namespace Lightning
 			virtual std::size_t INTERFACECALL GetHeight()const = 0;
 			//If this texture is a 3D texture, returns the depth,otherwise returns array size
 			virtual std::size_t INTERFACECALL GetDepth()const = 0;
+			virtual std::size_t INTERFACECALL GetMipmapLevels()const = 0;
 		};
 	}
 }

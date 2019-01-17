@@ -33,7 +33,7 @@ namespace Lightning
 			void CommitSamplerDescriptorTable(ID3D12GraphicsCommandList* commandList, UINT rootParameterIndex,
 				const D3D12RootBoundResource& resource, D3D12Device* device,
 				CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuHandle, UINT incrementSize);
-			
+			void SetSRVTextureParams(D3D12_SHADER_RESOURCE_VIEW_DESC& desc, D3D12Texture* texture);
 		private:
 			Container::Vector<D3D12Shader*> mShaders;
 			ComPtr<ID3D12RootSignature> mRootSignature;
