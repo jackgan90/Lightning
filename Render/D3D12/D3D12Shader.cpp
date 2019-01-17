@@ -37,6 +37,28 @@ namespace Lightning
 			InitConstantBufferRootParameter(shaderReflection.Get(), inputBindDescs);
 			InitTextureRootParameter(inputBindDescs);
 			InitSamplerStateParameter(inputBindDescs);
+			std::size_t rangeIndex{ 0 };
+			if (mDesc.ConstantBuffers > 0)
+			{
+				CD3DX12_ROOT_PARAMETER cbvParameter;
+				cbvParameter.InitAsDescriptorTable(mDesc.ConstantBuffers, &mDescriptorRanges[rangeIndex], GetParameterVisibility());
+				mRootParameters.push_back(cbvParameter);
+				rangeIndex += mDesc.ConstantBuffers;
+			}
+			if (mTextureParameterCount > 0)
+			{
+				CD3DX12_ROOT_PARAMETER textureParameter;
+				textureParameter.InitAsDescriptorTable(mTextureParameterCount, &mDescriptorRanges[rangeIndex], GetParameterVisibility());
+				mRootParameters.push_back(textureParameter);
+				rangeIndex += mTextureParameterCount;
+			}
+			if (mSamplerStateParamCount > 0)
+			{
+				CD3DX12_ROOT_PARAMETER samplerParameter;
+				samplerParameter.InitAsDescriptorTable(mSamplerStateParamCount, &mDescriptorRanges[rangeIndex], GetParameterVisibility());
+				mRootParameters.push_back(samplerParameter);
+				rangeIndex += mSamplerStateParamCount;
+			}
 		}
 
 		void D3D12Shader::InitConstantBufferRootParameter(
@@ -85,9 +107,6 @@ namespace Lightning
 				{
 					mTotalConstantBufferSize = UINT(D3D12ConstantBufferManager::AlignedSize(mTotalConstantBufferSize));
 				}
-				CD3DX12_ROOT_PARAMETER cbvParameter;
-				cbvParameter.InitAsDescriptorTable(mDesc.ConstantBuffers, &mDescriptorRanges[0], GetParameterVisibility());
-				mRootParameters.push_back(cbvParameter);
 			}
 		}
 
@@ -113,12 +132,6 @@ namespace Lightning
 					++mTextureParameterCount;
 				}
 			}
-			if (mTextureParameterCount > 0)
-			{
-				CD3DX12_ROOT_PARAMETER textureParameter;
-				textureParameter.InitAsDescriptorTable(mTextureParameterCount, &mDescriptorRanges[resourceCount], GetParameterVisibility());
-				mRootParameters.push_back(textureParameter);
-			}
 		}
 
 		void D3D12Shader::InitSamplerStateParameter(
@@ -142,12 +155,6 @@ namespace Lightning
 					mParameters[desc.Name] = paramInfo;
 					++mSamplerStateParamCount;
 				}
-			}
-			if (mSamplerStateParamCount > 0)
-			{
-				CD3DX12_ROOT_PARAMETER samplerParameter;
-				samplerParameter.InitAsDescriptorTable(mSamplerStateParamCount, &mDescriptorRanges[resourceCount], GetParameterVisibility());
-				mRootParameters.push_back(samplerParameter);
 			}
 		}
 
