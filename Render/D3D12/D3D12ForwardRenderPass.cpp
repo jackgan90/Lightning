@@ -9,19 +9,22 @@ namespace Lightning
 {
 	namespace Render
 	{
-		D3D12ForwardRenderPass::D3D12ForwardRenderPass():
-			mTotalConstantBufferSize(0), mTotalConstantBuffers(0), mTotalSamplerStates(0)
+		D3D12ForwardRenderPass::D3D12ForwardRenderPass()
+			: mTotalConstantBufferSize(0), mTotalConstantBuffers(0)
+			, mTotalSamplerStates(0), mTotalTextures(0)
 		{
 		}
 
 		void D3D12ForwardRenderPass::Apply(RenderQueue& renderQueue)
 		{
-			if(mTotalConstantBufferSize > 0)
+			if (mTotalConstantBufferSize > 0)
+			{
 				D3D12ConstantBufferManager::Instance()->Reserve(mTotalConstantBufferSize);
-			if (mTotalConstantBuffers)
+			}
+			if (mTotalConstantBuffers + mTotalTextures > 0)
 			{
 				D3D12DescriptorHeapManager::Instance()->ReserveFrameDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
-					true, mTotalConstantBuffers);
+					true, mTotalConstantBuffers + mTotalTextures);
 			}
 			if (mTotalSamplerStates)
 			{
@@ -43,6 +46,7 @@ namespace Lightning
 				mTotalConstantBufferSize += d3d12Shader->GetConstantBufferSize();
 				mTotalConstantBuffers += d3d12Shader->GetConstantBufferCount();
 				mTotalSamplerStates += d3d12Shader->GetSamplerStateCount();
+				mTotalTextures += d3d12Shader->GetTextureCount();
 			});
 		}
 		
@@ -70,6 +74,7 @@ namespace Lightning
 			mTotalConstantBufferSize = 0;
 			mTotalConstantBuffers = 0;
 			mTotalSamplerStates = 0;
+			mTotalTextures = 0;
 		}
 	}
 }
