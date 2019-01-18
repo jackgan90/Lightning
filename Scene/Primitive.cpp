@@ -235,7 +235,7 @@ namespace Lightning
 		Cube::CubeDataSource::CubeDataSource()
 		{
 			auto pVecs = new Vector3f[48];			//normal and position
-			auto pos_unit = .5f * 1.73205f;
+			auto pos_unit = .5f;
 			pVecs[0] = { -pos_unit, -pos_unit, pos_unit };		//front face
 			pVecs[1] = { 0.f, 0.f, 1.f };		
 			pVecs[2] = { pos_unit, -pos_unit, pos_unit };
