@@ -80,7 +80,7 @@ namespace Lightning
 			device->CreateShaderFromFile(Render::ShaderType::VERTEX, "texture_map.vs", new test(cube));
 			device->CreateShaderFromFile(Render::ShaderType::FRAGMENT, "texture_map.ps", new test(cube));
 
-			device->CreateTextureFromFile("Purged_One_Human_Jumper.jpg", new test1(scene, cube));
+			device->CreateTextureFromFile("rubikscube3-labeling-flat.png", new test1(scene, cube));
 			/*
 			static std::random_device rd;
 			static std::mt19937 mt(rd());

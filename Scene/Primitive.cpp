@@ -234,40 +234,73 @@ namespace Lightning
 		//Cube
 		Cube::CubeDataSource::CubeDataSource()
 		{
-			auto pVecs = new Vector3f[16];
-			pVecs[0] = { 0.5f, 0.5f, 0.5f };	//right top front v0
-			pVecs[1] = { 0.5774f, 0.5774f, 0.5774f };
-			pVecs[2] = { 0.5f, 0.5f, -0.5f };	//right top back v1
-			pVecs[3] = { 0.5774f, 0.5774f, -0.5774f };
-			pVecs[4] = { 0.5f, -0.5f, 0.5f };	//right bottom front v2
-			pVecs[5] = { 0.5774f, -0.5774f, 0.5774f };
-			pVecs[6] = { 0.5f, -0.5f, -0.5f };	//right bottom back v3
-			pVecs[7] = { 0.5774f, -0.5774f, -0.5774f };
-			pVecs[8] = { -0.5f, 0.5f, 0.5f };	//left top front v4
-			pVecs[9] = { -0.5774f, 0.5774f, 0.5774f };
-			pVecs[10] = { -0.5f, 0.5f, -0.5f };	//left top back v5
-			pVecs[11] = { -0.5774f, 0.5774f, -0.5774f };
-			pVecs[12] = { -0.5f, -0.5f, 0.5f };	//left bottom front v6
-			pVecs[13] = { -0.5774f, -0.5774f, 0.5774f };
-			pVecs[14] = { -0.5f, -0.5f, -0.5f };	//left bottom back v7
-			pVecs[15] = { -0.5774f, -0.5774f, -0.5774f };
+			auto pVecs = new Vector3f[48];			//normal and position
+			auto pos_unit = .5f * 1.73205f;
+			pVecs[0] = { -pos_unit, -pos_unit, pos_unit };		//front face
+			pVecs[1] = { 0.f, 0.f, 1.f };		
+			pVecs[2] = { pos_unit, -pos_unit, pos_unit };
+			pVecs[3] = { 0.f, 0.f, 1.f };		
+			pVecs[4] = { pos_unit, pos_unit, pos_unit };
+			pVecs[5] = { 0.f, 0.f, 1.f };		
+			pVecs[6] = { -pos_unit, pos_unit, pos_unit };
+			pVecs[7] = { 0.f, 0.f, 1.f };		
+
+			pVecs[8] = { pos_unit, -pos_unit, pos_unit };		//right face
+			pVecs[9] = { 1.f, 0.f, 0.f };		
+			pVecs[10] = { pos_unit, -pos_unit, -pos_unit };
+			pVecs[11] = { 1.f, 0.f, 0.f };		
+			pVecs[12] = { pos_unit, pos_unit, -pos_unit };
+			pVecs[13] = { 1.f, 0.f, 0.f };		
+			pVecs[14] = { pos_unit, pos_unit, pos_unit };
+			pVecs[15] = { 1.f, 0.f, 0.f };		
+
+			pVecs[16] = { pos_unit, -pos_unit, -pos_unit };		//back face
+			pVecs[17] = { 0.f, 0.f, -1.f };		
+			pVecs[18] = { -pos_unit, -pos_unit, -pos_unit };
+			pVecs[19] = { 0.f, 0.f, -1.f };		
+			pVecs[20] = { -pos_unit, pos_unit, -pos_unit };
+			pVecs[21] = { 0.f, 0.f, -1.f };		
+			pVecs[22] = { pos_unit, pos_unit, -pos_unit };
+			pVecs[23] = { 0.f, 0.f, -1.f };		
+
+			pVecs[24] = { -pos_unit, -pos_unit, -pos_unit };	//left face
+			pVecs[25] = { -1.f, 0.f, 0.f };		
+			pVecs[26] = { -pos_unit, -pos_unit, pos_unit };
+			pVecs[27] = { -1.f, 0.f, 0.f };		
+			pVecs[28] = { -pos_unit, pos_unit, pos_unit };
+			pVecs[29] = { -1.f, 0.f, 0.f };		
+			pVecs[30] = { -pos_unit, pos_unit, -pos_unit };
+			pVecs[31] = { -1.f, 0.f, 0.f };		
+
+			pVecs[32] = { -pos_unit, pos_unit, pos_unit };	//top face
+			pVecs[33] = { 0.f, 1.f, 0.f };		
+			pVecs[34] = { pos_unit, pos_unit, pos_unit };
+			pVecs[35] = { 0.f, 1.f, 0.f };		
+			pVecs[36] = { pos_unit, pos_unit, -pos_unit };
+			pVecs[37] = { 0.f, 1.f, 0.f };		
+			pVecs[38] = { -pos_unit, pos_unit, -pos_unit };
+			pVecs[39] = { 0.f, 1.f, 0.f };		
+
+			pVecs[40] = { -pos_unit, -pos_unit, -pos_unit };	//bottom face
+			pVecs[41] = { 0.f, -1.f, 0.f };		
+			pVecs[42] = { pos_unit, -pos_unit, -pos_unit };
+			pVecs[43] = { 0.f, -1.f, 0.f };		
+			pVecs[44] = { pos_unit, -pos_unit, pos_unit };
+			pVecs[45] = { 0.f, -1.f, 0.f };		
+			pVecs[46] = { -pos_unit, -pos_unit, pos_unit };
+			pVecs[47] = { 0.f, -1.f, 0.f };		
+
 			vertices = reinterpret_cast<std::uint8_t*>(pVecs);
 			std::uint16_t index_data[] = {
-				//right face
-				0, 2, 3, 0, 3, 1,
-				//front face
-				4, 6, 2, 4, 2, 0,
-				//left face
-				5, 7, 6, 5, 6, 4,
-				//back face
-				1, 3, 7, 1, 7, 5,
-				//top face
-				5, 4, 0, 5, 0, 1,
-				//bottom face
-				6, 7, 3, 6, 3, 2
+				0, 1, 2, 0, 2, 3,
+				4, 5, 6, 4, 6, 7,
+				8, 9, 10, 8, 10, 11,
+				12, 13, 14, 12, 14, 15,
+				16, 17, 18, 16, 18, 19,
+				20, 21, 22, 20, 22, 23
 			};
 			indices = new std::uint16_t[36];
-			std::memcpy(indices, index_data, 36 * sizeof(std::uint16_t));
+			std::memcpy(indices, index_data, sizeof(index_data));
 		}
 
 		Cube::CubeDataSource Cube::sDataSource;
@@ -293,20 +326,20 @@ namespace Lightning
 				compTexcoord.semantic = Render::RenderSemantics::TEXCOORD0;
 				components.push_back(compTexcoord);
 				auto pDevice = renderer->GetDevice();
-				auto uvBufferSize = sizeof(Vector2f) * 8;
+				auto uvBufferSize = sizeof(Vector2f) * 24;
 				descriptor.components = &components[0];
 				descriptor.componentCount = components.size();
 				auto vertexBuffer = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(uvBufferSize), descriptor);
 				mRenderUnit->SetVertexBuffer(1, vertexBuffer);
 				auto uv = reinterpret_cast<Vector2f*>(vertexBuffer->Lock(0, uvBufferSize));
-				uv[0].x = 0.5f; uv[0].y = 0.0f; //right top front v0
-				uv[1].x = 0.5f; uv[1].y = 1.0f; //right top back v1
-				uv[2].x = 0.5f; uv[2].y = 0.3333f; //right bottom front v2
-				uv[3].x = 0.5f; uv[3].y = 0.66667f; //right bottom back v3
-				uv[4].x = 0.25f; uv[4].y = 0.0f; //left top front v4
-				uv[5].x = 0.25f; uv[5].y = 1.0f; //left top back v5
-				uv[6].x = 0.25f; uv[6].y = 0.3333f; //left bottom front v6
-				uv[7].x = 0.25f; uv[7].y = 0.66667f; //left bottom back v7
+				for (auto i = 0;i < 24;i += 4)
+				{
+					uv[i].x = 0.f; uv[i].y = 0.f; 
+					uv[i + 1].x = 1.f; uv[i + 1].y = 0.f;
+					uv[i + 2].x = 1.f; uv[i + 2].y = 1.f;
+					uv[i + 3].x = 0.f; uv[i + 3].y = 1.f;
+				}
+
 				vertexBuffer->Unlock(0, uvBufferSize);
 				vertexBuffer->Release();
 				//apply texture to material

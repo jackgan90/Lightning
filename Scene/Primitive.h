@@ -76,7 +76,7 @@ namespace Lightning
 			std::uint8_t *GetVertices() override { return sDataSource.vertices; }
 			std::uint16_t *GetIndices() override { return sDataSource.indices; }
 			Vector3f GetScale() override { return Vector3f{mWidth, mHeight, mThickness}; }
-			std::size_t GetVertexBufferSize() override { return sizeof(Vector3f) * 16; }
+			std::size_t GetVertexBufferSize() override { return sizeof(Vector3f) * 48; }
 			std::size_t GetIndexBufferSize() override { return sizeof(std::uint16_t) * 36; }
 			float mWidth;
 			float mHeight;
