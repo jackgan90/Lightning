@@ -9,8 +9,7 @@ namespace Lightning
 		class FileSystemFactory : public Singleton<FileSystemFactory>
 		{
 		public:
-			IFileSystem* CreateFileSystem();
-			void DestroyFileSystem(IFileSystem* fs);
+			std::unique_ptr<IFileSystem> CreateFileSystem();
 		};
 	}
 }

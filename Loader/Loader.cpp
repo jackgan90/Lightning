@@ -13,28 +13,26 @@ namespace Lightning
 	}
 	namespace Loading
 	{
-		DeserializeTask::DeserializeTask(const LoadTask& loadTask, Foundation::IFile* file, 
+		DeserializeTask::DeserializeTask(const LoadTask& loadTask, const std::shared_ptr<Foundation::IFile>& file, 
 			ISerializeBuffer* buffer, bool ownBuffer)
 			:mLoadTask(loadTask), mFile(file), mBuffer(buffer), mOwnFile(ownBuffer)
 		{
-			mFile->AddRef();
 			mBuffer->AddRef();
 		}
 
 		DeserializeTask::~DeserializeTask()
 		{
 			mBuffer->Release();
-			mFile->Release();
 		}
 
 
 		tbb::task* DeserializeTask::execute()
 		{
-			mLoadTask.serializer->Deserialize(mFile, mBuffer);
+			mLoadTask.serializer->Deserialize(mFile.get(), mBuffer);
 			mLoadTask.serializer->Dispose();
 			if (mOwnFile)
 			{
-				Loader::Instance()->DisposeFile(mLoadTask.path, mFile);
+				Loader::Instance()->DisposeFile(mLoadTask.path, mFile.get());
 			}
 			return nullptr;
 		}

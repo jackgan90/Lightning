@@ -26,7 +26,6 @@ namespace Lightning
 			}
 			INTERFACECALL ~FoundationPluginImpl()override
 			{
-				Foundation::FileSystemFactory::Instance()->DestroyFileSystem(mFileSystem);
 				LOG_INFO("Foundation plugin unloaded.");
 				mFileSink->flush();
 			}
@@ -40,7 +39,7 @@ namespace Lightning
 		private:
 			void InitLoggerImpl(const char* name, Foundation::Logger* logger);
 			std::shared_ptr<spdlog::sinks::basic_file_sink_mt> mFileSink;
-			Foundation::IFileSystem* mFileSystem;
+			std::unique_ptr<Foundation::IFileSystem> mFileSystem;
 #ifdef _MSC_VER
 			std::shared_ptr<spdlog::sinks::msvc_sink_mt> mMsvcSink;
 #endif
@@ -79,7 +78,7 @@ namespace Lightning
 
 		Foundation::IFileSystem* FoundationPluginImpl::GetFileSystem()
 		{
-			return mFileSystem;
+			return mFileSystem.get();
 		}
 
 		Foundation::IConfigManager* FoundationPluginImpl::GetConfigManager()

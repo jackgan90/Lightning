@@ -10,10 +10,10 @@ namespace Lightning
 		{
 		public:
 			TextureSerializer(const std::string path, ITextureCallback* callback);
-			INTERFACECALL ~TextureSerializer()override;
-			void INTERFACECALL Serialize(char** buffer)override;
-			void INTERFACECALL Deserialize(Foundation::IFile* file, Loading::ISerializeBuffer* buffer)override;
-			void INTERFACECALL Dispose()override;
+			~TextureSerializer()override;
+			void Serialize(char** buffer)override;
+			void Deserialize(Foundation::IFile* file, Loading::ISerializeBuffer* buffer)override;
+			void Dispose()override;
 		private:
 			std::string mPath;
 			ITextureCallback* mFinishCallback;

@@ -3,6 +3,7 @@
 #include <memory>
 #include <unordered_map>
 #include <boost/filesystem.hpp>
+#include <cstdlib>
 #include "Singleton.h"
 #include "IFileSystem.h"
 
@@ -15,13 +16,13 @@ namespace Lightning
 		{
 		public:
 			GeneralFileSystem();
-			INTERFACECALL ~GeneralFileSystem()override;
-			IFile* INTERFACECALL FindFile(const char* fileName, FileAccess bitMask)override;
-			bool INTERFACECALL SetRoot(const char* rootPath)override;
-			const char* INTERFACECALL GetRoot() const override;
+			~GeneralFileSystem()override;
+			std::shared_ptr<IFile> FindFile(const std::string& fileName, FileAccess bitMask)override;
+			bool SetRoot(const std::string& rootPath)override;
+			std::string GetRoot() const override;
 		protected:
 			boost::filesystem::path mRoot;
-			std::unordered_map<std::string, IFile*> mCachedFiles;
+			std::unordered_map<std::string, std::shared_ptr<IFile>> mCachedFiles;
 		};
 
 		class GeneralFile : public IFile
@@ -33,14 +34,14 @@ namespace Lightning
 			//should not copy an existing file which may cause chaos file access.
 			GeneralFile(GeneralFile&& f);
 			GeneralFile& operator=(GeneralFile&& f);
-			INTERFACECALL ~GeneralFile()override;
-			FileSize INTERFACECALL GetSize()override;
-			void INTERFACECALL SetFilePointer(FilePointerType type, FileAnchor anchor, FileSize offset)override;
-			FileSize INTERFACECALL Read(char* buf, FileSize length)override;
-			void INTERFACECALL Close()override;
-			bool INTERFACECALL IsOpen()const override;
-			const char* INTERFACECALL GetPath()const override;
-			const char* INTERFACECALL GetName()const override;
+			~GeneralFile()override;
+			FileSize GetSize()override;
+			void SetFilePointer(FilePointerType type, FileAnchor anchor, FileSize offset)override;
+			FileSize Read(char* buf, FileSize length)override;
+			void Close()override;
+			bool IsOpen()const override;
+			std::string GetPath()const override;
+			std::string GetName()const override;
 		protected:
 			void CalculateFileSize();
 			void OpenFile();
@@ -50,7 +51,6 @@ namespace Lightning
 			bool mSizeDirty;
 			std::unique_ptr<std::fstream> mFile;
 			FileAccess mAccess;
-			REF_OBJECT_OVERRIDE(GeneralFile)
 		};
 
 	}

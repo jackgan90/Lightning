@@ -6,14 +6,9 @@ namespace Lightning
 {
 	namespace Foundation
 	{
-		IFileSystem* FileSystemFactory::CreateFileSystem()
+		std::unique_ptr<IFileSystem> FileSystemFactory::CreateFileSystem()
 		{
-			return new GeneralFileSystem;
-		}
-
-		void FileSystemFactory::DestroyFileSystem(IFileSystem* fs)
-		{
-			delete fs;
+			return std::make_unique<GeneralFileSystem>();
 		}
 	}
 }

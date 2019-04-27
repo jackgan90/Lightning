@@ -143,16 +143,15 @@ namespace Lightning
 			return *mFile ? readSize : mFile->gcount();
 		}
 
-		const char* GeneralFile::GetPath()const
+		std::string GeneralFile::GetPath()const
 		{
-			return mPath.string().c_str();
+			return mPath.string();
 		}
 
-		const char* GeneralFile::GetName()const
+		std::string GeneralFile::GetName()const
 		{
-			return mPath.filename().string().c_str();
+			return mPath.filename().string();
 		}
-
 
 		GeneralFileSystem::GeneralFileSystem()
 		{
@@ -162,13 +161,9 @@ namespace Lightning
 		
 		GeneralFileSystem::~GeneralFileSystem()
 		{
-			for (auto& file : mCachedFiles)
-			{
-				file.second->Release();
-			}
 		}
 
-		IFile* GeneralFileSystem::FindFile(const char* filename, FileAccess bitmask)
+		std::shared_ptr<IFile> GeneralFileSystem::FindFile(const std::string& filename, FileAccess bitmask)
 		{
 			assert(Environment::Instance()->IsInLoaderIOThread() && "FindFile must be called from LoaderIO Thread!");
 			auto cachedFile = mCachedFiles.find(filename);
@@ -183,8 +178,7 @@ namespace Lightning
 				});
 				if (it != end)
 				{
-					auto file = NEW_REF_OBJ(GeneralFile, it->path().string(), bitmask);
-					mCachedFiles.insert(std::make_pair(filename, file));
+					mCachedFiles.emplace(filename, std::make_shared<GeneralFile>(it->path().string(), bitmask));
 					return mCachedFiles[filename];
 				}
 			}
@@ -195,15 +189,15 @@ namespace Lightning
 			return nullptr;
 		}
 
-		bool GeneralFileSystem::SetRoot(const char* root_path)
+		bool GeneralFileSystem::SetRoot(const std::string& root_path)
 		{
 			mRoot = root_path;
 			return true;
 		}
 
-		const char* GeneralFileSystem::GetRoot() const
+		std::string GeneralFileSystem::GetRoot() const
 		{
-			return mRoot.string().c_str();
+			return mRoot.string();
 		}
 
 	}

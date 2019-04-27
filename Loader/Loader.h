@@ -23,13 +23,13 @@ namespace Lightning
 		class DeserializeTask : public tbb::task
 		{
 		public:
-			DeserializeTask(const LoadTask& loaderTask, Foundation::IFile* file, 
+			DeserializeTask(const LoadTask& loaderTask, const std::shared_ptr<Foundation::IFile>& file, 
 				ISerializeBuffer* buffer, bool ownFile);
 			~DeserializeTask()override;
 			tbb::task* execute()override;
 		private:
 			LoadTask mLoadTask;
-			Foundation::IFile* mFile;
+			std::shared_ptr<Foundation::IFile> mFile;
 			ISerializeBuffer* mBuffer;
 			bool mOwnFile;
 		};
