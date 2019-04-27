@@ -68,10 +68,11 @@ namespace Lightning
 			)
 			{
 #ifdef _MSC_VER
-				mLogger = std::unique_ptr<spdlog::logger>(new spdlog::logger(name, {fileSink, msvcSink}));
+				spdlog::sinks_init_list sinks = { fileSink, msvcSink };
 #else
-				mLogger = std::unique_ptr<spdlog::logger>(new spdlog::logger(name, {fileSink}));
+				spdlog::sinks_init_list sinks = { fileSink };
 #endif
+				mLogger = std::make_unique<spdlog::logger>(name, sinks);
 				mLogger->set_level(spdlog::level::debug);
 			}
 			void Finalize()
