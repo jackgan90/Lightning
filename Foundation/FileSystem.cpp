@@ -178,8 +178,8 @@ namespace Lightning
 				});
 				if (it != end)
 				{
-					mCachedFiles.emplace(filename, std::make_shared<GeneralFile>(it->path().string(), bitmask));
-					return mCachedFiles[filename];
+					auto f = mCachedFiles.emplace(filename, std::make_shared<GeneralFile>(it->path().string(), bitmask));
+					return f.first->second;
 				}
 			}
 			catch (const boost::filesystem::filesystem_error& e)
