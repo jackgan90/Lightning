@@ -47,7 +47,7 @@ namespace Lightning
 		void D3D12ShaderGroup::CommitDescriptorHeaps(ID3D12GraphicsCommandList* commandList, 
 			DescriptorHeap*& constantHeap, DescriptorHeap*& samplerHeap)
 		{
-			using DescriptorHeapLists = Foundation::ThreadLocalObject<Container::Vector<ID3D12DescriptorHeap*>>;
+			using DescriptorHeapLists = Foundation::ThreadLocalObject<std::vector<ID3D12DescriptorHeap*>>;
 			static DescriptorHeapLists descriptorHeapLists;
 			auto& descriptorHeaps = *descriptorHeapLists;
 			descriptorHeaps.clear();
@@ -207,7 +207,7 @@ namespace Lightning
 		{
 			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
 			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-			Container::Vector<D3D12_ROOT_PARAMETER> rootParameters;
+			std::vector<D3D12_ROOT_PARAMETER> rootParameters;
 			D3D12_ROOT_SIGNATURE_FLAGS flags = 
 				D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT | 
 				D3D12_ROOT_SIGNATURE_FLAG_DENY_VERTEX_SHADER_ROOT_ACCESS |

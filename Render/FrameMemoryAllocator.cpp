@@ -5,7 +5,6 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::Container;
 		FrameMemoryAllocator::RingBuffer::RingBuffer(std::size_t size):
 			mMaxSize(size < MIN_BUFFER_SIZE ? MIN_BUFFER_SIZE : size), mUsedSize(0), mHead(0), mTail(0), mFrameSize(0)
 		{
@@ -134,7 +133,7 @@ namespace Lightning
 
 		void FrameMemoryAllocator::ReleaseFramesBefore(std::uint64_t frame)
 		{
-			mBuffers.for_each([this, frame](Container::Vector<RingBuffer>& threadBuffers) {
+			mBuffers.for_each([this, frame](std::vector<RingBuffer>& threadBuffers) {
 				std::size_t numBuffersToDelete{ 0 };
 				for (std::size_t i = 0;i < threadBuffers.size();++i)
 				{
@@ -166,7 +165,7 @@ namespace Lightning
 		std::size_t FrameMemoryAllocator::GetAllocatedMemorySize()const
 		{
 			std::size_t totalSize{ 0 };
-			mBuffers.for_each([&totalSize](const Container::Vector<RingBuffer>& threadBuffers) {
+			mBuffers.for_each([&totalSize](const std::vector<RingBuffer>& threadBuffers) {
 				for (const auto& buffer : threadBuffers)
 				{
 					totalSize += buffer.GetSize();
@@ -178,7 +177,7 @@ namespace Lightning
 		std::size_t FrameMemoryAllocator::GetUsedMemorySize()const
 		{
 			std::size_t totalSize{ 0 };
-			mBuffers.for_each([&totalSize](const Container::Vector<RingBuffer>& threadBuffers) {
+			mBuffers.for_each([&totalSize](const std::vector<RingBuffer>& threadBuffers) {
 				for (const auto& buffer : threadBuffers)
 				{
 					totalSize += buffer.GetUsedSize();

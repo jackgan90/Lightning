@@ -603,9 +603,9 @@ namespace Lightning
 			auto frameResourceIndex = GetFrameResourceIndex();
 			auto currentRenderTarget = mSwapChain->GetCurrentRenderTarget();
 			auto renderTarget = static_cast<D3D12RenderTarget*>(currentRenderTarget);
-			static Container::Vector<ID3D12CommandList*> commandLists;
+			static std::vector<ID3D12CommandList*> commandLists;
 			commandLists.clear();
-			Container::Vector<ID3D12CommandList*>* pCommandLists = &commandLists;
+			std::vector<ID3D12CommandList*>* pCommandLists = &commandLists;
 			mCmdEncoders[frameResourceIndex].for_each([pCommandLists](D3D12CommandEncoder& encoder) {
 				pCommandLists->push_back(encoder.GetCommandList());
 			});

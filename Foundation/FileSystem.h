@@ -1,8 +1,8 @@
 #pragma once
 #include <string>
 #include <memory>
+#include <unordered_map>
 #include <boost/filesystem.hpp>
-#include "Container.h"
 #include "Singleton.h"
 #include "IFileSystem.h"
 
@@ -21,7 +21,7 @@ namespace Lightning
 			const char* INTERFACECALL GetRoot() const override;
 		protected:
 			boost::filesystem::path mRoot;
-			Container::UnorderedMap<std::string, IFile*> mCachedFiles;
+			std::unordered_map<std::string, IFile*> mCachedFiles;
 		};
 
 		class GeneralFile : public IFile

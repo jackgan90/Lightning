@@ -2,7 +2,6 @@
 #include "IPluginManager.h"
 #include "IFoundationPlugin.h"
 #include "Logger.h"
-#include "Container.h"
 #include "Plugin.h"
 #ifdef LIGHTNING_WIN32
 #include "WindowsGameWindow.h"
@@ -24,7 +23,7 @@ namespace Lightning
 			void INTERFACECALL OnCreated(IPluginManager*)override;
 		private:
 			IPluginManager* mPluginMgr;
-			Container::Vector<Window::IWindow*> mWindows;
+			std::vector<Window::IWindow*> mWindows;
 			PLUGIN_OVERRIDE(WindowPluginImpl)
 		};
 

@@ -3,8 +3,8 @@
 #include <d3d12.h>
 #include <cstdint>
 #include <memory>
+#include <unordered_map>
 #include "boost/noncopyable.hpp"
-#include "Container.h"
 #include "tbb/spin_mutex.h"
 
 namespace Lightning
@@ -12,7 +12,6 @@ namespace Lightning
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
-		using Foundation::Container;
 		class D3D12StatefulResource;
 		using D3D12StatefulResourcePtr = std::shared_ptr<D3D12StatefulResource>;
 		class D3D12StatefulResource : private boost::noncopyable
@@ -43,7 +42,7 @@ namespace Lightning
 				//basically this state is only for local state.Global state doesn't need it
 				D3D12_RESOURCE_STATES firstState;
 			};
-			using CommandListResourceStates = Container::UnorderedMap<ID3D12GraphicsCommandList*, ResourceState>;
+			using CommandListResourceStates = std::unordered_map<ID3D12GraphicsCommandList*, ResourceState>;
 			ComPtr<ID3D12Resource> mResource;
 			D3D12_RESOURCE_DESC mDesc;
 			ResourceState mGlobalState;

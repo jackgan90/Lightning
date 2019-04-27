@@ -1,5 +1,4 @@
 #pragma once
-#include "Container.h"
 #include "IRenderer.h"
 #include "IRenderFence.h"
 #include "IFileSystem.h"
@@ -12,8 +11,6 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::Container;
-
 		struct FrameResource
 		{
 			IRenderFence *fence{ nullptr };
@@ -80,13 +77,13 @@ namespace Lightning
 			static IRenderer* sInstance;
 			std::unique_ptr<Device> mDevice;
 			std::unique_ptr<SwapChain> mSwapChain;
-			Container::Vector<std::unique_ptr<RenderPass>> mRenderPasses;
+			std::vector<std::unique_ptr<RenderPass>> mRenderPasses;
 			ColorF mClearColor;
 			FrameResource mFrameResources[RENDER_FRAME_COUNT];
 			Window::IWindow* mOutputWindow;
-			Container::UnorderedMap<RenderSemantics, SemanticInfo> mPipelineInputSemanticInfos;
-			Container::UnorderedMap<std::string, RenderSemantics> mUniformToSemantics;
-			Container::UnorderedMap<RenderSemantics, const char*> mSemanticsToUniform;
+			std::unordered_map<RenderSemantics, SemanticInfo> mPipelineInputSemanticInfos;
+			std::unordered_map<std::string, RenderSemantics> mUniformToSemantics;
+			std::unordered_map<RenderSemantics, const char*> mSemanticsToUniform;
 		private:
 			void HandleWindowResize();
 			SemanticInfo ParsePipelineInputSemantics(const SemanticItem& item);

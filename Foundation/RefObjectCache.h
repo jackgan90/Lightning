@@ -2,7 +2,7 @@
 #include <cassert>
 #include <mutex>
 #include <string>
-#include "Container.h"
+#include <unordered_map>
 #include "Singleton.h"
 #include "IRefObject.h"
 
@@ -66,7 +66,7 @@ namespace Lightning
 		protected:
 			friend class Singleton<Derived>;
 			RefObjectCache(){}
-			Container::UnorderedMap<KeyType, ObjectType*> mObjects;
+			std::unordered_map<KeyType, ObjectType*> mObjects;
 			std::mutex mObjectMutex;
 		};
 	}

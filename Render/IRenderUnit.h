@@ -1,5 +1,4 @@
 #pragma once
-#include "Container.h"
 #include "IMaterial.h"
 #include "IRenderTarget.h"
 #include "IDepthStencilBuffer.h"
@@ -61,6 +60,6 @@ namespace Lightning
 		//queue won't be cleared until next time the renderer renders to the same swap chain,which ensures the 
 		//render resource validation during this frame(render resources won't be deleted because a render unit
 		//holds all shared_ptr referring to them).
-		using RenderQueue = Foundation::Container::Vector<IImmutableRenderUnit*>;
+		using RenderQueue = std::vector<IImmutableRenderUnit*>;
 	}
 }

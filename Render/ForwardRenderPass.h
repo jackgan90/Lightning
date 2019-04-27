@@ -1,5 +1,4 @@
 #pragma once
-#include "Container.h"
 #include "RenderPass.h"
 #include "PipelineState.h"
 
@@ -7,8 +6,6 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::Container;
-
 		class ForwardRenderPass : public RenderPass
 		{
 		public:	

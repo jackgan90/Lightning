@@ -4,7 +4,6 @@
 #include <cstdint>
 #include <atomic>
 #include "Singleton.h"
-#include "Container.h"
 #include "RenderConstants.h"
 #include "D3D12StatefulResource.h"
 
@@ -13,7 +12,6 @@ namespace Lightning
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
-		using Foundation::Container;
 		struct D3D12ConstantBuffer
 		{
 			std::uint8_t *userMemory;

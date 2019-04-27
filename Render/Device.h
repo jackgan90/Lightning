@@ -1,7 +1,6 @@
 #pragma once
 #include "IDevice.h"
 #include "ILoader.h"
-#include "Container.h"
 
 namespace Lightning
 {
@@ -18,7 +17,7 @@ namespace Lightning
 		protected:
 			Device();
 			Loading::ILoader* GetLoader();
-			using DefaultShaderMap = Foundation::Container::UnorderedMap<ShaderType, IShader*>;
+			using DefaultShaderMap = std::unordered_map<ShaderType, IShader*>;
 			DefaultShaderMap mDefaultShaders;
 		private:
 			Loading::ILoader* mLoader;

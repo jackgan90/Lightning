@@ -1,7 +1,6 @@
 #pragma once
 #include <boost/functional/hash.hpp>
 #include <memory>
-#include "Container.h"
 #include "IVertexBuffer.h"
 
 namespace Lightning

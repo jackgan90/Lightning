@@ -3,7 +3,6 @@
 #include <dxgi1_4.h>
 #include <wrl\client.h>
 #include <atomic>
-#include "Container.h"
 #include "Device.h"
 #include "FileSystem.h"
 #include "D3D12Shader.h"
@@ -17,7 +16,6 @@ namespace Lightning
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
-		using Foundation::Container;
 		class D3D12Device : public Device
 		{
 		public:

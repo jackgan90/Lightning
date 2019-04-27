@@ -1,6 +1,7 @@
 #pragma once
+#include <unordered_map>
+#include <functional>
 #include "Singleton.h"
-#include "Container.h"
 #include "IEvent.h"
 
 namespace Lightning
@@ -18,10 +19,10 @@ namespace Lightning
 		private:
 			friend class Singleton<EventManager>;
 			EventManager();
-			using Subscribers = Container::UnorderedMap<EventSubscriberID, EventSubscriber>;
-			using EventSubscribers = Container::UnorderedMap<EventType, Subscribers>;
-			using EventTypes = Container::UnorderedMap<EventSubscriberID, EventType>;
-			using Iterators = Container::UnorderedMap<EventType, Subscribers::iterator>;
+			using Subscribers = std::unordered_map<EventSubscriberID, EventSubscriber>;
+			using EventSubscribers = std::unordered_map<EventType, Subscribers>;
+			using EventTypes = std::unordered_map<EventSubscriberID, EventType>;
+			using Iterators = std::unordered_map<EventType, Subscribers::iterator>;
 			EventTypes mEventTypes;
 			EventSubscribers mSubscribers;
 			Iterators mItSubscribers;

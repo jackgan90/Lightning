@@ -57,7 +57,7 @@ namespace Lightning
 				ComPtr<ID3D12PipelineState> pipelineState;
 				std::shared_ptr<D3D12ShaderGroup> shaderGroup;
 			};
-			using PipelineCacheMap = Container::UnorderedMap<std::size_t, PipelineCacheObject>;
+			using PipelineCacheMap = std::unordered_map<std::size_t, PipelineCacheObject>;
 
 			PipelineCacheObject CreateAndCachePipelineState(const PipelineState& pState, std::size_t hashValue);
 			void ApplyRasterizerState(const RasterizerState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);

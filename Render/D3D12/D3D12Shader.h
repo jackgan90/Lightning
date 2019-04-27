@@ -3,7 +3,6 @@
 #include <wrl/client.h>
 #include <d3dcompiler.h>
 #include "ThreadLocalObject.h"
-#include "Container.h"
 #include "D3D12ConstantBufferManager.h"
 #include "D3D12Texture.h"
 #include "Texture/Sampler.h"
@@ -14,7 +13,6 @@ namespace Lightning
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
-		using Foundation::Container;
 		enum class D3D12RootResourceType : std::uint8_t
 		{
 			ConstantBuffers,
@@ -54,7 +52,7 @@ namespace Lightning
 			void INTERFACECALL GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount)override;
 			void* GetByteCodeBuffer()const;
 			SIZE_T GetByteCodeBufferSize()const;
-			const Container::Vector<D3D12_ROOT_PARAMETER>& GetRootParameters()const;
+			const std::vector<D3D12_ROOT_PARAMETER>& GetRootParameters()const;
 			std::size_t GetRootParameterCount()const;
 			const D3D12RootBoundResource* GetRootBoundResources();
 			UINT GetConstantBufferCount()const;
@@ -67,9 +65,9 @@ namespace Lightning
 			D3D12_SHADER_VISIBILITY GetParameterVisibility()const;
 			void UpdateRootBoundResources();
 			void InitConstantBufferRootParameter(ID3D12ShaderReflection*, 
-				const Container::UnorderedMap<std::string, D3D12_SHADER_INPUT_BIND_DESC>&);
-			void InitTextureRootParameter(const Container::UnorderedMap<std::string, D3D12_SHADER_INPUT_BIND_DESC>&);
-			void InitSamplerStateParameter(const Container::UnorderedMap<std::string, D3D12_SHADER_INPUT_BIND_DESC>&);
+				const std::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC>&);
+			void InitTextureRootParameter(const std::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC>&);
+			void InitSamplerStateParameter(const std::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC>&);
 		private:
 			struct ParameterInfo
 			{
@@ -81,7 +79,7 @@ namespace Lightning
 				UINT offset;
 				UINT size;
 			};
-			using ConstantBufferInfos = Container::UnorderedMap<std::size_t, ConstantBufferInfo>;
+			using ConstantBufferInfos = std::unordered_map<std::size_t, ConstantBufferInfo>;
 			class ShaderResourceProxy
 			{
 			public:
@@ -111,14 +109,14 @@ namespace Lightning
 		private:
 			ComPtr<ID3D10Blob> mByteCode;
 			D3D12_SHADER_DESC mDesc;
-			Container::UnorderedMap<std::string, ParameterInfo> mParameters;
-			Container::Vector<D3D12_ROOT_PARAMETER> mRootParameters;
+			std::unordered_map<std::string, ParameterInfo> mParameters;
+			std::vector<D3D12_ROOT_PARAMETER> mRootParameters;
 			//each offset corresponds to mIntermediateBuffer
 			ConstantBufferInfos mConstantBufferInfo;
-			Container::Vector<D3D12_DESCRIPTOR_RANGE> mDescriptorRanges;
+			std::vector<D3D12_DESCRIPTOR_RANGE> mDescriptorRanges;
 			//buffer used to cache constant buffer value
 			Foundation::ThreadLocalObject<ShaderResourceProxy> mResourceProxy;
-			Container::Vector<RenderSemantics> mUniformSemantics;
+			std::vector<RenderSemantics> mUniformSemantics;
 			D3D_SHADER_MODEL mShaderModel;
 			UINT mTotalConstantBufferSize;
 			UINT mTextureParameterCount;

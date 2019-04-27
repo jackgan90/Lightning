@@ -1,7 +1,6 @@
 #pragma once
 #include <exception>
 #include "WindowEvents.h"
-#include "Container.h"
 #include "IWindow.h"
 #include "Logger.h"
 #include "RefObject.h"
@@ -10,7 +9,6 @@ namespace Lightning
 {
 	namespace Window
 	{
-		using Foundation::Container;
 		class WindowInitException : public std::exception
 		{
 		public:
@@ -39,7 +37,7 @@ namespace Lightning
 			virtual void OnMouseDown(std::size_t x, std::size_t y, VirtualKeyCode keyCode);
 			virtual void OnMouseMove(std::size_t x, std::size_t y, VirtualKeyCode keyCode);
 			virtual void OnDestroy(int exitCode);
-			Container::Vector<IWindowEventReceiver*> mEventReceivers;
+			std::vector<IWindowEventReceiver*> mEventReceivers;
 			std::string mCaption;
 			std::uint32_t mWidth;
 			std::uint32_t mHeight;

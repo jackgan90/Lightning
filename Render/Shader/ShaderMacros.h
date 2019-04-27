@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "Container.h"
+#include <unordered_map>
 #include "IShaderMacros.h"
 
 
@@ -8,7 +8,6 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::Container;
 		class ShaderMacros : public IShaderMacros
 		{
 		public:
@@ -29,8 +28,8 @@ namespace Lightning
 			void INTERFACECALL GetAllMacros(MacroPair** pairs)const override;
 			std::size_t INTERFACECALL GetHash()const override;
 		private:
-			using MacroContainer = Container::UnorderedMap<std::string, std::string>;
-			MacroContainer mMacros;
+			using MacroMap = std::unordered_map<std::string, std::string>;
+			MacroMap mMacros;
 		};
 	}
 }

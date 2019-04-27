@@ -1,12 +1,10 @@
 #pragma once
-#include "Container.h"
 #include "D3D12Shader.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::Container;
 		class D3D12ShaderGroup : boost::noncopyable
 		{
 		public:
@@ -35,7 +33,7 @@ namespace Lightning
 				CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuHandle, UINT incrementSize);
 			void SetSRVTextureParams(D3D12_SHADER_RESOURCE_VIEW_DESC& desc, D3D12Texture* texture);
 		private:
-			Container::Vector<D3D12Shader*> mShaders;
+			std::vector<D3D12Shader*> mShaders;
 			ComPtr<ID3D12RootSignature> mRootSignature;
 			std::size_t mConstantBufferCount;
 			std::size_t mTextureCount;

@@ -3,7 +3,6 @@
 #include <cmath>
 #include <algorithm>
 #include "Common.h"
-#include "Container.h"
 #include "Math/Vector.h"
 #include "Primitive.h"
 #include "IPluginManager.h"
@@ -22,7 +21,6 @@ namespace Lightning
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Vector4f;
 		using Foundation::Math::DegreesToRadians;
-		using Foundation::Container;
 		using Render::ShaderParameter;
 		extern Plugins::IRenderPlugin* gRenderPlugin;
 
@@ -144,7 +142,7 @@ namespace Lightning
 				mRenderUnit->Release();
 			mRenderUnit = renderer->CreateRenderUnit();
 			Render::VertexDescriptor descriptor;
-			Container::Vector<Render::VertexComponent> components;
+			std::vector<Render::VertexComponent> components;
 			Render::VertexComponent compPosition;
 			compPosition.format = Render::RenderFormat::R32G32B32_FLOAT;
 			compPosition.instanceStepRate = 0;
@@ -317,7 +315,7 @@ namespace Lightning
 			{
 				//generate uv
 				Render::VertexDescriptor descriptor;
-				Container::Vector<Render::VertexComponent> components;
+				std::vector<Render::VertexComponent> components;
 				Render::VertexComponent compTexcoord;
 				compTexcoord.format = Render::RenderFormat::R32G32_FLOAT;
 				compTexcoord.instanceStepRate = 0;

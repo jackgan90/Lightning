@@ -2,7 +2,8 @@
 #include <cstddef>
 #include <cstdint>
 #include <thread>
-#include "Container.h"
+#include <deque>
+#include <vector>
 #include "ThreadLocalObject.h"
 
 namespace Lightning
@@ -17,7 +18,7 @@ namespace Lightning
 			~FrameMemoryAllocator() = default;
 			FrameMemoryAllocator(const FrameMemoryAllocator&) = delete;
 			FrameMemoryAllocator& operator=(const FrameMemoryAllocator&) = delete;
-			//Allocate elementCount elements of type T ,should not run simultaineously with FinishFrame and ReleaseFramesBefore
+			//Allocate elementCount elements of type T ,should not run simultaneously with FinishFrame and ReleaseFramesBefore
 			template<typename T, typename... Args>
 			T* Allocate(std::size_t elementCount, Args&&... args)
 			{
@@ -66,9 +67,9 @@ namespace Lightning
 				std::size_t mHead;
 				std::size_t mTail;
 				std::size_t mFrameSize;
-				Foundation::Container::Deque<FrameMarker> mFrameMarkers;
+				std::deque<FrameMarker> mFrameMarkers;
 			};
-			Foundation::ThreadLocalObject<Foundation::Container::Vector<RingBuffer>> mBuffers;
+			Foundation::ThreadLocalObject<std::vector<RingBuffer>> mBuffers;
 		};
 	}
 }

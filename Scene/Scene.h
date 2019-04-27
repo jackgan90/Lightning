@@ -1,14 +1,12 @@
 #pragma once
 #include <cstdint>
 #include "IScene.h"
-#include "Container.h"
 #include "SceneRenderData.h"
 
 namespace Lightning
 {
 	namespace Scene
 	{
-		using Foundation::Container;
 		class Scene : public IScene
 		{
 		public:
@@ -21,7 +19,7 @@ namespace Lightning
 		protected:
 			ICamera* mActiveCamera;
 			std::uint32_t mID;
-			Container::Vector<IDrawable*> mDrawables;
+			std::vector<IDrawable*> mDrawables;
 			SceneRenderData mRenderData;
 		};
 	}

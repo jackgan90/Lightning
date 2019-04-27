@@ -1,6 +1,6 @@
 #pragma once
 #include <cstdint>
-#include "Container.h"
+#include <vector>
 
 namespace Lightning
 {
@@ -37,7 +37,7 @@ namespace Lightning
 				char* ptr;
 				std::size_t current;
 			};
-			Container::Vector<Buffer> mBuffers;
+			std::vector<Buffer> mBuffers;
 			static constexpr const std::size_t BUFFER_SIZE = sizeof(T) * BufferObjects;
 		};
 	}

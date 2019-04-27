@@ -1,5 +1,5 @@
 #pragma once
-#include "Container.h"
+#include <list>
 #include "Singleton.h"
 #include "System.h"
 
@@ -39,7 +39,7 @@ namespace Lightning
 					mSystems.insert(mSystems.end(), system);
 			}
 			friend class Singleton<SystemManager>;
-			using SystemList = Container::List<SystemPtr<ISystem>>;
+			using SystemList = std::list<SystemPtr<ISystem>>;
 			SystemManager();
 			SystemList mSystems;
 		};

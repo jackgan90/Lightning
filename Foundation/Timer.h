@@ -2,7 +2,10 @@
 #include <functional>
 #include <cstdint>
 #include <chrono>
-#include "Container.h"
+#include <list>
+#include <vector>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace Lightning
 {
@@ -51,12 +54,12 @@ namespace Lightning
 				std::size_t loopRound;
 				std::function<void()> func;
 			};
-			Container::Vector<Container::List<TimerTask>> mTasks;
-			Container::UnorderedMap<std::size_t, TimerTask*> mIDToTasks;
+			std::vector<std::list<TimerTask>> mTasks;
+			std::unordered_map<std::size_t, TimerTask*> mIDToTasks;
 			//This container exists because a task may potentially remove itself willingly or unwillingly
 			//in callback which happens in iteration.In this scenario,The deletion must be cached and 
 			//execute after iteration
-			Container::UnorderedSet<std::size_t> mDeletedTasks;
+			std::unordered_set<std::size_t> mDeletedTasks;
 			std::size_t mResolution;
 			std::size_t mBucketCursor;
 			std::size_t mLoopRound;

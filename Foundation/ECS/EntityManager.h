@@ -1,7 +1,6 @@
 #pragma once
 #include "Event.h"
 #include "Entity.h"
-#include "Container.h"
 #include "Singleton.h"
 
 namespace Lightning
@@ -45,7 +44,7 @@ namespace Lightning
 			void Update();
 		private:
 			friend class Singleton<EntityManager>;
-			using EntityMap = Container::UnorderedMap<EntityID, EntityPtr>;
+			using EntityMap = std::unordered_map<EntityID, EntityPtr>;
 			EntityManager();
 			EntityID mCurrentEntityID;
 			EntityMap mEntities;

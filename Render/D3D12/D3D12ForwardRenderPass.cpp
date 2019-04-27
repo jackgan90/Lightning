@@ -36,9 +36,9 @@ namespace Lightning
 
 		void D3D12ForwardRenderPass::OnAddRenderUnit(const IImmutableRenderUnit* unit)
 		{
-			using ShaderContainer = Container::Vector<IShader*>;
-			static Foundation::ThreadLocalObject<ShaderContainer> shadersContainer;
-			auto& shaders = *shadersContainer;
+			using ShaderVec = std::vector<IShader*>;
+			static Foundation::ThreadLocalObject<ShaderVec> tloShaders;
+			auto& shaders = *tloShaders;
 			shaders.clear();
 			GetMaterialShaders(unit->GetMaterial(), shaders);
 			std::for_each(shaders.begin(), shaders.end(), [this](IShader* shader) {
@@ -50,7 +50,7 @@ namespace Lightning
 			});
 		}
 		
-		void D3D12ForwardRenderPass::GetMaterialShaders(IMaterial* material, Container::Vector<IShader*>& shaders)
+		void D3D12ForwardRenderPass::GetMaterialShaders(IMaterial* material, std::vector<IShader*>& shaders)
 		{
 			auto vs = material->GetShader(ShaderType::VERTEX);
 			auto fs = material->GetShader(ShaderType::FRAGMENT);

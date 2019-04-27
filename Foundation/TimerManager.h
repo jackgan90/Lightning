@@ -1,6 +1,6 @@
 #pragma once
 #include <thread>
-#include "Container.h"
+#include <unordered_map>
 #include "Singleton.h"
 #include "Timer.h"
 
@@ -14,7 +14,7 @@ namespace Lightning
 			ITimer* CreateTimer(std::size_t resolution);
 			ITimer* GetTimer();
 		private:
-			Container::UnorderedMap< std::thread::id, Container::Vector<ITimer*>> mTimers;
+			std::unordered_map< std::thread::id, std::vector<ITimer*>> mTimers;
 			static constexpr std::size_t sBucketCount = 4096;
 		};
 	}

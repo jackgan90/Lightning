@@ -28,12 +28,12 @@ namespace Lightning
 			mCmdListResources[cmdList].insert(resource);
 		}
 
-		void D3D12StatefulResourceManager::FixResourceStates(Container::Vector<ID3D12CommandList*>& commandLists)
+		void D3D12StatefulResourceManager::FixResourceStates(std::vector<ID3D12CommandList*>& commandLists)
 		{
 			MutexLock lock(mtxResources);
 			std::size_t i{ 0 };
 			mEncoderIndex = 0;
-			static Container::Vector<D3D12_RESOURCE_BARRIER> barrierDescs;
+			static std::vector<D3D12_RESOURCE_BARRIER> barrierDescs;
 			barrierDescs.clear();
 			while (i < commandLists.size())
 			{

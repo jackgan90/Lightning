@@ -1,13 +1,11 @@
 #pragma once
 #include "ISceneManager.h"
-#include "Container.h"
 #include "Singleton.h"
 
 namespace Lightning
 {
 	namespace Scene
 	{
-		using Foundation::Container;
 		using Foundation::Singleton;
 		class SceneManager : public ISceneManager, public Singleton<SceneManager>
 		{
@@ -23,7 +21,7 @@ namespace Lightning
 		protected:
 			void DestroyAllScenesImpl();
 			std::uint32_t mCurrentSceneID;
-			Container::UnorderedMap<std::uint32_t, IScene*> mScenes;
+			std::unordered_map<std::uint32_t, IScene*> mScenes;
 			IScene* mForegroundScene;
 		private:
 			friend class Singleton<SceneManager>;

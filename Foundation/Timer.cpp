@@ -28,7 +28,7 @@ namespace Lightning
 				std::size_t interval;
 				std::function<void()> func;
 			};
-			static Container::Vector<TaskInfo> repeatedTasks;
+			static std::vector<TaskInfo> repeatedTasks;
 			auto now = high_resolution_clock::now();
 			auto elapsedTime = duration_cast<milliseconds>(now - mLastTickTime);
 			if (std::size_t(elapsedTime.count()) < mResolution)

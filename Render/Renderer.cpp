@@ -279,7 +279,7 @@ namespace Lightning
 
 		void Renderer::WaitForPreviousFrame(bool waitAll)
 		{
-			static Container::Vector<std::size_t> resourceIndice;
+			static std::vector<std::size_t> resourceIndice;
 			resourceIndice.clear();
 			if (!waitAll)
 			{

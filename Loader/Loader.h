@@ -2,17 +2,17 @@
 #include <thread>
 #include <mutex>
 #include <functional>
+#include <unordered_map>
 #include "ILoader.h"
 #include "Singleton.h"
-#include "Container.h"
 #include "ISerializeBuffer.h"
 #include "tbb/task.h"
+#include "tbb/concurrent_queue.h"
 
 namespace Lightning
 {
 	namespace Loading
 	{
-		using Foundation::Container;
 		using LoadFinishHandler = std::function<void(void*)>;
 		struct LoadTask
 		{
@@ -47,9 +47,9 @@ namespace Lightning
 			void DisposeFile(const std::string& path, Foundation::IFile* file);
 			static void IOThread();
 			bool mRunning;
-			Container::ConcurrentQueue<LoadTask> mTasks;
-			Container::ConcurrentQueue<std::string> mDisposedPathes;
-			Container::UnorderedMap<std::string, ISerializeBuffer*> mBuffers;
+			tbb::concurrent_queue<LoadTask> mTasks;
+			tbb::concurrent_queue<std::string> mDisposedPathes;
+			std::unordered_map<std::string, ISerializeBuffer*> mBuffers;
 			std::mutex mTaskQueueMutex;
 			std::condition_variable mCondVar;
 			std::thread mLoaderIOThread;

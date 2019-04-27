@@ -1,7 +1,7 @@
 #include <boost/property_tree/exceptions.hpp>
 #include <cstdlib>
+#include <vector>
 #include "ConfigManager.h"
-#include "Container.h"
 #include "Logger.h"
 
 namespace Lightning
@@ -36,7 +36,7 @@ namespace Lightning
 				mConfig.MSAAEnabled = mTree.get<bool>("Lightning.Render.MSAAEnable");
 				mConfig.MSAASampleCount = mTree.get<unsigned>("Lightning.Render.MSAASampleCount");
 				mConfig.ThreadCount = mTree.get<unsigned>("Lightning.General.Threads");
-				Container::Vector<std::string> plugins;
+				std::vector<std::string> plugins;
 				for (auto& value : mTree.get_child("Lightning.Plugins"))
 				{
 					plugins.push_back(value.second.data());

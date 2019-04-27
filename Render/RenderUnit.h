@@ -4,13 +4,11 @@
 #include <tbb/scalable_allocator.h>
 #include "RefObject.h"
 #include "IRenderUnit.h"
-#include "Container.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::Container;
 		class RenderUnit : public IRenderUnit
 		{
 		public:
@@ -66,9 +64,9 @@ namespace Lightning
 			IIndexBuffer* mIndexBuffer;
 			IMaterial* mMaterial;	//shader material attributes
 			IDepthStencilBuffer* mDepthStencilBuffer; //depth stencil buffer for this draw
-			Container::Vector<IRenderTarget*> mRenderTargets;//render targets
-			Container::Vector<ViewportAndScissorRect> mViewportAndScissorRects;
-			Container::UnorderedMap<std::size_t, IVertexBuffer*> mVertexBuffers;
+			std::vector<IRenderTarget*> mRenderTargets;//render targets
+			std::vector<ViewportAndScissorRect> mViewportAndScissorRects;
+			std::unordered_map<std::size_t, IVertexBuffer*> mVertexBuffers;
 			//std::unordered_map<std::size_t, IVertexBuffer*,
 			//	std::hash<std::size_t>, std::equal_to<std::size_t>, VertexBufferAllocatorType> mVertexBuffers;
 			bool mCustomRenderTargets;

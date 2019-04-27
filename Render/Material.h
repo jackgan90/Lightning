@@ -1,6 +1,5 @@
 #pragma once
 #include <memory>
-#include "Container.h"
 #include "Semantics.h"
 #include "IMaterial.h"
 #include "RefObject.h"
@@ -10,7 +9,6 @@ namespace Lightning
 {
 	namespace Render
 	{
-		using Foundation::Container;
 		class Material : public IMaterial
 		{
 		public:
@@ -28,9 +26,9 @@ namespace Lightning
 			struct ShaderParameters
 			{
 				IShader* shader;
-				Container::Vector<ShaderParameter> parameters;
+				std::vector<ShaderParameter> parameters;
 			};
-			using ShaderParametersCache = Container::UnorderedMap<ShaderType, ShaderParameters>;
+			using ShaderParametersCache = std::unordered_map<ShaderType, ShaderParameters>;
 
 			ShaderParametersCache mShaders;
 			BlendState mBlendState;

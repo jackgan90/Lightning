@@ -27,7 +27,7 @@ namespace Lightning
 			ComPtr<ID3D12ShaderReflection> shaderReflection;
 			D3DReflect(mByteCode->GetBufferPointer(), mByteCode->GetBufferSize(), IID_PPV_ARGS(&shaderReflection));
 			shaderReflection->GetDesc(&mDesc);
-			Container::UnorderedMap<std::string, D3D12_SHADER_INPUT_BIND_DESC> inputBindDescs;
+			std::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC> inputBindDescs;
 			for (UINT i = 0;i < mDesc.BoundResources;++i)
 			{
 				D3D12_SHADER_INPUT_BIND_DESC bindDesc;
@@ -63,7 +63,7 @@ namespace Lightning
 
 		void D3D12Shader::InitConstantBufferRootParameter(
 			ID3D12ShaderReflection* shaderReflection, 
-			const Container::UnorderedMap<std::string, D3D12_SHADER_INPUT_BIND_DESC>& inputBindDescs)
+			const std::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC>& inputBindDescs)
 		{
 			if (mDesc.ConstantBuffers > 0)
 			{
@@ -111,7 +111,7 @@ namespace Lightning
 		}
 
 		void D3D12Shader::InitTextureRootParameter(
-			const Container::UnorderedMap<std::string, D3D12_SHADER_INPUT_BIND_DESC>& inputBindDescs)
+			const std::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC>& inputBindDescs)
 		{
 			auto resourceCount = mDescriptorRanges.size();
 			for (auto it = inputBindDescs.cbegin(); it != inputBindDescs.cend();++it)
@@ -135,7 +135,7 @@ namespace Lightning
 		}
 
 		void D3D12Shader::InitSamplerStateParameter(
-			const Container::UnorderedMap<std::string, D3D12_SHADER_INPUT_BIND_DESC>& inputBindDescs)
+			const std::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC>& inputBindDescs)
 		{
 			auto resourceCount = mDescriptorRanges.size();
 			for (auto it = inputBindDescs.cbegin(); it != inputBindDescs.cend();++it)
@@ -413,7 +413,7 @@ namespace Lightning
 			mResourceProxy->CommitResources();
 		}
 
-		const Container::Vector<D3D12_ROOT_PARAMETER>& D3D12Shader::GetRootParameters()const
+		const std::vector<D3D12_ROOT_PARAMETER>& D3D12Shader::GetRootParameters()const
 		{
 			return mRootParameters;
 		}

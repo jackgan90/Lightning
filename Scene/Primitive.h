@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include <cstdint>
-#include "Container.h"
 #include "IRenderUnit.h"
 #include "IShader.h"
 #include "IPrimitive.h"
@@ -49,7 +48,7 @@ namespace Lightning
 			ITexture* mTexture;
 			std::string mSamplerStateName;
 			SamplerState mSamplerState;
-			Foundation::Container::Vector<Render::IShader*> mShaders;
+			std::vector<Render::IShader*> mShaders;
 			REF_OBJECT_OVERRIDE(Primitive)
 		};
 
