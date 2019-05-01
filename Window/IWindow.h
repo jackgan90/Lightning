@@ -1,7 +1,6 @@
 #pragma once
 #include <cstdint>
 #include "cstddef"
-#include "IRefObject.h"
 #include "WindowEvents.h"
 
 #define WINDOW_MSG_CLASS_HANDLER(EventType, Handler)\
