@@ -14,22 +14,19 @@ namespace Lightning
 	namespace Loading
 	{
 		DeserializeTask::DeserializeTask(const LoadTask& loadTask, const std::shared_ptr<Foundation::IFile>& file, 
-			ISerializeBuffer* buffer, bool ownBuffer)
+			const std::shared_ptr<ISerializeBuffer>& buffer, bool ownBuffer)
 			:mLoadTask(loadTask), mFile(file), mBuffer(buffer), mOwnFile(ownBuffer)
 		{
-			mBuffer->AddRef();
 		}
 
 		DeserializeTask::~DeserializeTask()
 		{
-			mBuffer->Release();
 		}
 
 
 		tbb::task* DeserializeTask::execute()
 		{
 			mLoadTask.serializer->Deserialize(mFile.get(), mBuffer);
-			mLoadTask.serializer->Dispose();
 			if (mOwnFile)
 			{
 				Loader::Instance()->DisposeFile(mLoadTask.path, mFile.get());
@@ -52,11 +49,11 @@ namespace Lightning
 			mLoaderIOThread.join();
 		}
 
-		void Loader::Load(const char* path, ISerializer* ser)
+		void Loader::Load(const std::string& path, const std::shared_ptr<ISerializer>& serializer)
 		{
-			assert(ser != nullptr && "Serializer must not be nullptr!");
+			assert(serializer != nullptr && "Serializer must not be nullptr!");
 			LoadTask task;
-			task.serializer = ser;
+			task.serializer = serializer;
 			task.path = path;
 			mTasks.push(task);
 			mCondVar.notify_one();
@@ -91,7 +88,6 @@ namespace Lightning
 					auto it = mgr->mBuffers.find(path);
 					if (it != mgr->mBuffers.end())
 					{
-						it->second->Release();
 						mgr->mBuffers.erase(it);
 					}
 				}
@@ -103,7 +99,6 @@ namespace Lightning
 					if (!file)
 					{
 						LOG_ERROR("Can't find file : {0}", task.path.c_str());
-						task.serializer->Dispose();
 						continue;
 					}
 					if (file->IsOpen())
@@ -117,12 +112,11 @@ namespace Lightning
 					{
 						LOG_ERROR("File is empty : {0}", file->GetPath());
 						file->Close();
-						task.serializer->Dispose();
 						continue;
 					}
 					file->SetFilePointer(Foundation::FilePointerType::Read, Foundation::FileAnchor::Begin, 0);
 					//auto sharedBuffer = std::shared_ptr<char>(new char[std::size_t(size + 1)], std::default_delete<char[]>());
-					auto sharedBuffer = NEW_REF_OBJ(SerializeBuffer, size);
+					auto sharedBuffer = std::make_shared<SerializeBuffer>(size);
 					auto buffer = sharedBuffer->GetBuffer();
 					buffer[size] = 0;
 					auto readSize = file->Read(buffer, size);
@@ -130,8 +124,6 @@ namespace Lightning
 					{
 						LOG_ERROR("Unable to read whole file : {0}", file->GetPath());
 						file->Close();
-						sharedBuffer->Release();
-						task.serializer->Dispose();
 						continue;
 					}
 					mgr->mBuffers[task.path] = sharedBuffer;

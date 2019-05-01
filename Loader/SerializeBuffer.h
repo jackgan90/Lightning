@@ -1,6 +1,6 @@
 #pragma once
+#include <memory>
 #include "ISerializeBuffer.h"
-#include "RefObject.h"
 
 namespace Lightning
 {
@@ -10,13 +10,11 @@ namespace Lightning
 		{
 		public:
 			SerializeBuffer(std::size_t size);
-			INTERFACECALL ~SerializeBuffer()override;
-			char* INTERFACECALL GetBuffer()override;
-			std::size_t INTERFACECALL GetBufferSize()const override;
+			char* GetBuffer()override;
+			std::size_t GetBufferSize()const override;
 		private:
-			char* mBuffer;
+			std::unique_ptr<char[], std::default_delete<char[]>> mBuffer;
 			std::size_t mSize;
-			REF_OBJECT_OVERRIDE(SerializeBuffer)
 		};
 	}
 }

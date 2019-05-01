@@ -6,18 +6,13 @@ namespace Lightning
 	{
 		SerializeBuffer::SerializeBuffer(std::size_t size): mSize(size)
 		{
-			mBuffer = new char[mSize + 1];
+			mBuffer = std::make_unique<char[]>(mSize + 1);
 			mBuffer[mSize] = 0;
-		}
-
-		SerializeBuffer::~SerializeBuffer()
-		{
-			delete[] mBuffer;
 		}
 
 		char* SerializeBuffer::GetBuffer()
 		{
-			return mBuffer;
+			return mBuffer.get();
 		}
 
 		std::size_t SerializeBuffer::GetBufferSize()const

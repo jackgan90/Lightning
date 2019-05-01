@@ -16,7 +16,7 @@ namespace Lightning
 		using LoadFinishHandler = std::function<void(void*)>;
 		struct LoadTask
 		{
-			ISerializer* serializer;
+			std::shared_ptr<ISerializer> serializer;
 			std::string path;
 		};
 
@@ -24,22 +24,22 @@ namespace Lightning
 		{
 		public:
 			DeserializeTask(const LoadTask& loaderTask, const std::shared_ptr<Foundation::IFile>& file, 
-				ISerializeBuffer* buffer, bool ownFile);
+				const std::shared_ptr<ISerializeBuffer>& buffer, bool ownFile);
 			~DeserializeTask()override;
 			tbb::task* execute()override;
 		private:
 			LoadTask mLoadTask;
 			std::shared_ptr<Foundation::IFile> mFile;
-			ISerializeBuffer* mBuffer;
+			std::shared_ptr<ISerializeBuffer> mBuffer;
 			bool mOwnFile;
 		};
 
 		class Loader : public ILoader, public Foundation::Singleton<Loader>
 		{
 		public:
-			void INTERFACECALL Finalize()override;
-			void INTERFACECALL Load(const char* path, ISerializer* ser)override;
-			INTERFACECALL ~Loader()override;
+			void Finalize()override;
+			void Load(const std::string& path, const std::shared_ptr<ISerializer>& serializer)override;
+			~Loader()override;
 		private:
 			friend class Foundation::Singleton<Loader>;
 			friend class DeserializeTask;
@@ -49,7 +49,7 @@ namespace Lightning
 			bool mRunning;
 			tbb::concurrent_queue<LoadTask> mTasks;
 			tbb::concurrent_queue<std::string> mDisposedPathes;
-			std::unordered_map<std::string, ISerializeBuffer*> mBuffers;
+			std::unordered_map<std::string, std::shared_ptr<ISerializeBuffer>> mBuffers;
 			std::mutex mTaskQueueMutex;
 			std::condition_variable mCondVar;
 			std::thread mLoaderIOThread;

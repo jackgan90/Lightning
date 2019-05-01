@@ -26,7 +26,7 @@ namespace Lightning
 			IIndexBuffer* INTERFACECALL CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;
 			IShader* INTERFACECALL CreateShader(ShaderType type, const char* shaderName, 
 				const char* const shaderSource, const IShaderMacros* macros)override;
-			ITexture* INTERFACECALL CreateTexture(const TextureDescriptor& descriptor, ISerializeBuffer* buffer)override;
+			ITexture* CreateTexture(const TextureDescriptor& descriptor, const std::shared_ptr<ISerializeBuffer>& buffer)override;
 			IRenderTarget* INTERFACECALL CreateRenderTarget(ITexture* texture) override;
 			IDepthStencilBuffer* INTERFACECALL CreateDepthStencilBuffer(ITexture* texture)override;
 			D3D12Texture* CreateTexture(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState);

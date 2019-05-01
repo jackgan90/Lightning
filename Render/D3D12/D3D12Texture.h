@@ -14,7 +14,7 @@ namespace Lightning
 		{
 		public:
 			//Create normal texture
-			D3D12Texture(const D3D12_RESOURCE_DESC& desc, D3D12Device* device, Loading::ISerializeBuffer* buffer);
+			D3D12Texture(const D3D12_RESOURCE_DESC& desc, D3D12Device* device, const std::shared_ptr<Loading::ISerializeBuffer>& buffer);
 			//Create for depth or stencil buffer
 			D3D12Texture(const D3D12_RESOURCE_DESC& desc, D3D12Device* device, const float depth, const std::uint8_t stencil);
 			D3D12Texture(D3D12Device* device, const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState);
@@ -45,7 +45,7 @@ namespace Lightning
 			D3D12_CLEAR_VALUE mClearValue;
 			D3D12StatefulResourcePtr mResource;
 			D3D12StatefulResourcePtr mIntermediateResource;
-			Loading::ISerializeBuffer* mBuffer;
+			std::shared_ptr<Loading::ISerializeBuffer> mBuffer;
 			D3D12Device* mDevice;
 			std::mutex mCommitMutex;
 			REF_OBJECT_OVERRIDE(D3D12Texture)

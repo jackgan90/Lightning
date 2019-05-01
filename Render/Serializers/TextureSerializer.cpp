@@ -12,11 +12,10 @@ namespace Lightning
 		class FreeImageBuffer : public ISerializeBuffer
 		{
 		public:
-			FreeImageBuffer(ISerializeBuffer* rawBuffer, const std::string& path) 
+			FreeImageBuffer(const std::shared_ptr<ISerializeBuffer>& rawBuffer, const std::string& path) 
 				:mRawBuffer(rawBuffer), mBitmap(nullptr), mPath(path)
 			{
 				assert(rawBuffer && "raw buffer must not be nullptr!");
-				mRawBuffer->AddRef();
 			}
 
 			void GetTextureDescriptor(TextureDescriptor& descriptor)
@@ -72,35 +71,30 @@ namespace Lightning
 				return true;
 			}
 
-			INTERFACECALL ~FreeImageBuffer()
+			~FreeImageBuffer()override
 			{
 				if (mBitmap)
 				{
 					FreeImage_Unload(mBitmap);
 				}
-				if (mRawBuffer)
-				{
-					mRawBuffer->Release();
-				}
 			}
 
-			char* INTERFACECALL GetBuffer()override
+			char* GetBuffer()override
 			{
 				return reinterpret_cast<char*>(FreeImage_GetBits(mBitmap));
 			}
 
-			std::size_t INTERFACECALL GetBufferSize()const override
+			std::size_t GetBufferSize()const override
 			{
 				return FreeImage_GetMemorySize(mBitmap);
 			}
 		private:
-			ISerializeBuffer* mRawBuffer;
+			std::shared_ptr<ISerializeBuffer> mRawBuffer;
 			FIBITMAP* mBitmap;
 			std::string mPath;
-			REF_OBJECT_OVERRIDE(FreeImageBuffer)
 		};
 
-		TextureSerializer::TextureSerializer(const std::string path, ITextureCallback* callback):
+		TextureSerializer::TextureSerializer(const std::string path, ResourceAsyncCallback<ITexture> callback):
 			mPath(path), mFinishCallback(callback), mTexture(nullptr)
 		{
 
@@ -110,7 +104,7 @@ namespace Lightning
 		{
 			if (mFinishCallback)
 			{
-				mFinishCallback->Execute(mTexture);
+				mFinishCallback(mTexture);
 			}
 			if (mTexture)
 				mTexture->Release();
@@ -122,22 +116,16 @@ namespace Lightning
 			
 		}
 
-		void TextureSerializer::Deserialize(Foundation::IFile* file, ISerializeBuffer* buffer)
+		void TextureSerializer::Deserialize(Foundation::IFile* file, const std::shared_ptr<ISerializeBuffer>& buffer)
 		{
-			auto fiBuffer = NEW_REF_OBJ(FreeImageBuffer, buffer, file->GetPath());
+			auto fiBuffer = std::make_shared<FreeImageBuffer>(buffer, file->GetPath());
 			if (fiBuffer->Init())
 			{
 				TextureDescriptor descriptor;
 				fiBuffer->GetTextureDescriptor(descriptor);
 				auto device = Renderer::Instance()->GetDevice();
 				mTexture = device->CreateTexture(descriptor, fiBuffer);
-				fiBuffer->Release();
 			}
-		}
-
-		void TextureSerializer::Dispose()
-		{
-			delete this;
 		}
 	}
 }

@@ -9,14 +9,13 @@ namespace Lightning
 		class TextureSerializer : public Loading::ISerializer
 		{
 		public:
-			TextureSerializer(const std::string path, ITextureCallback* callback);
+			TextureSerializer(const std::string path, ResourceAsyncCallback<ITexture> callback);
 			~TextureSerializer()override;
 			void Serialize(char** buffer)override;
-			void Deserialize(Foundation::IFile* file, Loading::ISerializeBuffer* buffer)override;
-			void Dispose()override;
+			void Deserialize(Foundation::IFile* file, const std::shared_ptr<Loading::ISerializeBuffer>& buffer)override;
 		private:
 			std::string mPath;
-			ITextureCallback* mFinishCallback;
+			ResourceAsyncCallback<ITexture> mFinishCallback;
 			ITexture* mTexture;
 		};
 	}

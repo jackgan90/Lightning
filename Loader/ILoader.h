@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <memory>
 #include "ISerializer.h"
 
 namespace Lightning
@@ -8,9 +9,9 @@ namespace Lightning
 	{
 		struct ILoader
 		{
-			virtual INTERFACECALL ~ILoader() = default;
-			virtual void INTERFACECALL Finalize() = 0;
-			virtual void INTERFACECALL Load(const char* path, ISerializer* ser) = 0;
+			virtual ~ILoader() = default;
+			virtual void Finalize() = 0;
+			virtual void Load(const std::string& path, const std::shared_ptr<ISerializer>& serializer) = 0;
 		};
 	}
 }

@@ -11,14 +11,12 @@ namespace Lightning
 	namespace Render
 	{
 		using Loading::ISerializeBuffer;
-		D3D12Texture::D3D12Texture(const D3D12_RESOURCE_DESC& desc, D3D12Device* device, ISerializeBuffer* buffer)
+		D3D12Texture::D3D12Texture(const D3D12_RESOURCE_DESC& desc, D3D12Device* device, const std::shared_ptr<ISerializeBuffer>& buffer)
 			:mCommitted(false), mBuffer(buffer), mDevice(device)
 		{
 			mClearValue.Format = DXGI_FORMAT_UNKNOWN;
 			mClearValue.DepthStencil.Depth = 1.0f;
 			mClearValue.DepthStencil.Stencil = 0;
-			if (mBuffer)
-				mBuffer->AddRef();
 			mResource = mDevice->CreateCommittedResource(
 				&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
 				D3D12_HEAP_FLAG_NONE,
@@ -63,10 +61,6 @@ namespace Lightning
 		{
 			mResource.reset();
 			mIntermediateResource.reset();
-			if (mBuffer)
-			{
-				mBuffer->Release();
-			}
 		}
 
 		void D3D12Texture::InitIntermediateResource()
@@ -136,8 +130,7 @@ namespace Lightning
 					mResource->TransitTo(commandList, D3D12_RESOURCE_STATE_COPY_DEST);
 					::UpdateSubresources(commandList, mResource->GetResource(), mIntermediateResource->GetResource(), 0, 0, 1, &subresourceData);
 					mResource->TransitTo(commandList, D3D12_RESOURCE_STATE_GENERIC_READ);
-					mBuffer->Release();
-					mBuffer = nullptr;
+					mBuffer.reset();
 					mCommitted = true;
 				}
 			}

@@ -12,19 +12,9 @@ namespace Lightning
 	namespace Render
 	{
 		using Loading::ISerializeBuffer;
-		//Avoid using template in cross module interfaces
-		struct IShaderCallback
-		{
-			virtual INTERFACECALL ~IShaderCallback() = default;
-			virtual void INTERFACECALL Execute(IShader*) = 0;
-		};
-
-		struct ITextureCallback
-		{
-			virtual INTERFACECALL ~ITextureCallback() = default;
-			virtual void INTERFACECALL Execute(ITexture*) = 0;
-		};
-
+		template<typename T>
+		using ResourceAsyncCallback = std::function<void(T*)>;
+		
 		struct IDevice
 		{
 			virtual INTERFACECALL ~IDevice() = default;
@@ -37,9 +27,9 @@ namespace Lightning
 				const char* const shaderSource, const IShaderMacros* macros) = 0;
 			virtual IRenderTarget* INTERFACECALL CreateRenderTarget(ITexture* texture) = 0;
 			virtual IDepthStencilBuffer* INTERFACECALL CreateDepthStencilBuffer(ITexture* texture) = 0;
-			virtual void INTERFACECALL CreateShaderFromFile(ShaderType type, const char* const path, IShaderCallback* callback) = 0;
-			virtual ITexture* INTERFACECALL CreateTexture(const TextureDescriptor& descriptor, ISerializeBuffer* buffer) = 0;
-			virtual void INTERFACECALL CreateTextureFromFile(const char* const path, ITextureCallback* callback) = 0;
+			virtual void CreateShaderFromFile(ShaderType type, const std::string& path, ResourceAsyncCallback<IShader> callback) = 0;
+			virtual ITexture* CreateTexture(const TextureDescriptor& descriptor, const std::shared_ptr<ISerializeBuffer>& buffer) = 0;
+			virtual void CreateTextureFromFile(const std::string& path, ResourceAsyncCallback<ITexture> callback) = 0;
 			virtual IShader* INTERFACECALL GetDefaultShader(ShaderType type) = 0;
 		};
 	}

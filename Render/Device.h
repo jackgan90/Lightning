@@ -12,8 +12,8 @@ namespace Lightning
 			friend class Renderer;
 			~Device()override;
 			IShader* INTERFACECALL GetDefaultShader(ShaderType type)override;
-			void INTERFACECALL CreateShaderFromFile(ShaderType type, const char* const path, IShaderCallback* callback)override;
-			void INTERFACECALL CreateTextureFromFile(const char* const path, ITextureCallback* callback)override;
+			void CreateShaderFromFile(ShaderType type, const std::string& path, ResourceAsyncCallback<IShader> callback)override;
+			void CreateTextureFromFile(const std::string& path, ResourceAsyncCallback<ITexture> callback)override;
 		protected:
 			Device();
 			Loading::ILoader* GetLoader();

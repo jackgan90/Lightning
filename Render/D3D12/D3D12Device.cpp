@@ -144,7 +144,7 @@ namespace Lightning
 			return NEW_REF_OBJ(D3D12Shader, mHighestShaderModel, type, shaderName, shaderSource);
 		}
 
-		ITexture* D3D12Device::CreateTexture(const TextureDescriptor& descriptor, ISerializeBuffer* buffer)
+		ITexture* D3D12Device::CreateTexture(const TextureDescriptor& descriptor, const std::shared_ptr<ISerializeBuffer>& buffer)
 		{
 			D3D12_RESOURCE_DESC desc{};
 			desc.Alignment = 0;

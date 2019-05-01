@@ -48,39 +48,22 @@ namespace Lightning
 			color.b = 255;
 			color.a = 255;
 			cube->SetColor(color);
-			//scene->AddDrawable(cube);
-			//cube->Release();
 			auto renderer = renderPlugin->GetRenderer();
 			auto device = renderer->GetDevice();
-			struct test : Render::IShaderCallback
-			{
-				test(Scene::IPrimitive* p) : prim(p){}
-				void Execute(Render::IShader* shader)override
-				{	
-					prim->SetShader(shader);
-					delete this;
-				}
-				Scene::IPrimitive* prim;
-			};
+			device->CreateShaderFromFile(Render::ShaderType::VERTEX, "texture_map.vs", 
+				[cube](Render::IShader* shader) {
+					cube->SetShader(shader);
+			});
+			device->CreateShaderFromFile(Render::ShaderType::FRAGMENT, "texture_map.ps", 
+				[cube](Render::IShader* shader) {
+					cube->SetShader(shader);
+			});
 
-			struct test1 : Render::ITextureCallback
-			{
-				test1(Scene::IScene* _scene, Scene::IPrimitive* p) : scene(_scene), prim(p){}
-				void Execute(Render::ITexture* texture)override
-				{
-					prim->SetTexture("tex", texture);
-					scene->AddDrawable(prim);
-					prim->Release();
-					delete this;
-				}
-				Scene::IPrimitive* prim;
-				Scene::IScene* scene;
-			};
-			
-			device->CreateShaderFromFile(Render::ShaderType::VERTEX, "texture_map.vs", new test(cube));
-			device->CreateShaderFromFile(Render::ShaderType::FRAGMENT, "texture_map.ps", new test(cube));
-
-			device->CreateTextureFromFile("lunafreya.jpg", new test1(scene, cube));
+			device->CreateTextureFromFile("lunafreya.jpg", [cube, scene](Render::ITexture* texture) {
+					cube->SetTexture("tex", texture);
+					scene->AddDrawable(cube);
+					cube->Release();
+			});
 			/*
 			static std::random_device rd;
 			static std::mt19937 mt(rd());
