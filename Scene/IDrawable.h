@@ -9,9 +9,10 @@ namespace Lightning
 	{
 		using Render::IRenderer;
 		using Plugins::IRefObject;
-		struct IDrawable : IRefObject
+		struct IDrawable
 		{
-			virtual void INTERFACECALL Draw(IRenderer* , const SceneRenderData&) = 0;
+			virtual ~IDrawable() = default;
+			virtual void Draw(IRenderer* , const SceneRenderData&) = 0;
 		};
 	}
 }

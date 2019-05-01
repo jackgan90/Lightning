@@ -15,24 +15,24 @@ namespace Lightning
 		{
 		public:
 			Primitive();
-			INTERFACECALL ~Primitive()override;
-			void INTERFACECALL Draw(IRenderer* renderer, const SceneRenderData& sceneRenderData) override;
-			PrimitiveType INTERFACECALL GetPrimitiveType()const override{ return mRenderUnit->GetPrimitiveType(); }
-			void INTERFACECALL SetWorldPosition(const Vector3f& pos) override{ mTransform.SetPosition(pos); }
-			Vector3f INTERFACECALL GetWorldPosition()const override{ return mTransform.GetPosition(); }
-			void INTERFACECALL SetWorldRotation(const Quaternionf& rot) override{ mTransform.SetRotation(rot); }
-			Quaternionf INTERFACECALL GetWorldRotation()const override{ return mTransform.GetRotation(); }
-			Color32 INTERFACECALL GetColor()const override{ return mColor; }
-			void INTERFACECALL GetColor(float& a, float& r, float& g, float& b)override;
-			void INTERFACECALL SetColor(const Color32& color)override;
+			~Primitive()override;
+			void Draw(IRenderer* renderer, const SceneRenderData& sceneRenderData) override;
+			PrimitiveType GetPrimitiveType()const override{ return mRenderUnit->GetPrimitiveType(); }
+			void SetWorldPosition(const Vector3f& pos) override{ mTransform.SetPosition(pos); }
+			Vector3f GetWorldPosition()const override{ return mTransform.GetPosition(); }
+			void SetWorldRotation(const Quaternionf& rot) override{ mTransform.SetRotation(rot); }
+			Quaternionf GetWorldRotation()const override{ return mTransform.GetRotation(); }
+			Color32 GetColor()const override{ return mColor; }
+			void GetColor(float& a, float& r, float& g, float& b)override;
+			void SetColor(const Color32& color)override;
 			//color is in ARGB order
-			void INTERFACECALL SetColor(std::uint32_t color)override;
-			void INTERFACECALL SetColor(float a, float r, float g, float b)override;
-			void INTERFACECALL SetTransparency(std::uint8_t transparency)override;
-			void INTERFACECALL SetTransparency(float transparency)override;
-			void INTERFACECALL SetTexture(const char* name, ITexture* texture)override;
-			void INTERFACECALL SetSamplerState(const char* name, const SamplerState& state)override;
-			void INTERFACECALL SetShader(IShader* shader)override;
+			void SetColor(std::uint32_t color)override;
+			void SetColor(float a, float r, float g, float b)override;
+			void SetTransparency(std::uint8_t transparency)override;
+			void SetTransparency(float transparency)override;
+			void SetTexture(const char* name, ITexture* texture)override;
+			void SetSamplerState(const char* name, const SamplerState& state)override;
+			void SetShader(IShader* shader)override;
 		protected:
 			virtual void UpdateRenderUnit(IRenderer*);
 			virtual std::uint8_t *GetVertices() = 0;
@@ -49,7 +49,6 @@ namespace Lightning
 			std::string mSamplerStateName;
 			SamplerState mSamplerState;
 			std::vector<Render::IShader*> mShaders;
-			REF_OBJECT_OVERRIDE(Primitive)
 		};
 
 		struct PrimitiveDataSource

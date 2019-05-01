@@ -23,10 +23,10 @@ namespace Lightning
 			ScenePluginImpl() {};
 			~ScenePluginImpl()override;
 			ISceneManager* GetSceneManager()override;
-			IPrimitive* CreateCube(float width, float height, float thickness)override;
-			IPrimitive* CreateCylinder(float height, float radius)override;
-			IPrimitive* CreateHemisphere(float radius)override;
-			IPrimitive* CreateSphere(float radius)override;
+			std::shared_ptr<IPrimitive> CreateCube(float width, float height, float thickness)override;
+			std::shared_ptr<IPrimitive> CreateCylinder(float height, float radius)override;
+			std::shared_ptr<IPrimitive> CreateHemisphere(float radius)override;
+			std::shared_ptr<IPrimitive> CreateSphere(float radius)override;
 			void Tick()override;
 			void OnCreated(IPluginManager*)override;
 		private:
@@ -58,24 +58,24 @@ namespace Lightning
 			return SceneManager::Instance();
 		}
 
-		IPrimitive* ScenePluginImpl::CreateCube(float width, float height, float thickness)
+		std::shared_ptr<IPrimitive> ScenePluginImpl::CreateCube(float width, float height, float thickness)
 		{
-			return NEW_REF_OBJ(Cube, width, height, thickness);
+			return std::make_shared<Cube>(width, height, thickness);
 		}
 
-		IPrimitive* ScenePluginImpl::CreateCylinder(float height, float radius)
+		std::shared_ptr<IPrimitive> ScenePluginImpl::CreateCylinder(float height, float radius)
 		{
-			return NEW_REF_OBJ(Cylinder, height, radius);
+			return std::make_shared<Cylinder>(height, radius);
 		}
 
-		IPrimitive* ScenePluginImpl::CreateHemisphere(float radius)
+		std::shared_ptr<IPrimitive> ScenePluginImpl::CreateHemisphere(float radius)
 		{
-			return NEW_REF_OBJ(Hemisphere, radius);
+			return std::make_shared<Hemisphere>(radius);
 		}
 
-		IPrimitive* ScenePluginImpl::CreateSphere(float radius)
+		std::shared_ptr<IPrimitive> ScenePluginImpl::CreateSphere(float radius)
 		{
-			return NEW_REF_OBJ(Sphere, radius);
+			return std::make_shared<Sphere>(radius);
 		}
 	}
 }

@@ -11,15 +11,15 @@ namespace Lightning
 		{
 		public:
 			Scene(std::uint32_t id);
-			INTERFACECALL ~Scene()override;
-			std::uint32_t INTERFACECALL GetID()const override{ return mID; }
-			void INTERFACECALL Update()override;
-			void INTERFACECALL AddDrawable(IDrawable* )override;
-			ICamera* INTERFACECALL GetActiveCamera()override { return mActiveCamera; }
+			~Scene()override;
+			std::uint32_t GetID()const override{ return mID; }
+			void Update()override;
+			void AddDrawable(const std::shared_ptr<IDrawable>& drawable)override;
+			ICamera* GetActiveCamera()override { return mActiveCamera; }
 		protected:
 			ICamera* mActiveCamera;
 			std::uint32_t mID;
-			std::vector<IDrawable*> mDrawables;
+			std::vector<std::shared_ptr<IDrawable>> mDrawables;
 			SceneRenderData mRenderData;
 		};
 	}

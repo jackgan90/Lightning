@@ -62,7 +62,6 @@ namespace Lightning
 			device->CreateTextureFromFile("lunafreya.jpg", [cube, scene](Render::ITexture* texture) {
 					cube->SetTexture("tex", texture);
 					scene->AddDrawable(cube);
-					cube->Release();
 			});
 			/*
 			static std::random_device rd;
@@ -72,7 +71,7 @@ namespace Lightning
 			static std::uniform_int_distribution<int> cDist(0, 255);
 			for (auto i = 0;i < 200;++i)
 			{
-				Scene::IPrimitive* p{ nullptr };
+				std::shared_ptr<Scene::IPrimitive> p;
 				switch (dist(mt))
 				{
 				case 0:
@@ -103,7 +102,6 @@ namespace Lightning
 				p->SetColor(color);
 				p->SetWorldRotation(Transformer::RandomRotation());
 				scene->AddDrawable(p);
-				p->Release();
 			}*/
 		}
 		//For test only end
