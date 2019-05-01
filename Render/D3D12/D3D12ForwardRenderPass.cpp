@@ -40,7 +40,7 @@ namespace Lightning
 			static Foundation::ThreadLocalObject<ShaderVec> tloShaders;
 			auto& shaders = *tloShaders;
 			shaders.clear();
-			GetMaterialShaders(unit->GetMaterial(), shaders);
+			GetMaterialShaders(unit->GetMaterial().get(), shaders);
 			std::for_each(shaders.begin(), shaders.end(), [this](IShader* shader) {
 				auto d3d12Shader = static_cast<D3D12Shader*>(shader);
 				mTotalConstantBufferSize += d3d12Shader->GetConstantBufferSize();

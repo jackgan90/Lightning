@@ -14,7 +14,7 @@ namespace Lightning
 		//call for the two methods.
 		struct IRenderPlugin : public Plugin
 		{
-			virtual Render::IMaterial* CreateMaterial() = 0;
+			virtual std::shared_ptr<Render::IMaterial> CreateMaterial() = 0;
 			virtual Render::IRenderer* GetRenderer() = 0;
 			//Thread unsafe
 			virtual Render::IRenderer* CreateRenderer(Window::IWindow*) = 0;

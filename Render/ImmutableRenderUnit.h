@@ -11,20 +11,20 @@ namespace Lightning
 		{
 		public:
 			ImmutableRenderUnit();
-			INTERFACECALL ~ImmutableRenderUnit()override;
-			PrimitiveType INTERFACECALL GetPrimitiveType()const override;
-			IIndexBuffer* INTERFACECALL GetIndexBuffer()const override;
-			std::size_t INTERFACECALL GetVertexBufferCount()const override;
-			void INTERFACECALL GetVertexBuffer(std::size_t index, std::size_t& slot, IVertexBuffer*& vertexBuffer)const override;
-			IMaterial* INTERFACECALL GetMaterial()const override;
-			const Transform& INTERFACECALL GetTransform()const override;
-			const Matrix4f& INTERFACECALL GetViewMatrix()const override;
-			const Matrix4f& INTERFACECALL GetProjectionMatrix()const override;
-			IRenderTarget* INTERFACECALL GetRenderTarget(std::size_t index)const override;
-			std::size_t INTERFACECALL GetRenderTargetCount()const override;
-			IDepthStencilBuffer* INTERFACECALL GetDepthStencilBuffer()const override;
-			std::size_t INTERFACECALL GetViewportCount()const override;
-			void INTERFACECALL GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const override;
+			~ImmutableRenderUnit()override;
+			PrimitiveType GetPrimitiveType()const override;
+			IIndexBuffer* GetIndexBuffer()const override;
+			std::size_t GetVertexBufferCount()const override;
+			void GetVertexBuffer(std::size_t index, std::size_t& slot, IVertexBuffer*& vertexBuffer)const override;
+			std::shared_ptr<IMaterial> GetMaterial()const override;
+			const Transform& GetTransform()const override;
+			const Matrix4f& GetViewMatrix()const override;
+			const Matrix4f& GetProjectionMatrix()const override;
+			IRenderTarget* GetRenderTarget(std::size_t index)const override;
+			std::size_t GetRenderTargetCount()const override;
+			IDepthStencilBuffer* GetDepthStencilBuffer()const override;
+			std::size_t GetViewportCount()const override;
+			void GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const override;
 		private:
 			struct ViewportAndScissorRect
 			{
@@ -43,7 +43,7 @@ namespace Lightning
 			Matrix4f mViewMatrix;		//camera view matrix
 			Matrix4f mProjectionMatrix;//camera projection matrix
 			IIndexBuffer* mIndexBuffer;
-			IMaterial* mMaterial;	//shader material attributes
+			std::shared_ptr<IMaterial> mMaterial;	//shader material attributes
 			IDepthStencilBuffer* mDepthStencilBuffer; //depth stencil buffer for this draw
 			std::size_t mRenderTargetCount;
 			std::size_t mViewportCount;

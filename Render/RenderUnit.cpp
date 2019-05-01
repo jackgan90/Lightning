@@ -107,18 +107,14 @@ namespace Lightning
 			}
 		}
 
-		void RenderUnit::SetMaterial(IMaterial* material)
+		void RenderUnit::SetMaterial(const std::shared_ptr<IMaterial>& material)
 		{
 			if (material == mMaterial)
 				return;
-			if (mMaterial)
-				mMaterial->Release();
 			mMaterial = material;
-			if (mMaterial)
-				mMaterial->AddRef();
 		}
 
-		IMaterial* RenderUnit::GetMaterial()const
+		std::shared_ptr<IMaterial> RenderUnit::GetMaterial()const
 		{
 			return mMaterial;
 		}
@@ -280,10 +276,6 @@ namespace Lightning
 			}
 
 			clonedUnit->mMaterial = GetMaterial();
-			if (clonedUnit->mMaterial)
-			{
-				clonedUnit->mMaterial->AddRef();
-			}
 
 			clonedUnit->mDepthStencilBuffer = GetDepthStencilBuffer();
 			if (clonedUnit->mDepthStencilBuffer)
@@ -329,11 +321,7 @@ namespace Lightning
 				mIndexBuffer->Release();
 				mIndexBuffer = nullptr;
 			}
-			if (mMaterial)
-			{
-				mMaterial->Release();
-				mMaterial = nullptr;
-			}
+			mMaterial.reset();
 			if (mDepthStencilBuffer)
 			{
 				mDepthStencilBuffer->Release();

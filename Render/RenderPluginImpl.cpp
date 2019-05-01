@@ -17,7 +17,7 @@ namespace Lightning
 		public:
 			RenderPluginImpl();
 			~RenderPluginImpl()override;
-			IMaterial* CreateMaterial()override;
+			std::shared_ptr<IMaterial> CreateMaterial()override;
 			IRenderer* GetRenderer()override;
 			Render::IRenderer* CreateRenderer(Window::IWindow*)override;
 			void DestroyRenderer(Render::IRenderer*)override;
@@ -53,9 +53,9 @@ namespace Lightning
 			
 		}
 
-		IMaterial* RenderPluginImpl::CreateMaterial()
+		std::shared_ptr<IMaterial> RenderPluginImpl::CreateMaterial()
 		{
-			return NEW_REF_OBJ(Material);
+			return std::make_shared<Material>();
 		}
 
 		IRenderer* RenderPluginImpl::GetRenderer()

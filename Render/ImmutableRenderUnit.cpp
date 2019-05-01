@@ -15,10 +15,6 @@ namespace Lightning
 			{
 				mIndexBuffer->Release();
 			}
-			if (mMaterial)
-			{
-				mMaterial->Release();
-			}
 			if (mDepthStencilBuffer)
 			{
 				mDepthStencilBuffer->Release();
@@ -54,7 +50,7 @@ namespace Lightning
 			vertexBuffer = mVertexBuffers[index].vertexBuffer;
 		}
 
-		IMaterial* ImmutableRenderUnit::GetMaterial()const
+		std::shared_ptr<IMaterial> ImmutableRenderUnit::GetMaterial()const
 		{
 			return mMaterial;
 		}
