@@ -13,7 +13,7 @@ namespace Lightning
 			char* GetBuffer()override;
 			std::size_t GetBufferSize()const override;
 		private:
-			std::unique_ptr<char[], std::default_delete<char[]>> mBuffer;
+			std::unique_ptr<char[]> mBuffer;
 			std::size_t mSize;
 		};
 	}
