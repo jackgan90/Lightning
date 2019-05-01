@@ -15,7 +15,7 @@ namespace Lightning
 			virtual IPlugin* LoadPlugin(const std::string& pluginName) = 0;
 			virtual IPlugin* GetPlugin(const std::string& pluginName) = 0;
 			virtual bool UnloadPlugin(const std::string& pluginName) = 0;
-			virtual void Update() = 0;
+			virtual void Tick() = 0;
 			//Adjust update order.Make plugin1's update happens before plugin2's
 			virtual void MakePlugin1UpdateBeforePlugin2(IPlugin* plugin1, IPlugin* plugin2) = 0;
 		};

@@ -30,7 +30,7 @@ namespace Lightning
 
 		while (application->IsRunning())
 		{
-			pluginMgr->Update();
+			pluginMgr->Tick();
 		}
 
 		auto exitCode = application->GetExitCode();

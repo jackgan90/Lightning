@@ -27,7 +27,7 @@ namespace Lightning
 			IPrimitive* CreateCylinder(float height, float radius)override;
 			IPrimitive* CreateHemisphere(float radius)override;
 			IPrimitive* CreateSphere(float radius)override;
-			void Update()override;
+			void Tick()override;
 			void OnCreated(IPluginManager*)override;
 		private:
 			IPluginManager* mPluginMgr;
@@ -48,7 +48,7 @@ namespace Lightning
 			FINALIZE_LOGGER(mPluginMgr)
 		}
 
-		void ScenePluginImpl::Update()
+		void ScenePluginImpl::Tick()
 		{
 			SceneManager::Instance()->Update();
 		}

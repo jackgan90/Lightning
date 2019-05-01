@@ -21,15 +21,15 @@ namespace Lightning
 		{
 			assert(plugin1 && plugin2 && "Both plugin1 and plugin2 must be valid!");
 			std::lock_guard<std::recursive_mutex> lock(mPluginsMutex);
-			plugin1->SetUpdateOrder(plugin2->GetUpdateOrder() - 1);
+			plugin1->SetTickOrder(plugin2->GetTickOrder() - 1);
 			mNeedSyncPlugins = true;
 		}
 
-		void PluginManager::Update()
+		void PluginManager::Tick()
 		{
 			for (auto& pluginInfo : mPluginsToUpdate)
 			{
-				pluginInfo.plugin->Update();
+				pluginInfo.plugin->Tick();
 			}
 
 			SynchronizeTables();
@@ -72,7 +72,7 @@ namespace Lightning
 
 		bool PluginManager::ComparePluginUpdateOrder(const PluginInfo& info1, const PluginInfo& info2)
 		{
-			return info1.plugin->GetUpdateOrder() < info2.plugin->GetUpdateOrder();
+			return info1.plugin->GetTickOrder() < info2.plugin->GetTickOrder();
 		}
 
 		IPlugin* PluginManager::LoadPlugin(const std::string& pluginName)
@@ -100,7 +100,7 @@ namespace Lightning
 					{
 						info.refCount = 1;
 						info.plugin->SetName(pluginName.c_str());
-						info.plugin->SetUpdateOrder(mPluginUpdatePriority.fetch_add(1, std::memory_order_relaxed));
+						info.plugin->SetTickOrder(mPluginUpdatePriority.fetch_add(1, std::memory_order_relaxed));
 						info.plugin->OnCreated(this);
 						//mPlugins.emplace(name, info);
 						mPendingAddPlugins.emplace(pluginName, info);

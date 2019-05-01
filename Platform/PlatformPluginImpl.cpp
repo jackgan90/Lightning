@@ -18,7 +18,7 @@ namespace Lightning
 			PlatformPluginImpl(){}
 			~PlatformPluginImpl()override;
 			IApplication* CreateApplication()override;
-			void Update()override;
+			void Tick()override;
 			void OnCreated(IPluginManager*)override;
 		private:
 			std::unique_ptr<IApplication> mApp;
@@ -38,7 +38,7 @@ namespace Lightning
 			FINALIZE_LOGGER(mPluginMgr)
 		}
 
-		void PlatformPluginImpl::Update()
+		void PlatformPluginImpl::Tick()
 		{
 			if (mApp)
 				mApp->Update();

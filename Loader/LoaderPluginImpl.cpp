@@ -16,7 +16,7 @@ namespace Lightning
 			LoaderPluginImpl(){}
 			 ~LoaderPluginImpl()override;
 			ILoader* GetLoader()override;
-			void Update()override;
+			void Tick()override;
 			void OnCreated(IPluginManager*)override;
 		private:
 			IPluginManager* mPluginMgr;
@@ -38,7 +38,7 @@ namespace Lightning
 			FINALIZE_LOGGER(mPluginMgr)
 		}
 
-		void LoaderPluginImpl::Update()
+		void LoaderPluginImpl::Tick()
 		{
 
 		}

@@ -46,8 +46,8 @@ namespace Lightning
 				mName = name; 
 				mFullName = mName + std::string(PluginExtension); 
 			}
-			void SetUpdateOrder(int updateOrder)override { mUpdateOrder = updateOrder; }
-			int GetUpdateOrder()const override{ return mUpdateOrder; }
+			void SetTickOrder(int updateOrder)override { mUpdateOrder = updateOrder; }
+			int GetTickOrder()const override{ return mUpdateOrder; }
 		protected:
 			std::string mName;
 			std::string mFullName;

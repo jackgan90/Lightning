@@ -23,7 +23,7 @@ namespace Lightning
 			IPlugin* LoadPlugin(const std::string& pluginName)override;
 			IPlugin* GetPlugin(const std::string& pluginName)override;
 			bool UnloadPlugin(const std::string& pluginName)override;
-			void Update()override;
+			void Tick()override;
 			void MakePlugin1UpdateBeforePlugin2(IPlugin* plugin1, IPlugin* plugin2)override;
 		private:
 			friend class Engine;

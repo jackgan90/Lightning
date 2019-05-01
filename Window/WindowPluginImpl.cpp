@@ -19,7 +19,7 @@ namespace Lightning
 			WindowPluginImpl(){}
 			~WindowPluginImpl()override;
 			Window::IWindow* CreateWindow()override;
-			void Update()override;
+			void Tick()override;
 			void OnCreated(IPluginManager*)override;
 		private:
 			IPluginManager* mPluginMgr;
@@ -43,7 +43,7 @@ namespace Lightning
 			FINALIZE_LOGGER(mPluginMgr)
 		}
 
-		void WindowPluginImpl::Update()
+		void WindowPluginImpl::Tick()
 		{
 			for (auto window : mWindows)
 			{

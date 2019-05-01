@@ -29,7 +29,7 @@ namespace Lightning
 				LOG_INFO("Foundation plugin unloaded.");
 				mFileSink->flush();
 			}
-			void Update()override;
+			void Tick()override;
 			void InitLogger(const char* name, Foundation::Logger* logger)override;
 			void FinalizeLogger(Foundation::Logger* logger)override;
 			Foundation::IFileSystem* GetFileSystem()override;
@@ -51,7 +51,7 @@ namespace Lightning
 
 		}
 
-		void FoundationPluginImpl::Update()
+		void FoundationPluginImpl::Tick()
 		{
 
 		}

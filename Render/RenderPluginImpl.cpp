@@ -21,7 +21,7 @@ namespace Lightning
 			IRenderer* GetRenderer()override;
 			Render::IRenderer* CreateRenderer(Window::IWindow*)override;
 			void DestroyRenderer(Render::IRenderer*)override;
-			void Update()override;
+			void Tick()override;
 			void OnCreated(IPluginManager*)override;
 		private:
 			void DestroyRendererImpl(Render::IRenderer*);
@@ -47,7 +47,7 @@ namespace Lightning
 			DestroyRendererImpl(mRenderer);
 		}
 
-		void RenderPluginImpl::Update()
+		void RenderPluginImpl::Tick()
 		{
 			mRenderer->Render();
 			
