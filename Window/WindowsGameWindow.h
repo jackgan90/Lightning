@@ -11,9 +11,9 @@ namespace Lightning
 		{
 		public:
 			WindowsGameWindow();
-			INTERFACECALL ~WindowsGameWindow()override;
-			bool INTERFACECALL Show(bool show)override;
-			void INTERFACECALL Update()override;
+			~WindowsGameWindow()override;
+			bool Show(bool show)override;
+			void Update()override;
 			HWND GetWindowHandle()const { return mHwnd; }
 		private:
 			static LRESULT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

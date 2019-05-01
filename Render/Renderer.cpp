@@ -55,7 +55,6 @@ namespace Lightning
 			, mStarted(false)
 		{
 			assert(!sInstance);
-			mOutputWindow->AddRef();
 			sInstance = this;
 			for (const auto& semanticItem : PipelineInputSemantics)
 			{
@@ -245,7 +244,6 @@ namespace Lightning
 			}
 			mFrameResources[0].renderQueue = mCurrentFrameRenderQueue;
 			mFrameResources[0].ReleaseRenderQueue();
-			mOutputWindow->Release();
 			mDevice.reset();
 			mSwapChain.reset();
 			mRenderPasses.clear();

@@ -23,10 +23,10 @@ namespace Lightning
 		{
 		public:
 			//Only left for backwards compatibility,will remove later once refactoring is over
-			std::uint32_t INTERFACECALL GetWidth()const override{ return mWidth; }
-			std::uint32_t INTERFACECALL GetHeight()const override{ return mHeight; }
-			bool INTERFACECALL RegisterEventReceiver(IWindowEventReceiver* receiver)override;
-			bool INTERFACECALL UnregisterEventReceiver(IWindowEventReceiver* receiver)override;
+			std::uint32_t GetWidth()const override{ return mWidth; }
+			std::uint32_t GetHeight()const override{ return mHeight; }
+			bool RegisterEventReceiver(IWindowEventReceiver* receiver)override;
+			bool UnregisterEventReceiver(IWindowEventReceiver* receiver)override;
 		protected:
 			GameWindow();
 			virtual void OnCreated();
@@ -41,7 +41,6 @@ namespace Lightning
 			std::string mCaption;
 			std::uint32_t mWidth;
 			std::uint32_t mHeight;
-			REF_OBJECT_OVERRIDE(GameWindow)
 		};
 	}
 }

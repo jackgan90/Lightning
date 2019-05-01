@@ -14,26 +14,27 @@ namespace Lightning
 	namespace Window
 	{
 		struct IWindowEventReceiver;
-		struct IWindow : Plugins::IRefObject
+		struct IWindow
 		{
-			virtual bool INTERFACECALL Show(bool show) = 0;
-			virtual void INTERFACECALL Update() = 0;
-			virtual std::uint32_t INTERFACECALL GetWidth()const = 0;
-			virtual std::uint32_t INTERFACECALL GetHeight()const = 0;
-			virtual bool INTERFACECALL RegisterEventReceiver(IWindowEventReceiver* receiver) = 0;
-			virtual bool INTERFACECALL UnregisterEventReceiver(IWindowEventReceiver* receiver) = 0;
+			virtual ~IWindow() = default;
+			virtual bool Show(bool show) = 0;
+			virtual void Update() = 0;
+			virtual std::uint32_t GetWidth()const = 0;
+			virtual std::uint32_t GetHeight()const = 0;
+			virtual bool RegisterEventReceiver(IWindowEventReceiver* receiver) = 0;
+			virtual bool UnregisterEventReceiver(IWindowEventReceiver* receiver) = 0;
 		};
 
 		struct IWindowEventReceiver
 		{
-			virtual void INTERFACECALL OnWindowCreated(IWindow* window) = 0;
-			virtual void INTERFACECALL OnWindowDestroy(IWindow* window, int exitCode) = 0;
-			virtual void INTERFACECALL OnWindowIdle(IWindow* window) = 0;
-			virtual void INTERFACECALL OnWindowResize(IWindow* window, std::size_t width, std::size_t height) = 0;
-			virtual void INTERFACECALL OnWindowMouseWheel(IWindow* window, int delta, bool isVertical) = 0;
-			virtual void INTERFACECALL OnWindowKeyDown(IWindow* window, VirtualKeyCode keyCode) = 0;
-			virtual void INTERFACECALL OnWindowMouseDown(IWindow* window, VirtualKeyCode keyCode, std::size_t x, std::size_t y) = 0;
-			virtual void INTERFACECALL OnWindowMouseMove(IWindow* window, VirtualKeyCode keyCode, std::size_t x, std::size_t y) = 0;
+			virtual void OnWindowCreated(IWindow* window) = 0;
+			virtual void OnWindowDestroy(IWindow* window, int exitCode) = 0;
+			virtual void OnWindowIdle(IWindow* window) = 0;
+			virtual void OnWindowResize(IWindow* window, std::size_t width, std::size_t height) = 0;
+			virtual void OnWindowMouseWheel(IWindow* window, int delta, bool isVertical) = 0;
+			virtual void OnWindowKeyDown(IWindow* window, VirtualKeyCode keyCode) = 0;
+			virtual void OnWindowMouseDown(IWindow* window, VirtualKeyCode keyCode, std::size_t x, std::size_t y) = 0;
+			virtual void OnWindowMouseMove(IWindow* window, VirtualKeyCode keyCode, std::size_t x, std::size_t y) = 0;
 		};
 
 

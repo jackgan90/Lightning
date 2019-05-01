@@ -161,7 +161,6 @@ namespace Lightning
 		void Application::OnQuit(int exitCode)
 		{
 			mWindow->UnregisterEventReceiver(this);
-			mWindow->Release();
 			mRunning = false;
 			mExitCode = exitCode;
 			auto sceneMgr = Plugins::GetPlugin<Plugins::IScenePlugin>(Plugins::gPluginMgr, "Scene")->GetSceneManager();

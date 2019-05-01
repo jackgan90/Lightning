@@ -13,17 +13,18 @@ namespace Lightning
 	namespace Plugins
 	{
 		using namespace Foundation;
+		using Window::IWindow;
 		class WindowPluginImpl : public IWindowPlugin
 		{
 		public:
 			WindowPluginImpl(){}
 			~WindowPluginImpl()override;
-			Window::IWindow* CreateWindow()override;
+			IWindow* CreateWindow()override;
 			void Tick()override;
 			void OnCreated(IPluginManager*)override;
 		private:
 			IPluginManager* mPluginMgr;
-			std::vector<Window::IWindow*> mWindows;
+			std::vector<std::unique_ptr<IWindow>> mWindows;
 		};
 
 		void WindowPluginImpl::OnCreated(IPluginManager* mgr)
@@ -35,17 +36,14 @@ namespace Lightning
 
 		WindowPluginImpl::~WindowPluginImpl()
 		{
-			for (auto window : mWindows)
-			{
-				window->Release();
-			}
+			mWindows.clear();	//need to ensure the destructors of windows execute before finalize logger,because logger may be invoked in destructors.
 			LOG_INFO("Window plugin unloaded.");
 			FINALIZE_LOGGER(mPluginMgr)
 		}
 
 		void WindowPluginImpl::Tick()
 		{
-			for (auto window : mWindows)
+			for (auto& window : mWindows)
 			{
 				window->Update();
 			}
@@ -54,10 +52,8 @@ namespace Lightning
 		Window::IWindow* WindowPluginImpl::CreateWindow()
 		{
 #ifdef LIGHTNING_WIN32
-			auto window = NEW_REF_OBJ(Window::WindowsGameWindow);
-			window->AddRef();
-			mWindows.push_back(window);
-			return window;
+			mWindows.push_back(std::make_unique<Window::WindowsGameWindow>());
+			return mWindows.back().get();
 #endif
 			return nullptr;
 		}
