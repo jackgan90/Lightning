@@ -1,7 +1,6 @@
 project(Foundation)
 message(STATUS "Configuring project Foundation")
 
-set(MEMORY_HEADERS	Memory/MemoryPool.h)
 
 set(MATH_HEADERS	Math/Common.h
 					Math/Vector.h
@@ -59,10 +58,9 @@ set(SOURCES FileSystem.cpp
 			Environment.cpp)
 
 
-list(APPEND HEADERS ${MEMORY_HEADERS} ${MATH_HEADERS} ${ECS_HEADERS} ${PLUGIN_HEADERS})
+list(APPEND HEADERS ${MATH_HEADERS} ${ECS_HEADERS} ${PLUGIN_HEADERS})
 list(APPEND SOURCES ${ECS_SOURCES} ${PLUGIN_SOURCES})
 
-source_group("Memory" FILES	${MEMORY_HEADERS})
 source_group("Math" FILES ${MATH_HEADERS})
 source_group("ECS" FILES ${ECS_HEADERS} ${ECS_SOURCES})
 source_group("Plugin" FILES ${PLUGIN_HEADERS} ${PLUGIN_SOURCES})

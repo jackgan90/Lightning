@@ -25,6 +25,7 @@ namespace Lightning
 			bool UnloadPlugin(const std::string& pluginName)override;
 			void Tick()override;
 			void MakePlugin1UpdateBeforePlugin2(IPlugin* plugin1, IPlugin* plugin2)override;
+			~PluginManager();
 		private:
 			friend class Engine;
 			struct PluginInfo
@@ -49,7 +50,6 @@ namespace Lightning
 			using PluginTable = std::unordered_map<std::string, PluginInfo>;
 			using PluginList = std::vector<PluginInfo>;
 			PluginManager();
-			~PluginManager();
 			bool UnloadPlugin(PluginTable& table, const std::string& name);
 			IPlugin* LookUpPlugin(PluginTable& table, const std::string& pluginName, bool addRef);
 			void SynchronizeTables();

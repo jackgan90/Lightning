@@ -13,9 +13,8 @@ namespace Lightning
 				mTimers.emplace(std::piecewise_construct, std::make_tuple(threadId), std::make_tuple());
 				it = mTimers.find(threadId);
 			}
-			ITimer *timer = new WheelTimer(sBucketCount, resolution);
-			it->second.push_back(timer);
-			return timer;
+			it->second.emplace_back(std::make_unique<WheelTimer>(sBucketCount, resolution));
+			return it->second.back().get();
 		}
 
 		ITimer* TimerManager::GetTimer()
@@ -26,7 +25,7 @@ namespace Lightning
 				return nullptr;
 			if (it->second.empty())
 				return nullptr;
-			return it->second[0];
+			return it->second[0].get();
 		}
 	}
 }

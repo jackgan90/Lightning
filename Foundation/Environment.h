@@ -9,8 +9,8 @@ namespace Lightning
 		class Environment : public IEnvironment, public Singleton<Environment>
 		{
 		public:
-			void INTERFACECALL InitLoaderIOThreadID()override;
-			bool INTERFACECALL IsInLoaderIOThread()const override;
+			void SetLoaderIOThreadID(std::thread::id id)override;
+			bool IsInLoaderIOThread()const override;
 		private:
 			friend class Singleton<Environment>;
 			std::thread::id mLoaderIOThreadID;

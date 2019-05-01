@@ -17,9 +17,8 @@ namespace Lightning
 			REPEAT,
 		};
 
-		class ITimer
+		struct ITimer
 		{
-		public:
 			virtual ~ITimer() {};
 			virtual void Start() = 0;
 			virtual void Tick() = 0;

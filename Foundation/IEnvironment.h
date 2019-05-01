@@ -8,11 +8,10 @@ namespace Lightning
 	{
 		struct IEnvironment
 		{
-			virtual INTERFACECALL ~IEnvironment() = default;
-			//InitLoaderIOThreadID must be called by Loader IO thread procedure to let environment know
+			virtual ~IEnvironment() = default;
 			//the thread id.
-			virtual void INTERFACECALL InitLoaderIOThreadID() = 0;
-			virtual bool INTERFACECALL IsInLoaderIOThread()const = 0;
+			virtual void SetLoaderIOThreadID(std::thread::id id) = 0;
+			virtual bool IsInLoaderIOThread()const = 0;
 		};
 	}
 }

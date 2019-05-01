@@ -5,24 +5,24 @@
 namespace Lightning
 {
 	using Plugins::IPlatformPlugin;
+	using Plugins::PluginManager;
 	Engine::Engine()
 	{
-
 	}
 
 	int Engine::Run()
 	{
-		auto pluginMgr = CreatePluginMgr();
+		PluginManager pluginMgr;
 		//Load Foundation.dll,this is the fundamental module providing basic services for all other plugins
-		//such log, config ,file system etc.So it must be the first plugin to load and the last to free.
-		auto foundation = Plugins::LoadPlugin<Plugins::IFoundationPlugin>(pluginMgr, "Foundation");
+		//such as log, config ,file system etc.So it must be the first plugin to load and the last to free.
+		auto foundation = Plugins::LoadPlugin<Plugins::IFoundationPlugin>(&pluginMgr, "Foundation");
 		auto configMgr = foundation->GetConfigManager();
 		const auto& config = configMgr->GetConfig();
 		for (unsigned i = 0;i < config.Plugins.size();++i)
 		{
-			pluginMgr->LoadPlugin(config.Plugins[i]);
+			pluginMgr.LoadPlugin(config.Plugins[i]);
 		}
-		auto platformPlugin = Plugins::GetPlugin<IPlatformPlugin>(pluginMgr, "Platform");
+		auto platformPlugin = Plugins::GetPlugin<IPlatformPlugin>(&pluginMgr, "Platform");
 
 
 		auto application = platformPlugin->CreateApplication();
@@ -30,17 +30,16 @@ namespace Lightning
 
 		while (application->IsRunning())
 		{
-			pluginMgr->Tick();
+			pluginMgr.Tick();
 		}
 
 		auto exitCode = application->GetExitCode();
 
 		for (unsigned i = 0;i < config.Plugins.size();++i)
 		{
-			pluginMgr->UnloadPlugin(config.Plugins[i]);
+			pluginMgr.UnloadPlugin(config.Plugins[i]);
 		}
-		pluginMgr->UnloadPlugin("Foundation");
-		DestroyPluginMgr(pluginMgr);
+		pluginMgr.UnloadPlugin("Foundation");
 		return exitCode;
 	}
 }

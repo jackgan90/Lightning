@@ -13,14 +13,6 @@ namespace Lightning
 			static Engine sInstance;
 			return &sInstance;
 		}
-		Plugins::IPluginManager* CreatePluginMgr()const
-		{
-			return new Plugins::PluginManager();
-		}
-		void DestroyPluginMgr(Plugins::IPluginManager* pluginMgr)
-		{
-			delete pluginMgr;
-		}
 		int Run();
 	private:
 		Engine();
