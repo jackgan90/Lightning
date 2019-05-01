@@ -20,16 +20,17 @@ namespace Lightning
 		class PluginManager : public IPluginManager
 		{
 		public:
-			IPlugin* INTERFACECALL LoadPlugin(const char* pluginName)override;
-			IPlugin* INTERFACECALL GetPlugin(const char* pluginName)override;
-			bool INTERFACECALL UnloadPlugin(const char* pluginName)override;
-			void INTERFACECALL Update()override;
-			void INTERFACECALL MakePlugin1UpdateBeforePlugin2(IPlugin* plugin1, IPlugin* plugin2)override;
+			IPlugin* LoadPlugin(const std::string& pluginName)override;
+			IPlugin* GetPlugin(const std::string& pluginName)override;
+			bool UnloadPlugin(const std::string& pluginName)override;
+			void Update()override;
+			void MakePlugin1UpdateBeforePlugin2(IPlugin* plugin1, IPlugin* plugin2)override;
 		private:
 			friend class Engine;
 			struct PluginInfo
 			{
 				IPlugin* plugin;
+				int refCount;
 #ifdef LIGHTNING_WIN32
 				HMODULE handle;
 #endif

@@ -1,5 +1,5 @@
 #pragma once
-#include "IPlugin.h"
+#include "Plugin.h"
 #include "IWindow.h"
 #undef CreateWindow
 
@@ -7,9 +7,9 @@ namespace Lightning
 {
 	namespace Plugins
 	{
-		struct IWindowPlugin : public IPlugin
+		struct IWindowPlugin : public Plugin
 		{
-			virtual Window::IWindow* INTERFACECALL CreateWindow() = 0;
+			virtual Window::IWindow* CreateWindow() = 0;
 		};
 	}
 }

@@ -1,20 +1,21 @@
 #pragma once
-#include "IRefObject.h"
+#include <string>
 
 namespace Lightning
 {
 	namespace Plugins
 	{
-		struct IPlugin : public IRefObject
+		struct IPlugin
 		{
-			virtual const char* INTERFACECALL GetName()const = 0;
-			virtual const char* INTERFACECALL GetFullName()const = 0;
+			virtual ~IPlugin() = default;
+			virtual std::string GetName()const = 0;
+			virtual std::string GetFullName()const = 0;
 			//The following methods are meant for IPluginManager to invoke,never invoke those methods directly
-			virtual void INTERFACECALL Update() = 0;
-			virtual void INTERFACECALL OnCreated(class IPluginManager*) = 0;
-			virtual void INTERFACECALL SetName(const char* name) = 0;
-			virtual void INTERFACECALL SetUpdateOrder(int order) = 0;
-			virtual int INTERFACECALL GetUpdateOrder()const = 0;
+			virtual void Update() = 0;
+			virtual void OnCreated(class IPluginManager*) = 0;
+			virtual void SetName(const std::string& name) = 0;
+			virtual void SetUpdateOrder(int order) = 0;
+			virtual int GetUpdateOrder()const = 0;
 		};
 	}
 }

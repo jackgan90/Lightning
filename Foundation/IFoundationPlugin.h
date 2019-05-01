@@ -1,9 +1,9 @@
 #pragma once
 #include "Logger.h"
-#include "IPlugin.h"
 #include "IFileSystem.h"
 #include "IConfigManager.h"
 #include "IEnvironment.h"
+#include "Plugin.h"
 
 #define INIT_LOGGER(mgr, name)										\
 {																		\
@@ -21,13 +21,13 @@ namespace Lightning
 {
 	namespace Plugins
 	{
-		struct IFoundationPlugin : public IPlugin
+		struct IFoundationPlugin : public Plugin
 		{
-			virtual void INTERFACECALL InitLogger(const char* name, Foundation::Logger* logger) = 0;
-			virtual void INTERFACECALL FinalizeLogger(Foundation::Logger* logger) = 0;
-			virtual Foundation::IFileSystem* INTERFACECALL GetFileSystem() = 0;
-			virtual Foundation::IConfigManager* INTERFACECALL GetConfigManager() = 0;
-			virtual Foundation::IEnvironment* INTERFACECALL GetEnvironment() = 0;
+			virtual void InitLogger(const char* name, Foundation::Logger* logger) = 0;
+			virtual void FinalizeLogger(Foundation::Logger* logger) = 0;
+			virtual Foundation::IFileSystem* GetFileSystem() = 0;
+			virtual Foundation::IConfigManager* GetConfigManager() = 0;
+			virtual Foundation::IEnvironment* GetEnvironment() = 0;
 		};
 	}
 }

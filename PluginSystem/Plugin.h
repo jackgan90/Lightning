@@ -25,37 +25,9 @@ extern "C"\
 	LIGHTNING_PLUGIN_DLL_EXPORT Lightning::Plugins::IPlugin* GetPlugin(Lightning::Plugins::IPluginManager* mgr)\
 	{\
 		Lightning::Plugins::gPluginMgr = mgr;\
-		return NEW_REF_OBJ(Lightning::Plugins::##pluginImpl);\
+		return new Lightning::Plugins::##pluginImpl;\
 	}\
 }\
-
-#define PLUGIN_GETNAME_METHOD const char* INTERFACECALL GetName()const override{ return mName.c_str(); }
-#define PLUGIN_GETFULLNAME_METHOD const char* INTERFACECALL GetFullName()const override { return mFullName.c_str(); }
-
-#define PLUGIN_SETNAME_METHOD \
-void INTERFACECALL SetName(const char* name)override \
-{ \
-	mName = name; \
-	mFullName = mName + std::string(PluginExtension); \
-}
-
-#define PLUGIN_SETUPDATEORDER_METHOD void INTERFACECALL SetUpdateOrder(int updateOrder)override { mUpdateOrder = updateOrder; }
-#define PLUGIN_GETUPDATEORDER_METHOD int INTERFACECALL GetUpdateOrder()const override{ return mUpdateOrder; }
-#define PLUGIN_PRIVATE_FIELDS \
-std::string mName;\
-std::string mFullName;\
-int mUpdateOrder;
-
-#define PLUGIN_OVERRIDE(ClassName) \
-public: \
-PLUGIN_GETNAME_METHOD \
-PLUGIN_GETFULLNAME_METHOD \
-PLUGIN_SETNAME_METHOD \
-PLUGIN_SETUPDATEORDER_METHOD \
-PLUGIN_GETUPDATEORDER_METHOD \
-private: \
-PLUGIN_PRIVATE_FIELDS \
-REF_OBJECT_OVERRIDE(ClassName)
 
 namespace Lightning
 {
@@ -64,6 +36,23 @@ namespace Lightning
 #ifdef LIGHTNING_WIN32
 		constexpr char* PluginExtension = ".dll";
 #endif
+		class Plugin : public IPlugin
+		{
+		public:
+			std::string GetName()const override{ return mName; }
+			std::string GetFullName()const override { return mFullName; }
+			void SetName(const std::string& name)override 
+			{ 
+				mName = name; 
+				mFullName = mName + std::string(PluginExtension); 
+			}
+			void SetUpdateOrder(int updateOrder)override { mUpdateOrder = updateOrder; }
+			int GetUpdateOrder()const override{ return mUpdateOrder; }
+		protected:
+			std::string mName;
+			std::string mFullName;
+			int mUpdateOrder;
+		};
 		extern "C" typedef IPlugin* (*GetPluginProc)(class IPluginManager*);
 	}
 }

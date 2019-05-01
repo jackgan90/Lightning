@@ -75,22 +75,21 @@ namespace Lightning
 			return info1.plugin->GetUpdateOrder() < info2.plugin->GetUpdateOrder();
 		}
 
-		IPlugin* PluginManager::LoadPlugin(const char* szName)
+		IPlugin* PluginManager::LoadPlugin(const std::string& pluginName)
 		{
-			std::string name(szName);
 			std::lock_guard<std::recursive_mutex> lock(mPluginsMutex);
 
-			auto plugin = LookUpPlugin(mPendingAddPlugins, name, true);
+			auto plugin = LookUpPlugin(mPendingAddPlugins, pluginName, true);
 			if (plugin)
 				return plugin;
 
-			plugin = LookUpPlugin(mPlugins, name, true);
+			plugin = LookUpPlugin(mPlugins, pluginName, true);
 			if (plugin)
 				return plugin;
 
 			PluginInfo info;
 #ifdef LIGHTNING_WIN32
-			info.handle = ::LoadLibrary((name + PluginExtension).c_str());
+			info.handle = ::LoadLibrary((pluginName + PluginExtension).c_str());
 			if (info.handle)
 			{
 				GetPluginProc pGetProc = (GetPluginProc)::GetProcAddress(info.handle, GET_PLUGIN_PROC);
@@ -99,14 +98,15 @@ namespace Lightning
 					info.plugin = pGetProc(this);
 					if (info.plugin)
 					{
-						info.plugin->SetName(name.c_str());
+						info.refCount = 1;
+						info.plugin->SetName(pluginName.c_str());
 						info.plugin->SetUpdateOrder(mPluginUpdatePriority.fetch_add(1, std::memory_order_relaxed));
 						info.plugin->OnCreated(this);
 						//mPlugins.emplace(name, info);
-						mPendingAddPlugins.emplace(name, info);
+						mPendingAddPlugins.emplace(pluginName, info);
 						Operation operation;
 						operation.info = info;
-						operation.name = name;
+						operation.name = pluginName;
 						operation.type = OperationType::Load;
 						mOperationQueue.push_back(operation);
 						//Needs to be the last statement.So that main thread will get data from operation queue.
@@ -128,22 +128,21 @@ namespace Lightning
 			if (it != table.end())
 			{
 				if (addRef)
-					it->second.plugin->AddRef();
+					it->second.refCount += 1;
 				return it->second.plugin;
 			}
 			return nullptr;
 		}
 
-		IPlugin* PluginManager::GetPlugin(const char* szName)
+		IPlugin* PluginManager::GetPlugin(const std::string& pluginName)
 		{
-			std::string name(szName);
 			std::lock_guard<std::recursive_mutex> lock(mPluginsMutex);
 
-			auto plugin = LookUpPlugin(mPendingAddPlugins, name, false);
+			auto plugin = LookUpPlugin(mPendingAddPlugins, pluginName, false);
 			if (plugin)
 				return plugin;
 
-			plugin = LookUpPlugin(mPlugins, name, false);
+			plugin = LookUpPlugin(mPlugins, pluginName, false);
 			if (plugin)
 				return plugin;
 
@@ -155,8 +154,9 @@ namespace Lightning
 			auto it = table.find(name);
 			if (it != table.end())
 			{
-				if (it->second.plugin->Release())
+				if (--it->second.refCount <= 0)
 				{
+					delete it->second.plugin;
 #ifdef LIGHTNING_WIN32
 					::FreeLibrary(it->second.handle);
 #endif
@@ -167,20 +167,19 @@ namespace Lightning
 			return false;
 		}
 
-		bool PluginManager::UnloadPlugin(const char* szName)
+		bool PluginManager::UnloadPlugin(const std::string& pluginName)
 		{
-			std::string name(szName);
 			std::lock_guard<std::recursive_mutex> lock(mPluginsMutex);
-			auto res = UnloadPlugin(mPendingAddPlugins, name);
+			auto res = UnloadPlugin(mPendingAddPlugins, pluginName);
 			if (res)
 				return true;
 
-			auto it = mPlugins.find(name);
+			auto it = mPlugins.find(pluginName);
 			if (it != mPlugins.end())
 			{
 				Operation operation;
 				operation.info = it->second;
-				operation.name = name;
+				operation.name = pluginName;
 				operation.type = OperationType::Unload;
 				mOperationQueue.push_back(operation);
 				mNeedSyncPlugins = true;

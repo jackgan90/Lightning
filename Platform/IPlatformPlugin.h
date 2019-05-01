@@ -1,14 +1,14 @@
 #pragma once
-#include "IPlugin.h"
+#include "Plugin.h"
 #include "Application/IApplication.h"
 
 namespace Lightning
 {
 	namespace Plugins
 	{
-		struct IPlatformPlugin : public Plugins::IPlugin
+		struct IPlatformPlugin : public Plugin
 		{
-			virtual App::IApplication* INTERFACECALL CreateApplication() = 0;
+			virtual App::IApplication* CreateApplication() = 0;
 		};
 	}
 }

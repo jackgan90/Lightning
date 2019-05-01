@@ -1,6 +1,7 @@
 #pragma once
 #include <type_traits>
-#include "Portable.h"
+#include <string>
+#include <vector>
 
 namespace Lightning
 {
@@ -8,19 +9,17 @@ namespace Lightning
 	{
 		struct EngineConfig
 		{
-			char* ResourceRoot;		//the root directory of resources(shader,script,mesh etc)
-			bool MSAAEnabled;				//is msaa enabled?
-			unsigned MSAASampleCount;	// msaa sample count
-			unsigned ThreadCount;		// thread count used for the whole application(0 indicates determined by hardware)
-			char** Plugins;				//engine plugins loaded on app start.
-			unsigned PluginCount;
+			std::string ResourceRoot;			//the root directory of resources(shader,script,mesh etc)
+			bool MSAAEnabled;					//is MSAA enabled?
+			unsigned MSAASampleCount;			// MSAA sample count
+			unsigned ThreadCount;				// thread count used for the whole application(0 indicates determined by hardware)
+			std::vector<std::string> Plugins;	//engine plugins loaded on app start.
 		};
-		static_assert(std::is_pod<EngineConfig>::value, "EngineConfig is not a POD type.");
 
 		struct IConfigManager
 		{
-			virtual INTERFACECALL ~IConfigManager() = default;
-			virtual const EngineConfig& INTERFACECALL GetConfig()const = 0;
+			virtual ~IConfigManager() = default;
+			virtual const EngineConfig& GetConfig()const = 0;
 		};
 	}
 }

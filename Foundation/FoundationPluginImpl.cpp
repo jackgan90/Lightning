@@ -24,18 +24,18 @@ namespace Lightning
 				mFileSystem = Foundation::FileSystemFactory::Instance()->CreateFileSystem();
 				LOG_INFO("File system created!Current working directory:{0}", mFileSystem->GetRoot());
 			}
-			INTERFACECALL ~FoundationPluginImpl()override
+			~FoundationPluginImpl()override
 			{
 				LOG_INFO("Foundation plugin unloaded.");
 				mFileSink->flush();
 			}
-			void INTERFACECALL Update()override;
-			void INTERFACECALL InitLogger(const char* name, Foundation::Logger* logger)override;
-			void INTERFACECALL FinalizeLogger(Foundation::Logger* logger)override;
-			Foundation::IFileSystem* INTERFACECALL GetFileSystem()override;
-			Foundation::IConfigManager* INTERFACECALL GetConfigManager()override;
-			Foundation::IEnvironment* INTERFACECALL GetEnvironment()override;
-			void INTERFACECALL OnCreated(IPluginManager*)override;
+			void Update()override;
+			void InitLogger(const char* name, Foundation::Logger* logger)override;
+			void FinalizeLogger(Foundation::Logger* logger)override;
+			Foundation::IFileSystem* GetFileSystem()override;
+			Foundation::IConfigManager* GetConfigManager()override;
+			Foundation::IEnvironment* GetEnvironment()override;
+			void OnCreated(IPluginManager*)override;
 		private:
 			void InitLoggerImpl(const char* name, Foundation::Logger* logger);
 			std::shared_ptr<spdlog::sinks::basic_file_sink_mt> mFileSink;
@@ -44,7 +44,6 @@ namespace Lightning
 			std::shared_ptr<spdlog::sinks::msvc_sink_mt> mMsvcSink;
 #endif
 			static constexpr char* LogFileName = "log.txt";
-			PLUGIN_OVERRIDE(FoundationPluginImpl)
 		};
 
 		void FoundationPluginImpl::OnCreated(IPluginManager* mgr)

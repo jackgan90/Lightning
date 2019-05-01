@@ -11,7 +11,7 @@
 		<Plugin>Scene</Plugin>
 	</Plugins>
 	<Resource>
-		<Root>F:\Lightning_res</Root>
+		<Root>D:\Lightning_res</Root>
 	</Resource>
 	<Render>
 		<MSAAEnable>true</MSAAEnable>

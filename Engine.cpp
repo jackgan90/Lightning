@@ -18,7 +18,7 @@ namespace Lightning
 		auto foundation = Plugins::LoadPlugin<Plugins::IFoundationPlugin>(pluginMgr, "Foundation");
 		auto configMgr = foundation->GetConfigManager();
 		const auto& config = configMgr->GetConfig();
-		for (unsigned i = 0;i < config.PluginCount;++i)
+		for (unsigned i = 0;i < config.Plugins.size();++i)
 		{
 			pluginMgr->LoadPlugin(config.Plugins[i]);
 		}
@@ -35,7 +35,7 @@ namespace Lightning
 
 		auto exitCode = application->GetExitCode();
 
-		for (unsigned i = 0;i < config.PluginCount;++i)
+		for (unsigned i = 0;i < config.Plugins.size();++i)
 		{
 			pluginMgr->UnloadPlugin(config.Plugins[i]);
 		}
