@@ -27,6 +27,7 @@ namespace Lightning
 			virtual IDepthStencilBuffer* GetDepthStencilBuffer()const = 0;
 			virtual std::size_t GetViewportCount()const = 0;
 			virtual void GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const = 0;
+			virtual void Commit() = 0;
 		};
 		//An IRenderUnit object is an object that encapsulates objects and states that are used to render a drawable object in a frame.
 		//It describers what needs to be passed to the downstream rendering pipeline.Users of this interface may change its state by calling 

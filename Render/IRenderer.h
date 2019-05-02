@@ -110,6 +110,7 @@ namespace Lightning
 			virtual RenderSemantics INTERFACECALL GetUniformSemantic(const char* uniform_name) = 0;
 			//Gets uniform name by RenderSemantics
 			virtual const char* INTERFACECALL GetUniformName(RenderSemantics semantic) = 0;
+			virtual void GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name) = 0;
 		};
 	}
 }

@@ -42,6 +42,7 @@ namespace Lightning
 			std::size_t GetViewportCount()const override;
 			void GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const override;
 			IImmutableRenderUnit * Clone()const override;
+			void Commit()override;
 		private:
 			//using VertexBufferAllocatorType = boost::pool_allocator<std::pair<const std::size_t, IVertexBuffer*>>;
 			//using VertexBufferAllocatorType = std::allocator<std::pair<const std::size_t, IVertexBuffer*>>;

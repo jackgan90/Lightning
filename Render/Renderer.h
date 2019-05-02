@@ -46,6 +46,7 @@ namespace Lightning
 			IDepthStencilBuffer* INTERFACECALL GetDefaultDepthStencilBuffer()override;
 			RenderSemantics INTERFACECALL GetUniformSemantic(const char* uniform_name)override;
 			const char* INTERFACECALL GetUniformName(RenderSemantics semantic)override;
+			void GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name)override;
 		protected:
 			Renderer(Window::IWindow* window);
 			//Thread unsafe ,must ensure there's no concurrent execution
@@ -64,7 +65,6 @@ namespace Lightning
 			virtual RenderPass* CreateRenderPass(RenderPassType type);
 			virtual bool CheckIfDepthStencilBufferNeedsResize();
 			void ApplyRenderPasses();
-			void GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name);
 			void SwitchRenderQueue();
 		protected:
 			struct SemanticInfo

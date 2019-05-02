@@ -340,28 +340,23 @@ namespace Lightning
 			ApplyDepthStencilState(state.depthStencilState, desc);
 			if (state.vs)
 			{
-				ApplyShader(state.vs, desc);
-				cacheObject.shaderGroup->AddShader(static_cast<D3D12Shader*>(state.vs));
+				ApplyShader(state.vs, cacheObject.shaderGroup.get(), desc);
 			}
 			if (state.fs)
 			{
-				ApplyShader(state.fs, desc);
-				cacheObject.shaderGroup->AddShader(static_cast<D3D12Shader*>(state.fs));
+				ApplyShader(state.fs, cacheObject.shaderGroup.get(),desc);
 			}
 			if (state.gs)
 			{
-				ApplyShader(state.gs, desc);
-				cacheObject.shaderGroup->AddShader(static_cast<D3D12Shader*>(state.gs));
+				ApplyShader(state.gs, cacheObject.shaderGroup.get(), desc);
 			}
 			if (state.hs)
 			{
-				ApplyShader(state.hs, desc);
-				cacheObject.shaderGroup->AddShader(static_cast<D3D12Shader*>(state.hs));
+				ApplyShader(state.hs, cacheObject.shaderGroup.get(), desc);
 			}
 			if (state.ds)
 			{
-				ApplyShader(state.ds, desc);
-				cacheObject.shaderGroup->AddShader(static_cast<D3D12Shader*>(state.ds));
+				ApplyShader(state.ds, cacheObject.shaderGroup.get(), desc);
 			}
 			UpdatePSOInputLayout(state.inputLayouts, state.inputLayoutCount, desc);
 			desc.pRootSignature = cacheObject.shaderGroup->CreateRootSignature().Get();
@@ -457,7 +452,7 @@ namespace Lightning
 			desc.DSVFormat = D3D12TypeMapper::MapRenderFormat(state.bufferFormat);
 		}
 
-		void D3D12Renderer::ApplyShader(IShader* pShader, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
+		void D3D12Renderer::ApplyShader(IShader* pShader, D3D12ShaderGroup* shaderGroup, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
 			auto d3d12shader = static_cast<D3D12Shader*>(pShader);
 			auto byteCode = d3d12shader->GetByteCodeBuffer();
@@ -487,6 +482,7 @@ namespace Lightning
 			default:
 				break;
 			}
+			shaderGroup->AddShader(static_cast<D3D12Shader*>(pShader));
 		}
 
 		void D3D12Renderer::UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::size_t layoutCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)

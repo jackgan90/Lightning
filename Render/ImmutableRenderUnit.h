@@ -25,6 +25,14 @@ namespace Lightning
 			IDepthStencilBuffer* GetDepthStencilBuffer()const override;
 			std::size_t GetViewportCount()const override;
 			void GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const override;
+			void Commit()override;
+		private:
+			void CommitBuffers();
+			void CommitPipelineStates();
+			void CommitShaderParameters();
+			void CommitSemanticUniforms(IShader* shader);
+			void Draw();
+			void GetInputLayouts(VertexInputLayout*& layouts, std::size_t& layoutCount);
 		private:
 			struct ViewportAndScissorRect
 			{

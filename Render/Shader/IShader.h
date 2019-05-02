@@ -23,12 +23,11 @@ namespace Lightning
 
 		enum class ShaderType : std::uint8_t
 		{
-			VERTEX = 0,
+			VERTEX = 1,
 			FRAGMENT,
 			GEOMETRY,
 			HULL, //hull shader
 			DOMAIN,	//domain shader
-			SHADER_TYPE_NUM
 		};
 
 		struct IShader :  Plugins::IRefObject

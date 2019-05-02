@@ -365,5 +365,10 @@ namespace Lightning
 			this->~RenderUnit();
 			RenderUnitPool::free(this);
 		}
+
+		void RenderUnit::Commit()
+		{
+			//RenderUnit cannot be committed
+		}
 	}
 }

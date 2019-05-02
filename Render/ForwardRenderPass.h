@@ -14,13 +14,6 @@ namespace Lightning
 			void Apply(RenderQueue& renderQueue)override;
 			void OnAddRenderUnit(const IImmutableRenderUnit* unit)override;
 			void OnFrameEnd()override;
-		protected:
-			void CommitBuffers(const IImmutableRenderUnit* unit);
-			void CommitPipelineStates(const IImmutableRenderUnit* unit);
-			void CommitShaderParameters(const IImmutableRenderUnit* unit);
-			void CommitSemanticUniforms(IShader* shader, const IImmutableRenderUnit* unit);
-			void Draw(const IImmutableRenderUnit* unit);
-			void GetInputLayouts(const IImmutableRenderUnit* unit, VertexInputLayout*& layouts, std::size_t& layoutCount);
 		};
 	}
 }

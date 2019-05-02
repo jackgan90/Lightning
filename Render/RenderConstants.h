@@ -19,7 +19,7 @@ namespace Lightning
 
 		enum class PrimitiveType : std::uint8_t
 		{
-			POINT_LIST,
+			POINT_LIST = 1,
 			LINE_LIST,
 			LINE_STRIP,
 			TRIANGLE_LIST,
