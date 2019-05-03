@@ -6,7 +6,6 @@
 #include "RenderException.h"
 #include "Math/Matrix.h"
 #include "Math/Vector.h"
-#include "IRefObject.h"
 #include "IShaderParameter.h"
 #include "IShaderMacros.h"
 #undef DOMAIN

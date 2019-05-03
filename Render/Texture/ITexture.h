@@ -2,7 +2,6 @@
 #include <memory>
 #include <cstdint>
 #include "RenderConstants.h"
-#include "IRefObject.h"
 
 namespace Lightning
 {

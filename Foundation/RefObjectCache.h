@@ -4,7 +4,6 @@
 #include <string>
 #include <unordered_map>
 #include "Singleton.h"
-#include "IRefObject.h"
 
 namespace Lightning
 {
