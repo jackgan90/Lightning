@@ -150,6 +150,13 @@ namespace Lightning
 			{
 				state.renderTargets[i] = GetRenderTarget(i);
 			}
+			auto depthStencilBuffer = GetDepthStencilBuffer();
+			if (depthStencilBuffer)
+			{
+				auto depthStencilTexture = depthStencilBuffer->GetTexture();
+				state.depthStencilState.bufferFormat = depthStencilTexture->GetRenderFormat();
+			}
+			renderer->ApplyRenderTargets(state.renderTargets, state.renderTargetCount, depthStencilBuffer);
 			auto material = GetMaterial();
 			if (material)
 			{
@@ -173,13 +180,6 @@ namespace Lightning
 			
 			GetInputLayouts(state.inputLayouts, state.inputLayoutCount);
 
-			auto depthStencilBuffer = GetDepthStencilBuffer();
-			if (depthStencilBuffer)
-			{
-				auto depthStencilTexture = depthStencilBuffer->GetTexture();
-				state.depthStencilState.bufferFormat = depthStencilTexture->GetRenderFormat();
-			}
-			renderer->ApplyRenderTargets(state.renderTargets, state.renderTargetCount, depthStencilBuffer);
 			renderer->ApplyPipelineState(state);
 			auto viewportCount = GetViewportCount();
 			auto viewports = g_RenderAllocator.Allocate<Viewport>(viewportCount);
