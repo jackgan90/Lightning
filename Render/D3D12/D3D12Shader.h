@@ -44,12 +44,12 @@ namespace Lightning
 		{
 		public:
 			D3D12Shader(D3D_SHADER_MODEL shaderModel, ShaderType type, const std::string& name, const char* const shaderSource);
-			INTERFACECALL ~D3D12Shader()override;
-			const IShaderMacros* INTERFACECALL GetMacros()const override;
-			std::size_t INTERFACECALL GetParameterCount()const override;
-			bool INTERFACECALL SetParameter(const IShaderParameter* parameter) override;
-			void INTERFACECALL Compile()override;
-			void INTERFACECALL GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount)override;
+			~D3D12Shader()override;
+			const IShaderMacros* GetMacros()const override;
+			std::size_t GetParameterCount()const override;
+			bool SetParameter(const IShaderParameter* parameter) override;
+			void Compile()override;
+			void GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount)override;
 			void* GetByteCodeBuffer()const;
 			SIZE_T GetByteCodeBufferSize()const;
 			const std::vector<D3D12_ROOT_PARAMETER>& GetRootParameters()const;

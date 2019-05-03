@@ -19,14 +19,14 @@ namespace Lightning
 			ShaderMacros& operator-=(const ShaderMacros& shaderMacros);
 			void Combine(const ShaderMacros& shaderMacros);
 			void Exclude(const ShaderMacros& shaderMacros);
-			bool INTERFACECALL HasMacro(const char* macroName)const override;
-			void INTERFACECALL Define(const char* macroName, const char* macroValue)override;
-			void INTERFACECALL Undefine(const char* macroName)override;
-			const char* INTERFACECALL GetMacroValue(const char* macroName)const override;
-			size_t INTERFACECALL GetMacroCount()const override;
-			const char* INTERFACECALL GetMacroString()const override;
-			void INTERFACECALL GetAllMacros(MacroPair** pairs)const override;
-			std::size_t INTERFACECALL GetHash()const override;
+			bool HasMacro(const char* macroName)const override;
+			void Define(const char* macroName, const char* macroValue)override;
+			void Undefine(const char* macroName)override;
+			const char* GetMacroValue(const char* macroName)const override;
+			size_t GetMacroCount()const override;
+			const char* GetMacroString()const override;
+			void GetAllMacros(MacroPair** pairs)const override;
+			std::size_t GetHash()const override;
 		private:
 			using MacroMap = std::unordered_map<std::string, std::string>;
 			MacroMap mMacros;

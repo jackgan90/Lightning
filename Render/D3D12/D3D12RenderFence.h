@@ -19,11 +19,11 @@ namespace Lightning
 		{
 		public:
 			D3D12RenderFence(D3D12Device* device, std::uint64_t initial_value);
-			INTERFACECALL ~D3D12RenderFence()override;
-			void INTERFACECALL SetTargetValue(std::uint64_t value)override;
-			std::uint64_t INTERFACECALL GetTargetValue()override;
-			std::uint64_t INTERFACECALL GetCompletedValue()override;
-			void INTERFACECALL WaitForTarget()override;
+			~D3D12RenderFence()override;
+			void SetTargetValue(std::uint64_t value)override;
+			std::uint64_t GetTargetValue()override;
+			std::uint64_t GetCompletedValue()override;
+			void WaitForTarget()override;
 		private:
 			ComPtr<ID3D12Fence> mFence;
 			HANDLE mEvent;

@@ -209,14 +209,14 @@ private:
 #endif
 
 #define REF_OBJECT_ADDREF_METHOD \
-void INTERFACECALL AddRef()override\
+void AddRef()override\
 {\
 	mRefCount.fetch_add(1, std::memory_order_relaxed);\
 }
 
 //For objects allocated with standard operator new
 #define REF_OBJECT_RELEASE_METHOD \
-bool INTERFACECALL Release()override\
+bool Release()override\
 {\
 	auto oldRefCountBase = mRefCount.fetch_sub(1, std::memory_order_relaxed);\
 	if (oldRefCountBase == 1)\
@@ -229,7 +229,7 @@ bool INTERFACECALL Release()override\
 
 //For objects allocated with a memory pool(Don't free memory on delete)
 #define REF_OBJECT_POOL_RELEASE_METHOD(ClassName, DeleteMethod) \
-bool INTERFACECALL Release()override\
+bool Release()override\
 {\
 	auto oldRefCountBase = mRefCount.fetch_sub(1, std::memory_order_relaxed);\
 	if (oldRefCountBase == 1)\
@@ -241,7 +241,7 @@ bool INTERFACECALL Release()override\
 }
 
 #define REF_OBJECT_GETREFCOUNT_METHOD \
-int INTERFACECALL GetRefCount()const override{ return mRefCount; }
+int GetRefCount()const override{ return mRefCount; }
 
 #ifndef NDEBUG
 #define REF_OBJECT_NEW_OVERRIDE \

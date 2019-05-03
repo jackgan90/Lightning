@@ -28,24 +28,24 @@ namespace Lightning
 		public:
 			~Renderer()override;
 			//entry point of render system
-			void INTERFACECALL Render()override;
-			IDevice* INTERFACECALL GetDevice()override;
-			ISwapChain* INTERFACECALL GetSwapChain()override;
+			void Render()override;
+			IDevice* GetDevice()override;
+			ISwapChain* GetSwapChain()override;
 			//return the current frame index
-			std::uint64_t INTERFACECALL GetCurrentFrameCount()const override;
-			void INTERFACECALL SetClearColor(float r, float g, float b, float a)override;
-			IRenderUnit* INTERFACECALL CreateRenderUnit()override;
-			void INTERFACECALL CommitRenderUnit(const IRenderUnit* item)override;
+			std::uint64_t GetCurrentFrameCount()const override;
+			void SetClearColor(float r, float g, float b, float a)override;
+			IRenderUnit* CreateRenderUnit()override;
+			void CommitRenderUnit(const IRenderUnit* item)override;
 			//TODO there can be multiple render passes in effect simultaneously,should change it
-			void INTERFACECALL AddRenderPass(RenderPassType type)override;
-			std::size_t INTERFACECALL GetFrameResourceIndex()const override;
-			void INTERFACECALL Start()override;
-			void INTERFACECALL ShutDown()override;
+			void AddRenderPass(RenderPassType type)override;
+			std::size_t GetFrameResourceIndex()const override;
+			void Start()override;
+			void ShutDown()override;
 			static IRenderer* Instance() { return sInstance; }
-			Window::IWindow* INTERFACECALL GetOutputWindow()override { return mOutputWindow; }
+			Window::IWindow* GetOutputWindow()override { return mOutputWindow; }
 			std::shared_ptr<IDepthStencilBuffer> GetDefaultDepthStencilBuffer()override;
-			RenderSemantics INTERFACECALL GetUniformSemantic(const char* uniform_name)override;
-			const char* INTERFACECALL GetUniformName(RenderSemantics semantic)override;
+			RenderSemantics GetUniformSemantic(const char* uniform_name)override;
+			const char* GetUniformName(RenderSemantics semantic)override;
 			void GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name)override;
 		protected:
 			Renderer(Window::IWindow* window);

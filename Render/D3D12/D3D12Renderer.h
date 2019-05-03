@@ -24,20 +24,20 @@ namespace Lightning
 		{
 		public:
 			D3D12Renderer(Window::IWindow* window);
-			INTERFACECALL ~D3D12Renderer()override;
-			float INTERFACECALL GetNDCNearPlane()const override { return 0.0f; }
-			void INTERFACECALL ShutDown()override;
-			void INTERFACECALL Start()override;
-			void INTERFACECALL ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, 
+			~D3D12Renderer()override;
+			float GetNDCNearPlane()const override { return 0.0f; }
+			void ShutDown()override;
+			void Start()override;
+			void ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, 
 				const RectI* rects=nullptr, std::size_t rectCount = 0)override;
-			void INTERFACECALL ClearDepthStencilBuffer(IDepthStencilBuffer* buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, 
+			void ClearDepthStencilBuffer(IDepthStencilBuffer* buffer, DepthStencilClearFlags flags, float depth, std::uint8_t stencil, 
 				const RectI* rects = nullptr, std::size_t rectCount = 0)override;
-			void INTERFACECALL ApplyRenderTargets(const IRenderTarget*const * renderTargets, std::size_t renderTargetCount, IDepthStencilBuffer* dsBuffer)override;
-			void INTERFACECALL ApplyPipelineState(const PipelineState& state)override;
-			void INTERFACECALL ApplyViewports(const Viewport* viewports, std::size_t viewportCount)override;
-			void INTERFACECALL ApplyScissorRects(const ScissorRect* scissorRects, std::size_t scissorRectCount)override;
-			void INTERFACECALL BindGPUBuffer(std::size_t slot, IGPUBuffer* buffer)override;
-			void INTERFACECALL Draw(const DrawParam& param)override;
+			void ApplyRenderTargets(const IRenderTarget*const * renderTargets, std::size_t renderTargetCount, IDepthStencilBuffer* dsBuffer)override;
+			void ApplyPipelineState(const PipelineState& state)override;
+			void ApplyViewports(const Viewport* viewports, std::size_t viewportCount)override;
+			void ApplyScissorRects(const ScissorRect* scissorRects, std::size_t scissorRectCount)override;
+			void BindGPUBuffer(std::size_t slot, IGPUBuffer* buffer)override;
+			void Draw(const DrawParam& param)override;
 			//For debug
 			void ReportLiveObjects()const;
 			ID3D12CommandQueue* GetCommandQueue();

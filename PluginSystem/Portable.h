@@ -1,7 +1,7 @@
 #pragma once
 
 #ifdef _MSC_VER
-#define INTERFACECALL __stdcall
+#define __stdcall
 #else
-#define INTERFACECALL
+#define
 #endif

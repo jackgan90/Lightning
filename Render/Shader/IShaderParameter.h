@@ -20,10 +20,10 @@ namespace Lightning
 
 		struct IShaderParameter
 		{
-			virtual INTERFACECALL ~IShaderParameter() = default;
-			virtual const char* INTERFACECALL GetName()const = 0;
-			virtual ShaderParameterType INTERFACECALL GetType()const = 0;
-			virtual const void* INTERFACECALL Buffer(std::size_t& size)const = 0;
+			virtual ~IShaderParameter() = default;
+			virtual const char* GetName()const = 0;
+			virtual ShaderParameterType GetType()const = 0;
+			virtual const void* Buffer(std::size_t& size)const = 0;
 		};
 	}
 }

@@ -40,8 +40,8 @@ namespace Lightning
 		struct IVertexBuffer : IGPUBuffer
 		{
 			//get vertex size in bytes
-			virtual std::uint32_t INTERFACECALL GetVertexSize()const = 0;
-			virtual const VertexDescriptor& INTERFACECALL GetVertexDescriptor()const = 0;
+			virtual std::uint32_t GetVertexSize()const = 0;
+			virtual const VertexDescriptor& GetVertexDescriptor()const = 0;
 		};
 	}
 }

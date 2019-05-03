@@ -9,8 +9,8 @@ namespace Lightning
 		using EventType = std::uint64_t;
 		struct IEvent
 		{
-			virtual INTERFACECALL ~IEvent() = default;
-			virtual EventType INTERFACECALL TypeIdentifier()const = 0;
+			virtual ~IEvent() = default;
+			virtual EventType TypeIdentifier()const = 0;
 		};
 	}
 }

@@ -7,10 +7,10 @@ namespace Lightning
 	{
 		struct IRefObject
 		{
-			virtual INTERFACECALL ~IRefObject() = default;
-			virtual void INTERFACECALL AddRef() = 0;
-			virtual bool INTERFACECALL Release() = 0;
-			virtual int INTERFACECALL GetRefCount()const = 0;
+			virtual ~IRefObject() = default;
+			virtual void AddRef() = 0;
+			virtual bool Release() = 0;
+			virtual int GetRefCount()const = 0;
 		};
 	}
 }

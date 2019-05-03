@@ -19,15 +19,15 @@ namespace Lightning
 			D3D12Texture(const D3D12_RESOURCE_DESC& desc, D3D12Device* device, const float depth, const std::uint8_t stencil);
 			D3D12Texture(D3D12Device* device, const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState);
 			~D3D12Texture()override;
-			TextureDimension INTERFACECALL GetDimension()const override;
-			void INTERFACECALL Commit()override;
-			std::uint16_t INTERFACECALL GetMultiSampleCount()const override;
-			std::uint16_t INTERFACECALL GetMultiSampleQuality()const override;
-			RenderFormat INTERFACECALL GetRenderFormat()const override;
-			std::size_t INTERFACECALL GetWidth()const override;
-			std::size_t INTERFACECALL GetHeight()const override;
-			std::size_t INTERFACECALL GetDepth()const override;
-			std::size_t INTERFACECALL GetMipmapLevels()const override;
+			TextureDimension GetDimension()const override;
+			void Commit()override;
+			std::uint16_t GetMultiSampleCount()const override;
+			std::uint16_t GetMultiSampleQuality()const override;
+			RenderFormat GetRenderFormat()const override;
+			std::size_t GetWidth()const override;
+			std::size_t GetHeight()const override;
+			std::size_t GetDepth()const override;
+			std::size_t GetMipmapLevels()const override;
 			D3D12Device* GetDevice()const { return mDevice; }
 			D3D12StatefulResourcePtr GetResource()const { return mResource; }
 			float GetDepthClearValue()const { return mClearValue.DepthStencil.Depth; }

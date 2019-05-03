@@ -33,16 +33,16 @@ namespace Lightning
 					std::memcpy(&f, buffer, bufferSize);
 				}
 			}
-			const char* INTERFACECALL GetName()const override
+			const char* GetName()const override
 			{
 				return mName.c_str();
 			}
-			ShaderParameterType INTERFACECALL GetType()const override
+			ShaderParameterType GetType()const override
 			{
 				return mType;
 			}
 
-			const void* INTERFACECALL Buffer(std::size_t& size)const override
+			const void* Buffer(std::size_t& size)const override
 			{
 				size = 0;
 				switch (mType)

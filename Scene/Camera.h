@@ -19,32 +19,32 @@ namespace Lightning
 				const Vector3f& lookDir = Vector3f{0.0f, 0.0f, -1.0f},
 				const Vector3f& worldUp = Vector3f{0.0f, 1.0f, 0.0f});
 			~Camera()override;
-			Matrix4f INTERFACECALL GetViewMatrix()const override{ return mViewMatrix; }
-			Matrix4f INTERFACECALL GetProjectionMatrix()const override{ return mProjectionMatrix; }
-			Matrix4f INTERFACECALL GetInvViewMatrix()const override{ return mInvViewMatrix; }
-			void INTERFACECALL MoveTo(const Vector3f& worldPosition)override;
-			void INTERFACECALL LookAt(const Vector3f& lookPosition)override;
-			void INTERFACECALL RotateTowards(const Vector3f& direction)override;
-			void INTERFACECALL SetNear(const float nearPlane)override;
-			void INTERFACECALL SetFar(const float farPlane)override;
-			float INTERFACECALL GetNear()const override{ return mNearPlane; }
-			float INTERFACECALL GetFar()const override{ return mFarPlane; }
-			void INTERFACECALL SetCameraType(CameraType type)override;
-			CameraType INTERFACECALL GetCameraType()const override{ return mType; }
+			Matrix4f GetViewMatrix()const override{ return mViewMatrix; }
+			Matrix4f GetProjectionMatrix()const override{ return mProjectionMatrix; }
+			Matrix4f GetInvViewMatrix()const override{ return mInvViewMatrix; }
+			void MoveTo(const Vector3f& worldPosition)override;
+			void LookAt(const Vector3f& lookPosition)override;
+			void RotateTowards(const Vector3f& direction)override;
+			void SetNear(const float nearPlane)override;
+			void SetFar(const float farPlane)override;
+			float GetNear()const override{ return mNearPlane; }
+			float GetFar()const override{ return mFarPlane; }
+			void SetCameraType(CameraType type)override;
+			CameraType GetCameraType()const override{ return mType; }
 			//Set vertical field of view in degrees
-			void INTERFACECALL SetFOV(const float fov)override;
-			float INTERFACECALL GetFOV()const override{ return Foundation::Math::RadiansToDegrees(mFov); }
-			void INTERFACECALL SetAspectRatio(const float aspectRatio)override;
-			float INTERFACECALL GetAspectRatio()const override{ return mAspectRatio; }
-			Vector3f INTERFACECALL GetWorldPosition()const override{ return mTransformer.GetPosition(); }
-			Vector3f INTERFACECALL CameraPointToWorld(const Vector3f& point)const override;
-			Vector3f INTERFACECALL WorldPointToCamera(const Vector3f& point)const override;
-			Vector3f INTERFACECALL CameraDirectionToWorld(const Vector3f& direction)const override;
-			Vector3f INTERFACECALL WorldDirectionToCamera(const Vector3f& direction)const;
-			Vector3f INTERFACECALL GetForward()const override{ return mTransformer.Forward(); }
-			void INTERFACECALL SetRotation(const Quaternionf& rotation) override;
-			Quaternionf INTERFACECALL GetRotation()const override{ return mTransformer.GetRotation(); }
-			void INTERFACECALL Update(IRenderer*)override;
+			void SetFOV(const float fov)override;
+			float GetFOV()const override{ return Foundation::Math::RadiansToDegrees(mFov); }
+			void SetAspectRatio(const float aspectRatio)override;
+			float GetAspectRatio()const override{ return mAspectRatio; }
+			Vector3f GetWorldPosition()const override{ return mTransformer.GetPosition(); }
+			Vector3f CameraPointToWorld(const Vector3f& point)const override;
+			Vector3f WorldPointToCamera(const Vector3f& point)const override;
+			Vector3f CameraDirectionToWorld(const Vector3f& direction)const override;
+			Vector3f WorldDirectionToCamera(const Vector3f& direction)const;
+			Vector3f GetForward()const override{ return mTransformer.Forward(); }
+			void SetRotation(const Quaternionf& rotation) override;
+			Quaternionf GetRotation()const override{ return mTransformer.GetRotation(); }
+			void Update(IRenderer*)override;
 		protected:
 			void UpdateViewMatrix();
 			void UpdateProjectionMatrix();

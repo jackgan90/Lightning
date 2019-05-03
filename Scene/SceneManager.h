@@ -11,13 +11,13 @@ namespace Lightning
 		{
 		public:
 			SceneManager();
-			INTERFACECALL ~SceneManager();
-			IScene* INTERFACECALL CreateScene()override;
-			IScene* INTERFACECALL GetForegroundScene()override;
-			void INTERFACECALL SetForegroundScene(IScene* scene)override;
-			void INTERFACECALL Update()override;
-			void INTERFACECALL DestroyScene(const std::uint32_t sceneId)override;
-			void INTERFACECALL DestroyAllScenes()override;
+			~SceneManager();
+			IScene* CreateScene()override;
+			IScene* GetForegroundScene()override;
+			void SetForegroundScene(IScene* scene)override;
+			void Update()override;
+			void DestroyScene(const std::uint32_t sceneId)override;
+			void DestroyAllScenes()override;
 		protected:
 			void DestroyAllScenesImpl();
 			std::uint32_t mCurrentSceneID;

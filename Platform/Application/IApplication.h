@@ -7,11 +7,11 @@ namespace Lightning
 	{
 		struct IApplication
 		{
-			virtual INTERFACECALL ~IApplication() = default;
-			virtual void INTERFACECALL Update() = 0;
-			virtual void INTERFACECALL Start() = 0;
-			virtual bool INTERFACECALL IsRunning() = 0;
-			virtual int INTERFACECALL GetExitCode()const = 0;
+			virtual ~IApplication() = default;
+			virtual void Update() = 0;
+			virtual void Start() = 0;
+			virtual bool IsRunning() = 0;
+			virtual int GetExitCode()const = 0;
 		};
 	}
 }
