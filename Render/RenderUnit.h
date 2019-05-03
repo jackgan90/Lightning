@@ -30,13 +30,13 @@ namespace Lightning
 			const Matrix4f& GetViewMatrix()const override;
 			void SetProjectionMatrix(const Matrix4f& matrix)override;
 			const Matrix4f& GetProjectionMatrix()const override;
-			void AddRenderTarget(IRenderTarget* renderTarget)override;
-			void RemoveRenderTarget(IRenderTarget* renderTarget)override;
-			IRenderTarget* GetRenderTarget(std::size_t index)const override;
+			void AddRenderTarget(const std::shared_ptr<IRenderTarget>& renderTarget)override;
+			void RemoveRenderTarget(const std::shared_ptr<IRenderTarget>& renderTarget)override;
+			std::shared_ptr<IRenderTarget> GetRenderTarget(std::size_t index)const override;
 			std::size_t GetRenderTargetCount()const override;
 			void ClearRenderTargets()override;
-			void SetDepthStencilBuffer(IDepthStencilBuffer* depthStencilBuffer)override;
-			IDepthStencilBuffer* GetDepthStencilBuffer()const override;
+			void SetDepthStencilBuffer(const std::shared_ptr<IDepthStencilBuffer>& depthStencilBuffer)override;
+			std::shared_ptr<IDepthStencilBuffer> GetDepthStencilBuffer()const override;
 			void Reset()override;
 			void AddViewportAndScissorRect(const Viewport& viewport, const ScissorRect& scissorRect)override;
 			std::size_t GetViewportCount()const override;
@@ -64,8 +64,8 @@ namespace Lightning
 			Matrix4f mProjectionMatrix;//camera projection matrix
 			IIndexBuffer* mIndexBuffer;
 			std::shared_ptr<IMaterial> mMaterial;	//shader material attributes
-			IDepthStencilBuffer* mDepthStencilBuffer; //depth stencil buffer for this draw
-			std::vector<IRenderTarget*> mRenderTargets;//render targets
+			std::shared_ptr<IDepthStencilBuffer> mDepthStencilBuffer; //depth stencil buffer for this draw
+			std::vector<std::shared_ptr<IRenderTarget>> mRenderTargets;//render targets
 			std::vector<ViewportAndScissorRect> mViewportAndScissorRects;
 			std::unordered_map<std::size_t, IVertexBuffer*> mVertexBuffers;
 			//std::unordered_map<std::size_t, IVertexBuffer*,

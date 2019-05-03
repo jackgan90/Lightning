@@ -21,11 +21,10 @@ namespace Lightning
 			Destroy();
 		}
 
-		void D3D12ShaderGroup::AddShader(D3D12Shader* shader)
+		void D3D12ShaderGroup::AddShader(const std::shared_ptr<D3D12Shader>& shader)
 		{
 			if (!shader)
 				return;
-			shader->AddRef();
 			mConstantBufferCount += shader->GetConstantBufferCount();
 			mTextureCount += shader->GetTextureCount();
 			mSamplerStateCount += shader->GetSamplerStateCount();
@@ -34,10 +33,7 @@ namespace Lightning
 
 		void D3D12ShaderGroup::Destroy()
 		{
-			for (auto shader : mShaders)
-			{
-				shader->Release();
-			}
+			mShaders.clear();
 			mConstantBufferCount = 0;
 			mTextureCount = 0;
 			mSamplerStateCount = 0;
@@ -235,7 +231,7 @@ namespace Lightning
 					flags &= ~D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS;
 					break;
 				}
-				const auto& parameters = static_cast<D3D12Shader*>(mShaders[i])->GetRootParameters();
+				const auto& parameters = mShaders[i]->GetRootParameters();
 				rootParameters.insert(rootParameters.end(), parameters.begin(), parameters.end());
 			}
 			D3D12_ROOT_PARAMETER* pParameters = rootParameters.empty() ? nullptr : &rootParameters[0];

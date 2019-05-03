@@ -48,7 +48,6 @@ namespace Lightning
 			std::shared_ptr<Loading::ISerializeBuffer> mBuffer;
 			D3D12Device* mDevice;
 			std::mutex mCommitMutex;
-			REF_OBJECT_OVERRIDE(D3D12Texture)
 		};
 	}
 }

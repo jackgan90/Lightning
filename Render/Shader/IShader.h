@@ -30,18 +30,19 @@ namespace Lightning
 			DOMAIN,	//domain shader
 		};
 
-		struct IShader :  Plugins::IRefObject
+		struct IShader
 		{
-			virtual ShaderType INTERFACECALL GetType()const = 0;
-			virtual void INTERFACECALL DefineMacros(const IShaderMacros* macros) = 0;
-			virtual const IShaderMacros* INTERFACECALL GetMacros()const = 0;
-			virtual std::size_t INTERFACECALL GetParameterCount()const = 0;
-			virtual void INTERFACECALL Compile() = 0;
-			virtual const char* INTERFACECALL GetName()const = 0;
-			virtual bool INTERFACECALL SetParameter(const IShaderParameter* parameter) = 0;
-			virtual const char* const INTERFACECALL GetSource()const = 0;
-			virtual void INTERFACECALL GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount) = 0;
-			virtual std::size_t INTERFACECALL GetHash()const = 0;
+			virtual ~IShader() = default;
+			virtual ShaderType GetType()const = 0;
+			virtual void DefineMacros(const IShaderMacros* macros) = 0;
+			virtual const IShaderMacros* GetMacros()const = 0;
+			virtual std::size_t GetParameterCount()const = 0;
+			virtual void Compile() = 0;
+			virtual const char* GetName()const = 0;
+			virtual bool SetParameter(const IShaderParameter* parameter) = 0;
+			virtual const char* const GetSource()const = 0;
+			virtual void GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount) = 0;
+			virtual std::size_t GetHash()const = 0;
 		};
 	}
 }

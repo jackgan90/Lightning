@@ -7,11 +7,12 @@ namespace Lightning
 	namespace Render
 	{
 		using RenderTargetID = int;
-		struct IRenderTarget : Plugins::IRefObject
+		struct IRenderTarget
 		{
 			//return the attached RT ID
-			virtual RenderTargetID INTERFACECALL GetID()const = 0;
-			virtual ITexture* INTERFACECALL GetTexture()const = 0;
+			virtual ~IRenderTarget() = default;
+			virtual RenderTargetID GetID()const = 0;
+			virtual std::shared_ptr<ITexture> GetTexture()const = 0;
 		};
 	}
 }

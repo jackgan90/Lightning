@@ -13,7 +13,7 @@ namespace Lightning
 			~SwapChain();
 			virtual bool CheckIfBackBufferNeedsResize();
 		protected:
-			IRenderTarget* mRenderTargets[RENDER_FRAME_COUNT];
+			std::shared_ptr<IRenderTarget> mRenderTargets[RENDER_FRAME_COUNT];
 			Window::IWindow* mOutputWindow;
 		};
 	}

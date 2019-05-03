@@ -15,7 +15,7 @@ namespace Lightning
 		{
 			IRenderFence *fence{ nullptr };
 			std::uint64_t frame{ 0 };
-			IDepthStencilBuffer* defaultDepthStencilBuffer{ nullptr };
+			std::shared_ptr<IDepthStencilBuffer> defaultDepthStencilBuffer;
 			RenderQueue* renderQueue{ nullptr };
 
 			void ReleaseRenderQueue();
@@ -43,7 +43,7 @@ namespace Lightning
 			void INTERFACECALL ShutDown()override;
 			static IRenderer* Instance() { return sInstance; }
 			Window::IWindow* INTERFACECALL GetOutputWindow()override { return mOutputWindow; }
-			IDepthStencilBuffer* INTERFACECALL GetDefaultDepthStencilBuffer()override;
+			std::shared_ptr<IDepthStencilBuffer> GetDefaultDepthStencilBuffer()override;
 			RenderSemantics INTERFACECALL GetUniformSemantic(const char* uniform_name)override;
 			const char* INTERFACECALL GetUniformName(RenderSemantics semantic)override;
 			void GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name)override;

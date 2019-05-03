@@ -36,13 +36,13 @@ namespace Lightning
 
 		void D3D12ForwardRenderPass::OnAddRenderUnit(const IImmutableRenderUnit* unit)
 		{
-			using ShaderVec = std::vector<IShader*>;
+			using ShaderVec = std::vector<std::shared_ptr<IShader>>;
 			static Foundation::ThreadLocalObject<ShaderVec> tloShaders;
 			auto& shaders = *tloShaders;
 			shaders.clear();
 			GetMaterialShaders(unit->GetMaterial().get(), shaders);
-			std::for_each(shaders.begin(), shaders.end(), [this](IShader* shader) {
-				auto d3d12Shader = static_cast<D3D12Shader*>(shader);
+			std::for_each(shaders.begin(), shaders.end(), [this](const std::shared_ptr<IShader>& shader) {
+				auto d3d12Shader = std::static_pointer_cast<D3D12Shader>(shader);
 				mTotalConstantBufferSize += d3d12Shader->GetConstantBufferSize();
 				mTotalConstantBuffers += d3d12Shader->GetConstantBufferCount();
 				mTotalSamplerStates += d3d12Shader->GetSamplerStateCount();
@@ -50,7 +50,7 @@ namespace Lightning
 			});
 		}
 		
-		void D3D12ForwardRenderPass::GetMaterialShaders(IMaterial* material, std::vector<IShader*>& shaders)
+		void D3D12ForwardRenderPass::GetMaterialShaders(IMaterial* material, std::vector<std::shared_ptr<IShader>>& shaders)
 		{
 			auto vs = material->GetShader(ShaderType::VERTEX);
 			auto fs = material->GetShader(ShaderType::FRAGMENT);

@@ -149,7 +149,7 @@ namespace Lightning
 			return mProjectionMatrix;
 		}
 
-		void RenderUnit::AddRenderTarget(IRenderTarget* renderTarget)
+		void RenderUnit::AddRenderTarget(const std::shared_ptr<IRenderTarget>& renderTarget)
 		{
 			assert(renderTarget != nullptr && "AddRenderTarget only accept valid pointer!");
 #ifndef NDEBUG
@@ -157,22 +157,20 @@ namespace Lightning
 			assert(it == mRenderTargets.end() && "duplicate render target found.");
 #endif
 			mCustomRenderTargets = true;
-			renderTarget->AddRef();
 			mRenderTargets.push_back(renderTarget);
 		}
 
-		void RenderUnit::RemoveRenderTarget(IRenderTarget* renderTarget)
+		void RenderUnit::RemoveRenderTarget(const std::shared_ptr<IRenderTarget>& renderTarget)
 		{
 			assert(mCustomRenderTargets && "AddRenderTarget must be called prior to call RemoveRenderTarget.");
 			auto it = std::find(mRenderTargets.cbegin(), mRenderTargets.cend(), renderTarget);
 			if (it != mRenderTargets.end())
 			{
-				(*it)->Release();
 				mRenderTargets.erase(it);
 			}
 		}
 
-		IRenderTarget* RenderUnit::GetRenderTarget(std::size_t index)const
+		std::shared_ptr<IRenderTarget> RenderUnit::GetRenderTarget(std::size_t index)const
 		{
 			if (!mCustomRenderTargets)
 			{
@@ -196,19 +194,15 @@ namespace Lightning
 			DoClearRenderTargets();
 		}
 
-		void RenderUnit::SetDepthStencilBuffer(IDepthStencilBuffer* depthStencilBuffer)
+		void RenderUnit::SetDepthStencilBuffer(const std::shared_ptr<IDepthStencilBuffer>& depthStencilBuffer)
 		{
 			mCustomDepthStencilBuffer = true;
 			if (mDepthStencilBuffer == depthStencilBuffer)
 				return;
-			if (mDepthStencilBuffer)
-				mDepthStencilBuffer->Release();
 			mDepthStencilBuffer = depthStencilBuffer;
-			if (mDepthStencilBuffer)
-				mDepthStencilBuffer->AddRef();
 		}
 
-		IDepthStencilBuffer* RenderUnit::GetDepthStencilBuffer()const
+		std::shared_ptr<IDepthStencilBuffer> RenderUnit::GetDepthStencilBuffer()const
 		{
 			if (!mCustomDepthStencilBuffer)
 			{
@@ -278,20 +272,11 @@ namespace Lightning
 			clonedUnit->mMaterial = GetMaterial();
 
 			clonedUnit->mDepthStencilBuffer = GetDepthStencilBuffer();
-			if (clonedUnit->mDepthStencilBuffer)
+			for (auto i = 0;i < GetRenderTargetCount();++i)
 			{
-				clonedUnit->mDepthStencilBuffer->AddRef();
+				clonedUnit->mRenderTargets.push_back(GetRenderTarget(i));
 			}
 
-			clonedUnit->mRenderTargetCount = GetRenderTargetCount();
-			clonedUnit->mRenderTargets = g_RenderAllocator.Allocate
-				<IRenderTarget*>(clonedUnit->mRenderTargetCount);
-			for (auto i = 0;i < clonedUnit->mRenderTargetCount;++i)
-			{
-				auto renderTarget = GetRenderTarget(i);
-				renderTarget->AddRef();
-				clonedUnit->mRenderTargets[i] = renderTarget;
-			}
 
 			clonedUnit->mViewportCount = GetViewportCount();
 			clonedUnit->mViewportAndScissorRects = g_RenderAllocator.Allocate 
@@ -322,11 +307,7 @@ namespace Lightning
 				mIndexBuffer = nullptr;
 			}
 			mMaterial.reset();
-			if (mDepthStencilBuffer)
-			{
-				mDepthStencilBuffer->Release();
-				mDepthStencilBuffer = nullptr;
-			}
+			mDepthStencilBuffer.reset();
 			DoClearVertexBuffers();
 			DoClearRenderTargets();
 			DoClearViewportAndScissorRects();
@@ -337,10 +318,6 @@ namespace Lightning
 
 		void RenderUnit::DoClearRenderTargets()
 		{
-			for (auto renderTarget : mRenderTargets)
-			{
-				renderTarget->Release();
-			}
 			mRenderTargets.clear();
 			mCustomRenderTargets = false;
 		}

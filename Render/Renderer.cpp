@@ -40,8 +40,7 @@ namespace Lightning
 				delete fence;
 				fence = nullptr;
 			}
-			if (defaultDepthStencilBuffer)
-				defaultDepthStencilBuffer->Release();
+			defaultDepthStencilBuffer.reset();
 			ReleaseRenderQueue();
 		}
 
@@ -84,9 +83,9 @@ namespace Lightning
 			OnFrameBegin();
 			SwitchRenderQueue();
 			auto backBuffer = mSwapChain->GetCurrentRenderTarget();
-			ClearRenderTarget(backBuffer, mClearColor);
+			ClearRenderTarget(backBuffer.get(), mClearColor);
 			auto depthStencilBuffer = GetDefaultDepthStencilBuffer();
-			ClearDepthStencilBuffer(depthStencilBuffer, DepthStencilClearFlags::CLEAR_DEPTH | DepthStencilClearFlags::CLEAR_STENCIL,
+			ClearDepthStencilBuffer(depthStencilBuffer.get(), DepthStencilClearFlags::CLEAR_DEPTH | DepthStencilClearFlags::CLEAR_STENCIL,
 				depthStencilBuffer->GetDepthClearValue(), depthStencilBuffer->GetStencilClearValue(), nullptr);
 			OnFrameUpdate();
 			ApplyRenderPasses();
@@ -226,7 +225,6 @@ namespace Lightning
 				descriptor.stencilClearValue = 0;
 				auto texture = mDevice->CreateTexture(descriptor, nullptr);
 				mFrameResources[i].defaultDepthStencilBuffer = mDevice->CreateDepthStencilBuffer(texture);
-				texture->Release();
 			}
 			mFrameResourceIndex = 0;
 			AddRenderPass(RenderPassType::FORWARD);
@@ -250,7 +248,7 @@ namespace Lightning
 			mStarted = false;
 		}
 
-		IDepthStencilBuffer* Renderer::GetDefaultDepthStencilBuffer()
+		std::shared_ptr<IDepthStencilBuffer> Renderer::GetDefaultDepthStencilBuffer()
 		{
 			return mFrameResources[mFrameResourceIndex].defaultDepthStencilBuffer;
 		}
@@ -347,7 +345,7 @@ namespace Lightning
 				height = renderTexture->GetHeight();
 				for (std::uint8_t i = 0;i < RENDER_FRAME_COUNT;++i)
 				{
-					ResizeDepthStencilBuffer(mFrameResources[i].defaultDepthStencilBuffer, width, height);
+					ResizeDepthStencilBuffer(mFrameResources[i].defaultDepthStencilBuffer.get(), width, height);
 				}
 			}
 		}

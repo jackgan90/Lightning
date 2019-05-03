@@ -5,12 +5,11 @@ namespace Lightning
 {
 	namespace Render
 	{
-		D3D12RenderTarget::D3D12RenderTarget(const RenderTargetID rtID, D3D12Texture* texture)
+		D3D12RenderTarget::D3D12RenderTarget(const RenderTargetID rtID, const std::shared_ptr<D3D12Texture>& texture)
 			:mTexture(texture)
 			,mID(rtID)
 		{
 			assert(texture != nullptr && "The texture used to initialize render target cannot be nullptr!");
-			mTexture->AddRef();
 			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
 			mHeap = D3D12DescriptorHeapManager::Instance()->Allocate(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, false, 1, false);
 			auto resource = mTexture->GetResource();
@@ -24,7 +23,6 @@ namespace Lightning
 				D3D12DescriptorHeapManager::Instance()->Deallocate(mHeap);
 				mHeap = nullptr;
 			}
-			mTexture->Release();
 		}
 
 		void D3D12RenderTarget::TransitToRTState(ID3D12GraphicsCommandList* commandList)

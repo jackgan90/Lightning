@@ -22,9 +22,9 @@ namespace Lightning
 			virtual const Transform& GetTransform()const = 0;
 			virtual const Matrix4f& GetViewMatrix()const = 0;
 			virtual const Matrix4f& GetProjectionMatrix()const = 0;
-			virtual IRenderTarget* GetRenderTarget(std::size_t index)const = 0;
+			virtual std::shared_ptr<IRenderTarget> GetRenderTarget(std::size_t index)const = 0;
 			virtual std::size_t GetRenderTargetCount()const = 0;
-			virtual IDepthStencilBuffer* GetDepthStencilBuffer()const = 0;
+			virtual std::shared_ptr<IDepthStencilBuffer> GetDepthStencilBuffer()const = 0;
 			virtual std::size_t GetViewportCount()const = 0;
 			virtual void GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const = 0;
 			virtual void Commit() = 0;
@@ -45,10 +45,10 @@ namespace Lightning
 			virtual void SetTransform(const Transform& transform) = 0;
 			virtual void SetViewMatrix(const Matrix4f& matrix) = 0;
 			virtual void SetProjectionMatrix(const Matrix4f& matrix) = 0;
-			virtual void AddRenderTarget(IRenderTarget* renderTarget) = 0;
-			virtual void RemoveRenderTarget(IRenderTarget* renderTarget) = 0;
+			virtual void AddRenderTarget(const std::shared_ptr<IRenderTarget>& renderTarget) = 0;
+			virtual void RemoveRenderTarget(const std::shared_ptr<IRenderTarget>& renderTarget) = 0;
 			virtual void ClearRenderTargets() = 0;
-			virtual void SetDepthStencilBuffer(IDepthStencilBuffer* depthStencilBuffer) = 0;
+			virtual void SetDepthStencilBuffer(const std::shared_ptr<IDepthStencilBuffer>& depthStencilBuffer) = 0;
 			//Viewport and scissorRect must be set atomic
 			virtual void AddViewportAndScissorRect(const Viewport& viewport, const ScissorRect& scissorRect) = 0;
 			virtual void Reset() = 0;

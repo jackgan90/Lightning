@@ -30,9 +30,9 @@ namespace Lightning
 			void SetColor(float a, float r, float g, float b)override;
 			void SetTransparency(std::uint8_t transparency)override;
 			void SetTransparency(float transparency)override;
-			void SetTexture(const char* name, ITexture* texture)override;
+			void SetTexture(const char* name, const std::shared_ptr<ITexture>& texture)override;
 			void SetSamplerState(const char* name, const SamplerState& state)override;
-			void SetShader(IShader* shader)override;
+			void SetShader(const std::shared_ptr<IShader>& shader)override;
 		protected:
 			virtual void UpdateRenderUnit(IRenderer*);
 			virtual std::uint8_t *GetVertices() = 0;
@@ -45,10 +45,10 @@ namespace Lightning
 			bool mShouldUpdateRenderUnit;
 			Color32 mColor;
 			std::string mTextureName;
-			ITexture* mTexture;
+			std::shared_ptr<ITexture> mTexture;
 			std::string mSamplerStateName;
 			SamplerState mSamplerState;
-			std::vector<Render::IShader*> mShaders;
+			std::vector<std::shared_ptr<Render::IShader>> mShaders;
 		};
 
 		struct PrimitiveDataSource

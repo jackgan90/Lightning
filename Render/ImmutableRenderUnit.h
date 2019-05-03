@@ -20,9 +20,9 @@ namespace Lightning
 			const Transform& GetTransform()const override;
 			const Matrix4f& GetViewMatrix()const override;
 			const Matrix4f& GetProjectionMatrix()const override;
-			IRenderTarget* GetRenderTarget(std::size_t index)const override;
+			std::shared_ptr<IRenderTarget> GetRenderTarget(std::size_t index)const override;
 			std::size_t GetRenderTargetCount()const override;
-			IDepthStencilBuffer* GetDepthStencilBuffer()const override;
+			std::shared_ptr<IDepthStencilBuffer> GetDepthStencilBuffer()const override;
 			std::size_t GetViewportCount()const override;
 			void GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const override;
 			void Commit()override;
@@ -32,7 +32,7 @@ namespace Lightning
 			void CommitShaderParameters();
 			void CommitSemanticUniforms(IShader* shader);
 			void Draw();
-			void GetInputLayouts(VertexInputLayout*& layouts, std::size_t& layoutCount);
+			void GetInputLayouts(std::vector<VertexInputLayout>& inputLayouts);
 		private:
 			struct ViewportAndScissorRect
 			{
@@ -52,10 +52,9 @@ namespace Lightning
 			Matrix4f mProjectionMatrix;//camera projection matrix
 			IIndexBuffer* mIndexBuffer;
 			std::shared_ptr<IMaterial> mMaterial;	//shader material attributes
-			IDepthStencilBuffer* mDepthStencilBuffer; //depth stencil buffer for this draw
-			std::size_t mRenderTargetCount;
+			std::shared_ptr<IDepthStencilBuffer> mDepthStencilBuffer; //depth stencil buffer for this draw
 			std::size_t mViewportCount;
-			IRenderTarget** mRenderTargets;
+			std::vector<std::shared_ptr<IRenderTarget>> mRenderTargets;
 			ViewportAndScissorRect* mViewportAndScissorRects;
 			VertexBufferSlot* mVertexBuffers;
 			std::size_t mVertexBufferCount;

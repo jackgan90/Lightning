@@ -16,7 +16,7 @@ namespace Lightning
 		private:
 			std::string mPath;
 			ResourceAsyncCallback<ITexture> mFinishCallback;
-			ITexture* mTexture;
+			std::shared_ptr<ITexture> mTexture;
 		};
 	}
 }

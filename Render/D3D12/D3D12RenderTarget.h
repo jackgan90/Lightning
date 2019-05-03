@@ -16,10 +16,10 @@ namespace Lightning
 		class D3D12RenderTarget : public IRenderTarget
 		{
 		public:
-			D3D12RenderTarget(RenderTargetID rtID, D3D12Texture* texture);
-			INTERFACECALL ~D3D12RenderTarget()override;
-			RenderTargetID INTERFACECALL GetID() const override { return mID; }
-			ITexture* INTERFACECALL GetTexture()const override { return mTexture; };
+			D3D12RenderTarget(RenderTargetID rtID, const std::shared_ptr<D3D12Texture>& texture);
+			~D3D12RenderTarget()override;
+			RenderTargetID GetID() const override { return mID; }
+			std::shared_ptr<ITexture> GetTexture()const override { return mTexture; };
 			const D3D12_CPU_DESCRIPTOR_HANDLE GetCPUHandle()const { return mHeap->CPUHandle; }
 			const D3D12_GPU_DESCRIPTOR_HANDLE GetGPUHandle()const { return mHeap->GPUHandle; }
 			void TransitToRTState(ID3D12GraphicsCommandList* commandList);
@@ -30,9 +30,8 @@ namespace Lightning
 			void Reset(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES state);
 		private:
 			RenderTargetID mID;
-			D3D12Texture* mTexture;
+			std::shared_ptr<D3D12Texture> mTexture;
 			DescriptorHeap *mHeap;
-			REF_OBJECT_OVERRIDE(D3D12RenderTarget)
 		};
 	}
 }

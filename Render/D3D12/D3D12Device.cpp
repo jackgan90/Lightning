@@ -138,13 +138,13 @@ namespace Lightning
 		}
 
 
-		IShader* D3D12Device::CreateShader(ShaderType type, const char* shaderName, 
+		std::shared_ptr<IShader> D3D12Device::CreateShader(ShaderType type, const char* shaderName, 
 			const char* const shaderSource, const IShaderMacros* macros)
 		{
-			return NEW_REF_OBJ(D3D12Shader, mHighestShaderModel, type, shaderName, shaderSource);
+			return std::make_shared<D3D12Shader>(mHighestShaderModel, type, shaderName, shaderSource);
 		}
 
-		ITexture* D3D12Device::CreateTexture(const TextureDescriptor& descriptor, const std::shared_ptr<ISerializeBuffer>& buffer)
+		std::shared_ptr<ITexture> D3D12Device::CreateTexture(const TextureDescriptor& descriptor, const std::shared_ptr<ISerializeBuffer>& buffer)
 		{
 			D3D12_RESOURCE_DESC desc{};
 			desc.Alignment = 0;
@@ -172,33 +172,34 @@ namespace Lightning
 			{
 				//depth stencil texture
 				desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
-				return NEW_REF_OBJ(D3D12Texture, desc, this, descriptor.depthClearValue, descriptor.stencilClearValue);
+				return std::make_shared<D3D12Texture>(desc, this, descriptor.depthClearValue, descriptor.stencilClearValue);
 			}
 			else
 			{
 				//Non depth stencil texture
-				return NEW_REF_OBJ(D3D12Texture, desc, this, buffer);
+				return std::make_shared<D3D12Texture>(desc, this, buffer);
 			}
 		}
 
-		D3D12Texture* D3D12Device::CreateTexture(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState)
+		std::shared_ptr<D3D12Texture> D3D12Device::CreateTexture(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState)
 		{
-			return NEW_REF_OBJ(D3D12Texture, this, resource, initialState);
+			return std::make_shared<D3D12Texture>(this, resource, initialState);
 		}
 
-		IRenderTarget* D3D12Device::CreateRenderTarget(ITexture* texture)
+		std::shared_ptr<IRenderTarget> D3D12Device::CreateRenderTarget(const std::shared_ptr<ITexture>& texture)
 		{
-			auto D3DTexture = dynamic_cast<D3D12Texture*>(texture);
-			assert(D3DTexture != nullptr && "A D3D12Texture is required!");
+			auto D3DTexture = std::dynamic_pointer_cast<D3D12Texture>(texture);//dynamic_cast<D3D12Texture*>(texture);
+			assert(D3DTexture && "A D3D12Texture is required!");
 			auto id = mCurrentRTID.fetch_add(1, std::memory_order_relaxed);
-			return NEW_REF_OBJ(D3D12RenderTarget, id, D3DTexture);
+			return std::make_shared<D3D12RenderTarget>(id, D3DTexture);
 		}
 
-		IDepthStencilBuffer* D3D12Device::CreateDepthStencilBuffer(ITexture* texture)
+		std::shared_ptr<IDepthStencilBuffer> D3D12Device::CreateDepthStencilBuffer(const std::shared_ptr<ITexture>& texture)
 		{
-			auto D3DTexture = dynamic_cast<D3D12Texture*>(texture);
-			assert(D3DTexture != nullptr && "A D3D12Texture is required.");
-			return NEW_REF_OBJ(D3D12DepthStencilBuffer, D3DTexture);
+			auto D3DTexture = std::dynamic_pointer_cast<D3D12Texture>(texture);//dynamic_cast<D3D12Texture*>(texture);
+			assert(D3DTexture && "A D3D12Texture is required.");
+			//return NEW_REF_OBJ(D3D12DepthStencilBuffer, D3DTexture);
+			return std::make_shared<D3D12DepthStencilBuffer>(D3DTexture);
 		}
 
 		//native device method wrappers begin

@@ -7,12 +7,11 @@ namespace Lightning
 {
 	namespace Render
 	{
-		D3D12DepthStencilBuffer::D3D12DepthStencilBuffer(D3D12Texture* texture)
+		D3D12DepthStencilBuffer::D3D12DepthStencilBuffer(const std::shared_ptr<D3D12Texture>& texture)
 			: mTexture(texture)
 			, mHeap(nullptr)
 		{
 			assert(mTexture != nullptr && "mTexture cannot be nullptr!");
-			mTexture->AddRef();
 			CreateDepthStencilView();
 		}
 
@@ -34,7 +33,6 @@ namespace Lightning
 
 		D3D12DepthStencilBuffer::~D3D12DepthStencilBuffer()
 		{
-			mTexture->Release();
 			D3D12DescriptorHeapManager::Instance()->Deallocate(mHeap);
 			mHeap = nullptr;
 		}

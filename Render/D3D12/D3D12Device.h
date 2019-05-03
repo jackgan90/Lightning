@@ -24,12 +24,12 @@ namespace Lightning
 			INTERFACECALL ~D3D12Device()override;
 			IVertexBuffer* INTERFACECALL CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor)override;
 			IIndexBuffer* INTERFACECALL CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;
-			IShader* INTERFACECALL CreateShader(ShaderType type, const char* shaderName, 
+			std::shared_ptr<IShader> CreateShader(ShaderType type, const char* shaderName, 
 				const char* const shaderSource, const IShaderMacros* macros)override;
-			ITexture* CreateTexture(const TextureDescriptor& descriptor, const std::shared_ptr<ISerializeBuffer>& buffer)override;
-			IRenderTarget* INTERFACECALL CreateRenderTarget(ITexture* texture) override;
-			IDepthStencilBuffer* INTERFACECALL CreateDepthStencilBuffer(ITexture* texture)override;
-			D3D12Texture* CreateTexture(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState);
+			std::shared_ptr<ITexture> CreateTexture(const TextureDescriptor& descriptor, const std::shared_ptr<ISerializeBuffer>& buffer)override;
+			std::shared_ptr<IRenderTarget> CreateRenderTarget(const std::shared_ptr<ITexture>& texture) override;
+			std::shared_ptr<IDepthStencilBuffer> CreateDepthStencilBuffer(const std::shared_ptr<ITexture>& texture)override;
+			std::shared_ptr<D3D12Texture> CreateTexture(const ComPtr<ID3D12Resource>& resource, D3D12_RESOURCE_STATES initialState);
 			//native device method wrapper start
 			D3D12StatefulResourcePtr CreateCommittedResource(
 				const D3D12_HEAP_PROPERTIES *pHeapProperties,

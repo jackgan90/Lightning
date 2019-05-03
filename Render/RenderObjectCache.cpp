@@ -5,12 +5,12 @@ namespace Lightning
 {
 	namespace Render
 	{
-		IShader* ShaderCache::GetShader(ShaderType type, const std::string& name, const IShaderMacros* macros)
+		std::shared_ptr<IShader> ShaderCache::GetShader(ShaderType type, const std::string& name, const IShaderMacros* macros)
 		{
 			return GetObject(GetKey(type, name, macros));
 		}
 
-		bool ShaderCache::AddShader(IShader* shader)
+		bool ShaderCache::AddShader(const std::shared_ptr<IShader>& shader)
 		{
 			return AddObject(GetKey(shader->GetType(), shader->GetName(), shader->GetMacros()), shader);
 		}

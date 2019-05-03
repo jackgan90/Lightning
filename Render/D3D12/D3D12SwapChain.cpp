@@ -42,7 +42,7 @@ namespace Lightning
 			return SUCCEEDED(hr);
 		}
 
-		IRenderTarget* D3D12SwapChain::GetCurrentRenderTarget()
+		std::shared_ptr<IRenderTarget> D3D12SwapChain::GetCurrentRenderTarget()
 		{
 			return mRenderTargets[mCurrentBackBufferIndex];
 		}
@@ -51,7 +51,7 @@ namespace Lightning
 		{
 			for (auto renderTarget : mRenderTargets)
 			{
-				auto D3DRenderTarget = dynamic_cast<D3D12RenderTarget*>(renderTarget);
+				auto D3DRenderTarget = dynamic_cast<D3D12RenderTarget*>(renderTarget.get());
 				assert(D3DRenderTarget != nullptr && "A D3DRenderTarget is required.");
 				//Release reference to ID3D12Resource
 				D3DRenderTarget->Reset();
@@ -71,7 +71,7 @@ namespace Lightning
 			mCurrentBackBufferIndex = mSwapChain->GetCurrentBackBufferIndex();
 			if (oldBackBufferIndex != mCurrentBackBufferIndex)
 			{
-				IRenderTarget* oldRenderTargets[RENDER_FRAME_COUNT];
+				std::shared_ptr<IRenderTarget> oldRenderTargets[RENDER_FRAME_COUNT];
 				std::memcpy(oldRenderTargets, mRenderTargets, sizeof(mRenderTargets));
 				auto i{ 0 };
 				for (;i < RENDER_FRAME_COUNT - oldBackBufferIndex;++i)
@@ -87,7 +87,7 @@ namespace Lightning
 
 			for (std::uint8_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
-				auto D3DRenderTarget = static_cast<D3D12RenderTarget*>(mRenderTargets[i]);
+				auto D3DRenderTarget = static_cast<D3D12RenderTarget*>(mRenderTargets[i].get());
 				ComPtr<ID3D12Resource> D3DResource;
 				auto hr = mSwapChain->GetBuffer(i, IID_PPV_ARGS(&D3DResource));
 				assert(SUCCEEDED(hr) && "Failed to get swap chain buffer.");
@@ -109,7 +109,6 @@ namespace Lightning
 				}
 				auto texture = device->CreateTexture(resources[i], D3D12_RESOURCE_STATE_PRESENT);
 				mRenderTargets[i] = device->CreateRenderTarget(texture);
-				texture->Release();
 			}
 		}
 

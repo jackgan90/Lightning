@@ -15,8 +15,8 @@ namespace Lightning
 		class ShaderCache : public Foundation::RefObjectCache<ShaderCache, std::string, IShader>
 		{
 		public:
-			IShader* GetShader(ShaderType type, const std::string& name, const IShaderMacros* macros);
-			bool AddShader(IShader* shader);
+			std::shared_ptr<IShader> GetShader(ShaderType type, const std::string& name, const IShaderMacros* macros);
+			bool AddShader(const std::shared_ptr<IShader>& shader);
 		private:
 			static std::string GetKey(ShaderType type, const std::string& name, const IShaderMacros* macros);
 		};

@@ -213,38 +213,37 @@ namespace Lightning
 		};
 		static_assert(std::is_pod<ScissorRect>::value, "ScissorRect is not a POD type.");
 
+		struct RenderTargetBlendState
+		{
+			std::shared_ptr<IRenderTarget> renderTarget;
+			BlendState blendState;
+		};
+
 		struct PipelineState
 		{
 			void Reset()
 			{
 				vs = fs = gs = hs = ds = nullptr;
-				inputLayoutCount = 0;
 
 				primType = PrimitiveType::TRIANGLE_LIST;
 				rasterizerState.Reset();
 				depthStencilState.Reset();
 
-				renderTargetCount = 0;
-				inputLayouts = nullptr;
-				blendStates = nullptr;
-				renderTargets = nullptr;
+				inputLayouts.clear();
+				renderTargetBlendStates.clear();
 			}
-			IShader* vs;
-			IShader* fs;
-			IShader* gs;
-			IShader* hs;
-			IShader* ds;
-			std::size_t inputLayoutCount;
+			std::shared_ptr<IShader> vs;
+			std::shared_ptr<IShader> fs;
+			std::shared_ptr<IShader> gs;
+			std::shared_ptr<IShader> hs;
+			std::shared_ptr<IShader> ds;
 			PrimitiveType primType;
 			RasterizerState rasterizerState;
 			DepthStencilState depthStencilState;
-			std::size_t renderTargetCount;
 			//Don't try to reorder the following fields.array fields must be put to the end of struct
-			VertexInputLayout* inputLayouts;
-			BlendState* blendStates;
-			IRenderTarget** renderTargets;
+			std::vector<VertexInputLayout> inputLayouts;
+			std::vector<RenderTargetBlendState> renderTargetBlendStates;
 		};
-		static_assert(std::is_pod<PipelineState>::value, "PipelineState is not a POD type.");
 
 	}
 }
@@ -275,23 +274,42 @@ namespace std{
 	{
 		std::size_t operator()(const Lightning::Render::PipelineState& state)const noexcept
 		{
-			constexpr std::size_t bufferSize = sizeof(state)
-				- sizeof(state.inputLayouts) - sizeof(state.blendStates) - sizeof(state.renderTargets);
-			std::uint8_t buffer[bufferSize];
-			std::memcpy(buffer, &state, bufferSize);
-
-			std::size_t hashValue = Lightning::Foundation::Utility::Hash(buffer, sizeof(buffer), 0x12345678u);
-
-			for (auto i = 0;i < state.inputLayoutCount;++i)
+			std::size_t hashValue{ 0x12345678u };
+			boost::hash_combine(hashValue, state.primType);
+			boost::hash_combine(hashValue, state.rasterizerState.GetHash());
+			boost::hash_combine(hashValue, state.depthStencilState.GetHash());
+			for (auto i = 0;i < state.inputLayouts.size();++i)
 			{
-				auto layoutHash = std::hash<Lightning::Render::VertexInputLayout>{}(state.inputLayouts[i]);
-				boost::hash_combine(hashValue, layoutHash);
+				const auto& inputLayout = state.inputLayouts[i];
+				boost::hash_combine(hashValue, std::hash<Lightning::Render::VertexInputLayout>{}(inputLayout));
 			}
-
-			for (auto i = 0;i < state.renderTargetCount;++i)
+			for (auto i = 0;i < state.renderTargetBlendStates.size();++i)
 			{
-				boost::hash_combine(hashValue, state.blendStates[i].GetHash());
-				boost::hash_combine(hashValue, state.renderTargets[i]);
+				const auto& renderTarget = state.renderTargetBlendStates[i].renderTarget;
+				const auto& blendState = state.renderTargetBlendStates[i].blendState;
+				boost::hash_combine(hashValue, blendState.GetHash());
+				//FIXME : render target should have its own descriptor,now only use the attached texture's render format to calculate the hash
+				boost::hash_combine(hashValue, renderTarget->GetTexture()->GetRenderFormat());
+			}
+			if (state.vs)
+			{
+				boost::hash_combine(hashValue, state.vs->GetHash());
+			}
+			if (state.fs)
+			{
+				boost::hash_combine(hashValue, state.fs->GetHash());
+			}
+			if (state.gs)
+			{
+				boost::hash_combine(hashValue, state.gs->GetHash());
+			}
+			if (state.hs)
+			{
+				boost::hash_combine(hashValue, state.hs->GetHash());
+			}
+			if (state.ds)
+			{
+				boost::hash_combine(hashValue, state.ds->GetHash());
 			}
 			return hashValue;
 		}

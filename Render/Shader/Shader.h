@@ -12,18 +12,17 @@ namespace Lightning
 		public:
 			static size_t Hash(const ShaderType& type, const std::string& shaderName, const IShaderMacros* macros);
 			Shader(ShaderType type, const std::string& name, const char* const source);
-			INTERFACECALL ~Shader()override;
-			void INTERFACECALL DefineMacros(const IShaderMacros* macros)override;
-			ShaderType INTERFACECALL GetType()const override;
-			const char* const INTERFACECALL GetSource()const override;
-			const char* INTERFACECALL GetName()const override;
-			std::size_t INTERFACECALL GetHash()const override;
+			~Shader()override;
+			void DefineMacros(const IShaderMacros* macros)override;
+			ShaderType GetType()const override;
+			const char* const GetSource()const override;
+			const char* GetName()const override;
+			std::size_t GetHash()const override;
 		protected:
 			ShaderType mType;
 			std::string mName;
 			const char* const mSource;
 			ShaderMacros mMacros;
-			REF_OBJECT_OVERRIDE(Shader)
 		};
 	}
 }

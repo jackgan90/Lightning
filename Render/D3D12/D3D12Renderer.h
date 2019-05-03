@@ -61,10 +61,10 @@ namespace Lightning
 
 			PipelineCacheObject CreateAndCachePipelineState(const PipelineState& pState, std::size_t hashValue);
 			void ApplyRasterizerState(const RasterizerState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
-			void ApplyBlendStates(std::size_t firstRTIndex, const BlendState* states, std::size_t stateCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
+			void ApplyBlendStates(const std::vector<RenderTargetBlendState>& states, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 			void ApplyDepthStencilState(const DepthStencilState& state, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
-			void ApplyShader(IShader* pShader, D3D12ShaderGroup* shaderGroup, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
-			void UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::size_t layoutCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
+			void ApplyShader(const std::shared_ptr<IShader>& pShader, D3D12ShaderGroup* shaderGroup, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
+			void UpdatePSOInputLayout(const std::vector<VertexInputLayout>& inputLayouts, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc);
 
 			ComPtr<IDXGIFactory4> mDXGIFactory;
 			ComPtr<ID3D12CommandQueue> mCommandQueue;

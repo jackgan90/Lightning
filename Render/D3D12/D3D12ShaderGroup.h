@@ -11,7 +11,7 @@ namespace Lightning
 			D3D12ShaderGroup();
 			~D3D12ShaderGroup();
 			//Add a shader to this group,thread unsafe
-			void AddShader(D3D12Shader* shader);
+			void AddShader(const std::shared_ptr<D3D12Shader>& shader);
 			//Commit all shaders managed by this group.Basically just commit all shader parameters.
 			void Commit(ID3D12GraphicsCommandList* commandList);
 			std::size_t GetHash()const;
@@ -33,7 +33,7 @@ namespace Lightning
 				CD3DX12_CPU_DESCRIPTOR_HANDLE& cpuHandle, CD3DX12_GPU_DESCRIPTOR_HANDLE& gpuHandle, UINT incrementSize);
 			void SetSRVTextureParams(D3D12_SHADER_RESOURCE_VIEW_DESC& desc, D3D12Texture* texture);
 		private:
-			std::vector<D3D12Shader*> mShaders;
+			std::vector<std::shared_ptr<D3D12Shader>> mShaders;
 			ComPtr<ID3D12RootSignature> mRootSignature;
 			std::size_t mConstantBufferCount;
 			std::size_t mTextureCount;

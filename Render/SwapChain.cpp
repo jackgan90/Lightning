@@ -9,18 +9,10 @@ namespace Lightning
 			:mOutputWindow(outputWindow)
 		{
 			assert(mOutputWindow != nullptr && "Output window must not be nullptr.");
-			std::memset(mRenderTargets, 0, sizeof(mRenderTargets));
 		}
 
 		SwapChain::~SwapChain()
 		{
-			for (auto renderTarget : mRenderTargets)
-			{
-				if (renderTarget)
-				{
-					renderTarget->Release();
-				}
-			}
 		}
 
 		bool SwapChain::CheckIfBackBufferNeedsResize()

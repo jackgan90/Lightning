@@ -21,10 +21,6 @@ namespace Lightning
 
 		Device::~Device()
 		{
-			for (auto& pair : mDefaultShaders)
-			{
-				pair.second->Release();
-			}
 			TextureCache::Instance()->Clear();
 			ShaderCache::Instance()->Clear();
 		}
@@ -51,7 +47,7 @@ namespace Lightning
 				}
 				return;
 			}
-			auto serializer = std::make_shared<ShaderSerializer>(type, path, macros, [callback](IShader* shader) {
+			auto serializer = std::make_shared<ShaderSerializer>(type, path, macros, [callback](const std::shared_ptr<IShader>& shader) {
 					if (shader)
 						ShaderCache::Instance()->AddShader(shader);
 					if (callback)
@@ -74,7 +70,7 @@ namespace Lightning
 				}
 				return;
 			}
-			auto serializer = std::make_shared<TextureSerializer>(path, [path, callback](ITexture* texture) {
+			auto serializer = std::make_shared<TextureSerializer>(path, [path, callback](const std::shared_ptr<ITexture>& texture) {
 					if (texture)
 						TextureCache::Instance()->AddObject(path, texture);
 					if (callback)
@@ -86,7 +82,7 @@ namespace Lightning
 			loader->Load(path, serializer);
 		}
 
-		IShader* Device::GetDefaultShader(ShaderType type)
+		std::shared_ptr<IShader> Device::GetDefaultShader(ShaderType type)
 		{
 			auto it = mDefaultShaders.find(type);
 			if (it == mDefaultShaders.end())

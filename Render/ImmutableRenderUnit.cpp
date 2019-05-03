@@ -19,14 +19,6 @@ namespace Lightning
 			{
 				mIndexBuffer->Release();
 			}
-			if (mDepthStencilBuffer)
-			{
-				mDepthStencilBuffer->Release();
-			}
-			for (auto i = 0;i < mRenderTargetCount;++i)
-			{
-				mRenderTargets[i]->Release();
-			}
 			for (auto i = 0;i < mVertexBufferCount;++i)
 			{
 				mVertexBuffers[i].vertexBuffer->Release();
@@ -74,17 +66,17 @@ namespace Lightning
 			return mProjectionMatrix;
 		}
 
-		IRenderTarget* ImmutableRenderUnit::GetRenderTarget(std::size_t index)const
+		std::shared_ptr<IRenderTarget> ImmutableRenderUnit::GetRenderTarget(std::size_t index)const
 		{
 			return mRenderTargets[index];
 		}
 
 		std::size_t ImmutableRenderUnit::GetRenderTargetCount()const
 		{
-			return mRenderTargetCount;
+			return mRenderTargets.size();
 		}
 
-		IDepthStencilBuffer* ImmutableRenderUnit::GetDepthStencilBuffer()const
+		std::shared_ptr<IDepthStencilBuffer> ImmutableRenderUnit::GetDepthStencilBuffer()const
 		{
 			return mDepthStencilBuffer;
 		}
@@ -124,7 +116,7 @@ namespace Lightning
 			auto renderer = Renderer::Instance();
 			for (auto shaderType : shaderTypes)
 			{
-				IShader* shader = material->GetShader(shaderType);
+				auto shader = material->GetShader(shaderType);
 				if (shader)
 				{
 					auto parameterCount = material->GetParameterCount(shaderType);
@@ -133,7 +125,7 @@ namespace Lightning
 						auto parameter = material->GetParameter(shaderType, i);
 						shader->SetParameter(parameter);
 					}
-					CommitSemanticUniforms(shader);
+					CommitSemanticUniforms(shader.get());
 				}
 			}
 		}
@@ -142,13 +134,22 @@ namespace Lightning
 		{
 			PipelineState state;
 			state.Reset();
-			state.renderTargetCount = GetRenderTargetCount();
 			auto renderer = Renderer::Instance();
-			auto pSwapChain = renderer->GetSwapChain();
-			state.renderTargets = g_RenderAllocator.Allocate<IRenderTarget*>(state.renderTargetCount);
-			for (auto i = 0;i < state.renderTargetCount;++i)
+			auto renderTargetCount = mRenderTargets.size();
+			auto renderTargets = g_RenderAllocator.Allocate<IRenderTarget*>(renderTargetCount);
+			for (auto i = 0;i < renderTargetCount;++i)
 			{
-				state.renderTargets[i] = GetRenderTarget(i);
+				BlendState blendState;
+				if (mMaterial)
+				{
+					mMaterial->GetBlendState(blendState);
+					if (blendState.enable)
+					{
+						state.depthStencilState.depthWriteEnable = false;
+					}
+				}
+				state.renderTargetBlendStates.push_back({ mRenderTargets[i], blendState });
+				renderTargets[i] = mRenderTargets[i].get();
 			}
 			auto depthStencilBuffer = GetDepthStencilBuffer();
 			if (depthStencilBuffer)
@@ -156,29 +157,19 @@ namespace Lightning
 				auto depthStencilTexture = depthStencilBuffer->GetTexture();
 				state.depthStencilState.bufferFormat = depthStencilTexture->GetRenderFormat();
 			}
-			renderer->ApplyRenderTargets(state.renderTargets, state.renderTargetCount, depthStencilBuffer);
-			auto material = GetMaterial();
-			if (material)
+			renderer->ApplyRenderTargets(renderTargets, mRenderTargets.size(), depthStencilBuffer.get());
+			if (mMaterial)
 			{
-				state.vs = material->GetShader(ShaderType::VERTEX);
-				state.fs = material->GetShader(ShaderType::FRAGMENT);
-				state.gs = material->GetShader(ShaderType::GEOMETRY);
-				state.hs = material->GetShader(ShaderType::HULL);
-				state.ds = material->GetShader(ShaderType::DOMAIN);
-				state.blendStates = g_RenderAllocator.Allocate<BlendState>(state.renderTargetCount);
-				for (auto i = 0;i < state.renderTargetCount;++i)
-				{
-					material->GetBlendState(state.blendStates[i]);
-					if (state.blendStates[i].enable)
-					{
-						state.depthStencilState.depthWriteEnable = false;
-					}
-				}
+				state.vs = mMaterial->GetShader(ShaderType::VERTEX);
+				state.fs = mMaterial->GetShader(ShaderType::FRAGMENT);
+				state.gs = mMaterial->GetShader(ShaderType::GEOMETRY);
+				state.hs = mMaterial->GetShader(ShaderType::HULL);
+				state.ds = mMaterial->GetShader(ShaderType::DOMAIN);
 			}
 			state.primType = GetPrimitiveType();
 			//TODO : Apply other pipeline states(blend state, rasterizer state etc)
 			
-			GetInputLayouts(state.inputLayouts, state.inputLayoutCount);
+			GetInputLayouts(state.inputLayouts);
 
 			renderer->ApplyPipelineState(state);
 			auto viewportCount = GetViewportCount();
@@ -258,24 +249,23 @@ namespace Lightning
 			}
 		}
 
-		void ImmutableRenderUnit::GetInputLayouts(VertexInputLayout*& layouts, std::size_t& layoutCount)
+		void ImmutableRenderUnit::GetInputLayouts(std::vector<VertexInputLayout>& inputLayouts)
 		{
-			layoutCount = GetVertexBufferCount();
-			layouts = g_RenderAllocator.Allocate<VertexInputLayout>(layoutCount);
-			for (std::size_t i = 0;i < layoutCount;i++)
+			for (std::size_t i = 0;i < mVertexBufferCount;i++)
 			{
 				IVertexBuffer* vertexBuffer;
 				std::size_t slot;
 				GetVertexBuffer(i, slot, vertexBuffer);
-				auto& layout = layouts[i];
-				layout.slot = slot;
+				VertexInputLayout layout;
 				auto& vertexDescriptor = vertexBuffer->GetVertexDescriptor();
+				layout.slot = slot;
 				layout.componentCount = vertexDescriptor.componentCount;
 				if (layout.componentCount > 0)
 				{
 					layout.components = g_RenderAllocator.Allocate<VertexComponent>(layout.componentCount);
 					std::memcpy(layout.components, vertexDescriptor.components, sizeof(VertexComponent) * layout.componentCount);
 				}
+				inputLayouts.push_back(layout);
 			}
 		}
 	}

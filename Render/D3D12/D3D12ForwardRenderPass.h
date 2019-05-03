@@ -13,7 +13,7 @@ namespace Lightning
 			void OnAddRenderUnit(const IImmutableRenderUnit* unit)override;
 			void OnFrameEnd()override;
 		private:
-			void GetMaterialShaders(IMaterial* material, std::vector<IShader*>& shaders);
+			void GetMaterialShaders(IMaterial* material, std::vector<std::shared_ptr<IShader>>& shaders);
 			std::size_t mTotalConstantBufferSize;
 			std::uint32_t mTotalConstantBuffers;
 			std::uint32_t mTotalTextures;

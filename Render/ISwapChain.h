@@ -16,7 +16,7 @@ namespace Lightning
 			virtual std::size_t INTERFACECALL GetMultiSampleQuality()const = 0;
 			virtual RenderFormat INTERFACECALL GetRenderFormat()const = 0;
 			//get corresponding render target
-			virtual IRenderTarget* INTERFACECALL GetCurrentRenderTarget() = 0;
+			virtual std::shared_ptr<IRenderTarget> GetCurrentRenderTarget() = 0;
 		};
 	}
 }

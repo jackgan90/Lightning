@@ -106,8 +106,6 @@ namespace Lightning
 			{
 				mFinishCallback(mTexture);
 			}
-			if (mTexture)
-				mTexture->Release();
 		}
 
 

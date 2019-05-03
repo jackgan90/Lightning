@@ -14,9 +14,9 @@ namespace Lightning
 		public:
 			Material();
 			~Material()override;
-			void SetShader(IShader* shader)override;
+			void SetShader(const std::shared_ptr<IShader>& shader)override;
 			bool ResetShader(ShaderType type)override;
-			IShader* GetShader(ShaderType type)override;
+			std::shared_ptr<IShader> GetShader(ShaderType type)override;
 			bool SetParameter(ShaderType type, const IShaderParameter* parameter)override;
 			void EnableBlend(bool enable)override;
 			void GetBlendState(BlendState& state)const override{ state = mBlendState; }
@@ -25,7 +25,7 @@ namespace Lightning
 		protected:
 			struct ShaderParameters
 			{
-				IShader* shader;
+				std::shared_ptr<IShader> shader;
 				std::vector<ShaderParameter> parameters;
 			};
 			using ShaderParametersCache = std::unordered_map<ShaderType, ShaderParameters>;

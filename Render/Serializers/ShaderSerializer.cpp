@@ -8,7 +8,7 @@ namespace Lightning
 	{
 		ShaderSerializer::ShaderSerializer(ShaderType type, const std::string& path, 
 			const ShaderMacros& macros, ResourceAsyncCallback<IShader> callback)
-			:mType(type), mPath(path), mMacros(macros), mFinishCallback(callback), mShader(nullptr)
+			:mType(type), mPath(path), mMacros(macros), mFinishCallback(callback)
 		{
 
 		}
@@ -19,8 +19,6 @@ namespace Lightning
 			{
 				mFinishCallback(mShader);
 			}
-			if (mShader)
-				mShader->Release();
 		}
 
 		void ShaderSerializer::Serialize(char** buffer)

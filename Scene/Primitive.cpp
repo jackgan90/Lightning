@@ -32,12 +32,6 @@ namespace Lightning
 
 		Primitive::~Primitive()
 		{
-			if (mTexture)
-				mTexture->Release();
-			for (auto shader : mShaders)
-			{
-				shader->Release();
-			}
 			if (mRenderUnit)
 				mRenderUnit->Release();
 		}
@@ -81,12 +75,10 @@ namespace Lightning
 			mColor.a = static_cast<std::uint8_t>(255 * transparency);
 		}
 
-		void Primitive::SetTexture(const char* name, ITexture* texture)
+		void Primitive::SetTexture(const char* name, const std::shared_ptr<ITexture>& texture)
 		{
 			if (texture != mTexture)
 			{
-				if (texture)
-					texture->AddRef();
 				mTextureName = name;
 				mTexture = texture;
 				mShouldUpdateRenderUnit = true;
@@ -100,18 +92,16 @@ namespace Lightning
 			mShouldUpdateRenderUnit = true;
 		}
 
-		void Primitive::SetShader(IShader* shader)
+		void Primitive::SetShader(const std::shared_ptr<IShader>& shader)
 		{
 			if (shader == nullptr)
 				return;
-			shader->AddRef();
 			bool replaced{ false };
 			for(auto i = 0;i < mShaders.size();++i)
 			{
 				auto s = mShaders[i];
 				if (s->GetType() == shader->GetType())
 				{
-					s->Release();
 					mShaders[i] = shader;
 					replaced = true;
 					break;
@@ -186,7 +176,7 @@ namespace Lightning
 			mRenderUnit->SetPrimitiveType(Render::PrimitiveType::TRIANGLE_LIST);
 			
 			auto material = gRenderPlugin->CreateMaterial();
-			IShader *vs{ nullptr }, *ps{ nullptr };
+			std::shared_ptr<IShader> vs, ps;
 			for (auto shader : mShaders)
 			{
 				if (shader->GetType() == Render::ShaderType::VERTEX)
@@ -198,14 +188,12 @@ namespace Lightning
 			if (!vs)
 			{
 				vs = pDevice->GetDefaultShader(Render::ShaderType::VERTEX);
-				vs->AddRef();
 				mShaders.push_back(vs);
 				material->SetShader(vs);
 			}
 			if (!ps)
 			{
 				ps = pDevice->GetDefaultShader(Render::ShaderType::FRAGMENT);
-				ps->AddRef();
 				mShaders.push_back(ps);
 				material->SetShader(ps);
 			}
@@ -217,7 +205,7 @@ namespace Lightning
 			material->SetParameter(Render::ShaderType::FRAGMENT, &paramLight);
 			if (mTexture)
 			{
-				ShaderParameter paramTexture(mTextureName.c_str(), mTexture);
+				ShaderParameter paramTexture(mTextureName.c_str(), mTexture.get());
 				material->SetParameter(Render::ShaderType::FRAGMENT, &paramTexture);
 			}
 

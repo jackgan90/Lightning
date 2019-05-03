@@ -47,18 +47,19 @@ namespace Lightning
 		};
 		static_assert(std::is_pod<TextureDescriptor>::value, "TextureDescriptor is not a POD type.");
 
-		struct ITexture : Plugins::IRefObject
+		struct ITexture
 		{
-			virtual TextureDimension INTERFACECALL GetDimension()const = 0;
-			virtual void INTERFACECALL Commit() = 0;
-			virtual std::uint16_t INTERFACECALL GetMultiSampleCount()const = 0;
-			virtual std::uint16_t INTERFACECALL GetMultiSampleQuality()const = 0;
-			virtual RenderFormat INTERFACECALL GetRenderFormat()const = 0;
-			virtual std::size_t INTERFACECALL GetWidth()const = 0;
-			virtual std::size_t INTERFACECALL GetHeight()const = 0;
+			virtual ~ITexture() = default;
+			virtual TextureDimension GetDimension()const = 0;
+			virtual void Commit() = 0;
+			virtual std::uint16_t GetMultiSampleCount()const = 0;
+			virtual std::uint16_t GetMultiSampleQuality()const = 0;
+			virtual RenderFormat GetRenderFormat()const = 0;
+			virtual std::size_t GetWidth()const = 0;
+			virtual std::size_t GetHeight()const = 0;
 			//If this texture is a 3D texture, returns the depth,otherwise returns array size
-			virtual std::size_t INTERFACECALL GetDepth()const = 0;
-			virtual std::size_t INTERFACECALL GetMipmapLevels()const = 0;
+			virtual std::size_t GetDepth()const = 0;
+			virtual std::size_t GetMipmapLevels()const = 0;
 		};
 	}
 }

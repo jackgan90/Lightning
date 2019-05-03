@@ -21,7 +21,7 @@ namespace Lightning
 			std::string mPath;
 			ShaderMacros mMacros;
 			ResourceAsyncCallback<IShader> mFinishCallback;
-			IShader* mShader;
+			std::shared_ptr<IShader> mShader;
 		};
 	}
 }

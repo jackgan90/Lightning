@@ -11,13 +11,9 @@ namespace Lightning
 
 		Material::~Material()
 		{
-			for (auto& pair : mShaders)
-			{
-				pair.second.shader->Release();
-			}
 		}
 
-		IShader* Material::GetShader(ShaderType type)
+		std::shared_ptr<IShader> Material::GetShader(ShaderType type)
 		{
 			auto it = mShaders.find(type);
 			if (it == mShaders.end())
@@ -25,11 +21,10 @@ namespace Lightning
 			return it->second.shader;
 		}
 
-		void Material::SetShader(IShader* shader)
+		void Material::SetShader(const std::shared_ptr<IShader>& shader)
 		{
 			if (!shader)
 				return;
-			shader->AddRef();
 			ResetShader(shader->GetType());
 			mShaders[shader->GetType()].shader = shader;
 		}
@@ -39,7 +34,6 @@ namespace Lightning
 			auto it = mShaders.find(type);
 			if (it != mShaders.end())
 			{
-				it->second.shader->Release();
 				mShaders.erase(it);
 				return true;
 			}

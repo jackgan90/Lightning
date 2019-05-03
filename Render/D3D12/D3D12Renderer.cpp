@@ -336,7 +336,7 @@ namespace Lightning
 			cacheObject.shaderGroup = std::make_shared<D3D12ShaderGroup>();
 			D3D12_GRAPHICS_PIPELINE_STATE_DESC desc{};
 			ApplyRasterizerState(state.rasterizerState, desc);
-			ApplyBlendStates(0, state.blendStates, state.renderTargetCount, desc);
+			ApplyBlendStates(state.renderTargetBlendStates, desc);
 			ApplyDepthStencilState(state.depthStencilState, desc);
 			if (state.vs)
 			{
@@ -358,14 +358,14 @@ namespace Lightning
 			{
 				ApplyShader(state.ds, cacheObject.shaderGroup.get(), desc);
 			}
-			UpdatePSOInputLayout(state.inputLayouts, state.inputLayoutCount, desc);
+			UpdatePSOInputLayout(state.inputLayouts, desc);
 			desc.pRootSignature = cacheObject.shaderGroup->CreateRootSignature().Get();
 			desc.PrimitiveTopologyType = D3D12TypeMapper::MapPrimitiveType(state.primType);
 			//TODO : should apply pipeline state based on PipelineState
-			desc.NumRenderTargets = UINT(state.renderTargetCount);
-			for (std::uint8_t i = 0; i < state.renderTargetCount; i++)
+			desc.NumRenderTargets = UINT(state.renderTargetBlendStates.size());
+			for (std::uint8_t i = 0; i < desc.NumRenderTargets; i++)
 			{
-				auto renderTexture = state.renderTargets[i]->GetTexture();
+				auto renderTexture = state.renderTargetBlendStates[i].renderTarget->GetTexture();
 				if (i == 0)
 				{
 					desc.SampleDesc.Count = renderTexture->GetMultiSampleCount();
@@ -406,24 +406,25 @@ namespace Lightning
 			pDesc->FrontCounterClockwise = state.frontFace == WindingOrder::COUNTER_CLOCKWISE;
 		}
 
-		void D3D12Renderer::ApplyBlendStates(std::size_t firstRTIndex, const BlendState* states, std::size_t stateCount, 
+		void D3D12Renderer::ApplyBlendStates(const std::vector<RenderTargetBlendState>& states, 
 			D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
-			for (auto i = firstRTIndex; i < firstRTIndex + stateCount;++i)
+			for (auto i = 0; i < states.size();++i)
 			{
+				const auto& blendState = states[i].blendState;
 				//TODO these values should be set based on render unit status
 				desc.BlendState.AlphaToCoverageEnable = FALSE;
 				desc.BlendState.IndependentBlendEnable = FALSE;
 				D3D12_RENDER_TARGET_BLEND_DESC* pDesc = &desc.BlendState.RenderTarget[i];
 				//TODO logic enable is conflict with blend enable, can't be set to true both
 				pDesc->LogicOpEnable = FALSE;
-				pDesc->BlendEnable = states[i].enable;
-				pDesc->BlendOp = D3D12TypeMapper::MapBlendOp(states[i].colorOp);
-				pDesc->BlendOpAlpha = D3D12TypeMapper::MapBlendOp(states[i].alphaOp);
-				pDesc->SrcBlend = D3D12TypeMapper::MapBlendFactor(states[i].srcColorFactor);
-				pDesc->SrcBlendAlpha = D3D12TypeMapper::MapBlendFactor(states[i].srcAlphaFactor);
-				pDesc->DestBlend = D3D12TypeMapper::MapBlendFactor(states[i].destColorFactor);
-				pDesc->DestBlendAlpha = D3D12TypeMapper::MapBlendFactor(states[i].destAlphaFactor);
+				pDesc->BlendEnable = blendState.enable;
+				pDesc->BlendOp = D3D12TypeMapper::MapBlendOp(blendState.colorOp);
+				pDesc->BlendOpAlpha = D3D12TypeMapper::MapBlendOp(blendState.alphaOp);
+				pDesc->SrcBlend = D3D12TypeMapper::MapBlendFactor(blendState.srcColorFactor);
+				pDesc->SrcBlendAlpha = D3D12TypeMapper::MapBlendFactor(blendState.srcAlphaFactor);
+				pDesc->DestBlend = D3D12TypeMapper::MapBlendFactor(blendState.destColorFactor);
+				pDesc->DestBlendAlpha = D3D12TypeMapper::MapBlendFactor(blendState.destAlphaFactor);
 				//TODO RenderTargetWriteMask must be set to D3D12_COLOR_WRITE_ENABLE_ALL even if blend is disabled
 				//I can't figure out the reason yet,need to delve into it
 				pDesc->RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL;
@@ -452,9 +453,9 @@ namespace Lightning
 			desc.DSVFormat = D3D12TypeMapper::MapRenderFormat(state.bufferFormat);
 		}
 
-		void D3D12Renderer::ApplyShader(IShader* pShader, D3D12ShaderGroup* shaderGroup, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
+		void D3D12Renderer::ApplyShader(const std::shared_ptr<IShader>& pShader, D3D12ShaderGroup* shaderGroup, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
-			auto d3d12shader = static_cast<D3D12Shader*>(pShader);
+			auto d3d12shader = static_cast<D3D12Shader*>(pShader.get());
 			auto byteCode = d3d12shader->GetByteCodeBuffer();
 			auto byteCodeLength = d3d12shader->GetByteCodeBufferSize();
 			switch (pShader->GetType())
@@ -482,26 +483,26 @@ namespace Lightning
 			default:
 				break;
 			}
-			shaderGroup->AddShader(static_cast<D3D12Shader*>(pShader));
+			shaderGroup->AddShader(std::static_pointer_cast<D3D12Shader>(pShader));
 		}
 
-		void D3D12Renderer::UpdatePSOInputLayout(const VertexInputLayout *inputLayouts, std::size_t layoutCount, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
+		void D3D12Renderer::UpdatePSOInputLayout(const std::vector<VertexInputLayout>& inputLayouts, D3D12_GRAPHICS_PIPELINE_STATE_DESC& desc)
 		{
 			D3D12_INPUT_LAYOUT_DESC& inputLayoutDesc = desc.InputLayout;
-			if (layoutCount == 0)
+			if (inputLayouts.empty())
 			{
 				inputLayoutDesc.NumElements = 0;
 				inputLayoutDesc.pInputElementDescs = nullptr;
 				return;
 			}
 			std::size_t inputElementCount{ 0 };
-			for (std::size_t i = 0;i < layoutCount;++i)
+			for (std::size_t i = 0;i < inputLayouts.size();++i)
 			{
 				inputElementCount += inputLayouts[i].componentCount;
 			}
 			auto pInputElementDesc = g_RenderAllocator.Allocate<D3D12_INPUT_ELEMENT_DESC>(inputElementCount);
 			std::size_t i = 0;
-			for (int j = 0;j < layoutCount;++j)
+			for (int j = 0;j < inputLayouts.size();++j)
 			{
 				auto& inputLayout = inputLayouts[j];
 				for (int k = 0;k < inputLayouts[j].componentCount;++k)
@@ -583,8 +584,8 @@ namespace Lightning
 			});
 			auto currentRenderTarget = mSwapChain->GetCurrentRenderTarget();
 			auto commandList = GetGraphicsCommandList();
-			static_cast<D3D12RenderTarget*>(currentRenderTarget)->TransitToPresentState(commandList);
-			auto d3d12DSBuffer = static_cast<D3D12DepthStencilBuffer*>(
+			std::static_pointer_cast<D3D12RenderTarget>(currentRenderTarget)->TransitToPresentState(commandList);
+			auto d3d12DSBuffer = std::static_pointer_cast<D3D12DepthStencilBuffer>(
 				mFrameResources[frameResourceIndex].defaultDepthStencilBuffer);
 			d3d12DSBuffer->TransitToState(commandList, D3D12_RESOURCE_STATE_COMMON);
 		}
@@ -598,7 +599,7 @@ namespace Lightning
 		{
 			auto frameResourceIndex = GetFrameResourceIndex();
 			auto currentRenderTarget = mSwapChain->GetCurrentRenderTarget();
-			auto renderTarget = static_cast<D3D12RenderTarget*>(currentRenderTarget);
+			auto renderTarget = std::static_pointer_cast<D3D12RenderTarget>(currentRenderTarget);
 			static std::vector<ID3D12CommandList*> commandLists;
 			commandLists.clear();
 			std::vector<ID3D12CommandList*>* pCommandLists = &commandLists;

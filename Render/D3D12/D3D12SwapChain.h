@@ -24,7 +24,7 @@ namespace Lightning
 			std::size_t INTERFACECALL GetMultiSampleCount()const override { return mDesc.SampleDesc.Count; }
 			std::size_t INTERFACECALL GetMultiSampleQuality()const override { return mDesc.SampleDesc.Quality; }
 			RenderFormat INTERFACECALL GetRenderFormat()const override{ return D3D12TypeMapper::MapRenderFormat(mDesc.BufferDesc.Format); }
-			IRenderTarget* INTERFACECALL GetCurrentRenderTarget()override;
+			std::shared_ptr<IRenderTarget> GetCurrentRenderTarget()override;
 			void INTERFACECALL Resize(std::size_t width, std::size_t height)override;
 		private:
 			void CreateRenderTargets();

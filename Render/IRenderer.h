@@ -105,7 +105,7 @@ namespace Lightning
 			//Shut down the renderer
 			virtual void INTERFACECALL ShutDown() = 0;
 			//get default depth stencil buffer
-			virtual IDepthStencilBuffer* INTERFACECALL GetDefaultDepthStencilBuffer() = 0;
+			virtual std::shared_ptr<IDepthStencilBuffer> GetDefaultDepthStencilBuffer() = 0;
 			//Gets the semantic corresponds to a string representing a uniform name
 			virtual RenderSemantics INTERFACECALL GetUniformSemantic(const char* uniform_name) = 0;
 			//Gets uniform name by RenderSemantics
