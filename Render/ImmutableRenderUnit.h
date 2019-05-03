@@ -13,9 +13,9 @@ namespace Lightning
 			ImmutableRenderUnit();
 			~ImmutableRenderUnit()override;
 			PrimitiveType GetPrimitiveType()const override;
-			IIndexBuffer* GetIndexBuffer()const override;
+			std::shared_ptr<IIndexBuffer> GetIndexBuffer()const override;
 			std::size_t GetVertexBufferCount()const override;
-			void GetVertexBuffer(std::size_t index, std::size_t& slot, IVertexBuffer*& vertexBuffer)const override;
+			void GetVertexBuffer(std::size_t index, std::size_t& slot, std::shared_ptr<IVertexBuffer>& vertexBuffer)const override;
 			std::shared_ptr<IMaterial> GetMaterial()const override;
 			const Transform& GetTransform()const override;
 			const Matrix4f& GetViewMatrix()const override;
@@ -41,7 +41,7 @@ namespace Lightning
 			};
 			struct VertexBufferSlot
 			{
-				IVertexBuffer* vertexBuffer;
+				std::shared_ptr<IVertexBuffer> vertexBuffer;
 				std::size_t slot;
 			};
 			friend class RenderUnit;
@@ -50,7 +50,7 @@ namespace Lightning
 			Transform mTransform;		//position rotation scale
 			Matrix4f mViewMatrix;		//camera view matrix
 			Matrix4f mProjectionMatrix;//camera projection matrix
-			IIndexBuffer* mIndexBuffer;
+			std::shared_ptr<IIndexBuffer> mIndexBuffer;
 			std::shared_ptr<IMaterial> mMaterial;	//shader material attributes
 			std::shared_ptr<IDepthStencilBuffer> mDepthStencilBuffer; //depth stencil buffer for this draw
 			std::size_t mViewportCount;

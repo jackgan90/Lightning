@@ -16,12 +16,12 @@ namespace Lightning
 			~RenderUnit()override;
 			void SetPrimitiveType(PrimitiveType type)override;
 			PrimitiveType GetPrimitiveType()const override;
-			void SetIndexBuffer(IIndexBuffer* indexBuffer)override;
-			IIndexBuffer* GetIndexBuffer()const override;
+			void SetIndexBuffer(const std::shared_ptr<IIndexBuffer>& indexBuffer)override;
+			std::shared_ptr<IIndexBuffer> GetIndexBuffer()const override;
 			void ClearVertexBuffers()override;
-			void SetVertexBuffer(std::size_t slot, IVertexBuffer* vertexBuffer)override;
+			void SetVertexBuffer(std::size_t slot, const std::shared_ptr<IVertexBuffer>& vertexBuffer)override;
 			std::size_t GetVertexBufferCount()const override;
-			void GetVertexBuffer(std::size_t index, std::size_t& slot, IVertexBuffer*& vertexBuffer)const override;
+			void GetVertexBuffer(std::size_t index, std::size_t& slot, std::shared_ptr<IVertexBuffer>& vertexBuffer)const override;
 			void SetMaterial(const std::shared_ptr<IMaterial>& material)override;
 			std::shared_ptr<IMaterial> GetMaterial()const override;
 			void SetTransform(const Transform& transform)override;
@@ -62,12 +62,12 @@ namespace Lightning
 			Transform mTransform;		//position rotation scale
 			Matrix4f mViewMatrix;		//camera view matrix
 			Matrix4f mProjectionMatrix;//camera projection matrix
-			IIndexBuffer* mIndexBuffer;
+			std::shared_ptr<IIndexBuffer> mIndexBuffer;
 			std::shared_ptr<IMaterial> mMaterial;	//shader material attributes
 			std::shared_ptr<IDepthStencilBuffer> mDepthStencilBuffer; //depth stencil buffer for this draw
 			std::vector<std::shared_ptr<IRenderTarget>> mRenderTargets;//render targets
 			std::vector<ViewportAndScissorRect> mViewportAndScissorRects;
-			std::unordered_map<std::size_t, IVertexBuffer*> mVertexBuffers;
+			std::unordered_map<std::size_t, std::shared_ptr<IVertexBuffer>> mVertexBuffers;
 			//std::unordered_map<std::size_t, IVertexBuffer*,
 			//	std::hash<std::size_t>, std::equal_to<std::size_t>, VertexBufferAllocatorType> mVertexBuffers;
 			bool mCustomRenderTargets;

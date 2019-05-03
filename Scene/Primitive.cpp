@@ -170,8 +170,6 @@ namespace Lightning
 			mem = indexBuffer->Lock(0, ibSize);
 			std::memcpy(mem, indices, ibSize);
 			indexBuffer->Unlock(0, ibSize);
-			vertexBuffer->Release();
-			indexBuffer->Release();
 
 			mRenderUnit->SetPrimitiveType(Render::PrimitiveType::TRIANGLE_LIST);
 			
@@ -326,7 +324,6 @@ namespace Lightning
 				}
 
 				vertexBuffer->Unlock(0, uvBufferSize);
-				vertexBuffer->Release();
 				//apply texture to material
 			}
 		}

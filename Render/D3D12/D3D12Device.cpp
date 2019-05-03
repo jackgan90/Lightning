@@ -127,14 +127,14 @@ namespace Lightning
 
 
 
-		IVertexBuffer* D3D12Device::CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor)
+		std::shared_ptr<IVertexBuffer> D3D12Device::CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor)
 		{
-			return NEW_REF_OBJ(D3D12VertexBuffer, this, bufferSize, descriptor);
+			return std::make_shared<D3D12VertexBuffer>(this, bufferSize, descriptor);
 		}
 
-		IIndexBuffer* D3D12Device::CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)
+		std::shared_ptr<IIndexBuffer> D3D12Device::CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)
 		{
-			return NEW_REF_OBJ(D3D12IndexBuffer, this, bufferSize, type);
+			return std::make_shared<D3D12IndexBuffer>(this, bufferSize, type);
 		}
 
 

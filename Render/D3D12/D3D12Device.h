@@ -21,9 +21,9 @@ namespace Lightning
 		public:
 			friend class D3D12Renderer;
 			D3D12Device(IDXGIFactory4* factory);
-			INTERFACECALL ~D3D12Device()override;
-			IVertexBuffer* INTERFACECALL CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor)override;
-			IIndexBuffer* INTERFACECALL CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;
+			~D3D12Device()override;
+			std::shared_ptr<IVertexBuffer> CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor)override;
+			std::shared_ptr<IIndexBuffer> CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;
 			std::shared_ptr<IShader> CreateShader(ShaderType type, const char* shaderName, 
 				const char* const shaderSource, const IShaderMacros* macros)override;
 			std::shared_ptr<ITexture> CreateTexture(const TextureDescriptor& descriptor, const std::shared_ptr<ISerializeBuffer>& buffer)override;

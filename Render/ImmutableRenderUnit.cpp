@@ -15,13 +15,10 @@ namespace Lightning
 
 		ImmutableRenderUnit::~ImmutableRenderUnit()
 		{
-			if (mIndexBuffer)
-			{
-				mIndexBuffer->Release();
-			}
+			mIndexBuffer.reset();
 			for (auto i = 0;i < mVertexBufferCount;++i)
 			{
-				mVertexBuffers[i].vertexBuffer->Release();
+				mVertexBuffers[i].vertexBuffer.reset();
 			}
 		}
 
@@ -30,7 +27,7 @@ namespace Lightning
 			return mPrimitiveType;
 		}
 
-		IIndexBuffer* ImmutableRenderUnit::GetIndexBuffer()const
+		std::shared_ptr<IIndexBuffer> ImmutableRenderUnit::GetIndexBuffer()const
 		{
 			return mIndexBuffer;
 		}
@@ -40,7 +37,7 @@ namespace Lightning
 			return mVertexBufferCount;
 		}
 
-		void ImmutableRenderUnit::GetVertexBuffer(std::size_t index, std::size_t& slot, IVertexBuffer*& vertexBuffer)const
+		void ImmutableRenderUnit::GetVertexBuffer(std::size_t index, std::size_t& slot, std::shared_ptr<IVertexBuffer>& vertexBuffer)const
 		{
 			slot = mVertexBuffers[index].slot;
 			vertexBuffer = mVertexBuffers[index].vertexBuffer;
@@ -190,16 +187,16 @@ namespace Lightning
 			for (std::uint8_t i = 0; i < vertexBufferCount; i++)
 			{
 				std::size_t slot;
-				IVertexBuffer* vertexBuffer;
+				std::shared_ptr<IVertexBuffer> vertexBuffer;
 				GetVertexBuffer(i, slot, vertexBuffer);
 				vertexBuffer->Commit();
-				renderer->BindGPUBuffer(slot, vertexBuffer);
+				renderer->BindGPUBuffer(slot, vertexBuffer.get());
 			}
 			auto indexBuffer = GetIndexBuffer();
 			if (indexBuffer)
 			{
 				indexBuffer->Commit();
-				renderer->BindGPUBuffer(0, indexBuffer);
+				renderer->BindGPUBuffer(0, indexBuffer.get());
 			}
 		}
 
@@ -253,7 +250,7 @@ namespace Lightning
 		{
 			for (std::size_t i = 0;i < mVertexBufferCount;i++)
 			{
-				IVertexBuffer* vertexBuffer;
+				std::shared_ptr<IVertexBuffer> vertexBuffer;
 				std::size_t slot;
 				GetVertexBuffer(i, slot, vertexBuffer);
 				VertexInputLayout layout;

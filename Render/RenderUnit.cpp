@@ -40,16 +40,12 @@ namespace Lightning
 			return mPrimitiveType;
 		}
 
-		void RenderUnit::SetIndexBuffer(IIndexBuffer* indexBuffer)
+		void RenderUnit::SetIndexBuffer(const std::shared_ptr<IIndexBuffer>& indexBuffer)
 		{
-			if (mIndexBuffer)
-				mIndexBuffer->Release();
 			mIndexBuffer = indexBuffer;
-			if (mIndexBuffer)
-				mIndexBuffer->AddRef();
 		}
 
-		IIndexBuffer* RenderUnit::GetIndexBuffer()const
+		std::shared_ptr<IIndexBuffer> RenderUnit::GetIndexBuffer()const
 		{
 			return mIndexBuffer;
 		}
@@ -59,17 +55,15 @@ namespace Lightning
 			DoClearVertexBuffers();
 		}
 
-		void RenderUnit::SetVertexBuffer(std::size_t slot, IVertexBuffer* vertexBuffer)
+		void RenderUnit::SetVertexBuffer(std::size_t slot, const std::shared_ptr<IVertexBuffer>& vertexBuffer)
 		{
 			auto it = mVertexBuffers.find(slot);
 			if (it != mVertexBuffers.end())
 			{
 				if (it->second == vertexBuffer)
 					return;
-				it->second->Release();
 				if (vertexBuffer)
 				{
-					vertexBuffer->AddRef();
 					it->second = vertexBuffer;
 				}
 				else
@@ -81,7 +75,6 @@ namespace Lightning
 			{
 				if (vertexBuffer)
 				{
-					vertexBuffer->AddRef();
 					mVertexBuffers.emplace(slot, vertexBuffer);
 				}
 			}
@@ -92,7 +85,7 @@ namespace Lightning
 			return mVertexBuffers.size();
 		}
 
-		void RenderUnit::GetVertexBuffer(std::size_t index, std::size_t& slot, IVertexBuffer*& vertexBuffer)const
+		void RenderUnit::GetVertexBuffer(std::size_t index, std::size_t& slot, std::shared_ptr<IVertexBuffer>& vertexBuffer)const
 		{
 			assert(index < mVertexBuffers.size() && "index out of range.");
 			auto i = 0;
@@ -264,10 +257,6 @@ namespace Lightning
 			clonedUnit->mProjectionMatrix = GetProjectionMatrix();
 
 			clonedUnit->mIndexBuffer = GetIndexBuffer();
-			if (clonedUnit->mIndexBuffer)
-			{
-				clonedUnit->mIndexBuffer->AddRef();
-			}
 
 			clonedUnit->mMaterial = GetMaterial();
 
@@ -294,18 +283,13 @@ namespace Lightning
 			{
 				GetVertexBuffer(i, clonedUnit->mVertexBuffers[i].slot, 
 					clonedUnit->mVertexBuffers[i].vertexBuffer);
-				clonedUnit->mVertexBuffers[i].vertexBuffer->AddRef();
 			}
 			return clonedUnit;
 		}
 
 		void RenderUnit::DoReset()
 		{
-			if (mIndexBuffer)
-			{
-				mIndexBuffer->Release();
-				mIndexBuffer = nullptr;
-			}
+			mIndexBuffer.reset();
 			mMaterial.reset();
 			mDepthStencilBuffer.reset();
 			DoClearVertexBuffers();
@@ -324,10 +308,6 @@ namespace Lightning
 
 		void RenderUnit::DoClearVertexBuffers()
 		{
-			for (auto it = mVertexBuffers.begin(); it != mVertexBuffers.end();++it)
-			{
-				it->second->Release();
-			}
 			mVertexBuffers.clear();
 		}
 
