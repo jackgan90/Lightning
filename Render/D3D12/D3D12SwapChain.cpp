@@ -72,7 +72,10 @@ namespace Lightning
 			if (oldBackBufferIndex != mCurrentBackBufferIndex)
 			{
 				std::shared_ptr<IRenderTarget> oldRenderTargets[RENDER_FRAME_COUNT];
-				std::memcpy(oldRenderTargets, mRenderTargets, sizeof(mRenderTargets));
+				for (auto i = 0;i < RENDER_FRAME_COUNT;++i)
+				{
+					oldRenderTargets[i] = mRenderTargets[i];
+				}
 				auto i{ 0 };
 				for (;i < RENDER_FRAME_COUNT - oldBackBufferIndex;++i)
 				{
@@ -87,7 +90,7 @@ namespace Lightning
 
 			for (std::uint8_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
-				auto D3DRenderTarget = static_cast<D3D12RenderTarget*>(mRenderTargets[i].get());
+				auto D3DRenderTarget = std::static_pointer_cast<D3D12RenderTarget>(mRenderTargets[i]);
 				ComPtr<ID3D12Resource> D3DResource;
 				auto hr = mSwapChain->GetBuffer(i, IID_PPV_ARGS(&D3DResource));
 				assert(SUCCEEDED(hr) && "Failed to get swap chain buffer.");
