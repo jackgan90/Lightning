@@ -1,14 +1,9 @@
 project(Scene)
 message(STATUS "Configuring project Scene")
 
-set(HEADERS IScene.h
-			Scene.h 
-			ISceneManager.h
+set(HEADERS Scene.h 
 			SceneManager.h
-			IDrawable.h
-			IPrimitive.h
 			Primitive.h
-			ICamera.h
 			Camera.h
 			SceneRenderData.h)
 
@@ -21,12 +16,19 @@ set(SOURCES Scene.cpp
 set(PLUGIN_HEADERS	IScenePlugin.h)
 set(PLUGIN_SOURCES	ScenePluginImpl.cpp)
 
-list(APPEND HEADERS	${PLUGIN_HEADERS})
+set(INTERFACE_HEADERS	IScene.h
+						ISceneManager.h			
+						IDrawable.h
+						ICamera.h
+						IPrimitive.h)
+
+list(APPEND HEADERS	${INTERFACE_HEADERS} ${PLUGIN_HEADERS})
 list(APPEND SOURCES ${PLUGIN_SOURCES})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
+source_group("Interfaces" FILES ${INTERFACE_HEADERS})
 source_group("Plugin" FILES ${PLUGIN_HEADERS} ${PLUGIN_SOURCES})
 
 if (WIN32)

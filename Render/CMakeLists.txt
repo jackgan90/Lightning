@@ -1,19 +1,23 @@
 project(Render)
 message(STATUS "Configuring project Render")
 
-
-set(HEADERS IDevice.h
-			ISwapChain.h
-			IRenderTarget.h
-			IDepthStencilBuffer.h
-			IRenderer.h
-			IRenderFence.h
-			IVertexBuffer.h
-			IIndexBuffer.h
-			IndexBuffer.h
-			IGPUBuffer.h
-			IMaterial.h
-			IRenderUnit.h
+set(INTERFACE_HEADERS	IDevice.h
+						ISwapChain.h
+						IRenderTarget.h
+						IDepthStencilBuffer.h
+						IRenderer.h
+						IRenderFence.h
+						IVertexBuffer.h
+						IIndexBuffer.h
+						IGPUBuffer.h
+						IMaterial.h
+						IRenderUnit.h
+						Shader/IShader.h
+						Shader/IShaderMacros.h
+						Shader/IShaderParameter.h
+						Texture/ITexture.h)
+						
+set(HEADERS IndexBuffer.h
 			Device.h
 			Renderer.h
 			SwapChain.h
@@ -51,17 +55,13 @@ set(SOURCES Renderer.cpp
 set(TYPES_HEADERS	Types/Color.h
 					Types/Rect.h)
 
-set(SHADER_HEADERS	Shader/IShader.h
-					Shader/Shader.h
-					Shader/IShaderMacros.h
-					Shader/IShaderParameter.h
+set(SHADER_HEADERS	Shader/Shader.h
 					Shader/ShaderParameter.h
 					Shader/ShaderMacros.h)
 set(SHADER_SOURCES	Shader/ShaderMacros.cpp
 					Shader/Shader.cpp)
 
-set(TEXTURE_HEADERS	Texture/ITexture.h
-					Texture/Sampler.h)
+set(TEXTURE_HEADERS	Texture/Sampler.h)
 
 set(SERIALIZERS_HEADERS	Serializers/ShaderSerializer.h
 						Serializers/TextureSerializer.h)
@@ -75,8 +75,20 @@ set(UTILITY_SOURCES RenderAllocator.cpp)
 set(PLUGIN_HEADERS	IRenderPlugin.h)
 set(PLUGIN_SOURCES	RenderPluginImpl.cpp)
 
-list(APPEND HEADERS ${TYPES_HEADERS} ${SHADER_HEADERS} ${UTILITY_HEADERS} ${SERIALIZERS_HEADERS} ${TEXTURE_HEADERS} ${PLUGIN_HEADERS})
-list(APPEND SOURCES ${SHADER_SOURCES} ${UTILITY_SOURCES} ${SERIALIZERS_SOURCES} ${PLUGIN_SOURCES})
+list(APPEND HEADERS ${INTERFACE_HEADERS}
+					${TYPES_HEADERS} 
+					${SHADER_HEADERS} 
+					${UTILITY_HEADERS} 
+					${SERIALIZERS_HEADERS} 
+					${TEXTURE_HEADERS} 
+					${PLUGIN_HEADERS})
+
+list(APPEND SOURCES ${SHADER_SOURCES} 
+					${UTILITY_SOURCES} 
+					${SERIALIZERS_SOURCES} 
+					${PLUGIN_SOURCES})
+
+source_group("Interfaces" FILES ${INTERFACE_HEADERS})
 
 source_group("Types" FILES ${TYPES_HEADERS})
 source_group("Shader" FILES ${SHADER_HEADERS}

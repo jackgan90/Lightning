@@ -9,20 +9,24 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(PLUGIN_HEADERS	ILoaderPlugin.h)
 set(PLUGIN_SOURCES	LoaderPluginImpl.cpp)
 
-set(HEADERS ISerializer.h
-			ILoader.h
-			ISerializeBuffer.h
-			SerializeBuffer.h
+set(INTERFACE_HEADERS	ISerializer.h
+						ILoader.h
+						ISerializeBuffer.h)
+
+set(HEADERS SerializeBuffer.h
 			Loader.h)
+
 set(SOURCES Loader.cpp
 			SerializeBuffer.cpp)
 
-list(APPEND HEADERS ${PLUGIN_HEADERS})
+list(APPEND HEADERS ${PLUGIN_HEADERS} ${INTERFACE_HEADERS})
 list(APPEND SOURCES ${PLUGIN_SOURCES})
 
 if (WIN32)
 	add_definitions(-DLIGHTNING_WIN32)
 endif()
+
+source_group("Interfaces" FILES ${INTERFACE_HEADERS})
 
 source_group("Plugin" FILES
 			${PLUGIN_HEADERS}

@@ -26,13 +26,15 @@ set(ECS_SOURCES		ECS/Component.cpp
 set(PLUGIN_HEADERS	IFoundationPlugin.h)
 set(PLUGIN_SOURCES	FoundationPluginImpl.cpp)
 
+set(INTERFACE_HEADERS	IConfigManager.h
+						IEnvironment.h
+						IFileSystem.h)
+
 set(HEADERS	Common.h
 			TimeSystem.h
-			IFileSystem.h
 			FileSystem.h
 			Logger.h
 			FileSystemFactory.h
-			IConfigManager.h
 			ConfigManager.h
 			Singleton.h
 			Counter.h
@@ -43,11 +45,10 @@ set(HEADERS	Common.h
 			TimerManager.h
 			EnumOperation.h
 			ThreadLocalObject.h
-			IEnvironment.h
 			Environment.h
 			SystemPriority.h
-			RefObjectCache.h
-			)
+			RefObjectCache.h )
+
 set(SOURCES FileSystem.cpp
 			ConfigManager.cpp
 			FileSystemFactory.cpp
@@ -58,9 +59,15 @@ set(SOURCES FileSystem.cpp
 			Environment.cpp)
 
 
-list(APPEND HEADERS ${MATH_HEADERS} ${ECS_HEADERS} ${PLUGIN_HEADERS})
-list(APPEND SOURCES ${ECS_SOURCES} ${PLUGIN_SOURCES})
+list(APPEND HEADERS ${INTERFACE_HEADERS}
+					${MATH_HEADERS} 
+					${ECS_HEADERS} 
+					${PLUGIN_HEADERS})
 
+list(APPEND SOURCES ${ECS_SOURCES} 
+					${PLUGIN_SOURCES})
+
+source_group("Interfaces" FILES ${INTERFACE_HEADERS})
 source_group("Math" FILES ${MATH_HEADERS})
 source_group("ECS" FILES ${ECS_HEADERS} ${ECS_SOURCES})
 source_group("Plugin" FILES ${PLUGIN_HEADERS} ${PLUGIN_SOURCES})

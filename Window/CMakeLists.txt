@@ -4,8 +4,9 @@ message(STATUS "Configuring project Window")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
-set(HEADERS	IWindow.h
-			GameWindow.h
+set(INTERFACE_HEADERS IWindow.h)
+
+set(HEADERS	GameWindow.h
 			WindowsGameWindow.h
 			WindowEvents.h)
 
@@ -22,9 +23,10 @@ if(LIGHTNING_USE_D3D12)
 	add_definitions(-DLIGHTNING_USE_D3D12)
 endif()
 
-list(APPEND HEADERS ${PLUGIN_HEADERS})
+list(APPEND HEADERS ${INTERFACE_HEADERS} ${PLUGIN_HEADERS})
 list(APPEND SOURCES ${PLUGIN_SOURCES})
 
+source_group("Interfaces" FILES ${INTERFACE_HEADERS})
 source_group("Plugin" FILES ${PLUGIN_HEADERS} ${PLUGIN_SOURCES})
 
 define_dll_export_macro(WINDOW)
