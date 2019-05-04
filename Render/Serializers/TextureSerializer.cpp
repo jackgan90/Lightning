@@ -95,7 +95,7 @@ namespace Lightning
 		};
 
 		TextureSerializer::TextureSerializer(const std::string path, ResourceAsyncCallback<ITexture> callback):
-			mPath(path), mFinishCallback(callback), mTexture(nullptr)
+			mPath(path), mFinishCallback(callback)
 		{
 
 		}
