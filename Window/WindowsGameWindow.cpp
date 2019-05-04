@@ -181,7 +181,7 @@ namespace Lightning
 			LOG_INFO("Win32 window destructed!");
 		}
 
-		void WindowsGameWindow::Update()
+		void WindowsGameWindow::Tick()
 		{
 			MSG msg{};
 			if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))

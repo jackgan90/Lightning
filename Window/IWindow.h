@@ -17,7 +17,7 @@ namespace Lightning
 		{
 			virtual ~IWindow() = default;
 			virtual bool Show(bool show) = 0;
-			virtual void Update() = 0;
+			virtual void Tick() = 0;
 			virtual std::uint32_t GetWidth()const = 0;
 			virtual std::uint32_t GetHeight()const = 0;
 			virtual bool RegisterEventReceiver(IWindowEventReceiver* receiver) = 0;

@@ -45,7 +45,7 @@ namespace Lightning
 		{
 			for (auto& window : mWindows)
 			{
-				window->Update();
+				window->Tick();
 			}
 		}
 
