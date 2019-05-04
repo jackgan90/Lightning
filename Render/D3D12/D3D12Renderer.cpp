@@ -277,31 +277,24 @@ namespace Lightning
 			commandList->RSSetScissorRects(UINT(scissorRectCount), D3D12ScissorRects);
 		}
 
-		void D3D12Renderer::BindGPUBuffer(std::size_t slot, IGPUBuffer* pBuffer)
+		void D3D12Renderer::BindVertexBuffer(std::size_t slot, IVertexBuffer* buffer)
 		{
-			if (!pBuffer)
+			if (!buffer)
 				return;
-			auto bufferType = pBuffer->GetType();
 			auto commandList = GetGraphicsCommandList();
-			switch (bufferType)
-			{
-			case GPUBufferType::VERTEX:
-			{
-				D3D12_VERTEX_BUFFER_VIEW* bufferViews = g_RenderAllocator.Allocate<D3D12_VERTEX_BUFFER_VIEW>(1);
-				bufferViews[0] = static_cast<D3D12VertexBuffer*>(pBuffer)->GetBufferView();
-				commandList->IASetVertexBuffers(UINT(slot), 1, bufferViews);
-				break;
-			}
-			case GPUBufferType::INDEX:
-			{
-				D3D12_INDEX_BUFFER_VIEW* bufferView = g_RenderAllocator.Allocate<D3D12_INDEX_BUFFER_VIEW>(1);
-				bufferView[0] = static_cast<D3D12IndexBuffer*>(pBuffer)->GetBufferView();
-				commandList->IASetIndexBuffer(bufferView);
-				break;
-			}
-			default:
-				break;
-			}
+			D3D12_VERTEX_BUFFER_VIEW* bufferViews = g_RenderAllocator.Allocate<D3D12_VERTEX_BUFFER_VIEW>(1);
+			bufferViews[0] = static_cast<D3D12VertexBuffer*>(buffer)->GetBufferView();
+			commandList->IASetVertexBuffers(UINT(slot), 1, bufferViews);
+		}
+
+		void D3D12Renderer::BindIndexBuffer(IIndexBuffer* buffer)
+		{	
+			if (!buffer)
+				return;
+			auto commandList = GetGraphicsCommandList();
+			D3D12_INDEX_BUFFER_VIEW* bufferView = g_RenderAllocator.Allocate<D3D12_INDEX_BUFFER_VIEW>(1);
+			bufferView[0] = static_cast<D3D12IndexBuffer*>(buffer)->GetBufferView();
+			commandList->IASetIndexBuffer(bufferView);
 		}
 
 		void D3D12Renderer::Draw(const DrawParam& param)

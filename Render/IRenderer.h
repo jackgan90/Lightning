@@ -92,7 +92,8 @@ namespace Lightning
 			virtual void ApplyViewports(const Viewport* viewports, std::size_t viewportCount) = 0;
 			virtual void ApplyScissorRects(const ScissorRect* scissorRects, std::size_t scissorRectCount) = 0;
 			//bind pBuffer to a GPU slot(does not copy data,just binding), each invocation will override previous binding
-			virtual void BindGPUBuffer(std::size_t slot, IGPUBuffer* buffer) = 0;
+			virtual void BindVertexBuffer(std::size_t slot, IVertexBuffer* buffer) = 0;
+			virtual void BindIndexBuffer(IIndexBuffer* buffer) = 0;
 			//issue underlying draw call
 			virtual void Draw(const DrawParam& param) = 0;
 			//get near plane value corresponding to normalized device coordinate

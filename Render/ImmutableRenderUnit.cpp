@@ -193,13 +193,13 @@ namespace Lightning
 				std::shared_ptr<IVertexBuffer> vertexBuffer;
 				GetVertexBuffer(i, slot, vertexBuffer);
 				vertexBuffer->Commit();
-				renderer->BindGPUBuffer(slot, vertexBuffer.get());
+				renderer->BindVertexBuffer(slot, vertexBuffer.get());
 			}
 			auto indexBuffer = GetIndexBuffer();
 			if (indexBuffer)
 			{
 				indexBuffer->Commit();
-				renderer->BindGPUBuffer(0, indexBuffer.get());
+				renderer->BindIndexBuffer(indexBuffer.get());
 			}
 		}
 

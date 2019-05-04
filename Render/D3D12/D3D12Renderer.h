@@ -36,7 +36,8 @@ namespace Lightning
 			void ApplyPipelineState(const PipelineState& state)override;
 			void ApplyViewports(const Viewport* viewports, std::size_t viewportCount)override;
 			void ApplyScissorRects(const ScissorRect* scissorRects, std::size_t scissorRectCount)override;
-			void BindGPUBuffer(std::size_t slot, IGPUBuffer* buffer)override;
+			void BindVertexBuffer(std::size_t slot, IVertexBuffer* buffer)override;
+			void BindIndexBuffer(IIndexBuffer* buffer)override;
 			void Draw(const DrawParam& param)override;
 			//For debug
 			void ReportLiveObjects()const;
