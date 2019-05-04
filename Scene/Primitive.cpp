@@ -210,7 +210,7 @@ namespace Lightning
 			material->EnableBlend(mColor.a != 0xff);
 			mRenderUnit->SetMaterial(material);
 			mTransform.SetScale(GetScale());
-			mRenderUnit->SetTransform(mTransform.GetTransform());
+			mRenderUnit->SetTransform(mTransform);
 		}
 
 		

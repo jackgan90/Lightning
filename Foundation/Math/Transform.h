@@ -11,69 +11,63 @@ namespace Lightning
 	{
 		namespace Math
 		{
-			struct Transform
-			{
-				Vector3f position;
-				Vector3f scale;
-				Quaternionf rotation;
-				Matrix4f matrix;
-				Matrix4f inverseMatrix;
-			};
-			static_assert(std::is_pod<Transform>::value, "Transform is not a POD.");
-
-			class Transformer
+			class Transform
 			{
 			public:
-				Transformer(): mMatrixDirty(true)
+				Transform()
+					: mMatrixDirty(true)
+					, mPosition{0.0f, 0.0f, 0.0f}
+					, mRotation{0.0f, 0.0f, 0.0f, 1.0f}
+					, mScale{1.0f, 1.0f, 1.0f}
 				{
-					mTransform.position = Vector3f{ 0.0f, 0.0f, 0.0f };
-					mTransform.rotation = Quaternionf{ 0.0f, 0.0f, 0.0f, 1.0f };
-					mTransform.scale = Vector3f{ 1.0f, 1.0f, 1.0f };
 				}
-				Transformer(const Vector3f& pos, const Vector3f& scale, const Quaternionf& rot)
-					:mMatrixDirty(true)
+				Transform(const Vector3f& pos, const Vector3f& scale, const Quaternionf& rot)
+					: mMatrixDirty(true)
+					, mPosition(pos)
+					, mRotation(rot)
+					, mScale(scale)
 				{
-					mTransform.position = pos;
-					mTransform.scale = scale;
-					mTransform.rotation = rot;
+
 				}
 
 				Matrix4f LocalToGlobalMatrix4()
 				{
 					UpdateMatrix();
-					return mTransform.matrix;
+					return mMatrix;
 				}
 				Matrix4f GlobalToLocalMatrix4()
 				{
 					UpdateMatrix();
-					return mTransform.inverseMatrix;
+					return mInverseMatrix;
 				}
 
 				void SetPosition(const Vector3f& position)
 				{
-					mTransform.position = position;
+					mPosition = position;
 					mMatrixDirty = true;
 				}
-				Vector3f GetPosition()const { return mTransform.position; }
+
+				Matrix4f GetMatrix(){ UpdateMatrix(); return mMatrix; }
+				Vector3f GetPosition()const { return mPosition; }
 
 				void SetRotation(const Quaternionf& rotation)
 				{
 					assert(rotation.Length() >= 0.999 && rotation.Length() <= 1.0001);
-					mTransform.rotation = rotation;
+					mRotation = rotation;
 					mMatrixDirty = true;
 				}
-				Quaternionf GetRotation()const { return mTransform.rotation; }
+				Quaternionf GetRotation()const { return mRotation; }
 
 				void SetScale(const Vector3f& scale)
 				{
-					mTransform.scale = scale;
+					mScale = scale;
 					mMatrixDirty = true;
 				}
-				Vector3f GetScale()const { return mTransform.scale; }
+				Vector3f GetScale()const { return mScale; }
 
 				void LookAt(const Vector3f& position, const Vector3f& up = Vector3f::up())
 				{
-					auto direction = position - mTransform.position;
+					auto direction = position - mPosition;
 					if (direction.IsZero())
 						return;
 					OrientTo(direction, up);
@@ -97,7 +91,7 @@ namespace Lightning
 
 					auto rot2 = Quaternionf::MakeRotation(newUp, desiredUp);
 
-					mTransform.rotation = rot2 * rot1;
+					mRotation = rot2 * rot1;
 
 					auto fwdDot = Forward().Dot(direction);
 					fwdDot = std::min(std::max(-1.0f, fwdDot), 1.0f);
@@ -105,16 +99,15 @@ namespace Lightning
 					{
 						Quaternionf quat;
 						quat.FromAxisAndAngle(desiredUp, std::cos(fwdDot));
-						mTransform.rotation = quat * mTransform.rotation;
+						mRotation = quat * mRotation;
 						//LOG_INFO("TRIGGER, x, y, z, w : %f, %f, %f, %f", mRotation.x, mRotation.y, mRotation.z, mRotation.w);
 					}
 
 					mMatrixDirty = true;
 				}
-				Transform GetTransform() { UpdateMatrix(); return mTransform; }
-				Vector3f Forward()const { return mTransform.rotation * Vector3f::back(); }
-				Vector3f Up()const { return mTransform.rotation * Vector3f::up(); }
-				Vector3f Right()const { return mTransform.rotation * Vector3f::right(); }
+				Vector3f Forward()const { return mRotation * Vector3f::back(); }
+				Vector3f Up()const { return mRotation * Vector3f::up(); }
+				Vector3f Right()const { return mRotation * Vector3f::right(); }
 				//ref : https://math.stackexchange.com/questions/44689/how-to-find-a-random-axis-or-unit-vector-in-3d
 				static Quaternionf RandomRotation()
 				{
@@ -139,33 +132,37 @@ namespace Lightning
 
 					Matrix4f matTrans;
 					matTrans.SetIdentity();
-					matTrans.SetColumn(3, Vector4f{mTransform.position.x, mTransform.position.y, mTransform.position.z, 1.0f});
+					matTrans.SetColumn(3, Vector4f{mPosition.x, mPosition.y, mPosition.z, 1.0f});
 
 					Matrix4f matRotation;
-					mTransform.rotation.ToMatrix(matRotation);
+					mRotation.ToMatrix(matRotation);
 
 					Matrix4f matScale;
 					matScale.SetIdentity();
-					matScale.SetCell(0, 0, mTransform.scale.x);
-					matScale.SetCell(1, 1, mTransform.scale.y);
-					matScale.SetCell(2, 2, mTransform.scale.z);
+					matScale.SetCell(0, 0, mScale.x);
+					matScale.SetCell(1, 1, mScale.y);
+					matScale.SetCell(2, 2, mScale.z);
 
-					mTransform.matrix = matTrans * matRotation * matScale;
+					mMatrix = matTrans * matRotation * matScale;
 
 					matScale.SetIdentity();
-					matScale.SetCell(0, 0, float(1.0 / mTransform.scale.x));
-					matScale.SetCell(1, 1, float(1.0 / mTransform.scale.y));
-					matScale.SetCell(2, 2, float(1.0 / mTransform.scale.z));
+					matScale.SetCell(0, 0, float(1.0 / mScale.x));
+					matScale.SetCell(1, 1, float(1.0 / mScale.y));
+					matScale.SetCell(2, 2, float(1.0 / mScale.z));
 
-					mTransform.rotation.Inversed().ToMatrix(matRotation);
+					mRotation.Inversed().ToMatrix(matRotation);
 
 					matTrans.SetIdentity();
-					matTrans.SetColumn(3, Vector4f{-mTransform.position.x, -mTransform.position.y, -mTransform.position.z, 1.0f});
+					matTrans.SetColumn(3, Vector4f{-mPosition.x, -mPosition.y, -mPosition.z, 1.0f});
 
-					mTransform.inverseMatrix = matScale * matRotation * matTrans;
+					mInverseMatrix = matScale * matRotation * matTrans;
 				}
 				bool mMatrixDirty;
-				Transform mTransform;
+				Vector3f mPosition;
+				Vector3f mScale;
+				Quaternionf mRotation;
+				Matrix4f mMatrix;
+				Matrix4f mInverseMatrix;
 			};
 		}
 	}

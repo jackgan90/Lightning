@@ -7,7 +7,7 @@ namespace Lightning
 {
 	namespace Scene
 	{
-		using Foundation::Math::Transformer;
+		using Foundation::Math::Transform;
 		//Use right-handed coordinate system
 		class Camera : public ICamera
 		{
@@ -36,14 +36,14 @@ namespace Lightning
 			float GetFOV()const override{ return Foundation::Math::RadiansToDegrees(mFov); }
 			void SetAspectRatio(const float aspectRatio)override;
 			float GetAspectRatio()const override{ return mAspectRatio; }
-			Vector3f GetWorldPosition()const override{ return mTransformer.GetPosition(); }
+			Vector3f GetWorldPosition()const override{ return mTransform.GetPosition(); }
 			Vector3f CameraPointToWorld(const Vector3f& point)const override;
 			Vector3f WorldPointToCamera(const Vector3f& point)const override;
 			Vector3f CameraDirectionToWorld(const Vector3f& direction)const override;
 			Vector3f WorldDirectionToCamera(const Vector3f& direction)const;
-			Vector3f GetForward()const override{ return mTransformer.Forward(); }
+			Vector3f GetForward()const override{ return mTransform.Forward(); }
 			void SetRotation(const Quaternionf& rotation) override;
-			Quaternionf GetRotation()const override{ return mTransformer.GetRotation(); }
+			Quaternionf GetRotation()const override{ return mTransform.GetRotation(); }
 			void Tick(IRenderer&)override;
 		protected:
 			void UpdateViewMatrix();
@@ -55,7 +55,7 @@ namespace Lightning
 			float mFov;
 			//ratio of near plane width / near plane height
 			float mAspectRatio;
-			Transformer mTransformer;
+			Transform mTransform;
 			Matrix4f mViewMatrix;
 			Matrix4f mInvViewMatrix;
 			Matrix4f mProjectionMatrix;
