@@ -1,7 +1,6 @@
 #pragma once
 #include <boost/pool/singleton_pool.hpp>
 #include "IRenderUnit.h"
-#include "RefObject.h"
 
 namespace Lightning
 {
