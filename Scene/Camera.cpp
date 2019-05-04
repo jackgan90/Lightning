@@ -184,9 +184,9 @@ namespace Lightning
 			return Vector3f{ res.x, res.y, res.z };
 		}
 
-		void Camera::Update(IRenderer* renderer)
+		void Camera::Tick(IRenderer& renderer)
 		{
-			auto window = renderer->GetOutputWindow();
+			auto window = renderer.GetOutputWindow();
 			if (window)
 			{
 				auto width = window->GetWidth();

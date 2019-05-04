@@ -23,12 +23,12 @@ namespace Lightning
 			}
 		}
 
-		void Scene::Update()
+		void Scene::Tick()
 		{
 			auto renderer = gRenderPlugin->GetRenderer();
 			if (mActiveCamera)
 			{
-				mActiveCamera->Update(renderer);
+				mActiveCamera->Tick(*renderer);
 			}
 			for (auto& drawable : mDrawables)
 			{

@@ -41,7 +41,7 @@ namespace Lightning
 		void PlatformPluginImpl::Tick()
 		{
 			if (mApp)
-				mApp->Update();
+				mApp->Tick();
 		}
 
 		IApplication* PlatformPluginImpl::CreateApplication()

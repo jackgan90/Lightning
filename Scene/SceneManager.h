@@ -15,7 +15,7 @@ namespace Lightning
 			IScene* CreateScene()override;
 			IScene* GetForegroundScene()override;
 			void SetForegroundScene(IScene* scene)override;
-			void Update()override;
+			void Tick()override;
 			void DestroyScene(const std::uint32_t sceneId)override;
 			void DestroyAllScenes()override;
 		protected:

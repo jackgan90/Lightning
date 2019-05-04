@@ -44,7 +44,7 @@ namespace Lightning
 			Vector3f GetForward()const override{ return mTransformer.Forward(); }
 			void SetRotation(const Quaternionf& rotation) override;
 			Quaternionf GetRotation()const override{ return mTransformer.GetRotation(); }
-			void Update(IRenderer*)override;
+			void Tick(IRenderer&)override;
 		protected:
 			void UpdateViewMatrix();
 			void UpdateProjectionMatrix();

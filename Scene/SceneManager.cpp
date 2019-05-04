@@ -10,10 +10,10 @@ namespace Lightning
 	{
 		using Render::IRenderer;
 		extern Plugins::IRenderPlugin* gRenderPlugin;
-		void SceneManager::Update()
+		void SceneManager::Tick()
 		{
 			for (auto& scene : mScenes)
-				scene.second->Update();
+				scene.second->Tick();
 		}
 
 		void SceneManager::DestroyScene(const std::uint32_t sceneId)

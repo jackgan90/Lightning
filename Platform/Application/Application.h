@@ -17,7 +17,7 @@ namespace Lightning
 		public:
 			Application();
 			~Application()override;
-			void Update()override;
+			void Tick()override;
 			void Start()override;
 			bool IsRunning() override{ return mRunning; }
 			int GetExitCode()const override{ return mExitCode; }

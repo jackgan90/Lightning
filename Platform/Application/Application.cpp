@@ -118,7 +118,7 @@ namespace Lightning
 		{
 		}
 
-		void Application::Update()
+		void Application::Tick()
 		{
 		}
 

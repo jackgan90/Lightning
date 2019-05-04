@@ -46,7 +46,7 @@ namespace Lightning
 			virtual Vector3f GetForward()const = 0;
 			virtual void SetRotation(const Quaternionf& rotation) = 0;
 			virtual Quaternionf GetRotation()const = 0;
-			virtual void Update(IRenderer*) = 0;
+			virtual void Tick(IRenderer&) = 0;
 		};
 	}
 }

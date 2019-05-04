@@ -50,7 +50,7 @@ namespace Lightning
 
 		void ScenePluginImpl::Tick()
 		{
-			SceneManager::Instance()->Update();
+			SceneManager::Instance()->Tick();
 		}
 
 		ISceneManager* ScenePluginImpl::GetSceneManager()
