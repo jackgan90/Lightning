@@ -43,11 +43,11 @@ namespace Lightning
 		class D3D12Shader : public Shader
 		{
 		public:
-			D3D12Shader(D3D_SHADER_MODEL shaderModel, ShaderType type, const std::string& name, const char* const shaderSource);
+			D3D12Shader(D3D_SHADER_MODEL shaderModel, ShaderType type, 
+				const std::string& name, const std::string& shaderSource, const std::shared_ptr<IShaderMacros>& macros);
 			~D3D12Shader()override;
-			const IShaderMacros* GetMacros()const override;
 			std::size_t GetParameterCount()const override;
-			bool SetParameter(const IShaderParameter* parameter) override;
+			bool SetParameter(const IShaderParameter& parameter) override;
 			void Compile()override;
 			void GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount)override;
 			void* GetByteCodeBuffer()const;
@@ -121,6 +121,7 @@ namespace Lightning
 			UINT mTotalConstantBufferSize;
 			UINT mTextureParameterCount;
 			UINT mSamplerStateParamCount;
+			std::shared_ptr<IShaderMacros> mMacros;
 		};
 	}
 }

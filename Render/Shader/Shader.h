@@ -1,6 +1,5 @@
 #pragma once
 #include "IShader.h"
-#include "ShaderMacros.h"
 #include "RefObject.h"
 
 namespace Lightning
@@ -11,18 +10,19 @@ namespace Lightning
 		{
 		public:
 			static size_t Hash(const ShaderType& type, const std::string& shaderName, const IShaderMacros* macros);
-			Shader(ShaderType type, const std::string& name, const char* const source);
+			Shader(ShaderType type, const std::string& name, const std::string& source, const std::shared_ptr<IShaderMacros>& macros);
 			~Shader()override;
-			void DefineMacros(const IShaderMacros* macros)override;
+			void DefineMacro(const std::string& macroName, const std::string& macroValue)override;
+			std::shared_ptr<IShaderMacros> GetMacros()const;
 			ShaderType GetType()const override;
-			const char* const GetSource()const override;
-			const char* GetName()const override;
+			std::string GetSource()const override;
+			std::string GetName()const override;
 			std::size_t GetHash()const override;
 		protected:
 			ShaderType mType;
 			std::string mName;
-			const char* const mSource;
-			ShaderMacros mMacros;
+			const std::string mSource;
+			std::shared_ptr<IShaderMacros> mMacros;
 		};
 	}
 }
@@ -33,7 +33,7 @@ namespace std
 	{
 		std::size_t operator()(const Lightning::Render::Shader& shader)const noexcept
 		{
-			return Lightning::Render::Shader::Hash(shader.GetType(), shader.GetName(), shader.GetMacros());
+			return Lightning::Render::Shader::Hash(shader.GetType(), shader.GetName(), shader.GetMacros().get());
 		}
 	};
 }

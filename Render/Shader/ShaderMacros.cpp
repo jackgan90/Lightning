@@ -66,7 +66,7 @@ namespace Lightning
 		}
 
 
-		bool ShaderMacros::HasMacro(const char* macroName)const
+		bool ShaderMacros::IsDefined(const std::string& macroName)const
 		{
 			return mMacros.find(macroName) != mMacros.end();
 		}
@@ -77,31 +77,36 @@ namespace Lightning
 		}
 
 
-		const char* ShaderMacros::GetMacroValue(const char* macroName)const
+		bool ShaderMacros::GetMacroValue(const std::string& macroName, std::string& macroValue)const
 		{
 			auto it = mMacros.find(macroName);
-			return it == mMacros.end() ? "" : it->second.c_str();
+			if (it == mMacros.end())
+			{
+				return false;
+			}
+			else
+			{
+				macroValue = it->second;
+				return true;
+			}
 		}
 
-		void ShaderMacros::Define(const char* macroName, const char* macroValue)
+		void ShaderMacros::Define(const std::string& macroName, const std::string& macroValue)
 		{
-			if(macroName)
-				mMacros[macroName] = macroValue;
+			assert(!macroName.empty() && "Defined macro name can't be empty!");
+			mMacros[macroName] = macroValue;
 		}
 
-		void ShaderMacros::Undefine(const char* macroName)
+		void ShaderMacros::Undefine(const std::string& macroName)
 		{
 			mMacros.erase(macroName);
 		}
 
-		void ShaderMacros::GetAllMacros(MacroPair** pairs)const
+		void ShaderMacros::GetAllMacros(std::vector<std::pair<std::string, std::string>>& macros)const
 		{
-			auto macroArray = *pairs;
-			auto i = 0;
-			for (auto it = mMacros.cbegin(); it != mMacros.cend();++it, ++i)
+			for (auto it = mMacros.cbegin(); it != mMacros.cend();++it)
 			{
-				macroArray[i].name = it->first.c_str();
-				macroArray[i].value = it->second.c_str();
+				macros.emplace_back(std::make_pair(it->first, it->second));
 			}
 		}
 
@@ -116,16 +121,15 @@ namespace Lightning
 			return seed;
 		}
 
-		const char* ShaderMacros::GetMacroString()const
+		std::string ShaderMacros::GetMacroString()const
 		{
-			static std::string str;
-			str.clear();
+			std::string macroString;
 			for (auto it = mMacros.cbegin(); it != mMacros.cend();++it)
 			{
-				str += it->first + " " + it->second + '\n';
+				macroString += it->first + " " + it->second + "\n";
 			}
 
-			return str.c_str();
+			return macroString;
 		}
 	}
 }

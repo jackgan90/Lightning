@@ -12,12 +12,19 @@ namespace Lightning
 
 		bool ShaderCache::AddShader(const std::shared_ptr<IShader>& shader)
 		{
-			return AddObject(GetKey(shader->GetType(), shader->GetName(), shader->GetMacros()), shader);
+			return AddObject(GetKey(shader->GetType(), shader->GetName(), shader->GetMacros().get()), shader);
 		}
 
 		std::string ShaderCache::GetKey(ShaderType type, const std::string& name, const IShaderMacros* macros)
 		{
-			return std::to_string(static_cast<int>(type)) + "_" + name + + "_" + macros->GetMacroString();
+			if (macros)
+			{
+				return std::to_string(static_cast<int>(type)) + "_" + name + + "_" + macros->GetMacroString();
+			}
+			else
+			{
+				return std::to_string(static_cast<int>(type)) + "_" + name + + "_";
+			}
 		}
 	}
 }

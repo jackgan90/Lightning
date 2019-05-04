@@ -17,12 +17,13 @@ namespace Lightning
 
 		extern FrameMemoryAllocator g_RenderAllocator;
 
-		D3D12Shader::D3D12Shader(D3D_SHADER_MODEL shaderModel, ShaderType type, const std::string& name, const char* const shaderSource):
-			Shader(type, name, shaderSource)
+		D3D12Shader::D3D12Shader(D3D_SHADER_MODEL shaderModel, ShaderType type, 
+			const std::string& name, const std::string& shaderSource, const std::shared_ptr<IShaderMacros>& macros):
+			Shader(type, name, shaderSource, macros)
 			, mShaderModel(shaderModel), mTotalConstantBufferSize(0)
 			, mTextureParameterCount(0), mSamplerStateParamCount(0)
 		{
-			assert(shaderSource);
+			assert(!shaderSource.empty() && "Invalid shader source");
 			CompileImpl();
 			ComPtr<ID3D12ShaderReflection> shaderReflection;
 			D3DReflect(mByteCode->GetBufferPointer(), mByteCode->GetBufferSize(), IID_PPV_ARGS(&shaderReflection));
@@ -313,11 +314,6 @@ namespace Lightning
 			boundResource[mSamplerResourceIndex].samplerStates[index] = samplerState;
 		}
 
-		const IShaderMacros* D3D12Shader::GetMacros()const
-		{
-			return &mMacros;
-		}
-
 		void* D3D12Shader::GetByteCodeBuffer()const
 		{
 			if (mByteCode)
@@ -341,19 +337,18 @@ namespace Lightning
 			return mDesc.BoundResources;
 		}
 
-		bool D3D12Shader::SetParameter(const IShaderParameter* parameter)
+		bool D3D12Shader::SetParameter(const IShaderParameter& parameter)
 		{
-			assert(parameter != nullptr && "parameter cannot be nullptr.");
-			auto parameterType = parameter->GetType();
+			auto parameterType = parameter.GetType();
 			if (parameterType == ShaderParameterType::UNKNOWN)
 			{
 				LOG_WARNING("Unknown shader parameter type when set shader {0}", mName.c_str());
 				return false;
 			}
-			auto it = mParameters.find(parameter->GetName());
+			auto it = mParameters.find(parameter.GetName());
 			assert(it != mParameters.end());
 			std::size_t size{ 0 };
-			auto parameterBuffer = parameter->Buffer(size);
+			auto parameterBuffer = parameter.Buffer(size);
 			InitResourceProxy();
 			if (parameterType == ShaderParameterType::TEXTURE)
 			{
@@ -365,7 +360,7 @@ namespace Lightning
 			}
 			else if (parameterType == ShaderParameterType::SAMPLER)
 			{
-				auto pSamplerState = reinterpret_cast<const SamplerState*>(parameter->Buffer(size));
+				auto pSamplerState = reinterpret_cast<const SamplerState*>(parameter.Buffer(size));
 				mResourceProxy->SetSamplerState(it->second.index, *pSamplerState);
 				return true;
 			}
@@ -384,7 +379,7 @@ namespace Lightning
 
 		void D3D12Shader::Compile()
 		{
-			if (mSource)
+			if (!mSource.empty())
 			{
 				CompileImpl();
 			}
@@ -503,34 +498,10 @@ namespace Lightning
 
 		void D3D12Shader::CompileImpl()
 		{
-			D3D_SHADER_MACRO* pMacros = nullptr;
-			auto macroCount = mMacros.GetMacroCount();
-			if (macroCount)
+			auto source = mSource;
+			if (mMacros)
 			{
-				pMacros = g_RenderAllocator.Allocate<D3D_SHADER_MACRO>(macroCount + 1);
-				auto macroPairs = g_RenderAllocator.Allocate<MacroPair>(macroCount);
-				std::memset(&pMacros[macroCount], 0, sizeof(D3D_SHADER_MACRO));
-				mMacros.GetAllMacros(&macroPairs);
-				auto idx = 0;
-				for (auto i = 0;i < macroCount; ++i,++idx)
-				{
-					auto name = macroPairs[i].name;
-					auto nameSize = std::strlen(name) + 1;
-					pMacros[idx].Name = g_RenderAllocator.Allocate<const char>(nameSize);
-#ifdef _MSC_VER
-					strcpy_s(const_cast<char*>(pMacros[idx].Name), nameSize, name);
-#else
-					std::strcpy(const_cast<char*>(pMacros[idx].Name), name);
-#endif
-					auto definition = macroPairs[i].value;
-					auto definitionSize = std::strlen(definition) + 1;
-					pMacros[idx].Definition = g_RenderAllocator.Allocate<const char>(definitionSize);
-#ifdef _MSC_VER
-					strcpy_s(const_cast<char*>(pMacros[idx].Definition), definitionSize,definition);
-#else
-					std::strcpy(const_cast<char*>(pMacros[idx].Definition), definition);
-#endif
-				}
+				source = mMacros->GetMacroString() + source;
 			}
 			//TODO: resolve include
 #ifndef NDEBUG
@@ -544,19 +515,16 @@ namespace Lightning
 			char shaderModel[32];
 			
 			GetShaderModelString(shaderModel);
-			HRESULT hr = ::D3DCompile(mSource, static_cast<SIZE_T>(strlen(mSource) + 1), nullptr, pMacros, nullptr, DEFAULT_SHADER_ENTRY,
+			HRESULT hr = ::D3DCompile(source.c_str(), static_cast<SIZE_T>(source.length() + 1), nullptr, nullptr, nullptr, DEFAULT_SHADER_ENTRY,
 				shaderModel, flags1, flags2, &mByteCode, &errorLog);
 			if (FAILED(hr))
 			{
 				std::stringstream ss;
 				ss << "Compile shader " << mName << " failed!";
-				if (macroCount)
+				if (mMacros)
 				{
 					ss << "Defined macros:" << std::endl;
-					for (size_t i = 0; i < macroCount; i++)
-					{
-						ss << pMacros[i].Name << ":" << pMacros[i].Definition << std::endl;
-					}
+					ss << mMacros->GetMacroString();
 				}
 				ss << "Detailed info:" << std::endl;
 				size_t compileErrorBufferSize = errorLog->GetBufferSize();

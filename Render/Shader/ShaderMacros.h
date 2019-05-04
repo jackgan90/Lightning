@@ -19,17 +19,16 @@ namespace Lightning
 			ShaderMacros& operator-=(const ShaderMacros& shaderMacros);
 			void Combine(const ShaderMacros& shaderMacros);
 			void Exclude(const ShaderMacros& shaderMacros);
-			bool HasMacro(const char* macroName)const override;
-			void Define(const char* macroName, const char* macroValue)override;
-			void Undefine(const char* macroName)override;
-			const char* GetMacroValue(const char* macroName)const override;
+			bool IsDefined(const std::string& macroName)const override;
+			void Define(const std::string& macroName, const std::string& macroValue)override;
+			void Undefine(const std::string& macroName)override;
+			bool GetMacroValue(const std::string& macroName, std::string& macroValue)const override;
 			size_t GetMacroCount()const override;
-			const char* GetMacroString()const override;
-			void GetAllMacros(MacroPair** pairs)const override;
+			std::string GetMacroString()const override;
+			void GetAllMacros(std::vector<std::pair<std::string, std::string>>& macros)const override;
 			std::size_t GetHash()const override;
 		private:
-			using MacroMap = std::unordered_map<std::string, std::string>;
-			MacroMap mMacros;
+			std::unordered_map<std::string, std::string> mMacros;
 		};
 	}
 }

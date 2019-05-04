@@ -23,11 +23,11 @@ namespace Lightning
 			//memory during the inovcation.
 			virtual std::shared_ptr<IVertexBuffer> CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor) = 0;
 			virtual std::shared_ptr<IIndexBuffer> CreateIndexBuffer(std::uint32_t bufferSize, IndexType type) = 0;
-			virtual std::shared_ptr<IShader> CreateShader(ShaderType type, const char* shaderName, 
-				const char* const shaderSource, const IShaderMacros* macros) = 0;
+			virtual std::shared_ptr<IShader> CreateShader(ShaderType type, const std::string& shaderName, 
+				const std::string& shaderSource, const std::shared_ptr<IShaderMacros>& macros) = 0;
 			virtual std::shared_ptr<IRenderTarget> CreateRenderTarget(const std::shared_ptr<ITexture>& texture) = 0;
 			virtual std::shared_ptr<IDepthStencilBuffer> CreateDepthStencilBuffer(const std::shared_ptr<ITexture>& texture) = 0;
-			virtual void CreateShaderFromFile(ShaderType type, const std::string& path, ResourceAsyncCallback<IShader> callback) = 0;
+			virtual void CreateShaderFromFile(ShaderType type, const std::string& path, const std::shared_ptr<IShaderMacros>& macros, ResourceAsyncCallback<IShader> callback) = 0;
 			virtual std::shared_ptr<ITexture> CreateTexture(const TextureDescriptor& descriptor, const std::shared_ptr<ISerializeBuffer>& buffer) = 0;
 			virtual void CreateTextureFromFile(const std::string& path, ResourceAsyncCallback<ITexture> callback) = 0;
 			virtual std::shared_ptr<IShader> GetDefaultShader(ShaderType type) = 0;

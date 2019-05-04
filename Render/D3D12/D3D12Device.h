@@ -24,8 +24,8 @@ namespace Lightning
 			~D3D12Device()override;
 			std::shared_ptr<IVertexBuffer> CreateVertexBuffer(std::uint32_t bufferSize, const VertexDescriptor& descriptor)override;
 			std::shared_ptr<IIndexBuffer> CreateIndexBuffer(std::uint32_t bufferSize, IndexType type)override;
-			std::shared_ptr<IShader> CreateShader(ShaderType type, const char* shaderName, 
-				const char* const shaderSource, const IShaderMacros* macros)override;
+			std::shared_ptr<IShader> CreateShader(ShaderType type, const std::string& shaderName, 
+				const std::string& shaderSource, const std::shared_ptr<IShaderMacros>& macros)override;
 			std::shared_ptr<ITexture> CreateTexture(const TextureDescriptor& descriptor, const std::shared_ptr<ISerializeBuffer>& buffer)override;
 			std::shared_ptr<IRenderTarget> CreateRenderTarget(const std::shared_ptr<ITexture>& texture) override;
 			std::shared_ptr<IDepthStencilBuffer> CreateDepthStencilBuffer(const std::shared_ptr<ITexture>& texture)override;

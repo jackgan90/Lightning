@@ -138,10 +138,10 @@ namespace Lightning
 		}
 
 
-		std::shared_ptr<IShader> D3D12Device::CreateShader(ShaderType type, const char* shaderName, 
-			const char* const shaderSource, const IShaderMacros* macros)
+		std::shared_ptr<IShader> D3D12Device::CreateShader(ShaderType type, const std::string& shaderName, 
+			const std::string& shaderSource, const std::shared_ptr<IShaderMacros>& macros)
 		{
-			return std::make_shared<D3D12Shader>(mHighestShaderModel, type, shaderName, shaderSource);
+			return std::make_shared<D3D12Shader>(mHighestShaderModel, type, shaderName, shaderSource, macros);
 		}
 
 		std::shared_ptr<ITexture> D3D12Device::CreateTexture(const TextureDescriptor& descriptor, const std::shared_ptr<ISerializeBuffer>& buffer)

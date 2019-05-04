@@ -33,13 +33,13 @@ namespace Lightning
 		{
 			virtual ~IShader() = default;
 			virtual ShaderType GetType()const = 0;
-			virtual void DefineMacros(const IShaderMacros* macros) = 0;
-			virtual const IShaderMacros* GetMacros()const = 0;
+			virtual void DefineMacro(const std::string& macroName, const std::string& macroValue) = 0;
+			virtual std::shared_ptr<IShaderMacros> GetMacros()const = 0;
 			virtual std::size_t GetParameterCount()const = 0;
 			virtual void Compile() = 0;
-			virtual const char* GetName()const = 0;
-			virtual bool SetParameter(const IShaderParameter* parameter) = 0;
-			virtual const char* const GetSource()const = 0;
+			virtual std::string GetName()const = 0;
+			virtual bool SetParameter(const IShaderParameter& parameter) = 0;
+			virtual std::string GetSource()const = 0;
 			virtual void GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount) = 0;
 			virtual std::size_t GetHash()const = 0;
 		};

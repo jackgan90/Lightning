@@ -35,10 +35,10 @@ namespace Lightning
 			return mLoader;
 		}
 
-		void Device::CreateShaderFromFile(ShaderType type, const std::string& path, ResourceAsyncCallback<IShader> callback)
+		void Device::CreateShaderFromFile(ShaderType type, const std::string& path, 
+			const std::shared_ptr<IShaderMacros>& macros, ResourceAsyncCallback<IShader> callback)
 		{
-			ShaderMacros macros;
-			auto shader = ShaderCache::Instance()->GetShader(type, path, &macros);
+			auto shader = ShaderCache::Instance()->GetShader(type, path, macros.get());
 			if (shader)
 			{
 				if (callback)

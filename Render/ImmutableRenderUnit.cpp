@@ -120,7 +120,10 @@ namespace Lightning
 					for (auto i = 0;i < parameterCount;++i)
 					{
 						auto parameter = material->GetParameter(shaderType, i);
-						shader->SetParameter(parameter);
+						if (parameter)
+						{
+							shader->SetParameter(*parameter);
+						}
 					}
 					CommitSemanticUniforms(shader.get());
 				}
@@ -236,7 +239,7 @@ namespace Lightning
 				{
 					//We know that transform.ToMatrix4 may change it's internal matrix
 					auto wvp = GetProjectionMatrix() * GetViewMatrix() * GetTransform().matrix;
-					shader->SetParameter(&ShaderParameter(uniformName, wvp));
+					shader->SetParameter(ShaderParameter(uniformName, wvp));
 					break;
 				}
 				default:

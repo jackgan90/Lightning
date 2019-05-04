@@ -40,7 +40,7 @@ namespace Lightning
 		void GenerateSceneObjects(ISceneManager* sceneMgr, Plugins::IScenePlugin* scenePlugin)
 		{
 			auto scene = sceneMgr->GetForegroundScene();
-		/*
+		
 			auto cube = scenePlugin->CreateCube(1.0f, 1.0f, 1.0f);
 			Render::Color32 color;
 			color.r = 255;
@@ -50,11 +50,11 @@ namespace Lightning
 			cube->SetColor(color);
 			auto renderer = renderPlugin->GetRenderer();
 			auto device = renderer->GetDevice();
-			device->CreateShaderFromFile(Render::ShaderType::VERTEX, "texture_map.vs", 
+			device->CreateShaderFromFile(Render::ShaderType::VERTEX, "texture_map.vs", nullptr,
 				[cube](const std::shared_ptr<Render::IShader>& shader) {
 					cube->SetShader(shader);
 			});
-			device->CreateShaderFromFile(Render::ShaderType::FRAGMENT, "texture_map.ps", 
+			device->CreateShaderFromFile(Render::ShaderType::FRAGMENT, "texture_map.ps", nullptr,
 				[cube](const std::shared_ptr<Render::IShader>& shader) {
 					cube->SetShader(shader);
 			});
@@ -62,8 +62,9 @@ namespace Lightning
 			device->CreateTextureFromFile("lunafreya.jpg", [cube, scene](const std::shared_ptr<Render::ITexture>& texture) {
 					cube->SetTexture("tex", texture);
 					scene->AddDrawable(cube);
-			});*/
+			});
 			
+			/*
 			static std::random_device rd;
 			static std::mt19937 mt(rd());
 			static std::uniform_real_distribution<float> rDist(-2, 2);
@@ -102,7 +103,7 @@ namespace Lightning
 				p->SetColor(color);
 				p->SetWorldRotation(Transformer::RandomRotation());
 				scene->AddDrawable(p);
-			}
+			}*/
 		}
 		//For test only end
 
