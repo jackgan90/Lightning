@@ -26,6 +26,7 @@ namespace Lightning
 			std::size_t GetViewportCount()const override;
 			void GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const override;
 			void Commit()override;
+			void Release()override;
 		private:
 			void CommitBuffers();
 			void CommitPipelineStates();
@@ -45,7 +46,6 @@ namespace Lightning
 				std::size_t slot;
 			};
 			friend class RenderUnit;
-			void Destroy();
 			PrimitiveType mPrimitiveType;
 			Transform mTransform;		//position rotation scale
 			Matrix4f mViewMatrix;		//camera view matrix
@@ -58,7 +58,6 @@ namespace Lightning
 			ViewportAndScissorRect* mViewportAndScissorRects;
 			VertexBufferSlot* mVertexBuffers;
 			std::size_t mVertexBufferCount;
-			REF_OBJECT_POOL_OVERRIDE(ImmutableRenderUnit, Destroy)
 		};
 		using ImmutableRenderUnitPool = boost::singleton_pool<ImmutableRenderUnit, sizeof(ImmutableRenderUnit)>;
 	}

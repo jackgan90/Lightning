@@ -13,8 +13,9 @@ namespace Lightning
 	{
 		using namespace Foundation::Math;
 		//An immutable render unit.The unit is read-only,used for committed render unit.
-		struct IImmutableRenderUnit : Plugins::IRefObject
+		struct IImmutableRenderUnit
 		{
+			virtual ~IImmutableRenderUnit() = default;
 			virtual PrimitiveType GetPrimitiveType()const = 0;
 			virtual std::shared_ptr<IIndexBuffer> GetIndexBuffer()const = 0;
 			virtual std::size_t GetVertexBufferCount()const = 0;
@@ -29,6 +30,7 @@ namespace Lightning
 			virtual std::size_t GetViewportCount()const = 0;
 			virtual void GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const = 0;
 			virtual void Commit() = 0;
+			virtual void Release() = 0;
 		};
 		//An IRenderUnit object is an object that encapsulates objects and states that are used to render a drawable object in a frame.
 		//It describers what needs to be passed to the downstream rendering pipeline.Users of this interface may change its state by calling 

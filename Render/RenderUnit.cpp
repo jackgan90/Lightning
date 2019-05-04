@@ -317,7 +317,7 @@ namespace Lightning
 			mCustomViewport = false;
 		}
 
-		void RenderUnit::Destroy()
+		void RenderUnit::Release()
 		{
 			this->~RenderUnit();
 			RenderUnitPool::free(this);

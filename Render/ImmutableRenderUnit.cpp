@@ -89,7 +89,7 @@ namespace Lightning
 			scissorRect = mViewportAndScissorRects[index].scissorRect;
 		}
 
-		void ImmutableRenderUnit::Destroy()
+		void ImmutableRenderUnit::Release()
 		{
 			this->~ImmutableRenderUnit();
 			ImmutableRenderUnitPool::free(this);

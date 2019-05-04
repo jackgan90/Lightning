@@ -43,6 +43,7 @@ namespace Lightning
 			void GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const override;
 			IImmutableRenderUnit * Clone()const override;
 			void Commit()override;
+			void Release()override;
 		private:
 			//using VertexBufferAllocatorType = boost::pool_allocator<std::pair<const std::size_t, IVertexBuffer*>>;
 			//using VertexBufferAllocatorType = std::allocator<std::pair<const std::size_t, IVertexBuffer*>>;
@@ -57,7 +58,6 @@ namespace Lightning
 			void DoClearVertexBuffers();
 			void DoClearViewportAndScissorRects();
 			//Destroy is only called by object_pool.Never invoke it manually.
-			void Destroy();
 			PrimitiveType mPrimitiveType;
 			Transform mTransform;		//position rotation scale
 			Matrix4f mViewMatrix;		//camera view matrix
@@ -74,7 +74,6 @@ namespace Lightning
 			bool mCustomDepthStencilBuffer;
 			bool mCustomViewport;
 			//static VertexBufferAllocatorType sVertexBufferAllocator;
-			REF_OBJECT_POOL_OVERRIDE(RenderUnit, Destroy)
 		};
 		using RenderUnitPool = boost::singleton_pool<RenderUnit, sizeof(RenderUnit)>;
 	}
