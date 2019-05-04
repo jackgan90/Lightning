@@ -1,3 +1,4 @@
+#include <chrono>
 #include "Loader.h"
 #include "Logger.h"
 #include "tbb/task.h"
@@ -94,6 +95,7 @@ namespace Lightning
 				LoadTask task;
 				if (mgr->mTasks.try_pop(task))
 				{
+					auto startTime = std::chrono::high_resolution_clock::now();
 					LOG_INFO("Start to load file : {0}", task.path);
 					auto file = fileSystem->FindFile(task.path.c_str(), Foundation::FileAccess::READ);
 					if (!file)
@@ -127,7 +129,9 @@ namespace Lightning
 						continue;
 					}
 					mgr->mBuffers[task.path] = sharedBuffer;
-					LOG_INFO("Loader finished reading file : {0}, buffer size : {1}", task.path, size);
+					auto endTime = std::chrono::high_resolution_clock::now();
+					LOG_INFO("Loader finished reading file : {0}, buffer size : {1}, elapsed time : {2} ms", 
+						task.path, size, std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count());
 					auto deserializeTask = new (tbb::task::allocate_root()) DeserializeTask(task, file, sharedBuffer, true);
 					tbb::task::enqueue(*deserializeTask);
 				}
