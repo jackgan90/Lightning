@@ -75,7 +75,7 @@ namespace Lightning
 			mColor.a = static_cast<std::uint8_t>(255 * transparency);
 		}
 
-		void Primitive::SetTexture(const char* name, const std::shared_ptr<ITexture>& texture)
+		void Primitive::SetTexture(const std::string& name, const std::shared_ptr<ITexture>& texture)
 		{
 			if (texture != mTexture)
 			{
@@ -85,7 +85,7 @@ namespace Lightning
 			}
 		}
 
-		void Primitive::SetSamplerState(const char* name, const SamplerState& state)
+		void Primitive::SetSamplerState(const std::string& name, const SamplerState& state)
 		{
 			mSamplerStateName = name;
 			mSamplerState = state;

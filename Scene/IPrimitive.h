@@ -41,8 +41,8 @@ namespace Lightning
 			virtual void SetColor(float a, float r, float g, float b) = 0;
 			virtual void SetTransparency(std::uint8_t transparency) = 0;
 			virtual void SetTransparency(float transparency) = 0;
-			virtual void SetTexture(const char* name, const std::shared_ptr<ITexture>& texture) = 0;
-			virtual void SetSamplerState(const char* name, const SamplerState& state) = 0;
+			virtual void SetTexture(const std::string& name, const std::shared_ptr<ITexture>& texture) = 0;
+			virtual void SetSamplerState(const std::string& name, const SamplerState& state) = 0;
 			virtual void SetShader(const std::shared_ptr<IShader>& shader) = 0;
 		};
 	}

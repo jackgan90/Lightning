@@ -30,8 +30,8 @@ namespace Lightning
 			void SetColor(float a, float r, float g, float b)override;
 			void SetTransparency(std::uint8_t transparency)override;
 			void SetTransparency(float transparency)override;
-			void SetTexture(const char* name, const std::shared_ptr<ITexture>& texture)override;
-			void SetSamplerState(const char* name, const SamplerState& state)override;
+			void SetTexture(const std::string& name, const std::shared_ptr<ITexture>& texture)override;
+			void SetSamplerState(const std::string& name, const SamplerState& state)override;
 			void SetShader(const std::shared_ptr<IShader>& shader)override;
 		protected:
 			virtual void UpdateRenderUnit(IRenderer*);
