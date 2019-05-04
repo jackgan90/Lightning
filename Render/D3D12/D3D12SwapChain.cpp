@@ -108,7 +108,8 @@ namespace Lightning
 				auto hr = mSwapChain->GetBuffer(i, IID_PPV_ARGS(&resources[i]));
 				if (FAILED(hr))
 				{
-					throw SwapChainInitException("Failed to get d3d12 swap chain buffer.");
+					LOG_ERROR("Failed to get d3d12 swap chain buffer.");
+					return;
 				}
 				auto texture = device->CreateTexture(resources[i], D3D12_RESOURCE_STATE_PRESENT);
 				mRenderTargets[i] = device->CreateRenderTarget(texture);

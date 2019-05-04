@@ -51,7 +51,8 @@ namespace Lightning
 #endif
 			if (FAILED(hr))
 			{
-				throw DeviceInitException("Failed to create DXGI factory!");
+				LOG_ERROR("Failed to create DXGI factory!");
+				return;
 			}
 			LOG_INFO("Initialize D3D12 render context succeeded!");
 		}

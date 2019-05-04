@@ -146,7 +146,8 @@ namespace Lightning
 
 			if (!::RegisterClassEx(&wndcls))
 			{
-				throw WindowInitException("Register window class failed!ErrorCode : 0x%x", ::GetLastError());
+				LOG_ERROR("Register window class failed!ErrorCode : 0x%x", ::GetLastError());
+				return;
 			}
 			LOG_INFO("Register window class succeed!");
 		}
@@ -166,7 +167,7 @@ namespace Lightning
 
 			if (!hWnd)
 			{
-				throw WindowInitException("Create window failed!ErrorCode : %x", ::GetLastError());
+				LOG_ERROR("Create window failed!ErrorCode : %x", ::GetLastError());
 			}
 		}
 

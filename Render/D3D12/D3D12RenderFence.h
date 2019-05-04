@@ -2,18 +2,12 @@
 #include <wrl/client.h>
 #include "D3D12Device.h"
 #include "IRenderFence.h"
-#include "RenderException.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
 		using Microsoft::WRL::ComPtr;
-		class FenceInitDexception : public RendererException
-		{
-		public:
-			FenceInitDexception(const char* w) : RendererException(w){}
-		};
 		//Thread safe
 		class D3D12RenderFence : public IRenderFence
 		{

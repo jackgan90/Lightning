@@ -115,12 +115,13 @@ namespace Lightning
 			}
 			if (!adaptorFound)
 			{
-				throw DeviceInitException("Can't find hardware d3d12 adaptor!");
+				LOG_ERROR("Can't find hardware d3d12 adaptor!");
+				return;
 			}
 			hr = D3D12CreateDevice(adaptor.Get(), D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&mDevice));
 			if (FAILED(hr))
 			{
-				throw DeviceInitException("Failed to create d3d12 device!");
+				LOG_ERROR("Failed to create d3d12 device!");
 			}
 		}
 

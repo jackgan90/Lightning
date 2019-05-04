@@ -1,6 +1,7 @@
 #include <cassert>
 #include "D3D12RenderFence.h"
 #include "D3D12Renderer.h"
+#include "Logger.h"
 
 namespace Lightning
 {
@@ -12,12 +13,13 @@ namespace Lightning
 			mFence = device->CreateFence(initial_value, D3D12_FENCE_FLAG_NONE);
 			if (!mFence)
 			{
-				throw FenceInitDexception("Failed to create d3d12 fence!");
+				LOG_ERROR("Failed to create d3d12 fence!");
+				return;
 			}
 			mEvent = ::CreateEvent(nullptr, FALSE, FALSE, nullptr);
 			if (!mEvent)
 			{
-				throw FenceInitDexception("Failed to create fence event!");
+				LOG_ERROR("Failed to create fence event!");
 			}
 		}
 

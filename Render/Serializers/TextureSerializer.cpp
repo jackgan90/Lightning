@@ -1,6 +1,5 @@
 #include "TextureSerializer.h"
 #include "FreeImage.h"
-#include "Logger.h"
 #include "Renderer.h"
 #include "RefObject.h"
 

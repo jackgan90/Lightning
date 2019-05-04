@@ -1,4 +1,5 @@
 #pragma once
+#include <unordered_map>
 #include "IDevice.h"
 #include "ILoader.h"
 
@@ -18,8 +19,7 @@ namespace Lightning
 		protected:
 			Device();
 			Loading::ILoader* GetLoader();
-			using DefaultShaderMap = std::unordered_map<ShaderType, std::shared_ptr<IShader>>;
-			DefaultShaderMap mDefaultShaders;
+			std::unordered_map<ShaderType, std::shared_ptr<IShader>> mDefaultShaders;
 		private:
 			Loading::ILoader* mLoader;
 		};

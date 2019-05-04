@@ -2,6 +2,7 @@
 #include "FrameMemoryAllocator.h"
 #include "ShaderParameter.h"
 #include "Renderer.h"
+#include "Logger.h"
 
 namespace Lightning
 {

@@ -9,16 +9,6 @@ namespace Lightning
 {
 	namespace Window
 	{
-		class WindowInitException : public std::exception
-		{
-		public:
-			template<typename... Args>
-			WindowInitException(const char*const w, const Args&... args) : exception(w)
-			{
-				LOG_ERROR(w, args...);
-			}
-		};
-
 		class GameWindow : public IWindow
 		{
 		public:

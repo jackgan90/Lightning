@@ -2,7 +2,6 @@
 #include <memory>
 #include <exception>
 #include <functional>
-#include "RenderException.h"
 #include "IDevice.h"
 #include "ISwapChain.h"
 #include "IDepthStencilBuffer.h"
@@ -17,18 +16,6 @@ namespace Lightning
 {
 	namespace Render
 	{
-		class DeviceInitException : public RendererException
-		{
-		public:
-			DeviceInitException(const char*const w):RendererException(w){}
-		};
-
-		class SwapChainInitException : public RendererException
-		{
-		public:
-			SwapChainInitException(const char*const w):RendererException(w){}
-		};
-
 		enum class DrawType
 		{
 			Vertex,

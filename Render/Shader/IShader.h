@@ -3,7 +3,6 @@
 #include <exception>
 #include <boost/functional/hash.hpp>
 #include "Semantics.h"
-#include "RenderException.h"
 #include "Math/Matrix.h"
 #include "Math/Vector.h"
 #include "IShaderParameter.h"
@@ -14,12 +13,6 @@ namespace Lightning
 {
 	namespace Render
 	{
-		class ShaderCompileException : public RendererException
-		{
-		public:
-			ShaderCompileException(const char*const w):RendererException(w){}
-		};
-
 		enum class ShaderType : std::uint8_t
 		{
 			VERTEX = 1,

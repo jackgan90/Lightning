@@ -25,7 +25,6 @@ set(HEADERS IndexBuffer.h
 			Semantics.h
 			VertexBuffer.h
 			RendererHelper.h
-			RenderException.h
 			RendererFactory.h
 			RenderConstants.h
 			Material.h

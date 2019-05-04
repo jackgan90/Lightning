@@ -6,6 +6,7 @@
 #include "D3D12Shader.h"
 #include "RendererHelper.h"
 #include "FrameMemoryAllocator.h"
+#include "Logger.h"
 
 namespace Lightning
 {
@@ -533,7 +534,6 @@ namespace Lightning
 				compileErrorBuffer[compileErrorBufferSize] = 0;
 				ss << compileErrorBuffer;
 				LOG_ERROR("{0}", ss.str().c_str());
-				throw ShaderCompileException("Failed to compile shader!");
 			}
 			else
 			{
