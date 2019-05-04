@@ -14,14 +14,14 @@ namespace Lightning
 		{
 		public:
 			ShaderParameter():mType(ShaderParameterType::UNKNOWN){}
-			ShaderParameter(const char* n, const float _f):mName(n), mType(ShaderParameterType::FLOAT), f(_f){}
-			ShaderParameter(const char* n, const Vector2f& _v2) :mName(n), mType(ShaderParameterType::FLOAT2) { new (&v2)Vector2f(_v2); }
-			ShaderParameter(const char* n, const Vector3f& _v3) :mName(n), mType(ShaderParameterType::FLOAT3) { new (&v3)Vector3f(_v3); }
-			ShaderParameter(const char* n, const Vector4f& _v4) :mName(n), mType(ShaderParameterType::FLOAT4) { new (&v4)Vector4f(_v4); }
-			ShaderParameter(const char* n, const Matrix4f& _m4) :mName(n), mType(ShaderParameterType::MATRIX4) { new (&m4)Matrix4f(_m4); }
-			ShaderParameter(const char* n, ITexture* _texture) :mName(n), mType(ShaderParameterType::TEXTURE) { texture = _texture; }
-			ShaderParameter(const char* n, const SamplerState& _state) :mName(n), mType(ShaderParameterType::SAMPLER) { samplerState = _state; }
-			ShaderParameter(const char* n, ShaderParameterType type, const void* buffer, std::size_t bufferSize) : mName(n), mType(type)
+			ShaderParameter(const std::string& name, const float _f):mName(name), mType(ShaderParameterType::FLOAT), f(_f){}
+			ShaderParameter(const std::string& name, const Vector2f& _v2) :mName(name), mType(ShaderParameterType::FLOAT2) { new (&v2)Vector2f(_v2); }
+			ShaderParameter(const std::string& name, const Vector3f& _v3) :mName(name), mType(ShaderParameterType::FLOAT3) { new (&v3)Vector3f(_v3); }
+			ShaderParameter(const std::string& name, const Vector4f& _v4) :mName(name), mType(ShaderParameterType::FLOAT4) { new (&v4)Vector4f(_v4); }
+			ShaderParameter(const std::string& name, const Matrix4f& _m4) :mName(name), mType(ShaderParameterType::MATRIX4) { new (&m4)Matrix4f(_m4); }
+			ShaderParameter(const std::string& name, ITexture* _texture) :mName(name), mType(ShaderParameterType::TEXTURE) { texture = _texture; }
+			ShaderParameter(const std::string& name, const SamplerState& _state) :mName(name), mType(ShaderParameterType::SAMPLER) { samplerState = _state; }
+			ShaderParameter(const std::string& name, ShaderParameterType type, const void* buffer, std::size_t bufferSize) : mName(name), mType(type)
 			{
 				if (type == ShaderParameterType::TEXTURE)
 				{
@@ -33,9 +33,9 @@ namespace Lightning
 					std::memcpy(&f, buffer, bufferSize);
 				}
 			}
-			const char* GetName()const override
+			std::string GetName()const override
 			{
-				return mName.c_str();
+				return mName;
 			}
 			ShaderParameterType GetType()const override
 			{

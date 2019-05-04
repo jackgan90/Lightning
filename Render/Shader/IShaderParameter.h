@@ -21,7 +21,7 @@ namespace Lightning
 		struct IShaderParameter
 		{
 			virtual ~IShaderParameter() = default;
-			virtual const char* GetName()const = 0;
+			virtual std::string GetName()const = 0;
 			virtual ShaderParameterType GetType()const = 0;
 			virtual const void* Buffer(std::size_t& size)const = 0;
 		};
