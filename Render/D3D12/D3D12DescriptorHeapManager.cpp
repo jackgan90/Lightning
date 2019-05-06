@@ -60,11 +60,11 @@ namespace Lightning
 			frameHeap.offset = 0;
 		}
 
-		DescriptorHeap* D3D12DescriptorHeapManager::Allocate(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count, bool frameTransient)
+		DescriptorHeap* D3D12DescriptorHeapManager::Allocate(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count, bool transient)
 		{
-			if (frameTransient)
+			if (transient)
 			{
-				return AllocateFrameHeap(type, shaderVisible, count);
+				return AllocateTransientHeap(type, shaderVisible, count);
 			}
 			else
 			{
@@ -72,7 +72,7 @@ namespace Lightning
 			}
 		}
 
-		DescriptorHeap* D3D12DescriptorHeapManager::AllocateFrameHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count)
+		DescriptorHeap* D3D12DescriptorHeapManager::AllocateTransientHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count)
 		{
 			assert(count > 0);
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();

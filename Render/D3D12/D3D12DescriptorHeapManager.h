@@ -28,7 +28,7 @@ namespace Lightning
 			D3D12DescriptorHeapManager();
 			~D3D12DescriptorHeapManager();
 			void ReserveFrameDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count);
-			DescriptorHeap* Allocate(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count, bool frameTransient);
+			DescriptorHeap* Allocate(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count, bool transient);
 			ComPtr<ID3D12DescriptorHeap> GetHeap(DescriptorHeap* pHeap)const;
 			void Deallocate(DescriptorHeap* pHeap);
 			//Thread safe
@@ -60,7 +60,7 @@ namespace Lightning
 				DescriptorHeapEx* handles;
 			};
 			DescriptorHeap* AllocatePersistentHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count);
-			DescriptorHeap* AllocateFrameHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count);
+			DescriptorHeap* AllocateTransientHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count);
 			std::tuple<bool, DescriptorHeapStore*> CreateHeapStore(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT descriptorCount);
 			std::tuple<bool, DescriptorHeap*> TryAllocatePersistentHeap(DescriptorHeapStore* heapInfo, UINT count);
 			void Deallocate(DescriptorHeapEx* pHeapEx);
