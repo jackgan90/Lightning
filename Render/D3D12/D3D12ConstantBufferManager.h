@@ -49,7 +49,7 @@ namespace Lightning
 			//BufferResource mBufferResources[RENDER_FRAME_COUNT];
 			Foundation::ThreadLocalObject<std::vector<BufferResource>> mBufferResources[RENDER_FRAME_COUNT];
 			//minimum buffer size
-			static constexpr std::size_t MIN_BUFFER_SIZE{ 1024 };
+			static constexpr std::size_t MIN_BUFFER_SIZE{ 2048 * 10};
 		};
 	}
 }
