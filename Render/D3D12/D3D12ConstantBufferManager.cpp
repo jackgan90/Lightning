@@ -23,21 +23,17 @@ namespace Lightning
 		{
 			for (std::size_t i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
-				mBufferResources[i].resource.reset();
+				mBufferResources[i].for_each([](std::vector<BufferResource>& bufferResources) {
+					bufferResources.clear();
+				});
 			}
 		}
 
-		void D3D12ConstantBufferManager::Reserve(std::size_t bufferSize)
+		D3D12ConstantBufferManager::BufferResource D3D12ConstantBufferManager::Reserve(std::size_t bufferSize)
 		{
 			assert(bufferSize > 0 && "bufferSize must be a positive value!");
-			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			auto& bufferResource = mBufferResources[resourceIndex];
-			if (bufferResource.resource && bufferResource.size >= bufferSize)
-			{
-				bufferResource.offset = 0;
-				return;
-			}
-			auto resourceSize = AlignedSize(bufferSize);
+			BufferResource bufferResource;
+			auto resourceSize = std::max(AlignedSize(bufferSize), MIN_BUFFER_SIZE);
 			D3D12Device* device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
 			bufferResource.resource = device->CreateCommittedResource(&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), D3D12_HEAP_FLAG_NONE,
 				&CD3DX12_RESOURCE_DESC::Buffer(resourceSize),
@@ -48,19 +44,54 @@ namespace Lightning
 			bufferResource.offset = 0;
 			bufferResource.size = resourceSize;
 			bufferResource.virtualAddress = bufferResource.resource->GetResource()->GetGPUVirtualAddress();
+			bufferResource.frameCount = Renderer::Instance()->GetCurrentFrameCount();
+			return bufferResource;
 		}
 
 		D3D12ConstantBuffer D3D12ConstantBufferManager::AllocBuffer(std::size_t bufferSize)
 		{
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			auto& bufferResource = mBufferResources[resourceIndex];
+			auto frameCount = Renderer::Instance()->GetCurrentFrameCount();
+			auto& bufferResources = mBufferResources[resourceIndex];
+			auto& threadBufferResources = *bufferResources;
+
 			auto realSize = AlignedSize(bufferSize);
 			D3D12ConstantBuffer cbuffer;
 			cbuffer.size = realSize;
-			auto offset = bufferResource.offset.fetch_add(realSize);
-			assert(offset < bufferResource.size);
-			cbuffer.userMemory = reinterpret_cast<std::uint8_t*>(bufferResource.mapAddress) + offset;
-			cbuffer.virtualAdress = bufferResource.virtualAddress + offset;
+			
+			if (threadBufferResources.empty() || threadBufferResources.back().frameCount != frameCount)
+			{
+				//It's another new frame,we need to merge buffers of previous frame
+				if (threadBufferResources.size() == 1 && threadBufferResources.back().size >= realSize)//Try to reuse buffers allocated on previous frame,if its size is big enough
+				{
+					auto& bufferResource = threadBufferResources.back();
+					bufferResource.frameCount = frameCount;
+					bufferResource.offset = 0;
+				}
+				else			//need to merge all buffers into one bigger buffer and make sure the merged buffer is big enough
+				{
+					std::size_t totalBufferSize{ realSize };
+					std::for_each(threadBufferResources.cbegin(), threadBufferResources.cend(), 
+						[&totalBufferSize](const BufferResource& bufferResource) {
+						totalBufferSize += bufferResource.size;
+					});
+					threadBufferResources.clear();
+					auto newBufferResource = Reserve(totalBufferSize);
+					threadBufferResources.emplace_back(newBufferResource);
+				}
+			}
+			auto& bufferResource = threadBufferResources.back();
+			auto offset = bufferResource.offset;
+			if (offset + realSize >= bufferResource.size)
+			{
+				auto newBufferResource = Reserve(realSize);
+				threadBufferResources.emplace_back(newBufferResource);
+				offset = 0;
+			}
+			assert(offset + realSize < threadBufferResources.back().size);
+			cbuffer.userMemory = reinterpret_cast<std::uint8_t*>(threadBufferResources.back().mapAddress) + offset;
+			cbuffer.virtualAdress = threadBufferResources.back().virtualAddress + offset;
+			threadBufferResources.back().offset += realSize;
 
 			return cbuffer;
 		}
