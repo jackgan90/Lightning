@@ -69,7 +69,7 @@ namespace Lightning
 			//persistent heaps are heaps persist longer than one frame.Examples are RTV and DSV heaps
 			std::vector<DescriptorHeapStore*> mPersistentHeaps[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES][2];
 			//frame heaps are heaps that only needs validation in one frame.After a frame finished,the content of heaps doesn't matter
-			FrameHeap mFrameHeaps[RENDER_FRAME_COUNT][D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES][2];
+			FrameHeap mTransientHeaps[RENDER_FRAME_COUNT][D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES][2];
 
 			UINT sIncrementSizes[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
 		};

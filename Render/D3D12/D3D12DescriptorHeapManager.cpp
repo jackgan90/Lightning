@@ -27,7 +27,7 @@ namespace Lightning
 				{
 					for (auto k = 0; k < 2;++k)
 					{
-						mFrameHeaps[i][j][k].heapStore = nullptr;
+						mTransientHeaps[i][j][k].heapStore = nullptr;
 					}
 				}
 			}
@@ -43,7 +43,7 @@ namespace Lightning
 			assert(count > 0 && "descriptor count must be positive!");
 			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto i = shaderVisible ? 1 : 0;
-			auto& frameHeap = mFrameHeaps[frameResourceIndex][type][i];
+			auto& frameHeap = mTransientHeaps[frameResourceIndex][type][i];
 			if (frameHeap.heapStore && frameHeap.descriptorCount >= count)
 			{
 				frameHeap.allocCount = 0;
@@ -77,7 +77,7 @@ namespace Lightning
 			assert(count > 0);
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto i = shaderVisible ? 1 : 0;
-			auto& frameHeap = mFrameHeaps[resourceIndex][type][i];
+			auto& frameHeap = mTransientHeaps[resourceIndex][type][i];
 			CD3DX12_CPU_DESCRIPTOR_HANDLE cpuHandle(frameHeap.heapStore->CPUHandle);
 			CD3DX12_GPU_DESCRIPTOR_HANDLE gpuHandle(frameHeap.heapStore->GPUHandle);
 			auto offset = frameHeap.offset.fetch_add(count, std::memory_order_relaxed);
@@ -281,10 +281,10 @@ namespace Lightning
 				{
 					for (auto k = 0; k < 2; ++k)
 					{
-						if (mFrameHeaps[i][j][k].heapStore)
+						if (mTransientHeaps[i][j][k].heapStore)
 						{
-							delete mFrameHeaps[i][j][k].heapStore;
-							delete[] mFrameHeaps[i][j][k].handles;
+							delete mTransientHeaps[i][j][k].heapStore;
+							delete[] mTransientHeaps[i][j][k].handles;
 						}
 						
 					}
