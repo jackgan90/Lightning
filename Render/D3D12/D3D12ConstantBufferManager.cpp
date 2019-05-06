@@ -70,13 +70,13 @@ namespace Lightning
 				}
 				else			//need to merge all buffers into one bigger buffer and make sure the merged buffer is big enough
 				{
-					std::size_t totalBufferSize{ realSize };
+					std::size_t totalBufferSize{ 0 };
 					std::for_each(threadBufferResources.cbegin(), threadBufferResources.cend(), 
 						[&totalBufferSize](const BufferResource& bufferResource) {
 						totalBufferSize += bufferResource.size;
 					});
 					threadBufferResources.clear();
-					threadBufferResources.emplace_back(Reserve(totalBufferSize));
+					threadBufferResources.emplace_back(Reserve(std::max(totalBufferSize, realSize)));
 				}
 			}
 			auto offset = threadBufferResources.back().offset;
