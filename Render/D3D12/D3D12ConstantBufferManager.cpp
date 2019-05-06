@@ -76,16 +76,13 @@ namespace Lightning
 						totalBufferSize += bufferResource.size;
 					});
 					threadBufferResources.clear();
-					auto newBufferResource = Reserve(totalBufferSize);
-					threadBufferResources.emplace_back(newBufferResource);
+					threadBufferResources.emplace_back(Reserve(totalBufferSize));
 				}
 			}
-			auto& bufferResource = threadBufferResources.back();
-			auto offset = bufferResource.offset;
-			if (offset + realSize >= bufferResource.size)
+			auto offset = threadBufferResources.back().offset;
+			if (offset + realSize >= threadBufferResources.back().size)
 			{
-				auto newBufferResource = Reserve(realSize);
-				threadBufferResources.emplace_back(newBufferResource);
+				threadBufferResources.emplace_back(Reserve(realSize));
 				offset = 0;
 			}
 			assert(offset + realSize < threadBufferResources.back().size);
