@@ -27,7 +27,7 @@ namespace Lightning
 		public:
 			D3D12DescriptorHeapManager();
 			~D3D12DescriptorHeapManager();
-			void ReserveFrameDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count);
+			void ReserveTransientDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count);
 			DescriptorHeap* Allocate(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count, bool transient);
 			ComPtr<ID3D12DescriptorHeap> GetHeap(DescriptorHeap* pHeap)const;
 			void Deallocate(DescriptorHeap* pHeap);
@@ -44,32 +44,32 @@ namespace Lightning
 				std::list<std::tuple<UINT, UINT>> freeIntervals;
 				std::size_t freeDescriptors;
 			};
-			struct DescriptorHeapEx : DescriptorHeap
+			struct DescriptorHeapAllocation : DescriptorHeap
 			{
 				DescriptorHeapStore *pStore;
 				std::tuple<UINT, UINT> interval;
 			};
 
 			//represents heaps allocated in one frame
-			struct FrameHeap
+			struct TransientHeap
 			{
 				std::atomic<UINT> offset;
 				std::atomic<std::size_t> allocCount;
 				UINT descriptorCount;
 				DescriptorHeapStore* heapStore;
-				DescriptorHeapEx* handles;
+				DescriptorHeapAllocation* handles;
 			};
 			DescriptorHeap* AllocatePersistentHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count);
 			DescriptorHeap* AllocateTransientHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count);
 			std::tuple<bool, DescriptorHeapStore*> CreateHeapStore(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT descriptorCount);
 			std::tuple<bool, DescriptorHeap*> TryAllocatePersistentHeap(DescriptorHeapStore* heapInfo, UINT count);
-			void Deallocate(DescriptorHeapEx* pHeapEx);
+			void Deallocate(DescriptorHeapAllocation* handle);
 			std::tuple<bool, DescriptorHeap*> TryAllocatePersistentHeap(std::vector<DescriptorHeapStore*>& heapList, UINT count);
 
 			//persistent heaps are heaps persist longer than one frame.Examples are RTV and DSV heaps
 			std::vector<DescriptorHeapStore*> mPersistentHeaps[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES][2];
-			//frame heaps are heaps that only needs validation in one frame.After a frame finished,the content of heaps doesn't matter
-			FrameHeap mTransientHeaps[RENDER_FRAME_COUNT][D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES][2];
+			//transient heaps are heaps that only needs validity in one frame.After a frame finishes,the content of heaps doesn't matter
+			TransientHeap mTransientHeaps[RENDER_FRAME_COUNT][D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES][2];
 
 			UINT sIncrementSizes[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
 		};

@@ -19,12 +19,12 @@ namespace Lightning
 		{
 			if (mTotalConstantBuffers + mTotalTextures > 0)
 			{
-				D3D12DescriptorHeapManager::Instance()->ReserveFrameDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+				D3D12DescriptorHeapManager::Instance()->ReserveTransientDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
 					true, mTotalConstantBuffers + mTotalTextures);
 			}
 			if (mTotalSamplerStates)
 			{
-				D3D12DescriptorHeapManager::Instance()->ReserveFrameDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER,
+				D3D12DescriptorHeapManager::Instance()->ReserveTransientDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER,
 					true, mTotalSamplerStates);
 			}
 			ForwardRenderPass::Apply(renderQueue);
