@@ -32,7 +32,7 @@ namespace Lightning
 			ComPtr<ID3D12DescriptorHeap> GetHeap(DescriptorHeap* pHeap)const;
 			void Deallocate(DescriptorHeap* pHeap);
 			//Thread safe
-			UINT GetIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type);
+			static UINT GetIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type);
 			//Thread unsafe
 			void Clear();
 		private:
@@ -61,17 +61,17 @@ namespace Lightning
 			};
 			DescriptorHeap* AllocatePersistentHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count);
 			DescriptorHeap* AllocateTransientHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count);
-			std::tuple<bool, DescriptorHeapStore*> CreateHeapStore(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT descriptorCount);
-			std::tuple<bool, DescriptorHeap*> TryAllocatePersistentHeap(DescriptorHeapStore* heapInfo, UINT count);
+			DescriptorHeap* TryAllocatePersistentHeap(DescriptorHeapStore* heapInfo, UINT count);
+			DescriptorHeap* TryAllocatePersistentHeap(std::vector<DescriptorHeapStore*>& heapList, UINT count);
 			void Deallocate(DescriptorHeapAllocation* handle);
-			std::tuple<bool, DescriptorHeap*> TryAllocatePersistentHeap(std::vector<DescriptorHeapStore*>& heapList, UINT count);
+			static DescriptorHeapStore* CreateHeapStore(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT descriptorCount);
 
 			//persistent heaps are heaps persist longer than one frame.Examples are RTV and DSV heaps
 			std::vector<DescriptorHeapStore*> mPersistentHeaps[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES][2];
 			//transient heaps are heaps that only needs validity in one frame.After a frame finishes,the content of heaps doesn't matter
 			TransientHeap mTransientHeaps[RENDER_FRAME_COUNT][D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES][2];
 
-			UINT sIncrementSizes[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
+			static UINT sIncrementSizes[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
 		};
 	}
 }

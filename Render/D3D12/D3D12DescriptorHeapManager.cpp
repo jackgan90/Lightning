@@ -1,4 +1,3 @@
-#include <iterator>
 #include "tbb/mutex.h"
 #include "D3D12DescriptorHeapManager.h"
 #include "Renderer.h"
@@ -14,6 +13,7 @@ namespace Lightning
 {
 	namespace Render
 	{
+		UINT D3D12DescriptorHeapManager::sIncrementSizes[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
 		D3D12DescriptorHeapManager::D3D12DescriptorHeapManager()
 		{
 			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
@@ -50,8 +50,7 @@ namespace Lightning
 			}
 			delete transientHeap.heapStore;
 			delete[] transientHeap.handles;
-			auto res = CreateHeapStore(type, shaderVisible, count);
-			transientHeap.heapStore = std::get<1>(res);
+			transientHeap.heapStore = CreateHeapStore(type, shaderVisible, count);
 			transientHeap.handles = new DescriptorHeapAllocation[count];
 			transientHeap.descriptorCount = count;
 			transientHeap.allocCount = 0;
@@ -98,24 +97,22 @@ namespace Lightning
 			if (mPersistentHeaps[type][i].empty())
 			{
 				auto store = CreateHeapStore(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE);
-				mPersistentHeaps[type][i].push_back(std::get<1>(store));
+				mPersistentHeaps[type][i].push_back(store);
 			}
-			auto res = TryAllocatePersistentHeap(mPersistentHeaps[type][i], count);
-			if (std::get<0>(res))
-				return std::get<1>(res);
+			auto heapAllocation = TryAllocatePersistentHeap(mPersistentHeaps[type][i], count);
+			if (heapAllocation)
+				return heapAllocation;
 			//if reach here,the existing heaps can not allocate more descriptors, so just allocate a new heap
 			auto store = CreateHeapStore(type, shaderVisible, count > HEAP_DESCRIPTOR_ALLOC_SIZE ? count : HEAP_DESCRIPTOR_ALLOC_SIZE);
-			mPersistentHeaps[type][i].push_back(std::get<1>(store));
-			res = TryAllocatePersistentHeap(mPersistentHeaps[type][i], count);
-			return std::get<1>(res);
+			mPersistentHeaps[type][i].push_back(store);
+			return TryAllocatePersistentHeap(mPersistentHeaps[type][i], count);
 		}
 
-		std::tuple<bool, D3D12DescriptorHeapManager::DescriptorHeapStore*> D3D12DescriptorHeapManager::CreateHeapStore(
+		D3D12DescriptorHeapManager::DescriptorHeapStore* D3D12DescriptorHeapManager::CreateHeapStore(
 			D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT descriptorCount)
 		{
 			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
-			auto res = std::make_tuple(false, new DescriptorHeapStore);
-			auto& heapStore = std::get<1>(res);
+			auto heapStore = new DescriptorHeapStore;
 			heapStore->desc.Flags = shaderVisible ? D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE : D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
 			heapStore->desc.NodeMask = 0;
 			heapStore->desc.NumDescriptors = descriptorCount;
@@ -125,7 +122,8 @@ namespace Lightning
 			{
 				LOG_ERROR("Failed to create d3d12 descriptor heap!type:%d, flags:%d, number of descriptors:%d", 
 					heapStore->desc.Type, heapStore->desc.Flags, heapStore->desc.NumDescriptors);
-				return res;
+				delete heapStore;
+				return nullptr;
 			}
 			heapStore->freeDescriptors = descriptorCount;
 			heapStore->freeIntervals.emplace_back(std::make_tuple(0, descriptorCount));
@@ -133,27 +131,25 @@ namespace Lightning
 			heapStore->GPUHandle = heapStore->heap->GetGPUDescriptorHandleForHeapStart();
 			heapStore->incrementSize = GetIncrementSize(type);
 			
-			std::get<0>(res) =  true;
-			return res;
+			return heapStore;
 		}
 
-		std::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocatePersistentHeap(std::vector<DescriptorHeapStore*>& heapList, UINT count)
+		DescriptorHeap* D3D12DescriptorHeapManager::TryAllocatePersistentHeap(std::vector<DescriptorHeapStore*>& heapList, UINT count)
 		{
 			//loop over existing heap list reversely and try to allocate from it
 			for (long long i = heapList.size() - 1; i >= 0;i--)
 			{
 				auto res = TryAllocatePersistentHeap(heapList[i], count);
-				if (std::get<0>(res))
+				if (res)
 					return res;
 			}
-			return std::make_tuple<bool, DescriptorHeap*>(false, nullptr);
+			return nullptr;
 		}
 
-		std::tuple<bool, DescriptorHeap*> D3D12DescriptorHeapManager::TryAllocatePersistentHeap(DescriptorHeapStore* heapStore, UINT count)
+		DescriptorHeap* D3D12DescriptorHeapManager::TryAllocatePersistentHeap(DescriptorHeapStore* heapStore, UINT count)
 		{
-			auto res = std::make_tuple<bool, DescriptorHeap*>(false, nullptr);
 			if(count > heapStore->freeDescriptors)
-				return res;
+				return nullptr;
 			for (auto it = heapStore->freeIntervals.begin(); it != heapStore->freeIntervals.end();++it)
 			{
 				auto left = std::get<0>(*it);
@@ -178,9 +174,7 @@ namespace Lightning
 						std::get<1>(interval) = left + count;
 					}
 					heapStore->freeDescriptors -= count;
-					std::get<0>(res) = true;
 					auto heapAllocation = new DescriptorHeapAllocation;
-					std::get<1>(res) = heapAllocation;
 					CD3DX12_CPU_DESCRIPTOR_HANDLE CPUHandle(heapStore->CPUHandle);
 					CD3DX12_GPU_DESCRIPTOR_HANDLE GPUHandle(heapStore->GPUHandle);
 					CPUHandle.Offset(left * heapStore->incrementSize);
@@ -190,10 +184,10 @@ namespace Lightning
 					heapAllocation->incrementSize = heapStore->incrementSize;
 					heapAllocation->interval = interval;
 					heapAllocation->pStore = heapStore;
-					break;
+					return heapAllocation;
 				}
 			}
-			return res;
+			return nullptr;
 		}
 
 		void D3D12DescriptorHeapManager::Deallocate(DescriptorHeap* pHeap)
@@ -203,12 +197,13 @@ namespace Lightning
 			delete pHeap;
 		}
 
-		void D3D12DescriptorHeapManager::Deallocate(DescriptorHeapAllocation *pHeapEx)
+		void D3D12DescriptorHeapManager::Deallocate(DescriptorHeapAllocation *heapAllocation)
 		{
-			auto pHeapStore = pHeapEx->pStore;
-			pHeapStore->freeDescriptors += std::get<1>(pHeapEx->interval) - std::get<0>(pHeapEx->interval);
+			auto pHeapStore = heapAllocation->pStore;
+			MutexLock lock(mtxHeap);
+			pHeapStore->freeDescriptors += std::get<1>(heapAllocation->interval) - std::get<0>(heapAllocation->interval);
 			if (pHeapStore->freeIntervals.empty())
-				pHeapStore->freeIntervals.push_back(pHeapEx->interval);
+				pHeapStore->freeIntervals.push_back(heapAllocation->interval);
 			else
 			{
 				//insert new interval to appropriate position.If adjacent intervals can be joined,then join them
@@ -217,7 +212,7 @@ namespace Lightning
 				//first loop intervals and find a gap that can be fit the new interval
 				for (auto currIt = pHeapStore->freeIntervals.begin();currIt != pHeapStore->freeIntervals.end();++currIt)
 				{
-					if(std::get<0>(*currIt) >= std::get<1>(pHeapEx->interval))
+					if(std::get<0>(*currIt) >= std::get<1>(heapAllocation->interval))
 					{
 						nextIt = currIt;
 						break;
@@ -228,28 +223,27 @@ namespace Lightning
 				{
 					if (prevIt == pHeapStore->freeIntervals.end())//prevIt also end, which means there's no free interval
 					{
-						pHeapStore->freeIntervals.push_back(pHeapEx->interval);
+						pHeapStore->freeIntervals.push_back(heapAllocation->interval);
 					}
 					else
 					{
 						//try to join previous interval with the new interval
-						if (std::get<1>(*prevIt) == std::get<0>(pHeapEx->interval))
+						if (std::get<1>(*prevIt) == std::get<0>(heapAllocation->interval))
 						{
-							std::get<1>(*prevIt) = std::get<1>(pHeapEx->interval);	//joinable
+							std::get<1>(*prevIt) = std::get<1>(heapAllocation->interval);	//joinable
 						}
 						else
 						{
-							auto backIt = std::back_inserter(pHeapStore->freeIntervals);
-							*backIt = pHeapEx->interval;
+							pHeapStore->freeIntervals.push_back(heapAllocation->interval);
 						}
 					}
 				}
 				else	//insert between two adjacent intervals.Try to merge if possible
 				{
-					auto currIt = pHeapStore->freeIntervals.insert(nextIt, pHeapEx->interval);
-					if (prevIt != pHeapStore->freeIntervals.end() && std::get<1>(*prevIt) == std::get<0>(pHeapEx->interval))
+					auto currIt = pHeapStore->freeIntervals.insert(nextIt, heapAllocation->interval);
+					if (prevIt != pHeapStore->freeIntervals.end() && std::get<1>(*prevIt) == std::get<0>(heapAllocation->interval))
 					{
-						std::get<1>(*prevIt) = std::get<1>(pHeapEx->interval);
+						std::get<1>(*prevIt) = std::get<1>(heapAllocation->interval);
 						pHeapStore->freeIntervals.erase(currIt);
 						currIt = prevIt;
 					}
@@ -304,8 +298,8 @@ namespace Lightning
 
 		ComPtr<ID3D12DescriptorHeap> D3D12DescriptorHeapManager::GetHeap(DescriptorHeap* pHeap)const
 		{
-			auto pHeapEx = static_cast<DescriptorHeapAllocation*>(pHeap);
-			return pHeapEx->pStore->heap;
+			auto heapAllocation = static_cast<DescriptorHeapAllocation*>(pHeap);
+			return heapAllocation->pStore->heap;
 		}
 	}
 }
