@@ -53,7 +53,7 @@ namespace Lightning
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
 			auto frameCount = Renderer::Instance()->GetCurrentFrameCount();
 			auto& bufferResources = mBufferResources[resourceIndex];
-			auto& threadBufferResources = *bufferResources;
+			auto& threadBufferResources = bufferResources.Local();
 
 			auto realSize = AlignedSize(bufferSize);
 			D3D12ConstantBuffer cbuffer;

@@ -34,7 +34,7 @@ namespace Lightning
 		{
 			using ShaderVec = std::vector<std::shared_ptr<IShader>>;
 			static Foundation::ThreadLocalObject<ShaderVec> tloShaders;
-			auto& shaders = *tloShaders;
+			auto& shaders = tloShaders.Local();
 			shaders.clear();
 			GetMaterialShaders(unit->GetMaterial().get(), shaders);
 			std::for_each(shaders.begin(), shaders.end(), [this](const std::shared_ptr<IShader>& shader) {

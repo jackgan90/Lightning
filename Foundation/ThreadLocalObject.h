@@ -22,11 +22,11 @@ namespace Lightning
 			{
 				return &mInstances.local();
 			}
-			T& operator*()
+			T& Local()
 			{
 				return mInstances.local();
 			}
-			const T& operator*()const
+			const T& Local()const
 			{
 				return mInstances.local();
 			}

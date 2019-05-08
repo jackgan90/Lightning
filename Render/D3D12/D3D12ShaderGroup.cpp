@@ -45,7 +45,7 @@ namespace Lightning
 		{
 			using DescriptorHeapLists = Foundation::ThreadLocalObject<std::vector<ID3D12DescriptorHeap*>>;
 			static DescriptorHeapLists descriptorHeapLists;
-			auto& descriptorHeaps = *descriptorHeapLists;
+			auto& descriptorHeaps = descriptorHeapLists.Local();
 			descriptorHeaps.clear();
 			//the heap to store CBVs SRVs UAVs
 			constantHeap = nullptr;

@@ -112,7 +112,7 @@ namespace Lightning
 		std::uint8_t* FrameMemoryAllocator::AllocateBytes(std::size_t size)
 		{
 			auto thread_id = std::this_thread::get_id();
-			auto& threadBuffers = *mBuffers;
+			auto& threadBuffers = mBuffers.Local();
 			if (threadBuffers.empty())
 			{
 				threadBuffers.emplace_back(size);
