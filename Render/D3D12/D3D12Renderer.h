@@ -51,7 +51,6 @@ namespace Lightning
 			IRenderFence* CreateRenderFence()override;
 			Device* CreateDevice()override;
 			SwapChain* CreateSwapChain()override;
-			RenderPass* CreateRenderPass(RenderPassType type)override;
 		private:
 			struct PipelineCacheObject
 			{

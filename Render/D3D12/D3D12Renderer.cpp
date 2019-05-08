@@ -13,7 +13,6 @@
 #include "D3D12StatefulResourceManager.h"
 #include "D3D12VertexBuffer.h"
 #include "D3D12IndexBuffer.h"
-#include "D3D12ForwardRenderPass.h"
 
 namespace
 {
@@ -535,14 +534,6 @@ namespace Lightning
 		SwapChain* D3D12Renderer::CreateSwapChain()
 		{
 			return new D3D12SwapChain(mDXGIFactory.Get(), GetCommandQueue(), mOutputWindow);
-		}
-
-		RenderPass* D3D12Renderer::CreateRenderPass(RenderPassType type)
-		{
-			if (type == RenderPassType::FORWARD)
-				return new D3D12ForwardRenderPass;
-			else
-				return Renderer::CreateRenderPass(type);
 		}
 
 #ifndef NDEBUG

@@ -127,7 +127,6 @@ if(LIGHTNING_USE_D3D12)
 						D3D12/D3D12CommandEncoder.h
 						D3D12/D3D12StatefulResource.h
 						D3D12/D3D12StatefulResourceManager.h
-						D3D12/D3D12ForwardRenderPass.h
 						D3D12/D3D12Texture.h)
 	set(D3D12_SOURCES	D3D12/D3D12Device.cpp
 						D3D12/D3D12SwapChain.cpp
@@ -145,7 +144,6 @@ if(LIGHTNING_USE_D3D12)
 						D3D12/D3D12CommandEncoder.cpp
 						D3D12/D3D12StatefulResource.cpp
 						D3D12/D3D12StatefulResourceManager.cpp
-						D3D12/D3D12ForwardRenderPass.cpp
 						D3D12/D3D12Texture.cpp)
 	list(APPEND HEADERS ${D3D12_HEADERS})
 	list(APPEND SOURCES ${D3D12_SOURCES})

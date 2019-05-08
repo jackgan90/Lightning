@@ -20,14 +20,6 @@ namespace Lightning
 			for (auto i = 0; i < D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES;++i)
 			{
 				sIncrementSizes[i] = device->GetDescriptorHandleIncrementSize(static_cast<D3D12_DESCRIPTOR_HEAP_TYPE>(i));
-				for (auto j = 0;j < RENDER_FRAME_COUNT;++j)
-				{
-					for (auto k = 0;k < 2;++k)
-					{
-						mTransientHeaps[j][i][k].heapStore = nullptr;
-						mTransientHeaps[j][i][k].handles = nullptr;
-					}
-				}
 			}
 		}
 
@@ -36,26 +28,6 @@ namespace Lightning
 
 		}
 
-		void D3D12DescriptorHeapManager::ReserveTransientDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count)
-		{
-			assert(count > 0 && "descriptor count must be positive!");
-			auto frameResourceIndex = Renderer::Instance()->GetFrameResourceIndex();
-			auto i = shaderVisible ? 1 : 0;
-			auto& transientHeap = mTransientHeaps[frameResourceIndex][type][i];
-			if (transientHeap.heapStore && transientHeap.descriptorCount >= count)
-			{
-				transientHeap.allocCount = 0;
-				transientHeap.offset = 0;
-				return;
-			}
-			delete transientHeap.heapStore;
-			delete[] transientHeap.handles;
-			transientHeap.heapStore = CreateHeapStore(type, shaderVisible, count);
-			transientHeap.handles = new DescriptorHeapAllocation[count];
-			transientHeap.descriptorCount = count;
-			transientHeap.allocCount = 0;
-			transientHeap.offset = 0;
-		}
 
 		DescriptorHeap* D3D12DescriptorHeapManager::Allocate(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count, bool transient)
 		{
@@ -69,20 +41,60 @@ namespace Lightning
 			}
 		}
 
+		D3D12DescriptorHeapManager::TransientHeap D3D12DescriptorHeapManager::ReserveTransientDescriptors(
+			D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count, std::uint64_t frameCount)
+		{
+			assert(count > 0 && "descriptor count must be positive!");
+			TransientHeap transientHeap;
+			count = std::max(count, TransientHeapAllocationUnit);
+			transientHeap.heapStore = CreateHeapStore(type, shaderVisible, count);
+			transientHeap.handles = new DescriptorHeapAllocation[count];
+			transientHeap.descriptorCount = count;
+			transientHeap.allocCount = 0;
+			transientHeap.frameCount = frameCount;
+			return transientHeap;
+		}
+
 		DescriptorHeap* D3D12DescriptorHeapManager::AllocateTransientHeap(D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible, UINT count)
 		{
 			assert(count > 0);
 			auto resourceIndex = Renderer::Instance()->GetFrameResourceIndex();
+			auto frameCount = Renderer::Instance()->GetCurrentFrameCount();
 			auto i = shaderVisible ? 1 : 0;
-			auto& transientHeap = mTransientHeaps[resourceIndex][type][i];
+			auto& transientHeapList = mTransientHeaps[resourceIndex][type][i].Local();
+			if (transientHeapList.empty() || transientHeapList.back().frameCount != frameCount)
+			{
+				if (transientHeapList.size() == 1 && transientHeapList.back().descriptorCount >= count)
+				{
+					transientHeapList.back().allocCount = 0;
+					transientHeapList.back().frameCount = frameCount;
+				}
+				else
+				{
+					UINT totalDescriptorCount{ 0 };
+					std::for_each(transientHeapList.begin(), transientHeapList.end(), 
+						[&totalDescriptorCount](TransientHeap& heap) {
+						totalDescriptorCount += heap.descriptorCount;
+						delete heap.heapStore;
+						delete[] heap.handles;
+					});
+					transientHeapList.clear();
+					transientHeapList.emplace_back(ReserveTransientDescriptors(type, shaderVisible, std::max(count, totalDescriptorCount), frameCount));
+				}
+			}
+			
+			if (transientHeapList.back().allocCount + count > transientHeapList.back().descriptorCount)
+			{
+				transientHeapList.emplace_back(ReserveTransientDescriptors(type, shaderVisible, count, frameCount));
+			}
+			auto& transientHeap = transientHeapList.back();
 			CD3DX12_CPU_DESCRIPTOR_HANDLE CPUHandle(transientHeap.heapStore->CPUHandle);
 			CD3DX12_GPU_DESCRIPTOR_HANDLE GPUHandle(transientHeap.heapStore->GPUHandle);
-			auto offset = transientHeap.offset.fetch_add(count, std::memory_order_relaxed);
-			CPUHandle.Offset(offset * transientHeap.heapStore->incrementSize);
-			GPUHandle.Offset(offset * transientHeap.heapStore->incrementSize);
+			CPUHandle.Offset(transientHeap.allocCount * transientHeap.heapStore->incrementSize);
+			GPUHandle.Offset(transientHeap.allocCount * transientHeap.heapStore->incrementSize);
 			
-			auto handleIndex = transientHeap.allocCount.fetch_add(1, std::memory_order_relaxed);
-			auto heap = &transientHeap.handles[handleIndex];
+			auto heap = &transientHeap.handles[transientHeap.allocCount];
+			transientHeap.allocCount += count;
 			heap->CPUHandle = CPUHandle;
 			heap->GPUHandle = GPUHandle;
 			heap->incrementSize = transientHeap.heapStore->incrementSize;
@@ -273,16 +285,13 @@ namespace Lightning
 				{
 					for (auto k = 0; k < 2; ++k)
 					{
-						if (mTransientHeaps[j][i][k].heapStore)
-						{
-							delete mTransientHeaps[j][i][k].heapStore;
-						}
-
-						if (mTransientHeaps[j][i][k].handles)
-						{
-							delete[] mTransientHeaps[j][i][k].handles;
-						}
-						
+						mTransientHeaps[j][i][k].for_each([](TransientHeapList& heapList) {
+							for (auto heap : heapList)
+							{
+								delete heap.heapStore;
+								delete[] heap.handles;
+							}
+						});
 					}
 				}
 				for (auto j = 0;j < 2;++j)
