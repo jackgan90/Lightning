@@ -25,7 +25,7 @@ namespace Lightning
 
 		D3D12DescriptorHeapManager::~D3D12DescriptorHeapManager()
 		{
-
+			Clear();
 		}
 
 
@@ -291,6 +291,7 @@ namespace Lightning
 								delete heap.heapStore;
 								delete[] heap.handles;
 							}
+							heapList.clear();
 						});
 					}
 				}
