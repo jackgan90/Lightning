@@ -1,16 +1,16 @@
 #pragma once
 #include <boost/pool/singleton_pool.hpp>
-#include "IDrawCall.h"
+#include "IDrawCommand.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		class CommittedDrawCall : public ICommittedDrawCall
+		class CommittedDrawCommand : public ICommittedDrawCommand
 		{
 		public:
-			CommittedDrawCall();
-			~CommittedDrawCall()override;
+			CommittedDrawCommand();
+			~CommittedDrawCommand()override;
 			PrimitiveType GetPrimitiveType()const override;
 			std::shared_ptr<IIndexBuffer> GetIndexBuffer()const override;
 			std::size_t GetVertexBufferCount()const override;
@@ -44,7 +44,7 @@ namespace Lightning
 				std::shared_ptr<IVertexBuffer> vertexBuffer;
 				std::size_t slot;
 			};
-			friend class DrawCall;
+			friend class DrawCommand;
 			PrimitiveType mPrimitiveType;
 			Transform mTransform;		//position rotation scale
 			Matrix4f mViewMatrix;		//camera view matrix
@@ -58,6 +58,6 @@ namespace Lightning
 			VertexBufferSlot* mVertexBuffers;
 			std::size_t mVertexBufferCount;
 		};
-		using CommittedDrawCallPool = boost::singleton_pool<CommittedDrawCall, sizeof(CommittedDrawCall)>;
+		using CommittedDrawCommandPool = boost::singleton_pool<CommittedDrawCommand, sizeof(CommittedDrawCommand)>;
 	}
 }

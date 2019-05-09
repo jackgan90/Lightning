@@ -1,8 +1,8 @@
 #include <cassert>
 #include <algorithm>
 #include "Renderer.h"
-#include "DrawCall.h"
-#include "CommittedDrawCall.h"
+#include "DrawCommand.h"
+#include "CommittedDrawCommand.h"
 #include "FrameMemoryAllocator.h"
 #include "Logger.h"
 #undef min
@@ -13,7 +13,7 @@ namespace Lightning
 	namespace Render
 	{
 		extern FrameMemoryAllocator g_RenderAllocator;
-		DrawCall::DrawCall()
+		DrawCommand::DrawCommand()
 			: mCustomRenderTargets(false)
 			, mCustomDepthStencilBuffer(false)
 			, mCustomViewport(false)
@@ -21,37 +21,37 @@ namespace Lightning
 
 		}
 
-		DrawCall::~DrawCall()
+		DrawCommand::~DrawCommand()
 		{
 			DoReset();
 		}
 
-		void DrawCall::SetPrimitiveType(PrimitiveType type)
+		void DrawCommand::SetPrimitiveType(PrimitiveType type)
 		{
 			mPrimitiveType = type;
 		}
 
-		PrimitiveType DrawCall::GetPrimitiveType()const
+		PrimitiveType DrawCommand::GetPrimitiveType()const
 		{
 			return mPrimitiveType;
 		}
 
-		void DrawCall::SetIndexBuffer(const std::shared_ptr<IIndexBuffer>& indexBuffer)
+		void DrawCommand::SetIndexBuffer(const std::shared_ptr<IIndexBuffer>& indexBuffer)
 		{
 			mIndexBuffer = indexBuffer;
 		}
 
-		std::shared_ptr<IIndexBuffer> DrawCall::GetIndexBuffer()const
+		std::shared_ptr<IIndexBuffer> DrawCommand::GetIndexBuffer()const
 		{
 			return mIndexBuffer;
 		}
 
-		void DrawCall::ClearVertexBuffers()
+		void DrawCommand::ClearVertexBuffers()
 		{
 			DoClearVertexBuffers();
 		}
 
-		void DrawCall::SetVertexBuffer(std::size_t slot, const std::shared_ptr<IVertexBuffer>& vertexBuffer)
+		void DrawCommand::SetVertexBuffer(std::size_t slot, const std::shared_ptr<IVertexBuffer>& vertexBuffer)
 		{
 			auto it = mVertexBuffers.find(slot);
 			if (it != mVertexBuffers.end())
@@ -76,12 +76,12 @@ namespace Lightning
 			}
 		}
 
-		std::size_t DrawCall::GetVertexBufferCount()const
+		std::size_t DrawCommand::GetVertexBufferCount()const
 		{
 			return mVertexBuffers.size();
 		}
 
-		void DrawCall::GetVertexBuffer(std::size_t index, std::size_t& slot, std::shared_ptr<IVertexBuffer>& vertexBuffer)const
+		void DrawCommand::GetVertexBuffer(std::size_t index, std::size_t& slot, std::shared_ptr<IVertexBuffer>& vertexBuffer)const
 		{
 			assert(index < mVertexBuffers.size() && "index out of range.");
 			auto i = 0;
@@ -96,49 +96,49 @@ namespace Lightning
 			}
 		}
 
-		void DrawCall::SetMaterial(const std::shared_ptr<IMaterial>& material)
+		void DrawCommand::SetMaterial(const std::shared_ptr<IMaterial>& material)
 		{
 			if (material == mMaterial)
 				return;
 			mMaterial = material;
 		}
 
-		std::shared_ptr<IMaterial> DrawCall::GetMaterial()const
+		std::shared_ptr<IMaterial> DrawCommand::GetMaterial()const
 		{
 			return mMaterial;
 		}
 
-		void DrawCall::SetTransform(const Transform& transform)
+		void DrawCommand::SetTransform(const Transform& transform)
 		{
 			mTransform = transform;
 		}
 
-		const Transform& DrawCall::GetTransform()const
+		const Transform& DrawCommand::GetTransform()const
 		{
 			return mTransform;
 		}
 
-		void DrawCall::SetViewMatrix(const Matrix4f& matrix)
+		void DrawCommand::SetViewMatrix(const Matrix4f& matrix)
 		{
 			mViewMatrix = matrix;
 		}
 
-		const Matrix4f& DrawCall::GetViewMatrix()const
+		const Matrix4f& DrawCommand::GetViewMatrix()const
 		{
 			return mViewMatrix;
 		}
 
-		void DrawCall::SetProjectionMatrix(const Matrix4f& matrix)
+		void DrawCommand::SetProjectionMatrix(const Matrix4f& matrix)
 		{
 			mProjectionMatrix = matrix;
 		}
 
-		const Matrix4f& DrawCall::GetProjectionMatrix()const
+		const Matrix4f& DrawCommand::GetProjectionMatrix()const
 		{
 			return mProjectionMatrix;
 		}
 
-		void DrawCall::AddRenderTarget(const std::shared_ptr<IRenderTarget>& renderTarget)
+		void DrawCommand::AddRenderTarget(const std::shared_ptr<IRenderTarget>& renderTarget)
 		{
 			assert(renderTarget != nullptr && "AddRenderTarget only accept valid pointer!");
 #ifndef NDEBUG
@@ -149,7 +149,7 @@ namespace Lightning
 			mRenderTargets.push_back(renderTarget);
 		}
 
-		void DrawCall::RemoveRenderTarget(const std::shared_ptr<IRenderTarget>& renderTarget)
+		void DrawCommand::RemoveRenderTarget(const std::shared_ptr<IRenderTarget>& renderTarget)
 		{
 			assert(mCustomRenderTargets && "AddRenderTarget must be called prior to call RemoveRenderTarget.");
 			auto it = std::find(mRenderTargets.cbegin(), mRenderTargets.cend(), renderTarget);
@@ -159,7 +159,7 @@ namespace Lightning
 			}
 		}
 
-		std::shared_ptr<IRenderTarget> DrawCall::GetRenderTarget(std::size_t index)const
+		std::shared_ptr<IRenderTarget> DrawCommand::GetRenderTarget(std::size_t index)const
 		{
 			if (!mCustomRenderTargets)
 			{
@@ -170,7 +170,7 @@ namespace Lightning
 			return mRenderTargets[index];
 		}
 
-		std::size_t DrawCall::GetRenderTargetCount()const
+		std::size_t DrawCommand::GetRenderTargetCount()const
 		{
 			if (mCustomRenderTargets)
 				return mRenderTargets.size();
@@ -178,12 +178,12 @@ namespace Lightning
 				return 1u;
 		}
 
-		void DrawCall::ClearRenderTargets()
+		void DrawCommand::ClearRenderTargets()
 		{
 			DoClearRenderTargets();
 		}
 
-		void DrawCall::SetDepthStencilBuffer(const std::shared_ptr<IDepthStencilBuffer>& depthStencilBuffer)
+		void DrawCommand::SetDepthStencilBuffer(const std::shared_ptr<IDepthStencilBuffer>& depthStencilBuffer)
 		{
 			mCustomDepthStencilBuffer = true;
 			if (mDepthStencilBuffer == depthStencilBuffer)
@@ -191,7 +191,7 @@ namespace Lightning
 			mDepthStencilBuffer = depthStencilBuffer;
 		}
 
-		std::shared_ptr<IDepthStencilBuffer> DrawCall::GetDepthStencilBuffer()const
+		std::shared_ptr<IDepthStencilBuffer> DrawCommand::GetDepthStencilBuffer()const
 		{
 			if (!mCustomDepthStencilBuffer)
 			{
@@ -200,13 +200,13 @@ namespace Lightning
 			}
 			return mDepthStencilBuffer;
 		}
-		void DrawCall::AddViewportAndScissorRect(const Viewport& viewport, const ScissorRect& scissorRect)
+		void DrawCommand::AddViewportAndScissorRect(const Viewport& viewport, const ScissorRect& scissorRect)
 		{
 			mCustomViewport = true;
 			mViewportAndScissorRects.push_back({ viewport, scissorRect });
 		}
 
-		std::size_t DrawCall::GetViewportCount()const
+		std::size_t DrawCommand::GetViewportCount()const
 		{
 			if (!mCustomViewport)
 				return std::size_t(1);
@@ -214,7 +214,7 @@ namespace Lightning
 				return mViewportAndScissorRects.size();
 		}
 
-		void DrawCall::GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const
+		void DrawCommand::GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const
 		{
 			if (!mCustomViewport)
 			{
@@ -239,14 +239,14 @@ namespace Lightning
 			}
 		}
 
-		void DrawCall::Reset()
+		void DrawCommand::Reset()
 		{
 			DoReset();
 		}
 
-		ICommittedDrawCall* DrawCall::Commit()const
+		ICommittedDrawCommand* DrawCommand::Commit()const
 		{
-			auto clonedUnit = new (CommittedDrawCallPool::malloc()) CommittedDrawCall;
+			auto clonedUnit = new (CommittedDrawCommandPool::malloc()) CommittedDrawCommand;
 			clonedUnit->mPrimitiveType = GetPrimitiveType();
 			clonedUnit->mTransform = GetTransform();
 			clonedUnit->mViewMatrix = GetViewMatrix();
@@ -265,7 +265,7 @@ namespace Lightning
 
 			clonedUnit->mViewportCount = GetViewportCount();
 			clonedUnit->mViewportAndScissorRects = g_RenderAllocator.Allocate 
-				<CommittedDrawCall::ViewportAndScissorRect>(clonedUnit->mViewportCount);
+				<CommittedDrawCommand::ViewportAndScissorRect>(clonedUnit->mViewportCount);
 			for (auto i = 0;i < clonedUnit->mViewportCount;++i)
 			{
 				GetViewportAndScissorRect(i, clonedUnit->mViewportAndScissorRects[i].viewport
@@ -274,7 +274,7 @@ namespace Lightning
 
 			clonedUnit->mVertexBufferCount = GetVertexBufferCount();
 			clonedUnit->mVertexBuffers = g_RenderAllocator.Allocate
-				<CommittedDrawCall::VertexBufferSlot>(clonedUnit->mVertexBufferCount);
+				<CommittedDrawCommand::VertexBufferSlot>(clonedUnit->mVertexBufferCount);
 			for (auto i = 0;i < clonedUnit->mVertexBufferCount;++i)
 			{
 				GetVertexBuffer(i, clonedUnit->mVertexBuffers[i].slot, 
@@ -283,7 +283,7 @@ namespace Lightning
 			return clonedUnit;
 		}
 
-		void DrawCall::DoReset()
+		void DrawCommand::DoReset()
 		{
 			mIndexBuffer.reset();
 			mMaterial.reset();
@@ -296,33 +296,33 @@ namespace Lightning
 			mCustomViewport = false;
 		}
 
-		void DrawCall::DoClearRenderTargets()
+		void DrawCommand::DoClearRenderTargets()
 		{
 			mRenderTargets.clear();
 			mCustomRenderTargets = false;
 		}
 
-		void DrawCall::DoClearVertexBuffers()
+		void DrawCommand::DoClearVertexBuffers()
 		{
 			mVertexBuffers.clear();
 		}
 
-		void DrawCall::DoClearViewportAndScissorRects()
+		void DrawCommand::DoClearViewportAndScissorRects()
 		{
 			mViewportAndScissorRects.clear();
 			mCustomViewport = false;
 		}
 
-		void DrawCall::Release()
+		void DrawCommand::Release()
 		{
-			this->~DrawCall();
-			DrawCallPool::free(this);
+			this->~DrawCommand();
+			DrawCommandPool::free(this);
 		}
 
-		void DrawCall::Apply()
+		void DrawCommand::Apply()
 		{
-			//DrawCall cannot apply
-			LOG_ERROR("Can't apply the draw call directly!Must invoke Commit and use Apply on CommittedDrawCall!");
+			//DrawCommand cannot apply
+			LOG_ERROR("Can't apply the draw call directly!Must invoke Commit and use Apply on CommittedDrawCommand!");
 			assert(0);
 		}
 	}

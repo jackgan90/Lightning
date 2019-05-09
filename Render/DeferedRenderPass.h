@@ -10,7 +10,7 @@ namespace Lightning
 		public:	
 			DeferedRenderPass():RenderPass(RenderPassType::DEFERED){}
 			//Apply is called by renderer once per frame.Subclasses should commit render resources to device in this method.
-			void Apply(DrawCallQueue&)override;
+			void Apply(DrawCommandQueue&)override;
 			void OnFrameEnd()override;
 		};
 	}

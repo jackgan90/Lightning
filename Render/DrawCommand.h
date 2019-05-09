@@ -3,17 +3,17 @@
 #include <boost/pool/pool_alloc.hpp>
 #include <tbb/scalable_allocator.h>
 #include "RefObject.h"
-#include "IDrawCall.h"
+#include "IDrawCommand.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		class DrawCall : public IDrawCall
+		class DrawCommand : public IDrawCommand
 		{
 		public:
-			DrawCall();
-			~DrawCall()override;
+			DrawCommand();
+			~DrawCommand()override;
 			void SetPrimitiveType(PrimitiveType type)override;
 			PrimitiveType GetPrimitiveType()const override;
 			void SetIndexBuffer(const std::shared_ptr<IIndexBuffer>& indexBuffer)override;
@@ -41,7 +41,7 @@ namespace Lightning
 			void AddViewportAndScissorRect(const Viewport& viewport, const ScissorRect& scissorRect)override;
 			std::size_t GetViewportCount()const override;
 			void GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const override;
-			ICommittedDrawCall * Commit()const override;
+			ICommittedDrawCommand * Commit()const override;
 			void Apply()override;
 			void Release()override;
 		private:
@@ -75,6 +75,6 @@ namespace Lightning
 			bool mCustomViewport;
 			//static VertexBufferAllocatorType sVertexBufferAllocator;
 		};
-		using DrawCallPool = boost::singleton_pool<DrawCall, sizeof(DrawCall)>;
+		using DrawCommandPool = boost::singleton_pool<DrawCommand, sizeof(DrawCommand)>;
 	}
 }

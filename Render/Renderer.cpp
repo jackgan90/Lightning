@@ -6,7 +6,7 @@
 #include "FrameMemoryAllocator.h"
 #include "Serializers/ShaderSerializer.h"
 #include "Serializers/TextureSerializer.h"
-#include "DrawCall.h"
+#include "DrawCommand.h"
 #include "Loader.h"
 
 namespace Lightning
@@ -16,15 +16,15 @@ namespace Lightning
 		IRenderer* Renderer::sInstance{ nullptr };
 		FrameMemoryAllocator g_RenderAllocator;
 		
-		void FrameResource::ReleaseDrawCallQueue()
+		void FrameResource::ReleaseDrawCommandQueue()
 		{
-			if (drawCallQueue)
+			if (drawCommandQueue)
 			{
-				for (auto unit : *drawCallQueue)
+				for (auto unit : *drawCommandQueue)
 				{
 					unit->Release();
 				}
-				drawCallQueue->clear();
+				drawCommandQueue->clear();
 			}
 		}
 
@@ -41,7 +41,7 @@ namespace Lightning
 				fence = nullptr;
 			}
 			defaultDepthStencilBuffer.reset();
-			ReleaseDrawCallQueue();
+			ReleaseDrawCommandQueue();
 		}
 
 		Renderer::Renderer(Window::IWindow* window)
@@ -49,8 +49,8 @@ namespace Lightning
 			, mFrameCount(0)
 			, mFrameResourceIndex(0)
 			, mClearColor{0.5f, 0.5f, 0.5f, 1.0f}
-			, mDrawCallQueueIndex(RENDER_FRAME_COUNT)
-			, mCurrentDrawCallQueue(&mDrawCallQueues[RENDER_FRAME_COUNT])
+			, mDrawCommandQueueIndex(RENDER_FRAME_COUNT)
+			, mCurrentDrawCommandQueue(&mDrawCommandQueues[RENDER_FRAME_COUNT])
 			, mStarted(false)
 		{
 			assert(!sInstance);
@@ -81,7 +81,7 @@ namespace Lightning
 			mFrameCount++;
 			mFrameResources[mFrameResourceIndex].OnFrameBegin();
 			OnFrameBegin();
-			SwitchDrawCallQueue();
+			SwitchDrawCommandQueue();
 			auto backBuffer = mSwapChain->GetCurrentRenderTarget();
 			ClearRenderTarget(backBuffer.get(), mClearColor);
 			auto depthStencilBuffer = GetDefaultDepthStencilBuffer();
@@ -131,7 +131,7 @@ namespace Lightning
 		{
 			for (auto& pass : mRenderPasses)
 			{
-				pass->Apply(*mFrameResources[mFrameResourceIndex].drawCallQueue);
+				pass->Apply(*mFrameResources[mFrameResourceIndex].drawCommandQueue);
 			}
 		}
 
@@ -143,11 +143,11 @@ namespace Lightning
 			name = it->second.name;
 		}
 
-		void Renderer::SwitchDrawCallQueue()
+		void Renderer::SwitchDrawCommandQueue()
 		{
-			mFrameResources[mFrameResourceIndex].drawCallQueue = mCurrentDrawCallQueue;
-			mDrawCallQueueIndex = mDrawCallQueueIndex == RENDER_FRAME_COUNT ? 0 : ++mDrawCallQueueIndex;
-			mCurrentDrawCallQueue = &mDrawCallQueues[mDrawCallQueueIndex];
+			mFrameResources[mFrameResourceIndex].drawCommandQueue = mCurrentDrawCommandQueue;
+			mDrawCommandQueueIndex = mDrawCommandQueueIndex == RENDER_FRAME_COUNT ? 0 : ++mDrawCommandQueueIndex;
+			mCurrentDrawCommandQueue = &mDrawCommandQueues[mDrawCommandQueueIndex];
 		}
 
 		void Renderer::SetClearColor(float r, float g, float b, float a)
@@ -160,17 +160,17 @@ namespace Lightning
 			return mFrameCount;
 		}
 
-		IDrawCall* Renderer::NewDrawCall()
+		IDrawCommand* Renderer::NewDrawCommand()
 		{
-			return new (DrawCallPool::malloc()) DrawCall;
+			return new (DrawCommandPool::malloc()) DrawCommand;
 		}
 
-		void Renderer::CommitDrawCall(const IDrawCall* unit)
+		void Renderer::CommitDrawCommand(const IDrawCommand* command)
 		{
-			assert(unit != nullptr && "Commit render unit cannot be nullptr!");
-			auto immutableUnit = unit->Commit();
+			assert(command != nullptr && "Draw command cannot be nullptr!");
+			auto immutableUnit = command->Commit();
 			//unit->AddRef();
-			mCurrentDrawCallQueue->push_back(immutableUnit);
+			mCurrentDrawCommandQueue->push_back(immutableUnit);
 		}
 
 		void Renderer::AddRenderPass(RenderPassType type)
@@ -236,8 +236,8 @@ namespace Lightning
 			{
 				mFrameResources[i].Release();
 			}
-			mFrameResources[0].drawCallQueue = mCurrentDrawCallQueue;
-			mFrameResources[0].ReleaseDrawCallQueue();
+			mFrameResources[0].drawCommandQueue = mCurrentDrawCommandQueue;
+			mFrameResources[0].ReleaseDrawCommandQueue();
 			mDevice.reset();
 			mSwapChain.reset();
 			mRenderPasses.clear();
@@ -290,7 +290,7 @@ namespace Lightning
 			{
 				auto& frameResource = mFrameResources[resourceIndex];
 				frameResource.fence->WaitForTarget();
-				frameResource.ReleaseDrawCallQueue();
+				frameResource.ReleaseDrawCommandQueue();
 				g_RenderAllocator.ReleaseFramesBefore(frameResource.frame);
 			}
 		}

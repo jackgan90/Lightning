@@ -11,7 +11,7 @@ set(INTERFACE_HEADERS	IDevice.h
 						IIndexBuffer.h
 						IGPUBuffer.h
 						IMaterial.h
-						IDrawCall.h
+						IDrawCommand.h
 						Shader/IShader.h
 						Shader/IShaderMacros.h
 						Shader/IShaderParameter.h
@@ -32,8 +32,8 @@ set(HEADERS IndexBuffer.h
 			ForwardRenderPass.h
 			DeferedRenderPass.h
 			FrameMemoryAllocator.h
-			DrawCall.h
-			CommittedDrawCall.h
+			DrawCommand.h
+			CommittedDrawCommand.h
 			RenderObjectCache.h)
 set(SOURCES Renderer.cpp
 			Device.cpp
@@ -47,8 +47,8 @@ set(SOURCES Renderer.cpp
 			ForwardRenderPass.cpp
 			FrameMemoryAllocator.cpp
 			DeferedRenderPass.cpp
-			DrawCall.cpp
-			CommittedDrawCall.cpp
+			DrawCommand.cpp
+			CommittedDrawCommand.cpp
 			RenderObjectCache.cpp)
 
 set(TYPES_HEADERS	Types/Color.h

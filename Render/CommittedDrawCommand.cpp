@@ -1,4 +1,4 @@
-#include "CommittedDrawCall.h"
+#include "CommittedDrawCommand.h"
 #include "FrameMemoryAllocator.h"
 #include "ShaderParameter.h"
 #include "Renderer.h"
@@ -9,12 +9,12 @@ namespace Lightning
 	namespace Render
 	{
 		extern FrameMemoryAllocator g_RenderAllocator;
-		CommittedDrawCall::CommittedDrawCall()
+		CommittedDrawCommand::CommittedDrawCommand()
 		{
 
 		}
 
-		CommittedDrawCall::~CommittedDrawCall()
+		CommittedDrawCommand::~CommittedDrawCommand()
 		{
 			mIndexBuffer.reset();
 			for (auto i = 0;i < mVertexBufferCount;++i)
@@ -23,80 +23,80 @@ namespace Lightning
 			}
 		}
 
-		PrimitiveType CommittedDrawCall::GetPrimitiveType()const
+		PrimitiveType CommittedDrawCommand::GetPrimitiveType()const
 		{
 			return mPrimitiveType;
 		}
 
-		std::shared_ptr<IIndexBuffer> CommittedDrawCall::GetIndexBuffer()const
+		std::shared_ptr<IIndexBuffer> CommittedDrawCommand::GetIndexBuffer()const
 		{
 			return mIndexBuffer;
 		}
 
-		std::size_t CommittedDrawCall::GetVertexBufferCount()const
+		std::size_t CommittedDrawCommand::GetVertexBufferCount()const
 		{
 			return mVertexBufferCount;
 		}
 
-		void CommittedDrawCall::GetVertexBuffer(std::size_t index, std::size_t& slot, std::shared_ptr<IVertexBuffer>& vertexBuffer)const
+		void CommittedDrawCommand::GetVertexBuffer(std::size_t index, std::size_t& slot, std::shared_ptr<IVertexBuffer>& vertexBuffer)const
 		{
 			slot = mVertexBuffers[index].slot;
 			vertexBuffer = mVertexBuffers[index].vertexBuffer;
 		}
 
-		std::shared_ptr<IMaterial> CommittedDrawCall::GetMaterial()const
+		std::shared_ptr<IMaterial> CommittedDrawCommand::GetMaterial()const
 		{
 			return mMaterial;
 		}
 
-		const Transform& CommittedDrawCall::GetTransform()const
+		const Transform& CommittedDrawCommand::GetTransform()const
 		{
 			return mTransform;
 		}
 
-		const Matrix4f& CommittedDrawCall::GetViewMatrix()const
+		const Matrix4f& CommittedDrawCommand::GetViewMatrix()const
 		{
 			return mViewMatrix;
 		}
 
-		const Matrix4f& CommittedDrawCall::GetProjectionMatrix()const
+		const Matrix4f& CommittedDrawCommand::GetProjectionMatrix()const
 		{
 			return mProjectionMatrix;
 		}
 
-		std::shared_ptr<IRenderTarget> CommittedDrawCall::GetRenderTarget(std::size_t index)const
+		std::shared_ptr<IRenderTarget> CommittedDrawCommand::GetRenderTarget(std::size_t index)const
 		{
 			return mRenderTargets[index];
 		}
 
-		std::size_t CommittedDrawCall::GetRenderTargetCount()const
+		std::size_t CommittedDrawCommand::GetRenderTargetCount()const
 		{
 			return mRenderTargets.size();
 		}
 
-		std::shared_ptr<IDepthStencilBuffer> CommittedDrawCall::GetDepthStencilBuffer()const
+		std::shared_ptr<IDepthStencilBuffer> CommittedDrawCommand::GetDepthStencilBuffer()const
 		{
 			return mDepthStencilBuffer;
 		}
 
-		std::size_t CommittedDrawCall::GetViewportCount()const
+		std::size_t CommittedDrawCommand::GetViewportCount()const
 		{
 			return mViewportCount;
 		}
 
-		void CommittedDrawCall::GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const
+		void CommittedDrawCommand::GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const
 		{
 			viewport = mViewportAndScissorRects[index].viewport;
 			scissorRect = mViewportAndScissorRects[index].scissorRect;
 		}
 
-		void CommittedDrawCall::Release()
+		void CommittedDrawCommand::Release()
 		{
-			this->~CommittedDrawCall();
-			CommittedDrawCallPool::free(this);
+			this->~CommittedDrawCommand();
+			CommittedDrawCommandPool::free(this);
 		}
 
-		void CommittedDrawCall::Apply()
+		void CommittedDrawCommand::Apply()
 		{
 			CommitShaderParameters();
 			CommitPipelineStates();
@@ -104,7 +104,7 @@ namespace Lightning
 			Draw();
 		}
 
-		void CommittedDrawCall::CommitShaderParameters()
+		void CommittedDrawCommand::CommitShaderParameters()
 		{
 			auto material = GetMaterial();
 			if (!material)
@@ -131,7 +131,7 @@ namespace Lightning
 			}
 		}
 
-		void CommittedDrawCall::CommitPipelineStates()
+		void CommittedDrawCommand::CommitPipelineStates()
 		{
 			PipelineState state;
 			state.Reset();
@@ -184,7 +184,7 @@ namespace Lightning
 			renderer->ApplyScissorRects(scissorRects, viewportCount);
 		}
 
-		void CommittedDrawCall::CommitBuffers()
+		void CommittedDrawCommand::CommitBuffers()
 		{
 			auto renderer = Renderer::Instance();
 			auto vertexBufferCount = GetVertexBufferCount();
@@ -204,7 +204,7 @@ namespace Lightning
 			}
 		}
 
-		void CommittedDrawCall::Draw()
+		void CommittedDrawCommand::Draw()
 		{
 			auto renderer = Renderer::Instance();
 			auto indexBuffer = GetIndexBuffer();
@@ -222,7 +222,7 @@ namespace Lightning
 			}
 		}
 
-		void CommittedDrawCall::CommitSemanticUniforms(IShader* shader)
+		void CommittedDrawCommand::CommitSemanticUniforms(IShader* shader)
 		{
 			auto renderer = Renderer::Instance();
 			RenderSemantics* semantics{ nullptr };
@@ -250,7 +250,7 @@ namespace Lightning
 			}
 		}
 
-		void CommittedDrawCall::GetInputLayouts(std::vector<VertexInputLayout>& inputLayouts)
+		void CommittedDrawCommand::GetInputLayouts(std::vector<VertexInputLayout>& inputLayouts)
 		{
 			for (std::size_t i = 0;i < mVertexBufferCount;i++)
 			{

@@ -7,7 +7,7 @@
 #include "IDepthStencilBuffer.h"
 #include "Color.h"
 #include "Math/Matrix.h"
-#include "IDrawCall.h"
+#include "IDrawCommand.h"
 #include "RenderPass.h"
 #include "IWindow.h"
 #include "Portable.h"
@@ -66,9 +66,9 @@ namespace Lightning
 			virtual std::uint64_t GetCurrentFrameCount()const = 0;
 			virtual std::size_t GetFrameResourceIndex()const = 0;
 			virtual void AddRenderPass(RenderPassType type) = 0;
-			virtual IDrawCall* NewDrawCall() = 0;
-			//Commit a render unit for rendering
-			virtual void CommitDrawCall(const IDrawCall* unit) = 0;
+			virtual IDrawCommand* NewDrawCommand() = 0;
+			//Commit a draw command for rendering
+			virtual void CommitDrawCommand(const IDrawCommand* unit) = 0;
 			//clear a specified render target,possibly parts of it defined by an array of rects
 			virtual void ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, 
 				const RectI* rects=nullptr, std::size_t rectCount = 0) = 0;

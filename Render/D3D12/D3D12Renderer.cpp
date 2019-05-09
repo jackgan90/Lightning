@@ -405,7 +405,7 @@ namespace Lightning
 			for (auto i = 0; i < states.size();++i)
 			{
 				const auto& blendState = states[i].blendState;
-				//TODO these values should be set based on render unit status
+				//TODO these values should be set based on draw command status
 				desc.BlendState.AlphaToCoverageEnable = FALSE;
 				desc.BlendState.IndependentBlendEnable = FALSE;
 				D3D12_RENDER_TARGET_BLEND_DESC* pDesc = &desc.BlendState.RenderTarget[i];

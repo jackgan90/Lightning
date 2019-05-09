@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <cstdint>
-#include "IDrawCall.h"
+#include "IDrawCommand.h"
 #include "IShader.h"
 #include "IPrimitive.h"
 #include "RefObject.h"
@@ -17,7 +17,7 @@ namespace Lightning
 			Primitive();
 			~Primitive()override;
 			void Draw(IRenderer* renderer, const SceneRenderData& sceneRenderData) override;
-			PrimitiveType GetPrimitiveType()const override{ return mDrawCall->GetPrimitiveType(); }
+			PrimitiveType GetPrimitiveType()const override{ return mDrawCommand->GetPrimitiveType(); }
 			void SetWorldPosition(const Vector3f& pos) override{ mTransform.SetPosition(pos); }
 			Vector3f GetWorldPosition()const override{ return mTransform.GetPosition(); }
 			void SetWorldRotation(const Quaternionf& rot) override{ mTransform.SetRotation(rot); }
@@ -34,15 +34,15 @@ namespace Lightning
 			void SetSamplerState(const std::string& name, const SamplerState& state)override;
 			void SetShader(const std::shared_ptr<IShader>& shader)override;
 		protected:
-			virtual void UpdateDrawCall(IRenderer*);
+			virtual void UpdateDrawCommand(IRenderer*);
 			virtual std::uint8_t *GetVertices() = 0;
 			virtual std::uint16_t *GetIndices() = 0;
 			virtual Vector3f GetScale() = 0;
 			virtual std::size_t GetVertexBufferSize() = 0;
 			virtual std::size_t GetIndexBufferSize() = 0;
-			Render::IDrawCall* mDrawCall;
+			Render::IDrawCommand* mDrawCommand;
 			Transform mTransform;
-			bool mDrawCallDirty;
+			bool mDrawCommandDirty;
 			Color32 mColor;
 			std::string mTextureName;
 			std::shared_ptr<ITexture> mTexture;
@@ -70,7 +70,7 @@ namespace Lightning
 		public:
 			Cube(float width = 1.0f, float height = 1.0f, float thickness = 1.0f);
 		protected:
-			void UpdateDrawCall(IRenderer*)override;
+			void UpdateDrawCommand(IRenderer*)override;
 			std::uint8_t *GetVertices() override { return sDataSource.vertices; }
 			std::uint16_t *GetIndices() override { return sDataSource.indices; }
 			Vector3f GetScale() override { return Vector3f{mWidth, mHeight, mThickness}; }
