@@ -168,9 +168,7 @@ namespace Lightning
 		void Renderer::CommitDrawCommand(const IDrawCommand* command)
 		{
 			assert(command != nullptr && "Draw command cannot be nullptr!");
-			auto immutableUnit = command->Commit();
-			//unit->AddRef();
-			mCurrentDrawCommandQueue->push_back(immutableUnit);
+			mCurrentDrawCommandQueue->push_back(command->Commit());
 		}
 
 		void Renderer::AddRenderPass(RenderPassType type)
