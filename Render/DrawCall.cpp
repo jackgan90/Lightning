@@ -2,8 +2,9 @@
 #include <algorithm>
 #include "Renderer.h"
 #include "DrawCall.h"
-#include "CommitedDrawCall.h"
+#include "CommittedDrawCall.h"
 #include "FrameMemoryAllocator.h"
+#include "Logger.h"
 #undef min
 #undef max
 
@@ -13,11 +14,7 @@ namespace Lightning
 	{
 		extern FrameMemoryAllocator g_RenderAllocator;
 		DrawCall::DrawCall()
-			: mIndexBuffer(nullptr)
-			, mMaterial(nullptr)
-			, mDepthStencilBuffer(nullptr)
-			/*, mVertexBuffers(sVertexBufferAllocator)*/
-			, mCustomRenderTargets(false)
+			: mCustomRenderTargets(false)
 			, mCustomDepthStencilBuffer(false)
 			, mCustomViewport(false)
 		{
@@ -247,9 +244,9 @@ namespace Lightning
 			DoReset();
 		}
 
-		ICommitedDrawCall* DrawCall::Commit()const
+		ICommittedDrawCall* DrawCall::Commit()const
 		{
-			auto clonedUnit = new (CommitedDrawCallPool::malloc()) CommitedDrawCall;
+			auto clonedUnit = new (CommittedDrawCallPool::malloc()) CommittedDrawCall;
 			clonedUnit->mPrimitiveType = GetPrimitiveType();
 			clonedUnit->mTransform = GetTransform();
 			clonedUnit->mViewMatrix = GetViewMatrix();
@@ -268,7 +265,7 @@ namespace Lightning
 
 			clonedUnit->mViewportCount = GetViewportCount();
 			clonedUnit->mViewportAndScissorRects = g_RenderAllocator.Allocate 
-				<CommitedDrawCall::ViewportAndScissorRect>(clonedUnit->mViewportCount);
+				<CommittedDrawCall::ViewportAndScissorRect>(clonedUnit->mViewportCount);
 			for (auto i = 0;i < clonedUnit->mViewportCount;++i)
 			{
 				GetViewportAndScissorRect(i, clonedUnit->mViewportAndScissorRects[i].viewport
@@ -277,7 +274,7 @@ namespace Lightning
 
 			clonedUnit->mVertexBufferCount = GetVertexBufferCount();
 			clonedUnit->mVertexBuffers = g_RenderAllocator.Allocate
-				<CommitedDrawCall::VertexBufferSlot>(clonedUnit->mVertexBufferCount);
+				<CommittedDrawCall::VertexBufferSlot>(clonedUnit->mVertexBufferCount);
 			for (auto i = 0;i < clonedUnit->mVertexBufferCount;++i)
 			{
 				GetVertexBuffer(i, clonedUnit->mVertexBuffers[i].slot, 
@@ -325,6 +322,8 @@ namespace Lightning
 		void DrawCall::Apply()
 		{
 			//DrawCall cannot apply
+			LOG_ERROR("Can't apply the draw call directly!Must invoke Commit and use Apply on CommittedDrawCall!");
+			assert(0);
 		}
 	}
 }

@@ -33,7 +33,7 @@ set(HEADERS IndexBuffer.h
 			DeferedRenderPass.h
 			FrameMemoryAllocator.h
 			DrawCall.h
-			CommitedDrawCall.h
+			CommittedDrawCall.h
 			RenderObjectCache.h)
 set(SOURCES Renderer.cpp
 			Device.cpp
@@ -48,7 +48,7 @@ set(SOURCES Renderer.cpp
 			FrameMemoryAllocator.cpp
 			DeferedRenderPass.cpp
 			DrawCall.cpp
-			CommitedDrawCall.cpp
+			CommittedDrawCall.cpp
 			RenderObjectCache.cpp)
 
 set(TYPES_HEADERS	Types/Color.h

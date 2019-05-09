@@ -6,11 +6,11 @@ namespace Lightning
 {
 	namespace Render
 	{
-		class CommitedDrawCall : public ICommitedDrawCall
+		class CommittedDrawCall : public ICommittedDrawCall
 		{
 		public:
-			CommitedDrawCall();
-			~CommitedDrawCall()override;
+			CommittedDrawCall();
+			~CommittedDrawCall()override;
 			PrimitiveType GetPrimitiveType()const override;
 			std::shared_ptr<IIndexBuffer> GetIndexBuffer()const override;
 			std::size_t GetVertexBufferCount()const override;
@@ -58,6 +58,6 @@ namespace Lightning
 			VertexBufferSlot* mVertexBuffers;
 			std::size_t mVertexBufferCount;
 		};
-		using CommitedDrawCallPool = boost::singleton_pool<CommitedDrawCall, sizeof(CommitedDrawCall)>;
+		using CommittedDrawCallPool = boost::singleton_pool<CommittedDrawCall, sizeof(CommittedDrawCall)>;
 	}
 }

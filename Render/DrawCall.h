@@ -41,7 +41,7 @@ namespace Lightning
 			void AddViewportAndScissorRect(const Viewport& viewport, const ScissorRect& scissorRect)override;
 			std::size_t GetViewportCount()const override;
 			void GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const override;
-			ICommitedDrawCall * Commit()const override;
+			ICommittedDrawCall * Commit()const override;
 			void Apply()override;
 			void Release()override;
 		private:

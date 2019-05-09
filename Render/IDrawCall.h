@@ -13,9 +13,9 @@ namespace Lightning
 	{
 		using namespace Foundation::Math;
 		//An immutable render unit.The unit is read-only,used for committed render unit.
-		struct ICommitedDrawCall
+		struct ICommittedDrawCall
 		{
-			virtual ~ICommitedDrawCall() = default;
+			virtual ~ICommittedDrawCall() = default;
 			virtual PrimitiveType GetPrimitiveType()const = 0;
 			virtual std::shared_ptr<IIndexBuffer> GetIndexBuffer()const = 0;
 			virtual std::size_t GetVertexBufferCount()const = 0;
@@ -38,7 +38,7 @@ namespace Lightning
 		//as long as it is not committed.After the unit is committed,any further operations that potentially
 		//change the object is a no-no.Such behavior usually cause undesired outcome.So don't try to reuse it
 		//after the commitment.You'd better call Release() after calling IRenderer::CommitDrawCall
-		struct IDrawCall : ICommitedDrawCall
+		struct IDrawCall : ICommittedDrawCall
 		{
 			virtual void SetPrimitiveType(PrimitiveType type) = 0;
 			virtual void SetIndexBuffer(const std::shared_ptr<IIndexBuffer>& indexBuffer) = 0;
@@ -55,7 +55,7 @@ namespace Lightning
 			//Viewport and scissorRect must be set atomic
 			virtual void AddViewportAndScissorRect(const Viewport& viewport, const ScissorRect& scissorRect) = 0;
 			virtual void Reset() = 0;
-			virtual ICommitedDrawCall* Commit()const = 0;
+			virtual ICommittedDrawCall* Commit()const = 0;
 		};
 
 		//DrawCallQueue is a very important concept.Every drawable object will encode there data to a DrawCall struct.
@@ -64,6 +64,6 @@ namespace Lightning
 		//queue won't be cleared until next time the renderer renders to the same swap chain,which ensures the 
 		//render resource validation during this frame(render resources won't be deleted because a render unit
 		//holds all shared_ptr referring to them).
-		using DrawCallQueue = std::vector<ICommitedDrawCall*>;
+		using DrawCallQueue = std::vector<ICommittedDrawCall*>;
 	}
 }
