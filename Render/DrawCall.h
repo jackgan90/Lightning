@@ -3,17 +3,17 @@
 #include <boost/pool/pool_alloc.hpp>
 #include <tbb/scalable_allocator.h>
 #include "RefObject.h"
-#include "IRenderUnit.h"
+#include "IDrawCall.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		class RenderUnit : public IRenderUnit
+		class DrawCall : public IDrawCall
 		{
 		public:
-			RenderUnit();
-			~RenderUnit()override;
+			DrawCall();
+			~DrawCall()override;
 			void SetPrimitiveType(PrimitiveType type)override;
 			PrimitiveType GetPrimitiveType()const override;
 			void SetIndexBuffer(const std::shared_ptr<IIndexBuffer>& indexBuffer)override;
@@ -41,8 +41,8 @@ namespace Lightning
 			void AddViewportAndScissorRect(const Viewport& viewport, const ScissorRect& scissorRect)override;
 			std::size_t GetViewportCount()const override;
 			void GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const override;
-			IImmutableRenderUnit * Clone()const override;
-			void Commit()override;
+			ICommitedDrawCall * Commit()const override;
+			void Apply()override;
 			void Release()override;
 		private:
 			//using VertexBufferAllocatorType = boost::pool_allocator<std::pair<const std::size_t, IVertexBuffer*>>;
@@ -75,6 +75,6 @@ namespace Lightning
 			bool mCustomViewport;
 			//static VertexBufferAllocatorType sVertexBufferAllocator;
 		};
-		using RenderUnitPool = boost::singleton_pool<RenderUnit, sizeof(RenderUnit)>;
+		using DrawCallPool = boost::singleton_pool<DrawCall, sizeof(DrawCall)>;
 	}
 }

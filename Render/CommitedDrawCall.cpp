@@ -1,4 +1,4 @@
-#include "ImmutableRenderUnit.h"
+#include "CommitedDrawCall.h"
 #include "FrameMemoryAllocator.h"
 #include "ShaderParameter.h"
 #include "Renderer.h"
@@ -9,12 +9,12 @@ namespace Lightning
 	namespace Render
 	{
 		extern FrameMemoryAllocator g_RenderAllocator;
-		ImmutableRenderUnit::ImmutableRenderUnit()
+		CommitedDrawCall::CommitedDrawCall()
 		{
 
 		}
 
-		ImmutableRenderUnit::~ImmutableRenderUnit()
+		CommitedDrawCall::~CommitedDrawCall()
 		{
 			mIndexBuffer.reset();
 			for (auto i = 0;i < mVertexBufferCount;++i)
@@ -23,80 +23,80 @@ namespace Lightning
 			}
 		}
 
-		PrimitiveType ImmutableRenderUnit::GetPrimitiveType()const
+		PrimitiveType CommitedDrawCall::GetPrimitiveType()const
 		{
 			return mPrimitiveType;
 		}
 
-		std::shared_ptr<IIndexBuffer> ImmutableRenderUnit::GetIndexBuffer()const
+		std::shared_ptr<IIndexBuffer> CommitedDrawCall::GetIndexBuffer()const
 		{
 			return mIndexBuffer;
 		}
 
-		std::size_t ImmutableRenderUnit::GetVertexBufferCount()const
+		std::size_t CommitedDrawCall::GetVertexBufferCount()const
 		{
 			return mVertexBufferCount;
 		}
 
-		void ImmutableRenderUnit::GetVertexBuffer(std::size_t index, std::size_t& slot, std::shared_ptr<IVertexBuffer>& vertexBuffer)const
+		void CommitedDrawCall::GetVertexBuffer(std::size_t index, std::size_t& slot, std::shared_ptr<IVertexBuffer>& vertexBuffer)const
 		{
 			slot = mVertexBuffers[index].slot;
 			vertexBuffer = mVertexBuffers[index].vertexBuffer;
 		}
 
-		std::shared_ptr<IMaterial> ImmutableRenderUnit::GetMaterial()const
+		std::shared_ptr<IMaterial> CommitedDrawCall::GetMaterial()const
 		{
 			return mMaterial;
 		}
 
-		const Transform& ImmutableRenderUnit::GetTransform()const
+		const Transform& CommitedDrawCall::GetTransform()const
 		{
 			return mTransform;
 		}
 
-		const Matrix4f& ImmutableRenderUnit::GetViewMatrix()const
+		const Matrix4f& CommitedDrawCall::GetViewMatrix()const
 		{
 			return mViewMatrix;
 		}
 
-		const Matrix4f& ImmutableRenderUnit::GetProjectionMatrix()const
+		const Matrix4f& CommitedDrawCall::GetProjectionMatrix()const
 		{
 			return mProjectionMatrix;
 		}
 
-		std::shared_ptr<IRenderTarget> ImmutableRenderUnit::GetRenderTarget(std::size_t index)const
+		std::shared_ptr<IRenderTarget> CommitedDrawCall::GetRenderTarget(std::size_t index)const
 		{
 			return mRenderTargets[index];
 		}
 
-		std::size_t ImmutableRenderUnit::GetRenderTargetCount()const
+		std::size_t CommitedDrawCall::GetRenderTargetCount()const
 		{
 			return mRenderTargets.size();
 		}
 
-		std::shared_ptr<IDepthStencilBuffer> ImmutableRenderUnit::GetDepthStencilBuffer()const
+		std::shared_ptr<IDepthStencilBuffer> CommitedDrawCall::GetDepthStencilBuffer()const
 		{
 			return mDepthStencilBuffer;
 		}
 
-		std::size_t ImmutableRenderUnit::GetViewportCount()const
+		std::size_t CommitedDrawCall::GetViewportCount()const
 		{
 			return mViewportCount;
 		}
 
-		void ImmutableRenderUnit::GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const
+		void CommitedDrawCall::GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const
 		{
 			viewport = mViewportAndScissorRects[index].viewport;
 			scissorRect = mViewportAndScissorRects[index].scissorRect;
 		}
 
-		void ImmutableRenderUnit::Release()
+		void CommitedDrawCall::Release()
 		{
-			this->~ImmutableRenderUnit();
-			ImmutableRenderUnitPool::free(this);
+			this->~CommitedDrawCall();
+			CommitedDrawCallPool::free(this);
 		}
 
-		void ImmutableRenderUnit::Commit()
+		void CommitedDrawCall::Apply()
 		{
 			CommitShaderParameters();
 			CommitPipelineStates();
@@ -104,7 +104,7 @@ namespace Lightning
 			Draw();
 		}
 
-		void ImmutableRenderUnit::CommitShaderParameters()
+		void CommitedDrawCall::CommitShaderParameters()
 		{
 			auto material = GetMaterial();
 			if (!material)
@@ -131,7 +131,7 @@ namespace Lightning
 			}
 		}
 
-		void ImmutableRenderUnit::CommitPipelineStates()
+		void CommitedDrawCall::CommitPipelineStates()
 		{
 			PipelineState state;
 			state.Reset();
@@ -184,7 +184,7 @@ namespace Lightning
 			renderer->ApplyScissorRects(scissorRects, viewportCount);
 		}
 
-		void ImmutableRenderUnit::CommitBuffers()
+		void CommitedDrawCall::CommitBuffers()
 		{
 			auto renderer = Renderer::Instance();
 			auto vertexBufferCount = GetVertexBufferCount();
@@ -204,7 +204,7 @@ namespace Lightning
 			}
 		}
 
-		void ImmutableRenderUnit::Draw()
+		void CommitedDrawCall::Draw()
 		{
 			auto renderer = Renderer::Instance();
 			auto indexBuffer = GetIndexBuffer();
@@ -222,7 +222,7 @@ namespace Lightning
 			}
 		}
 
-		void ImmutableRenderUnit::CommitSemanticUniforms(IShader* shader)
+		void CommitedDrawCall::CommitSemanticUniforms(IShader* shader)
 		{
 			auto renderer = Renderer::Instance();
 			RenderSemantics* semantics{ nullptr };
@@ -250,7 +250,7 @@ namespace Lightning
 			}
 		}
 
-		void ImmutableRenderUnit::GetInputLayouts(std::vector<VertexInputLayout>& inputLayouts)
+		void CommitedDrawCall::GetInputLayouts(std::vector<VertexInputLayout>& inputLayouts)
 		{
 			for (std::size_t i = 0;i < mVertexBufferCount;i++)
 			{

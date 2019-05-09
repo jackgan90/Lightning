@@ -1,16 +1,16 @@
 #pragma once
 #include <boost/pool/singleton_pool.hpp>
-#include "IRenderUnit.h"
+#include "IDrawCall.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
-		class ImmutableRenderUnit : public IImmutableRenderUnit
+		class CommitedDrawCall : public ICommitedDrawCall
 		{
 		public:
-			ImmutableRenderUnit();
-			~ImmutableRenderUnit()override;
+			CommitedDrawCall();
+			~CommitedDrawCall()override;
 			PrimitiveType GetPrimitiveType()const override;
 			std::shared_ptr<IIndexBuffer> GetIndexBuffer()const override;
 			std::size_t GetVertexBufferCount()const override;
@@ -24,7 +24,7 @@ namespace Lightning
 			std::shared_ptr<IDepthStencilBuffer> GetDepthStencilBuffer()const override;
 			std::size_t GetViewportCount()const override;
 			void GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const override;
-			void Commit()override;
+			void Apply()override;
 			void Release()override;
 		private:
 			void CommitBuffers();
@@ -44,7 +44,7 @@ namespace Lightning
 				std::shared_ptr<IVertexBuffer> vertexBuffer;
 				std::size_t slot;
 			};
-			friend class RenderUnit;
+			friend class DrawCall;
 			PrimitiveType mPrimitiveType;
 			Transform mTransform;		//position rotation scale
 			Matrix4f mViewMatrix;		//camera view matrix
@@ -58,6 +58,6 @@ namespace Lightning
 			VertexBufferSlot* mVertexBuffers;
 			std::size_t mVertexBufferCount;
 		};
-		using ImmutableRenderUnitPool = boost::singleton_pool<ImmutableRenderUnit, sizeof(ImmutableRenderUnit)>;
+		using CommitedDrawCallPool = boost::singleton_pool<CommitedDrawCall, sizeof(CommitedDrawCall)>;
 	}
 }

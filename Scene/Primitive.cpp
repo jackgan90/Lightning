@@ -24,16 +24,16 @@ namespace Lightning
 		using Render::ShaderParameter;
 		extern Plugins::IRenderPlugin* gRenderPlugin;
 
-		Primitive::Primitive():mShouldUpdateRenderUnit(true)
-			,mColor{0, 0, 0, 255}, mTexture(nullptr), mRenderUnit(nullptr)
+		Primitive::Primitive():mDrawCallDirty(true)
+			,mColor{0, 0, 0, 255}, mTexture(nullptr), mDrawCall(nullptr)
 		{
 
 		}
 
 		Primitive::~Primitive()
 		{
-			if (mRenderUnit)
-				mRenderUnit->Release();
+			if (mDrawCall)
+				mDrawCall->Release();
 		}
 
 		void Primitive::SetColor(const Color32& color)
@@ -81,7 +81,7 @@ namespace Lightning
 			{
 				mTextureName = name;
 				mTexture = texture;
-				mShouldUpdateRenderUnit = true;
+				mDrawCallDirty = true;
 			}
 		}
 
@@ -89,7 +89,7 @@ namespace Lightning
 		{
 			mSamplerStateName = name;
 			mSamplerState = state;
-			mShouldUpdateRenderUnit = true;
+			mDrawCallDirty = true;
 		}
 
 		void Primitive::SetShader(const std::shared_ptr<IShader>& shader)
@@ -113,24 +113,24 @@ namespace Lightning
 
 		void Primitive::Draw(IRenderer* renderer, const SceneRenderData& sceneRenderData)
 		{
-			if (mShouldUpdateRenderUnit)
+			if (mDrawCallDirty)
 			{
-				UpdateRenderUnit(renderer);
-				mShouldUpdateRenderUnit = false;
+				UpdateDrawCall(renderer);
+				mDrawCallDirty = false;
 			}
 			if (sceneRenderData.camera)
 			{
-				mRenderUnit->SetViewMatrix(sceneRenderData.camera->GetViewMatrix());
-				mRenderUnit->SetProjectionMatrix(sceneRenderData.camera->GetProjectionMatrix());
+				mDrawCall->SetViewMatrix(sceneRenderData.camera->GetViewMatrix());
+				mDrawCall->SetProjectionMatrix(sceneRenderData.camera->GetProjectionMatrix());
 			}
-			renderer->CommitRenderUnit(mRenderUnit);
+			renderer->CommitDrawCall(mDrawCall);
 		}
 
-		void Primitive::UpdateRenderUnit(IRenderer* renderer)
+		void Primitive::UpdateDrawCall(IRenderer* renderer)
 		{
-			if (mRenderUnit)
-				mRenderUnit->Release();
-			mRenderUnit = renderer->CreateRenderUnit();
+			if (mDrawCall)
+				mDrawCall->Release();
+			mDrawCall = renderer->NewDrawCall();
 			Render::VertexDescriptor descriptor;
 			std::vector<Render::VertexComponent> components;
 			Render::VertexComponent compPosition;
@@ -154,9 +154,9 @@ namespace Lightning
 			descriptor.components = &components[0];
 			descriptor.componentCount = components.size();
 			auto vertexBuffer = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(vbSize), descriptor);
-			mRenderUnit->SetVertexBuffer(0, vertexBuffer);
+			mDrawCall->SetVertexBuffer(0, vertexBuffer);
 			auto indexBuffer = pDevice->CreateIndexBuffer(static_cast<std::uint32_t>(ibSize), Render::IndexType::UINT16);
-			mRenderUnit->SetIndexBuffer(indexBuffer);
+			mDrawCall->SetIndexBuffer(indexBuffer);
 			
 			
 			auto vertices = GetVertices();
@@ -171,7 +171,7 @@ namespace Lightning
 			std::memcpy(mem, indices, ibSize);
 			indexBuffer->Unlock(0, ibSize);
 
-			mRenderUnit->SetPrimitiveType(Render::PrimitiveType::TRIANGLE_LIST);
+			mDrawCall->SetPrimitiveType(Render::PrimitiveType::TRIANGLE_LIST);
 			
 			auto material = gRenderPlugin->CreateMaterial();
 			std::shared_ptr<IShader> vs, ps;
@@ -208,9 +208,9 @@ namespace Lightning
 			}
 
 			material->EnableBlend(mColor.a != 0xff);
-			mRenderUnit->SetMaterial(material);
+			mDrawCall->SetMaterial(material);
 			mTransform.SetScale(GetScale());
-			mRenderUnit->SetTransform(mTransform);
+			mDrawCall->SetTransform(mTransform);
 		}
 
 		
@@ -293,9 +293,9 @@ namespace Lightning
 			assert(mWidth > 0 && mHeight > 0 && mThickness > 0 && "The size of the cube must be greater than 0!");
 		}
 
-		void Cube::UpdateRenderUnit(IRenderer* renderer)
+		void Cube::UpdateDrawCall(IRenderer* renderer)
 		{
-			Primitive::UpdateRenderUnit(renderer);
+			Primitive::UpdateDrawCall(renderer);
 			if (mTexture)
 			{
 				//generate uv
@@ -313,7 +313,7 @@ namespace Lightning
 				descriptor.components = &components[0];
 				descriptor.componentCount = components.size();
 				auto vertexBuffer = pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(uvBufferSize), descriptor);
-				mRenderUnit->SetVertexBuffer(1, vertexBuffer);
+				mDrawCall->SetVertexBuffer(1, vertexBuffer);
 				auto uv = reinterpret_cast<Vector2f*>(vertexBuffer->Lock(0, uvBufferSize));
 				for (auto i = 0;i < 24;i += 4)
 				{

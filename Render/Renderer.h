@@ -16,9 +16,9 @@ namespace Lightning
 			IRenderFence *fence{ nullptr };
 			std::uint64_t frame{ 0 };
 			std::shared_ptr<IDepthStencilBuffer> defaultDepthStencilBuffer;
-			RenderQueue* renderQueue{ nullptr };
+			DrawCallQueue* drawCallQueue{ nullptr };
 
-			void ReleaseRenderQueue();
+			void ReleaseDrawCallQueue();
 			void OnFrameBegin();
 			void Release();
 		};
@@ -34,8 +34,8 @@ namespace Lightning
 			//return the current frame index
 			std::uint64_t GetCurrentFrameCount()const override;
 			void SetClearColor(float r, float g, float b, float a)override;
-			IRenderUnit* CreateRenderUnit()override;
-			void CommitRenderUnit(const IRenderUnit* item)override;
+			IDrawCall* NewDrawCall()override;
+			void CommitDrawCall(const IDrawCall* item)override;
 			//TODO there can be multiple render passes in effect simultaneously,should change it
 			void AddRenderPass(RenderPassType type)override;
 			std::size_t GetFrameResourceIndex()const override;
@@ -65,7 +65,7 @@ namespace Lightning
 			virtual RenderPass* CreateRenderPass(RenderPassType type);
 			virtual bool CheckIfDepthStencilBufferNeedsResize();
 			void ApplyRenderPasses();
-			void SwitchRenderQueue();
+			void SwitchDrawCallQueue();
 		protected:
 			struct SemanticInfo
 			{
@@ -90,9 +90,9 @@ namespace Lightning
 			std::size_t mFrameResourceIndex;
 			bool mStarted;
 			std::uint64_t mFrameCount;
-			std::size_t mRenderQueueIndex;
-			RenderQueue mRenderQueues[RENDER_FRAME_COUNT + 1];
-			RenderQueue* mCurrentFrameRenderQueue;
+			std::size_t mDrawCallQueueIndex;
+			DrawCallQueue mDrawCallQueues[RENDER_FRAME_COUNT + 1];
+			DrawCallQueue* mCurrentDrawCallQueue;
 		};
 	}
 }
