@@ -14,7 +14,6 @@ namespace Lightning
 				[&q, this](const tbb::blocked_range<std::size_t>& range) {
 				for (std::size_t i = range.begin(); i != range.end();++i)
 				{
-					const auto unit = q[i];
 					q[i]->Apply();
 				}
 			});
