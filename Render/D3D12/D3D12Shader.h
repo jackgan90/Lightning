@@ -48,6 +48,7 @@ namespace Lightning
 			~D3D12Shader()override;
 			std::size_t GetParameterCount()const override;
 			bool SetParameter(const IShaderParameter& parameter) override;
+			ShaderParameterType GetParameterType(const std::string& name)const override;
 			void Compile()override;
 			void GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount)override;
 			void* GetByteCodeBuffer()const;
@@ -68,11 +69,15 @@ namespace Lightning
 				const std::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC>&);
 			void InitTextureRootParameter(const std::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC>&);
 			void InitSamplerStateParameter(const std::unordered_map<std::string, D3D12_SHADER_INPUT_BIND_DESC>&);
+			static ShaderParameterType GetParameterType(const D3D12_SHADER_TYPE_DESC& desc);
 		private:
 			struct ParameterInfo
 			{
+				//For constant buffer,the index is constant buffer index, for texture and sampler,the index is texture/sampler index
 				UINT index;
+				//For constant buffer,the offset is Bytes from constant buffer start,for texture/sampler,this field is unused.
 				UINT offset;
+				ShaderParameterType parameterType;
 			};
 			struct ConstantBufferInfo
 			{

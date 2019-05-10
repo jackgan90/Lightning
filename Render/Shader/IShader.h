@@ -32,6 +32,7 @@ namespace Lightning
 			virtual void Compile() = 0;
 			virtual std::string GetName()const = 0;
 			virtual bool SetParameter(const IShaderParameter& parameter) = 0;
+			virtual ShaderParameterType GetParameterType(const std::string& name)const = 0;
 			virtual std::string GetSource()const = 0;
 			virtual void GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount) = 0;
 			virtual std::size_t GetHash()const = 0;

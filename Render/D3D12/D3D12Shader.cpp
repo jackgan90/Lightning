@@ -83,12 +83,16 @@ namespace Lightning
 					mTotalConstantBufferSize += bufferDesc.Size;
 					for (UINT j = 0; j < bufferDesc.Variables; j++)
 					{
-						ID3D12ShaderReflectionVariable* variableRefl = constantBufferRefl->GetVariableByIndex(j);
+						auto variableReflection = constantBufferRefl->GetVariableByIndex(j);
+						auto typeReflection = variableReflection->GetType();
 						D3D12_SHADER_VARIABLE_DESC shaderVarDesc;
-						variableRefl->GetDesc(&shaderVarDesc);
+						D3D12_SHADER_TYPE_DESC shaderTypeDesc;
+						variableReflection->GetDesc(&shaderVarDesc);
+						typeReflection->GetDesc(&shaderTypeDesc);
 						ParameterInfo info;
 						info.index = i;
 						info.offset = shaderVarDesc.StartOffset;
+						info.parameterType = GetParameterType(shaderTypeDesc);
 						mParameters[shaderVarDesc.Name] = info;
 						auto semantic = renderer->GetUniformSemantic(shaderVarDesc.Name);
 						if (semantic != RenderSemantics::UNKNOWN)
@@ -130,6 +134,7 @@ namespace Lightning
 					mDescriptorRanges.push_back(range);
 					ParameterInfo paramInfo;
 					paramInfo.index = mTextureParameterCount;
+					paramInfo.parameterType = ShaderParameterType::TEXTURE;
 					mParameters[desc.Name] = paramInfo;
 					++mTextureParameterCount;
 				}
@@ -154,10 +159,59 @@ namespace Lightning
 					mDescriptorRanges.push_back(range);
 					ParameterInfo paramInfo;
 					paramInfo.index = mSamplerStateParamCount;
+					paramInfo.parameterType = ShaderParameterType::SAMPLER;
 					mParameters[desc.Name] = paramInfo;
 					++mSamplerStateParamCount;
 				}
 			}
+		}
+
+		ShaderParameterType D3D12Shader::GetParameterType(const D3D12_SHADER_TYPE_DESC& desc)
+		{
+			if (desc.Class == D3D_SVC_MATRIX_COLUMNS || desc.Class == D3D_SVC_MATRIX_ROWS)
+			{
+				if (desc.Type == D3D_SVT_FLOAT)
+				{
+					if (desc.Rows == 4)
+					{
+						//TODO : Complement other types
+						switch (desc.Columns)
+						{
+						case 4:
+							return ShaderParameterType::MATRIX4X4F;
+						default:
+							break;
+						}
+					}
+				}
+			}
+			
+			if (desc.Class == D3D_SVC_VECTOR)
+			{
+				if (desc.Type == D3D_SVT_FLOAT)
+				{
+					switch (desc.Columns)
+					{
+					case 2:
+						return ShaderParameterType::FLOAT2;
+					case 3:
+						return ShaderParameterType::FLOAT3;
+					case 4:
+						return ShaderParameterType::FLOAT4;
+					default:
+						break;
+					}
+				}
+			}
+			
+			if (desc.Class == D3D_SVC_SCALAR)
+			{
+				if (desc.Type == D3D_SVT_FLOAT)
+				{
+					return ShaderParameterType::FLOAT;
+				}
+			}
+			return ShaderParameterType::UNKNOWN;
 		}
 
 		D3D12Shader::~D3D12Shader()
@@ -376,6 +430,14 @@ namespace Lightning
 				}
 			}
 			return false;
+		}
+
+		ShaderParameterType D3D12Shader::GetParameterType(const std::string& name)const
+		{
+			auto it = mParameters.find(name);
+			if (it == mParameters.end())
+				return ShaderParameterType::UNKNOWN;
+			return it->second.parameterType;
 		}
 
 		void D3D12Shader::Compile()

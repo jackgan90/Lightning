@@ -13,7 +13,7 @@ namespace Lightning
 			FLOAT2,
 			FLOAT3,
 			FLOAT4,
-			MATRIX4,
+			MATRIX4X4F,
 			TEXTURE,
 			SAMPLER,
 		};

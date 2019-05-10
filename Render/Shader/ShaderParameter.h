@@ -18,7 +18,7 @@ namespace Lightning
 			ShaderParameter(const std::string& name, const Vector2f& _v2) :mName(name), mType(ShaderParameterType::FLOAT2) { new (&v2)Vector2f(_v2); }
 			ShaderParameter(const std::string& name, const Vector3f& _v3) :mName(name), mType(ShaderParameterType::FLOAT3) { new (&v3)Vector3f(_v3); }
 			ShaderParameter(const std::string& name, const Vector4f& _v4) :mName(name), mType(ShaderParameterType::FLOAT4) { new (&v4)Vector4f(_v4); }
-			ShaderParameter(const std::string& name, const Matrix4f& _m4) :mName(name), mType(ShaderParameterType::MATRIX4) { new (&m4)Matrix4f(_m4); }
+			ShaderParameter(const std::string& name, const Matrix4f& _m4) :mName(name), mType(ShaderParameterType::MATRIX4X4F) { new (&m4)Matrix4f(_m4); }
 			ShaderParameter(const std::string& name, ITexture* _texture) :mName(name), mType(ShaderParameterType::TEXTURE) { texture = _texture; }
 			ShaderParameter(const std::string& name, const SamplerState& _state) :mName(name), mType(ShaderParameterType::SAMPLER) { samplerState = _state; }
 			ShaderParameter(const std::string& name, ShaderParameterType type, const void* buffer, std::size_t bufferSize) : mName(name), mType(type)
@@ -61,7 +61,7 @@ namespace Lightning
 				case ShaderParameterType::FLOAT4:
 					size = sizeof(v4);
 					return &v4;
-				case ShaderParameterType::MATRIX4:
+				case ShaderParameterType::MATRIX4X4F:
 					size = sizeof(m4);
 					return &m4;
 				case ShaderParameterType::TEXTURE:
