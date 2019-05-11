@@ -18,7 +18,7 @@ namespace Lightning
 			auto it = mShaders.find(type);
 			if (it == mShaders.end())
 				return nullptr;
-			return it->second.shader;
+			return it->second;
 		}
 
 		void Material::SetShader(ShaderType shaderType, const std::shared_ptr<IShader>& shader)
@@ -29,18 +29,13 @@ namespace Lightning
 				return;
 			}
 			assert(shaderType == shader->GetType() && "Mismatched shader types.");
-			mShaders[shader->GetType()].shader = shader;
+			mShaders[shader->GetType()] = shader;
 		}
 
-		bool Material::SetParameter(ShaderType type, const ShaderParameter& parameter)
+		bool Material::SetParameter(const Parameter& parameter)
 		{
-			auto it = mShaders.find(type);
-			if (it != mShaders.end())
-			{
-				it->second.parameters.push_back(parameter);
-				return true;
-			}
-			return false;
+			mParameters[parameter.GetName()] = parameter;
+			return true;
 		}
 
 		void Material::EnableBlend(bool enable)
@@ -54,23 +49,14 @@ namespace Lightning
 			mBlendState.destAlphaFactor = BlendFactor::INV_SRC_ALPHA;
 		}
 
-		std::size_t Material::GetParameterCount(ShaderType type)const
+		void Material::VisitParameters(std::function<void(const Parameter& parameter)> visitor)
 		{
-			auto it = mShaders.find(type);
-			if (it == mShaders.end())
-				return 0;
-			return it->second.parameters.size();
-		}
-
-		const ShaderParameter* Material::GetParameter(ShaderType type, std::size_t parameterIndex)const
-		{
-			auto it = mShaders.find(type);
-			if (it != mShaders.end())
+			if (!visitor)
+				return;
+			for (auto it = mParameters.cbegin(); it != mParameters.cend();++it)
 			{
-				return &it->second.parameters[parameterIndex];
+				visitor(it->second);
 			}
-			return nullptr;
 		}
-
 	}
 }

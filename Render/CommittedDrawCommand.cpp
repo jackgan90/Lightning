@@ -1,6 +1,6 @@
 #include "CommittedDrawCommand.h"
 #include "FrameMemoryAllocator.h"
-#include "ShaderParameter.h"
+#include "Parameter.h"
 #include "Renderer.h"
 #include "Logger.h"
 
@@ -106,26 +106,30 @@ namespace Lightning
 
 		void CommittedDrawCommand::CommitShaderParameters()
 		{
+			static const ShaderType shaderTypes[] =
+			{
+				ShaderType::VERTEX,
+				ShaderType::FRAGMENT,
+				ShaderType::GEOMETRY,
+				ShaderType::HULL,
+				ShaderType::DOMAIN
+			};
 			auto material = GetMaterial();
 			if (!material)
 				return;
-			static const ShaderType shaderTypes[] = { ShaderType::VERTEX, ShaderType::FRAGMENT, ShaderType::GEOMETRY,
-			ShaderType::HULL, ShaderType::DOMAIN };
 			auto renderer = Renderer::Instance();
 			for (auto shaderType : shaderTypes)
 			{
 				auto shader = material->GetShader(shaderType);
 				if (shader)
 				{
-					auto parameterCount = material->GetParameterCount(shaderType);
-					for (auto i = 0;i < parameterCount;++i)
-					{
-						auto parameter = material->GetParameter(shaderType, i);
-						if (parameter)
+					material->VisitParameters([&material, &shader](const Parameter& parameter) {
+						auto shaderParamType = shader->GetParameterType(parameter.GetName());
+						if (shaderParamType != ParameterType::UNKNOWN)
 						{
-							shader->SetParameter(*parameter);
+							shader->SetParameter(parameter);
 						}
-					}
+					});
 					CommitSemanticUniforms(shader.get());
 				}
 			}
@@ -240,7 +244,7 @@ namespace Lightning
 				{
 					//We know that transform.ToMatrix4 may change it's internal matrix
 					auto wvp = GetProjectionMatrix() * GetViewMatrix() * mTransform.GetMatrix();
-					shader->SetParameter(ShaderParameter(uniformName, wvp));
+					shader->SetParameter(Parameter(uniformName, wvp));
 					break;
 				}
 				default:

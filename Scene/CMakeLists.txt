@@ -41,6 +41,7 @@ include_directories(${CMAKE_SOURCE_DIR}/PluginSystem
 					${CMAKE_SOURCE_DIR}/Loader
 					${CMAKE_SOURCE_DIR}/Render/Types
 					${CMAKE_SOURCE_DIR}/Render/Shader
+					${CMAKE_SOURCE_DIR}/Render/Texture
 					${CMAKE_SOURCE_DIR}/Window
 					${CMAKE_SOURCE_DIR}/Entities
 					${CMAKE_SOURCE_DIR}/Foundation

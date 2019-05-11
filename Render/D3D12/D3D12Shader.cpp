@@ -134,7 +134,7 @@ namespace Lightning
 					mDescriptorRanges.push_back(range);
 					ParameterInfo paramInfo;
 					paramInfo.index = mTextureParameterCount;
-					paramInfo.parameterType = ShaderParameterType::TEXTURE;
+					paramInfo.parameterType = ParameterType::TEXTURE;
 					mParameters[desc.Name] = paramInfo;
 					++mTextureParameterCount;
 				}
@@ -159,14 +159,14 @@ namespace Lightning
 					mDescriptorRanges.push_back(range);
 					ParameterInfo paramInfo;
 					paramInfo.index = mSamplerStateParamCount;
-					paramInfo.parameterType = ShaderParameterType::SAMPLER;
+					paramInfo.parameterType = ParameterType::SAMPLER;
 					mParameters[desc.Name] = paramInfo;
 					++mSamplerStateParamCount;
 				}
 			}
 		}
 
-		ShaderParameterType D3D12Shader::GetParameterType(const D3D12_SHADER_TYPE_DESC& desc)
+		ParameterType D3D12Shader::GetParameterType(const D3D12_SHADER_TYPE_DESC& desc)
 		{
 			if (desc.Class == D3D_SVC_MATRIX_COLUMNS || desc.Class == D3D_SVC_MATRIX_ROWS)
 			{
@@ -178,7 +178,7 @@ namespace Lightning
 						switch (desc.Columns)
 						{
 						case 4:
-							return ShaderParameterType::MATRIX4X4F;
+							return ParameterType::MATRIX4X4F;
 						default:
 							break;
 						}
@@ -193,11 +193,11 @@ namespace Lightning
 					switch (desc.Columns)
 					{
 					case 2:
-						return ShaderParameterType::FLOAT2;
+						return ParameterType::FLOAT2;
 					case 3:
-						return ShaderParameterType::FLOAT3;
+						return ParameterType::FLOAT3;
 					case 4:
-						return ShaderParameterType::FLOAT4;
+						return ParameterType::FLOAT4;
 					default:
 						break;
 					}
@@ -208,10 +208,10 @@ namespace Lightning
 			{
 				if (desc.Type == D3D_SVT_FLOAT)
 				{
-					return ShaderParameterType::FLOAT;
+					return ParameterType::FLOAT;
 				}
 			}
-			return ShaderParameterType::UNKNOWN;
+			return ParameterType::UNKNOWN;
 		}
 
 		D3D12Shader::~D3D12Shader()
@@ -392,10 +392,10 @@ namespace Lightning
 			return mDesc.BoundResources;
 		}
 
-		bool D3D12Shader::SetParameter(const ShaderParameter& parameter)
+		bool D3D12Shader::SetParameter(const Parameter& parameter)
 		{
 			auto parameterType = parameter.GetType();
-			if (parameterType == ShaderParameterType::UNKNOWN)
+			if (parameterType == ParameterType::UNKNOWN)
 			{
 				LOG_WARNING("Unknown shader parameter type when set shader {0}", mName.c_str());
 				return false;
@@ -405,7 +405,7 @@ namespace Lightning
 			std::size_t size{ 0 };
 			auto parameterBuffer = parameter.Buffer(size);
 			InitResourceProxy();
-			if (parameterType == ShaderParameterType::TEXTURE)
+			if (parameterType == ParameterType::TEXTURE)
 			{
 				auto texture = *reinterpret_cast<ITexture**>(const_cast<void*>(parameterBuffer));
 				assert(texture != nullptr && "Encounter null texture!");
@@ -413,7 +413,7 @@ namespace Lightning
 				mResourceProxy->SetTexture(it->second.index, static_cast<D3D12Texture*>(texture));
 				return true;
 			}
-			else if (parameterType == ShaderParameterType::SAMPLER)
+			else if (parameterType == ParameterType::SAMPLER)
 			{
 				auto pSamplerState = reinterpret_cast<const SamplerState*>(parameterBuffer);
 				mResourceProxy->SetSamplerState(it->second.index, *pSamplerState);
@@ -432,11 +432,11 @@ namespace Lightning
 			return false;
 		}
 
-		ShaderParameterType D3D12Shader::GetParameterType(const std::string& name)const
+		ParameterType D3D12Shader::GetParameterType(const std::string& name)const
 		{
 			auto it = mParameters.find(name);
 			if (it == mParameters.end())
-				return ShaderParameterType::UNKNOWN;
+				return ParameterType::UNKNOWN;
 			return it->second.parameterType;
 		}
 

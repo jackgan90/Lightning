@@ -61,6 +61,7 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/Render
 					${CMAKE_SOURCE_DIR}/Render/Types
 					${CMAKE_SOURCE_DIR}/Render/Shader
+					${CMAKE_SOURCE_DIR}/Render/Texture
 					${CMAKE_SOURCE_DIR}/Window
 					${CMAKE_SOURCE_DIR}/Utilities
 					${CMAKE_SOURCE_DIR}/Scene

@@ -6,7 +6,7 @@
 #include "Math/Matrix.h"
 #include "Math/Vector.h"
 #include "IShaderMacros.h"
-#include "ShaderParameter.h"
+#include "Parameter.h"
 #undef DOMAIN
 
 namespace Lightning
@@ -31,8 +31,8 @@ namespace Lightning
 			virtual std::size_t GetParameterCount()const = 0;
 			virtual void Compile() = 0;
 			virtual std::string GetName()const = 0;
-			virtual bool SetParameter(const ShaderParameter& parameter) = 0;
-			virtual ShaderParameterType GetParameterType(const std::string& name)const = 0;
+			virtual bool SetParameter(const Parameter& parameter) = 0;
+			virtual ParameterType GetParameterType(const std::string& name)const = 0;
 			virtual std::string GetSource()const = 0;
 			virtual void GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount) = 0;
 			virtual std::size_t GetHash()const = 0;

@@ -3,7 +3,7 @@
 #include "Semantics.h"
 #include "IMaterial.h"
 #include "RefObject.h"
-#include "ShaderParameter.h"
+#include "Parameter.h"
 
 namespace Lightning
 {
@@ -16,20 +16,13 @@ namespace Lightning
 			~Material()override;
 			void SetShader(ShaderType shaderType, const std::shared_ptr<IShader>& shader)override;
 			std::shared_ptr<IShader> GetShader(ShaderType type)override;
-			bool SetParameter(ShaderType type, const ShaderParameter& parameter)override;
+			bool SetParameter(const Parameter& parameter)override;
 			void EnableBlend(bool enable)override;
 			void GetBlendState(BlendState& state)const override{ state = mBlendState; }
-			std::size_t GetParameterCount(ShaderType type)const override;
-			const ShaderParameter* GetParameter(ShaderType type, std::size_t parameterIndex)const override;
+			void VisitParameters(std::function<void(const Parameter& parameter)> visitor)override;
 		protected:
-			struct ShaderParameters
-			{
-				std::shared_ptr<IShader> shader;
-				std::vector<ShaderParameter> parameters;
-			};
-			using ShaderParametersCache = std::unordered_map<ShaderType, ShaderParameters>;
-
-			ShaderParametersCache mShaders;
+			std::unordered_map<ShaderType, std::shared_ptr<IShader>> mShaders;
+			std::unordered_map<std::string, Parameter> mParameters;
 			BlendState mBlendState;
 		};
 	}

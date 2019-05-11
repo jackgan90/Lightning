@@ -7,7 +7,7 @@
 #include "Primitive.h"
 #include "IPluginManager.h"
 #include "IRenderPlugin.h"
-#include "ShaderParameter.h"
+#include "Parameter.h"
 
 namespace Lightning
 {
@@ -21,7 +21,7 @@ namespace Lightning
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Vector4f;
 		using Foundation::Math::DegreesToRadians;
-		using Render::ShaderParameter;
+		using Render::ParameterType;
 		extern Plugins::IRenderPlugin* gRenderPlugin;
 
 		Primitive::Primitive():mDrawCommandDirty(true)
@@ -197,14 +197,11 @@ namespace Lightning
 			}
 			float a, r, g, b;
 			GetColor(a, r, g, b);
-			ShaderParameter paramColor("color", Vector4f{ r, g, b, a });
-			ShaderParameter paramLight("light", Vector3f{ 3, 3, 3 });
-			material->SetParameter(Render::ShaderType::FRAGMENT, paramColor);
-			material->SetParameter(Render::ShaderType::FRAGMENT, paramLight);
+			material->SetParameter("color", Vector4f{ r, g, b, a });
+			material->SetParameter("light", Vector3f{ 3, 3, 3 });
 			if (mTexture)
 			{
-				ShaderParameter paramTexture(mTextureName.c_str(), mTexture.get());
-				material->SetParameter(Render::ShaderType::FRAGMENT, paramTexture);
+				material->SetParameter(mTextureName, mTexture.get());
 			}
 
 			material->EnableBlend(mColor.a != 0xff);

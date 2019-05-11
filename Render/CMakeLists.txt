@@ -51,10 +51,10 @@ set(SOURCES Renderer.cpp
 			RenderObjectCache.cpp)
 
 set(TYPES_HEADERS	Types/Color.h
-					Types/Rect.h)
+					Types/Rect.h
+					Types/Parameter.h)
 
 set(SHADER_HEADERS	Shader/Shader.h
-					Shader/ShaderParameter.h
 					Shader/ShaderMacros.h)
 set(SHADER_SOURCES	Shader/ShaderMacros.cpp
 					Shader/Shader.cpp)
