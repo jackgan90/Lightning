@@ -19,7 +19,7 @@ namespace Lightning
 			bool SetParameter(const Parameter& parameter)override;
 			void EnableBlend(bool enable)override;
 			void GetBlendState(BlendState& state)const override{ state = mBlendState; }
-			void VisitParameters(std::function<void(const Parameter& parameter)> visitor)override;
+			void VisitParameters(std::function<void(const Parameter& parameter)> visitor)const override;
 		protected:
 			std::unordered_map<ShaderType, std::shared_ptr<IShader>> mShaders;
 			std::unordered_map<std::string, Parameter> mParameters;

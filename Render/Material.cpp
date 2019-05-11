@@ -49,7 +49,7 @@ namespace Lightning
 			mBlendState.destAlphaFactor = BlendFactor::INV_SRC_ALPHA;
 		}
 
-		void Material::VisitParameters(std::function<void(const Parameter& parameter)> visitor)
+		void Material::VisitParameters(std::function<void(const Parameter& parameter)> visitor)const
 		{
 			if (!visitor)
 				return;
