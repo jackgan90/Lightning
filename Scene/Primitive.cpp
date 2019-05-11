@@ -181,19 +181,19 @@ namespace Lightning
 					vs = shader;
 				if (shader->GetType() == Render::ShaderType::FRAGMENT)
 					ps = shader;
-				material->SetShader(shader);
+				material->SetShader(shader->GetType(), shader);
 			}
 			if (!vs)
 			{
 				vs = pDevice->GetDefaultShader(Render::ShaderType::VERTEX);
 				mShaders.push_back(vs);
-				material->SetShader(vs);
+				material->SetShader(vs->GetType(), vs);
 			}
 			if (!ps)
 			{
 				ps = pDevice->GetDefaultShader(Render::ShaderType::FRAGMENT);
 				mShaders.push_back(ps);
-				material->SetShader(ps);
+				material->SetShader(ps->GetType(), ps);
 			}
 			float a, r, g, b;
 			GetColor(a, r, g, b);

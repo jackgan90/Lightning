@@ -21,23 +21,15 @@ namespace Lightning
 			return it->second.shader;
 		}
 
-		void Material::SetShader(const std::shared_ptr<IShader>& shader)
+		void Material::SetShader(ShaderType shaderType, const std::shared_ptr<IShader>& shader)
 		{
 			if (!shader)
-				return;
-			ResetShader(shader->GetType());
-			mShaders[shader->GetType()].shader = shader;
-		}
-
-		bool Material::ResetShader(ShaderType type)
-		{
-			auto it = mShaders.find(type);
-			if (it != mShaders.end())
 			{
-				mShaders.erase(it);
-				return true;
+				mShaders.erase(shaderType);
+				return;
 			}
-			return false;
+			assert(shaderType == shader->GetType() && "Mismatched shader types.");
+			mShaders[shader->GetType()].shader = shader;
 		}
 
 		bool Material::SetParameter(ShaderType type, const ShaderParameter& parameter)

@@ -14,8 +14,7 @@ namespace Lightning
 		public:
 			Material();
 			~Material()override;
-			void SetShader(const std::shared_ptr<IShader>& shader)override;
-			bool ResetShader(ShaderType type)override;
+			void SetShader(ShaderType shaderType, const std::shared_ptr<IShader>& shader)override;
 			std::shared_ptr<IShader> GetShader(ShaderType type)override;
 			bool SetParameter(ShaderType type, const ShaderParameter& parameter)override;
 			void EnableBlend(bool enable)override;

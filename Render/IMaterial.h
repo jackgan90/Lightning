@@ -10,9 +10,7 @@ namespace Lightning
 		{
 			virtual ~IMaterial() = default;
 			//set shader used by this material
-			virtual void SetShader(const std::shared_ptr<IShader>& shader) = 0;
-			//reset shader of specific type used by this material(reverse operation of SetShader)
-			virtual bool ResetShader(ShaderType) = 0;
+			virtual void SetShader(ShaderType shaderType, const std::shared_ptr<IShader>& shader) = 0;
 			virtual std::shared_ptr<IShader> GetShader(ShaderType) = 0;
 			virtual bool SetParameter(ShaderType type, const ShaderParameter& parameter) = 0;
 			virtual void EnableBlend(bool enable) = 0;
