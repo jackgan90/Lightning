@@ -17,11 +17,11 @@ namespace Lightning
 			void SetShader(const std::shared_ptr<IShader>& shader)override;
 			bool ResetShader(ShaderType type)override;
 			std::shared_ptr<IShader> GetShader(ShaderType type)override;
-			bool SetParameter(ShaderType type, const IShaderParameter* parameter)override;
+			bool SetParameter(ShaderType type, const ShaderParameter& parameter)override;
 			void EnableBlend(bool enable)override;
 			void GetBlendState(BlendState& state)const override{ state = mBlendState; }
 			std::size_t GetParameterCount(ShaderType type)const override;
-			const IShaderParameter* GetParameter(ShaderType type, std::size_t parameterIndex)const override;
+			const ShaderParameter* GetParameter(ShaderType type, std::size_t parameterIndex)const override;
 		protected:
 			struct ShaderParameters
 			{

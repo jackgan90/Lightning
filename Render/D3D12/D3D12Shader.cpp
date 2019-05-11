@@ -392,7 +392,7 @@ namespace Lightning
 			return mDesc.BoundResources;
 		}
 
-		bool D3D12Shader::SetParameter(const IShaderParameter& parameter)
+		bool D3D12Shader::SetParameter(const ShaderParameter& parameter)
 		{
 			auto parameterType = parameter.GetType();
 			if (parameterType == ShaderParameterType::UNKNOWN)
@@ -407,7 +407,7 @@ namespace Lightning
 			InitResourceProxy();
 			if (parameterType == ShaderParameterType::TEXTURE)
 			{
-				auto texture = const_cast<ITexture*>(reinterpret_cast<const ITexture*>(parameterBuffer));
+				auto texture = *reinterpret_cast<ITexture**>(const_cast<void*>(parameterBuffer));
 				assert(texture != nullptr && "Encounter null texture!");
 				texture->Commit();
 				mResourceProxy->SetTexture(it->second.index, static_cast<D3D12Texture*>(texture));
@@ -415,7 +415,7 @@ namespace Lightning
 			}
 			else if (parameterType == ShaderParameterType::SAMPLER)
 			{
-				auto pSamplerState = reinterpret_cast<const SamplerState*>(parameter.Buffer(size));
+				auto pSamplerState = reinterpret_cast<const SamplerState*>(parameterBuffer);
 				mResourceProxy->SetSamplerState(it->second.index, *pSamplerState);
 				return true;
 			}

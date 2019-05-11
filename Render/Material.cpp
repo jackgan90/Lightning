@@ -40,18 +40,12 @@ namespace Lightning
 			return false;
 		}
 
-		bool Material::SetParameter(ShaderType type, const IShaderParameter* parameter)
+		bool Material::SetParameter(ShaderType type, const ShaderParameter& parameter)
 		{
-			assert(parameter != nullptr && "shader parameter cannot be nullptr!");
 			auto it = mShaders.find(type);
 			if (it != mShaders.end())
 			{
-				auto parameterName = parameter->GetName();
-				auto parameterType = parameter->GetType();
-				std::size_t bufferSize;
-				auto buffer = parameter->Buffer(bufferSize);
-				assert(bufferSize > 0 && "Invalid parameter type.");
-				it->second.parameters.push_back(ShaderParameter(parameterName, parameterType, buffer, bufferSize));
+				it->second.parameters.push_back(parameter);
 				return true;
 			}
 			return false;
@@ -76,7 +70,7 @@ namespace Lightning
 			return it->second.parameters.size();
 		}
 
-		const IShaderParameter* Material::GetParameter(ShaderType type, std::size_t parameterIndex)const
+		const ShaderParameter* Material::GetParameter(ShaderType type, std::size_t parameterIndex)const
 		{
 			auto it = mShaders.find(type);
 			if (it != mShaders.end())

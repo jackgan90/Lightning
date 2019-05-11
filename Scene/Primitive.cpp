@@ -199,12 +199,12 @@ namespace Lightning
 			GetColor(a, r, g, b);
 			ShaderParameter paramColor("color", Vector4f{ r, g, b, a });
 			ShaderParameter paramLight("light", Vector3f{ 3, 3, 3 });
-			material->SetParameter(Render::ShaderType::FRAGMENT, &paramColor);
-			material->SetParameter(Render::ShaderType::FRAGMENT, &paramLight);
+			material->SetParameter(Render::ShaderType::FRAGMENT, paramColor);
+			material->SetParameter(Render::ShaderType::FRAGMENT, paramLight);
 			if (mTexture)
 			{
 				ShaderParameter paramTexture(mTextureName.c_str(), mTexture.get());
-				material->SetParameter(Render::ShaderType::FRAGMENT, &paramTexture);
+				material->SetParameter(Render::ShaderType::FRAGMENT, paramTexture);
 			}
 
 			material->EnableBlend(mColor.a != 0xff);

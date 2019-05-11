@@ -47,7 +47,7 @@ namespace Lightning
 				const std::string& name, const std::string& shaderSource, const std::shared_ptr<IShaderMacros>& macros);
 			~D3D12Shader()override;
 			std::size_t GetParameterCount()const override;
-			bool SetParameter(const IShaderParameter& parameter) override;
+			bool SetParameter(const ShaderParameter& parameter) override;
 			ShaderParameterType GetParameterType(const std::string& name)const override;
 			void Compile()override;
 			void GetUniformSemantics(RenderSemantics** semantics, std::uint16_t& semanticCount)override;

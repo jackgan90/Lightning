@@ -14,11 +14,11 @@ namespace Lightning
 			//reset shader of specific type used by this material(reverse operation of SetShader)
 			virtual bool ResetShader(ShaderType) = 0;
 			virtual std::shared_ptr<IShader> GetShader(ShaderType) = 0;
-			virtual bool SetParameter(ShaderType type, const IShaderParameter* parameter) = 0;
+			virtual bool SetParameter(ShaderType type, const ShaderParameter& parameter) = 0;
 			virtual void EnableBlend(bool enable) = 0;
 			virtual void GetBlendState(BlendState&)const = 0;
 			virtual std::size_t GetParameterCount(ShaderType type)const = 0;
-			virtual const IShaderParameter* GetParameter(ShaderType type, std::size_t parameterIndex)const = 0;
+			virtual const ShaderParameter* GetParameter(ShaderType type, std::size_t parameterIndex)const = 0;
 		};
 	}
 }

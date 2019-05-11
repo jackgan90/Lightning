@@ -14,7 +14,6 @@ set(INTERFACE_HEADERS	IDevice.h
 						IDrawCommand.h
 						Shader/IShader.h
 						Shader/IShaderMacros.h
-						Shader/IShaderParameter.h
 						Texture/ITexture.h)
 						
 set(HEADERS IndexBuffer.h
