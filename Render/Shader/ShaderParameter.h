@@ -27,8 +27,8 @@ namespace Lightning
 		{
 		public:
 			template<typename ValueType>
-			ShaderParameter(const std::string& name, const ValueType& value)
-				: mName(name), mValue(value)
+			ShaderParameter(const std::string& name, ValueType&& value)
+				: mName(name), mValue(std::forward<ValueType>(value))
 			{
 				mType = static_cast<ShaderParameterType>(mValue.which() + 1);
 			}
