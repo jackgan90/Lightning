@@ -26,7 +26,7 @@ namespace Lightning
 			SPHERE
 		};
 
-		struct IPrimitive : IDrawable
+		struct IPrimitive : Render::IDrawable
 		{
 			virtual PrimitiveType GetPrimitiveType()const = 0;
 			virtual void SetWorldPosition(const Vector3f& pos) = 0;

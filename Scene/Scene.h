@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
+#include <vector>
 #include "IScene.h"
-#include "SceneRenderData.h"
 
 namespace Lightning
 {
@@ -15,12 +15,11 @@ namespace Lightning
 			std::uint32_t GetID()const override{ return mID; }
 			void Tick()override;
 			void AddDrawable(const std::shared_ptr<IDrawable>& drawable)override;
-			ICamera* GetActiveCamera()override { return mActiveCamera; }
+			ICamera* GetActiveCamera()override;
 		protected:
-			ICamera* mActiveCamera;
+			std::vector<std::shared_ptr<ICamera>> mCameras;
 			std::uint32_t mID;
 			std::vector<std::shared_ptr<IDrawable>> mDrawables;
-			SceneRenderData mRenderData;
 		};
 	}
 }

@@ -8,8 +8,12 @@ namespace Lightning
 	namespace Scene
 	{
 		using Foundation::Math::Transform;
+		using Foundation::Math::Vector3f;
+		using Foundation::Math::Matrix4f;
+		using Foundation::Math::Quaternionf;
+		using Render::CameraType;
 		//Use right-handed coordinate system
-		class Camera : public ICamera
+		class Camera : public Render::ICamera
 		{
 		public:
 			Camera();
@@ -44,7 +48,6 @@ namespace Lightning
 			Vector3f GetForward()const override{ return mTransform.Forward(); }
 			void SetRotation(const Quaternionf& rotation) override;
 			Quaternionf GetRotation()const override{ return mTransform.GetRotation(); }
-			void Tick(IRenderer&)override;
 		protected:
 			void UpdateViewMatrix();
 			void UpdateProjectionMatrix();

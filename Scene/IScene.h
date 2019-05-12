@@ -7,6 +7,8 @@ namespace Lightning
 {
 	namespace Scene
 	{
+		using Render::IDrawable;
+		using Render::ICamera;
 		struct IScene
 		{
 			virtual ~IScene() = default;

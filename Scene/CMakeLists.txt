@@ -4,22 +4,18 @@ message(STATUS "Configuring project Scene")
 set(HEADERS Scene.h 
 			SceneManager.h
 			Primitive.h
-			Camera.h
-			SceneRenderData.h)
+			Camera.h)
 
 set(SOURCES Scene.cpp 
 			SceneManager.cpp
 			Primitive.cpp
-			Camera.cpp
-			SceneRenderData.cpp)
+			Camera.cpp)
 
 set(PLUGIN_HEADERS	IScenePlugin.h)
 set(PLUGIN_SOURCES	ScenePluginImpl.cpp)
 
 set(INTERFACE_HEADERS	IScene.h
 						ISceneManager.h			
-						IDrawable.h
-						ICamera.h
 						IPrimitive.h)
 
 list(APPEND HEADERS	${INTERFACE_HEADERS} ${PLUGIN_HEADERS})

@@ -183,17 +183,5 @@ namespace Lightning
 			auto res = mViewMatrix * dir;
 			return Vector3f{ res.x, res.y, res.z };
 		}
-
-		void Camera::Tick(IRenderer& renderer)
-		{
-			auto window = renderer.GetOutputWindow();
-			if (window)
-			{
-				auto width = window->GetWidth();
-				auto height = window->GetHeight();
-				auto aspectRatio = float(width) / height;
-				SetAspectRatio(aspectRatio);
-			}
-		}
 	}
 }

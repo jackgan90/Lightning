@@ -5,7 +5,7 @@
 
 namespace Lightning
 {
-	namespace Scene
+	namespace Render
 	{
 		using Foundation::Math::Matrix4f;
 		using Foundation::Math::Vector3f;
@@ -46,7 +46,6 @@ namespace Lightning
 			virtual Vector3f GetForward()const = 0;
 			virtual void SetRotation(const Quaternionf& rotation) = 0;
 			virtual Quaternionf GetRotation()const = 0;
-			virtual void Tick(IRenderer&) = 0;
 		};
 	}
 }

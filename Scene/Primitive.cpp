@@ -111,22 +111,22 @@ namespace Lightning
 				mShaders.push_back(shader);
 		}
 
-		void Primitive::Draw(IRenderer* renderer, const SceneRenderData& sceneRenderData)
+		void Primitive::Draw(Render::IRenderer* renderer, const std::shared_ptr<Render::ICamera>& camera)
 		{
 			if (mDrawCommandDirty)
 			{
 				UpdateDrawCommand(renderer);
 				mDrawCommandDirty = false;
 			}
-			if (sceneRenderData.camera)
+			if (camera)
 			{
-				mDrawCommand->SetViewMatrix(sceneRenderData.camera->GetViewMatrix());
-				mDrawCommand->SetProjectionMatrix(sceneRenderData.camera->GetProjectionMatrix());
+				mDrawCommand->SetViewMatrix(camera->GetViewMatrix());
+				mDrawCommand->SetProjectionMatrix(camera->GetProjectionMatrix());
 			}
 			renderer->CommitDrawCommand(mDrawCommand);
 		}
 
-		void Primitive::UpdateDrawCommand(IRenderer* renderer)
+		void Primitive::UpdateDrawCommand(Render::IRenderer* renderer)
 		{
 			if (mDrawCommand)
 				mDrawCommand->Release();
@@ -290,7 +290,7 @@ namespace Lightning
 			assert(mWidth > 0 && mHeight > 0 && mThickness > 0 && "The size of the cube must be greater than 0!");
 		}
 
-		void Cube::UpdateDrawCommand(IRenderer* renderer)
+		void Cube::UpdateDrawCommand(Render::IRenderer* renderer)
 		{
 			Primitive::UpdateDrawCommand(renderer);
 			if (mTexture)

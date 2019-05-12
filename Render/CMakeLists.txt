@@ -12,6 +12,8 @@ set(INTERFACE_HEADERS	IDevice.h
 						IGPUBuffer.h
 						IMaterial.h
 						IDrawCommand.h
+						IDrawable.h
+						ICamera.h
 						Shader/IShader.h
 						Shader/IShaderMacros.h
 						Texture/ITexture.h
