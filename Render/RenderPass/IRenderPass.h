@@ -8,7 +8,8 @@ namespace Lightning
 		struct IRenderPass
 		{
 			virtual ~IRenderPass() = default;
-			virtual void Apply(DrawCommandQueue& drawCommands) = 0;
+			virtual void Render(DrawCommandQueue& drawCommands) = 0;
+			virtual bool NeedRender()const = 0;
 		};
 	}
 }

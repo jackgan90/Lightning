@@ -126,7 +126,7 @@ namespace Lightning
 		{
 			if(mRootRenderPass)
 			{
-				mRootRenderPass->Apply(*mFrameResources[mFrameResourceIndex].drawCommandQueue);
+				mRootRenderPass->Render(*mFrameResources[mFrameResourceIndex].drawCommandQueue);
 			}
 		}
 
