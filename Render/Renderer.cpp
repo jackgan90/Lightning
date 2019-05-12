@@ -1,13 +1,12 @@
 #include <cassert>
 #include "Device.h"
 #include "Renderer.h"
-#include "ForwardRenderPass.h"
-#include "DeferedRenderPass.h"
 #include "FrameMemoryAllocator.h"
-#include "Serializers/ShaderSerializer.h"
-#include "Serializers/TextureSerializer.h"
 #include "DrawCommand.h"
 #include "Loader.h"
+#include "Serializers/ShaderSerializer.h"
+#include "Serializers/TextureSerializer.h"
+#include "RenderPass/ForwardRenderPass.h"
 
 namespace Lightning
 {
@@ -90,10 +89,6 @@ namespace Lightning
 			OnFrameUpdate();
 			ApplyRenderPasses();
 			OnFrameEnd();
-			for (auto& pass : mRenderPasses)
-			{
-				pass->OnFrameEnd();
-			}
 			auto fence = mFrameResources[mFrameResourceIndex].fence;
 			mFrameResources[mFrameResourceIndex].frame = mFrameCount;
 			fence->SetTargetValue(mFrameCount);
@@ -129,9 +124,9 @@ namespace Lightning
 
 		void Renderer::ApplyRenderPasses()
 		{
-			for (auto& pass : mRenderPasses)
+			if(mRootRenderPass)
 			{
-				pass->Apply(*mFrameResources[mFrameResourceIndex].drawCommandQueue);
+				mRootRenderPass->Apply(*mFrameResources[mFrameResourceIndex].drawCommandQueue);
 			}
 		}
 
@@ -171,30 +166,9 @@ namespace Lightning
 			mCurrentDrawCommandQueue->push_back(command->Commit());
 		}
 
-		void Renderer::AddRenderPass(RenderPassType type)
-		{
-			auto pass = CreateRenderPass(type);
-			if(pass)
-				mRenderPasses.emplace_back(pass);
-		}
-
 		std::size_t Renderer::GetFrameResourceIndex()const
 		{
 			return mFrameResourceIndex;
-		}
-
-		RenderPass* Renderer::CreateRenderPass(RenderPassType type)
-		{
-			switch (type)
-			{
-			case RenderPassType::FORWARD:
-				return new ForwardRenderPass();
-			case RenderPassType::DEFERED:
-				return new DeferedRenderPass();
-			default:
-				break;
-			}
-			return nullptr;
 		}
 
 		void Renderer::Start()
@@ -221,7 +195,7 @@ namespace Lightning
 				mFrameResources[i].defaultDepthStencilBuffer = mDevice->CreateDepthStencilBuffer(texture);
 			}
 			mFrameResourceIndex = 0;
-			AddRenderPass(RenderPassType::FORWARD);
+			mRootRenderPass = std::make_unique<ForwardRenderPass>();
 			mStarted = true;
 		}
 
@@ -238,7 +212,7 @@ namespace Lightning
 			mFrameResources[0].ReleaseDrawCommandQueue();
 			mDevice.reset();
 			mSwapChain.reset();
-			mRenderPasses.clear();
+			mRootRenderPass.reset();
 			mStarted = false;
 		}
 

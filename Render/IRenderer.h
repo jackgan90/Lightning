@@ -8,7 +8,6 @@
 #include "Color.h"
 #include "Math/Matrix.h"
 #include "IDrawCommand.h"
-#include "RenderPass.h"
 #include "IWindow.h"
 #include "Portable.h"
 
@@ -65,7 +64,6 @@ namespace Lightning
 			//get the current frame index
 			virtual std::uint64_t GetCurrentFrameCount()const = 0;
 			virtual std::size_t GetFrameResourceIndex()const = 0;
-			virtual void AddRenderPass(RenderPassType type) = 0;
 			virtual IDrawCommand* NewDrawCommand() = 0;
 			//Commit a draw command for rendering
 			virtual void CommitDrawCommand(const IDrawCommand* unit) = 0;

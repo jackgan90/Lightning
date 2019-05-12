@@ -3,9 +3,9 @@
 #include "IRenderFence.h"
 #include "IFileSystem.h"
 #include "IWindow.h"
-#include "RenderPass.h"
 #include "SwapChain.h"
 #include "Device.h"
+#include "RenderPass/IRenderPass.h"
 
 namespace Lightning
 {
@@ -36,8 +36,6 @@ namespace Lightning
 			void SetClearColor(float r, float g, float b, float a)override;
 			IDrawCommand* NewDrawCommand()override;
 			void CommitDrawCommand(const IDrawCommand* item)override;
-			//TODO there can be multiple render passes in effect simultaneously,should change it
-			void AddRenderPass(RenderPassType type)override;
 			std::size_t GetFrameResourceIndex()const override;
 			void Start()override;
 			void ShutDown()override;
@@ -62,7 +60,6 @@ namespace Lightning
 			virtual Device* CreateDevice() = 0;
 			//CreateSwapChain is called in Start,ensuring the device is already created
 			virtual SwapChain* CreateSwapChain() = 0;
-			virtual RenderPass* CreateRenderPass(RenderPassType type);
 			virtual bool CheckIfDepthStencilBufferNeedsResize();
 			void ApplyRenderPasses();
 			void SwitchDrawCommandQueue();
@@ -77,7 +74,7 @@ namespace Lightning
 			static IRenderer* sInstance;
 			std::unique_ptr<Device> mDevice;
 			std::unique_ptr<SwapChain> mSwapChain;
-			std::vector<std::unique_ptr<RenderPass>> mRenderPasses;
+			std::unique_ptr<IRenderPass> mRootRenderPass;
 			ColorF mClearColor;
 			FrameResource mFrameResources[RENDER_FRAME_COUNT];
 			Window::IWindow* mOutputWindow;

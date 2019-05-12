@@ -14,7 +14,8 @@ set(INTERFACE_HEADERS	IDevice.h
 						IDrawCommand.h
 						Shader/IShader.h
 						Shader/IShaderMacros.h
-						Texture/ITexture.h)
+						Texture/ITexture.h
+						RenderPass/IRenderPass.h)
 						
 set(HEADERS IndexBuffer.h
 			Device.h
@@ -27,9 +28,6 @@ set(HEADERS IndexBuffer.h
 			RendererFactory.h
 			RenderConstants.h
 			Material.h
-			RenderPass.h
-			ForwardRenderPass.h
-			DeferedRenderPass.h
 			FrameMemoryAllocator.h
 			DrawCommand.h
 			CommittedDrawCommand.h
@@ -42,10 +40,7 @@ set(SOURCES Renderer.cpp
 			RendererHelper.cpp
 			RendererFactory.cpp
 			Material.cpp
-			RenderPass.cpp
-			ForwardRenderPass.cpp
 			FrameMemoryAllocator.cpp
-			DeferedRenderPass.cpp
 			DrawCommand.cpp
 			CommittedDrawCommand.cpp
 			RenderObjectCache.cpp)
@@ -60,6 +55,11 @@ set(SHADER_SOURCES	Shader/ShaderMacros.cpp
 					Shader/Shader.cpp)
 
 set(TEXTURE_HEADERS	Texture/Sampler.h)
+
+set(RENDERPASS_HEADERS	RenderPass/RenderPass.h
+						RenderPass/ForwardRenderPass.h)
+set(RENDERPASS_SOURCES	RenderPass/RenderPass.cpp
+						RenderPass/ForwardRenderPass.cpp)
 
 set(SERIALIZERS_HEADERS	Serializers/ShaderSerializer.h
 						Serializers/TextureSerializer.h)
@@ -79,12 +79,14 @@ list(APPEND HEADERS ${INTERFACE_HEADERS}
 					${UTILITY_HEADERS} 
 					${SERIALIZERS_HEADERS} 
 					${TEXTURE_HEADERS} 
-					${PLUGIN_HEADERS})
+					${PLUGIN_HEADERS}
+					${RENDERPASS_HEADERS})
 
 list(APPEND SOURCES ${SHADER_SOURCES} 
 					${UTILITY_SOURCES} 
 					${SERIALIZERS_SOURCES} 
-					${PLUGIN_SOURCES})
+					${PLUGIN_SOURCES}
+					${RENDERPASS_SOURCES})
 
 source_group("Interfaces" FILES ${INTERFACE_HEADERS})
 
@@ -97,6 +99,8 @@ source_group("Texture" FILES ${TEXTURE_HEADERS})
 source_group("Utility" FILES ${UTILITY_HEADERS} ${UTILITY_SOURCES})
 
 source_group("Serializers" FILES ${SERIALIZERS_HEADERS} ${SERIALIZERS_SOURCES})
+
+source_group("RenderPass" FILES ${RENDERPASS_HEADERS} ${RENDERPASS_SOURCES})
 
 source_group("Plugin" FILES ${PLUGIN_HEADERS} ${PLUGIN_SOURCES})
 

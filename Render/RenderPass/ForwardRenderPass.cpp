@@ -18,9 +18,5 @@ namespace Lightning
 				}
 			});
 		}
-
-		void ForwardRenderPass::OnFrameEnd()
-		{
-		}
 	}
 }
