@@ -15,11 +15,6 @@ namespace Lightning
 		IRenderer* Renderer::sInstance{ nullptr };
 		FrameMemoryAllocator g_RenderAllocator;
 		
-		void FrameResource::OnFrameBegin()
-		{
-
-		}
-
 		void FrameResource::Release()
 		{
 			fence.reset();
@@ -58,7 +53,6 @@ namespace Lightning
 			WaitForPreviousFrame(false);
 			HandleWindowResize();
 			mFrameCount++;
-			mFrameResources[mFrameResourceIndex].OnFrameBegin();
 			OnFrameBegin();
 			if (mRootRenderPass)
 			{

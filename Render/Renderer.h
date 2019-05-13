@@ -17,7 +17,6 @@ namespace Lightning
 			std::uint64_t frame{ 0 };
 			std::shared_ptr<IDepthStencilBuffer> defaultDepthStencilBuffer;
 
-			void OnFrameBegin();
 			void Release();
 		};
 
