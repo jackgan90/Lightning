@@ -22,11 +22,7 @@ namespace Lightning
 
 		void FrameResource::Release()
 		{
-			if (fence)
-			{
-				delete fence;
-				fence = nullptr;
-			}
+			fence.reset();
 			defaultDepthStencilBuffer.reset();
 		}
 
@@ -78,9 +74,8 @@ namespace Lightning
 			{
 				mRootRenderPass->EndRender(*this);
 			}
-			auto fence = mFrameResources[mFrameResourceIndex].fence;
 			mFrameResources[mFrameResourceIndex].frame = mFrameCount;
-			fence->SetTargetValue(mFrameCount);
+			mFrameResources[mFrameResourceIndex].fence->SetTargetValue(mFrameCount);
 			mSwapChain->Present();
 			mFrameResourceIndex = (mFrameResourceIndex + 1) % RENDER_FRAME_COUNT;
 			g_RenderAllocator.FinishFrame(mFrameCount);
@@ -145,7 +140,7 @@ namespace Lightning
 			mSwapChain.reset(CreateSwapChain());
 			for (size_t i = 0; i < RENDER_FRAME_COUNT; i++)
 			{
-				mFrameResources[i].fence = CreateRenderFence();
+				mFrameResources[i].fence.reset(CreateRenderFence());
 				TextureDescriptor descriptor;
 				descriptor.depth = 1;
 				descriptor.width = mOutputWindow->GetWidth();
