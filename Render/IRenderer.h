@@ -1,6 +1,5 @@
 #pragma once
 #include <memory>
-#include <exception>
 #include <functional>
 #include "IDevice.h"
 #include "ISwapChain.h"
@@ -8,8 +7,9 @@
 #include "Color.h"
 #include "Math/Matrix.h"
 #include "IDrawCommand.h"
+#include "IDrawable.h"
+#include "ICamera.h"
 #include "IWindow.h"
-#include "Portable.h"
 
 namespace Lightning
 {
@@ -59,14 +59,9 @@ namespace Lightning
 			virtual IDevice* GetDevice() = 0;
 			virtual ISwapChain* GetSwapChain() = 0;
 			virtual Window::IWindow* GetOutputWindow() = 0;
-			//set default render target clear color.At the beginning of each frame,the back buffer is cleared to this color
-			virtual void SetClearColor(float r, float g, float b, float a) = 0;
 			//get the current frame index
 			virtual std::uint64_t GetCurrentFrameCount()const = 0;
 			virtual std::size_t GetFrameResourceIndex()const = 0;
-			virtual IDrawCommand* NewDrawCommand() = 0;
-			//Commit a draw command for rendering
-			virtual void CommitDrawCommand(const IDrawCommand* unit) = 0;
 			//clear a specified render target,possibly parts of it defined by an array of rects
 			virtual void ClearRenderTarget(IRenderTarget* renderTarget, const ColorF& color, 
 				const RectI* rects=nullptr, std::size_t rectCount = 0) = 0;
@@ -79,6 +74,8 @@ namespace Lightning
 			//bind pBuffer to a GPU slot(does not copy data,just binding), each invocation will override previous binding
 			virtual void BindVertexBuffer(std::size_t slot, IVertexBuffer* buffer) = 0;
 			virtual void BindIndexBuffer(IIndexBuffer* buffer) = 0;
+			//Adds a drawable to draw queue,thread safe.
+			virtual void Draw(const std::shared_ptr<IDrawable>& drawable, const std::shared_ptr<ICamera>& camera) = 0;
 			//issue underlying draw call
 			virtual void Draw(const DrawParam& param) = 0;
 			//get near plane value corresponding to normalized device coordinate
@@ -92,6 +89,8 @@ namespace Lightning
 			virtual void ShutDown() = 0;
 			//get default depth stencil buffer
 			virtual std::shared_ptr<IDepthStencilBuffer> GetDefaultDepthStencilBuffer() = 0;
+			//get default render target
+			virtual std::shared_ptr<IRenderTarget> GetDefaultRenderTarget() = 0;
 			//Gets the semantic corresponds to a string representing a uniform name
 			virtual RenderSemantics GetUniformSemantic(const char* uniform_name) = 0;
 			//Gets uniform name by RenderSemantics

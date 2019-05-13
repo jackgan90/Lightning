@@ -38,6 +38,27 @@ namespace Lightning
 			return true;
 		}
 
+		std::size_t Material::GetParameterTypeCount(ParameterType parameterType)const
+		{
+			std::size_t count{ 0 };
+			std::for_each(mParameters.cbegin(), mParameters.cend(), 
+				[&count](const std::pair<std::string, Parameter>&) {
+				count += 1;
+			});
+			return count;
+		}
+
+		bool Material::GetParameter(const std::string& name, Parameter& parameter)const
+		{
+			auto it = mParameters.find(name);
+			if (it != mParameters.end())
+			{
+				parameter = it->second;
+				return true;
+			}
+			return false;
+		}
+
 		void Material::EnableBlend(bool enable)
 		{
 			mBlendState.enable = enable;

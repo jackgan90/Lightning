@@ -39,7 +39,7 @@ namespace Lightning
 				}
 				for (auto& drawable : mDrawables)
 				{
-					drawable->Draw(renderer, camera);
+					drawable->Draw(*renderer, camera);
 				}
 			}
 		}

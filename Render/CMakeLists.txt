@@ -32,7 +32,6 @@ set(HEADERS IndexBuffer.h
 			Material.h
 			FrameMemoryAllocator.h
 			DrawCommand.h
-			CommittedDrawCommand.h
 			RenderObjectCache.h)
 set(SOURCES Renderer.cpp
 			Device.cpp
@@ -44,7 +43,6 @@ set(SOURCES Renderer.cpp
 			Material.cpp
 			FrameMemoryAllocator.cpp
 			DrawCommand.cpp
-			CommittedDrawCommand.cpp
 			RenderObjectCache.cpp)
 
 set(TYPES_HEADERS	Types/Color.h

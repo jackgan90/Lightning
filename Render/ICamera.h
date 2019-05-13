@@ -1,7 +1,5 @@
 #pragma once
 #include "Math/Quaternion.h"
-#include "Portable.h"
-#include "IRenderer.h"
 
 namespace Lightning
 {
@@ -10,7 +8,6 @@ namespace Lightning
 		using Foundation::Math::Matrix4f;
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Quaternionf;
-		using Render::IRenderer;
 
 		enum class CameraType
 		{

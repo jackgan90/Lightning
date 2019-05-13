@@ -15,18 +15,6 @@ namespace Lightning
 		IRenderer* Renderer::sInstance{ nullptr };
 		FrameMemoryAllocator g_RenderAllocator;
 		
-		void FrameResource::ReleaseDrawCommandQueue()
-		{
-			if (drawCommandQueue)
-			{
-				for (auto unit : *drawCommandQueue)
-				{
-					unit->Release();
-				}
-				drawCommandQueue->clear();
-			}
-		}
-
 		void FrameResource::OnFrameBegin()
 		{
 
@@ -40,16 +28,12 @@ namespace Lightning
 				fence = nullptr;
 			}
 			defaultDepthStencilBuffer.reset();
-			ReleaseDrawCommandQueue();
 		}
 
 		Renderer::Renderer(Window::IWindow* window)
 			: mOutputWindow(window)
 			, mFrameCount(0)
 			, mFrameResourceIndex(0)
-			, mClearColor{0.5f, 0.5f, 0.5f, 1.0f}
-			, mDrawCommandQueueIndex(RENDER_FRAME_COUNT)
-			, mCurrentDrawCommandQueue(&mDrawCommandQueues[RENDER_FRAME_COUNT])
 			, mStarted(false)
 		{
 			assert(!sInstance);
@@ -80,15 +64,20 @@ namespace Lightning
 			mFrameCount++;
 			mFrameResources[mFrameResourceIndex].OnFrameBegin();
 			OnFrameBegin();
-			SwitchDrawCommandQueue();
-			auto backBuffer = mSwapChain->GetCurrentRenderTarget();
-			ClearRenderTarget(backBuffer.get(), mClearColor);
-			auto depthStencilBuffer = GetDefaultDepthStencilBuffer();
-			ClearDepthStencilBuffer(depthStencilBuffer.get(), DepthStencilClearFlags::CLEAR_DEPTH | DepthStencilClearFlags::CLEAR_STENCIL,
-				depthStencilBuffer->GetDepthClearValue(), depthStencilBuffer->GetStencilClearValue(), nullptr);
+			if (mRootRenderPass)
+			{
+				mRootRenderPass->BeginRender(*this);
+			}
 			OnFrameUpdate();
-			ApplyRenderPasses();
+			if (mRootRenderPass)
+			{
+				mRootRenderPass->Render(*this);
+			}
 			OnFrameEnd();
+			if (mRootRenderPass)
+			{
+				mRootRenderPass->EndRender(*this);
+			}
 			auto fence = mFrameResources[mFrameResourceIndex].fence;
 			mFrameResources[mFrameResourceIndex].frame = mFrameCount;
 			fence->SetTargetValue(mFrameCount);
@@ -122,11 +111,11 @@ namespace Lightning
 			return false;
 		}
 
-		void Renderer::ApplyRenderPasses()
+		void Renderer::Draw(const std::shared_ptr<IDrawable>& drawable, const std::shared_ptr<ICamera>& camera)
 		{
-			if(mRootRenderPass)
+			if (mRootRenderPass)
 			{
-				mRootRenderPass->Render(*mFrameResources[mFrameResourceIndex].drawCommandQueue);
+				mRootRenderPass->AddDrawable(drawable, camera);
 			}
 		}
 
@@ -138,32 +127,9 @@ namespace Lightning
 			name = it->second.name;
 		}
 
-		void Renderer::SwitchDrawCommandQueue()
-		{
-			mFrameResources[mFrameResourceIndex].drawCommandQueue = mCurrentDrawCommandQueue;
-			mDrawCommandQueueIndex = mDrawCommandQueueIndex == RENDER_FRAME_COUNT ? 0 : ++mDrawCommandQueueIndex;
-			mCurrentDrawCommandQueue = &mDrawCommandQueues[mDrawCommandQueueIndex];
-		}
-
-		void Renderer::SetClearColor(float r, float g, float b, float a)
-		{
-			mClearColor = ColorF{r, g, b, a};
-		}
-
 		std::uint64_t Renderer::GetCurrentFrameCount()const
 		{
 			return mFrameCount;
-		}
-
-		IDrawCommand* Renderer::NewDrawCommand()
-		{
-			return new (DrawCommandPool::malloc()) DrawCommand;
-		}
-
-		void Renderer::CommitDrawCommand(const IDrawCommand* command)
-		{
-			assert(command != nullptr && "Draw command cannot be nullptr!");
-			mCurrentDrawCommandQueue->push_back(command->Commit());
 		}
 
 		std::size_t Renderer::GetFrameResourceIndex()const
@@ -208,8 +174,6 @@ namespace Lightning
 			{
 				mFrameResources[i].Release();
 			}
-			mFrameResources[0].drawCommandQueue = mCurrentDrawCommandQueue;
-			mFrameResources[0].ReleaseDrawCommandQueue();
 			mDevice.reset();
 			mSwapChain.reset();
 			mRootRenderPass.reset();
@@ -219,6 +183,11 @@ namespace Lightning
 		std::shared_ptr<IDepthStencilBuffer> Renderer::GetDefaultDepthStencilBuffer()
 		{
 			return mFrameResources[mFrameResourceIndex].defaultDepthStencilBuffer;
+		}
+
+		std::shared_ptr<IRenderTarget> Renderer::GetDefaultRenderTarget()
+		{
+			return mSwapChain->GetCurrentRenderTarget();
 		}
 
 		RenderSemantics Renderer::GetUniformSemantic(const char* uniform_name)
@@ -262,7 +231,6 @@ namespace Lightning
 			{
 				auto& frameResource = mFrameResources[resourceIndex];
 				frameResource.fence->WaitForTarget();
-				frameResource.ReleaseDrawCommandQueue();
 				g_RenderAllocator.ReleaseFramesBefore(frameResource.frame);
 			}
 		}

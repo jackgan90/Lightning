@@ -22,6 +22,10 @@ namespace Lightning
 			{
 				return SetParameter(Parameter(name, std::forward<ValueType>(value)));
 			}
+			//Get a parameter named name,if the specified parameter with the given name exists,returns true, otherwise returns false.
+			virtual bool GetParameter(const std::string& name, Parameter& parameter)const = 0;
+			//Gets number of parameters of a specific type
+			virtual std::size_t GetParameterTypeCount(ParameterType parameterType)const = 0;
 			virtual void EnableBlend(bool enable) = 0;
 			virtual void GetBlendState(BlendState& blendState)const = 0;
 			//The visitor should not modify the underlying parameter map during iteration

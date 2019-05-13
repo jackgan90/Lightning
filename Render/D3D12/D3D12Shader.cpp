@@ -403,24 +403,23 @@ namespace Lightning
 			auto it = mParameters.find(parameter.GetName());
 			assert(it != mParameters.end());
 			std::size_t size{ 0 };
-			auto parameterBuffer = parameter.Buffer(size);
 			InitResourceProxy();
 			if (parameterType == ParameterType::TEXTURE)
 			{
-				auto texture = *reinterpret_cast<ITexture**>(const_cast<void*>(parameterBuffer));
+				auto texture = parameter.GetValue<std::shared_ptr<ITexture>>();
 				assert(texture != nullptr && "Encounter null texture!");
 				texture->Commit();
-				mResourceProxy->SetTexture(it->second.index, static_cast<D3D12Texture*>(texture));
+				mResourceProxy->SetTexture(it->second.index, static_cast<D3D12Texture*>(texture.get()));
 				return true;
 			}
 			else if (parameterType == ParameterType::SAMPLER)
 			{
-				auto pSamplerState = reinterpret_cast<const SamplerState*>(parameterBuffer);
-				mResourceProxy->SetSamplerState(it->second.index, *pSamplerState);
+				mResourceProxy->SetSamplerState(it->second.index, parameter.GetValue<SamplerState>());
 				return true;
 			}
 			else
 			{
+				auto parameterBuffer = parameter.Buffer(size);
 				if (parameterBuffer)
 				{
 					const auto& paramInfo = it->second;

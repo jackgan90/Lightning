@@ -16,9 +16,7 @@ namespace Lightning
 			IRenderFence *fence{ nullptr };
 			std::uint64_t frame{ 0 };
 			std::shared_ptr<IDepthStencilBuffer> defaultDepthStencilBuffer;
-			DrawCommandQueue* drawCommandQueue{ nullptr };
 
-			void ReleaseDrawCommandQueue();
 			void OnFrameBegin();
 			void Release();
 		};
@@ -33,18 +31,17 @@ namespace Lightning
 			ISwapChain* GetSwapChain()override;
 			//return the current frame index
 			std::uint64_t GetCurrentFrameCount()const override;
-			void SetClearColor(float r, float g, float b, float a)override;
-			IDrawCommand* NewDrawCommand()override;
-			void CommitDrawCommand(const IDrawCommand* item)override;
 			std::size_t GetFrameResourceIndex()const override;
 			void Start()override;
 			void ShutDown()override;
 			static IRenderer* Instance() { return sInstance; }
 			Window::IWindow* GetOutputWindow()override { return mOutputWindow; }
 			std::shared_ptr<IDepthStencilBuffer> GetDefaultDepthStencilBuffer()override;
+			std::shared_ptr<IRenderTarget> GetDefaultRenderTarget()override;
 			RenderSemantics GetUniformSemantic(const char* uniform_name)override;
 			const char* GetUniformName(RenderSemantics semantic)override;
 			void GetSemanticInfo(RenderSemantics semantic, SemanticIndex& index, std::string& name)override;
+			void Draw(const std::shared_ptr<IDrawable>& drawable, const std::shared_ptr<ICamera>& camera)override;
 		protected:
 			Renderer(Window::IWindow* window);
 			//Thread unsafe ,must ensure there's no concurrent execution
@@ -61,8 +58,6 @@ namespace Lightning
 			//CreateSwapChain is called in Start,ensuring the device is already created
 			virtual SwapChain* CreateSwapChain() = 0;
 			virtual bool CheckIfDepthStencilBufferNeedsResize();
-			void ApplyRenderPasses();
-			void SwitchDrawCommandQueue();
 		protected:
 			struct SemanticInfo
 			{
@@ -75,7 +70,6 @@ namespace Lightning
 			std::unique_ptr<Device> mDevice;
 			std::unique_ptr<SwapChain> mSwapChain;
 			std::unique_ptr<IRenderPass> mRootRenderPass;
-			ColorF mClearColor;
 			FrameResource mFrameResources[RENDER_FRAME_COUNT];
 			Window::IWindow* mOutputWindow;
 			std::unordered_map<RenderSemantics, SemanticInfo> mPipelineInputSemanticInfos;
@@ -87,9 +81,6 @@ namespace Lightning
 			std::size_t mFrameResourceIndex;
 			bool mStarted;
 			std::uint64_t mFrameCount;
-			std::size_t mDrawCommandQueueIndex;
-			DrawCommandQueue mDrawCommandQueues[RENDER_FRAME_COUNT + 1];
-			DrawCommandQueue* mCurrentDrawCommandQueue;
 		};
 	}
 }

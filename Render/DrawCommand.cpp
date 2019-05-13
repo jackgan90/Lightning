@@ -2,7 +2,7 @@
 #include <algorithm>
 #include "Renderer.h"
 #include "DrawCommand.h"
-#include "CommittedDrawCommand.h"
+#include "DrawCommand.h"
 #include "FrameMemoryAllocator.h"
 #include "Logger.h"
 #undef min
@@ -13,10 +13,8 @@ namespace Lightning
 	namespace Render
 	{
 		extern FrameMemoryAllocator g_RenderAllocator;
-		DrawCommand::DrawCommand()
-			: mCustomRenderTargets(false)
-			, mCustomDepthStencilBuffer(false)
-			, mCustomViewport(false)
+		DrawCommand::DrawCommand(IRenderPass& renderPass)
+			: mRenderPass(renderPass)
 		{
 
 		}
@@ -138,179 +136,29 @@ namespace Lightning
 			return mProjectionMatrix;
 		}
 
-		void DrawCommand::AddRenderTarget(const std::shared_ptr<IRenderTarget>& renderTarget)
-		{
-			assert(renderTarget != nullptr && "AddRenderTarget only accept valid pointer!");
-#ifndef NDEBUG
-			auto it = std::find(mRenderTargets.cbegin(), mRenderTargets.cend(), renderTarget);
-			assert(it == mRenderTargets.end() && "duplicate render target found.");
-#endif
-			mCustomRenderTargets = true;
-			mRenderTargets.push_back(renderTarget);
-		}
-
-		void DrawCommand::RemoveRenderTarget(const std::shared_ptr<IRenderTarget>& renderTarget)
-		{
-			assert(mCustomRenderTargets && "AddRenderTarget must be called prior to call RemoveRenderTarget.");
-			auto it = std::find(mRenderTargets.cbegin(), mRenderTargets.cend(), renderTarget);
-			if (it != mRenderTargets.end())
-			{
-				mRenderTargets.erase(it);
-			}
-		}
-
-		std::shared_ptr<IRenderTarget> DrawCommand::GetRenderTarget(std::size_t index)const
-		{
-			if (!mCustomRenderTargets)
-			{
-				assert(index == 0 && "index exceed container size");
-				auto swapChain = Renderer::Instance()->GetSwapChain();
-				return swapChain->GetCurrentRenderTarget();
-			}
-			return mRenderTargets[index];
-		}
-
-		std::size_t DrawCommand::GetRenderTargetCount()const
-		{
-			if (mCustomRenderTargets)
-				return mRenderTargets.size();
-			else
-				return 1u;
-		}
-
-		void DrawCommand::ClearRenderTargets()
-		{
-			DoClearRenderTargets();
-		}
-
-		void DrawCommand::SetDepthStencilBuffer(const std::shared_ptr<IDepthStencilBuffer>& depthStencilBuffer)
-		{
-			mCustomDepthStencilBuffer = true;
-			if (mDepthStencilBuffer == depthStencilBuffer)
-				return;
-			mDepthStencilBuffer = depthStencilBuffer;
-		}
-
-		std::shared_ptr<IDepthStencilBuffer> DrawCommand::GetDepthStencilBuffer()const
-		{
-			if (!mCustomDepthStencilBuffer)
-			{
-				auto renderer = Renderer::Instance();
-				return renderer->GetDefaultDepthStencilBuffer();
-			}
-			return mDepthStencilBuffer;
-		}
-		void DrawCommand::AddViewportAndScissorRect(const Viewport& viewport, const ScissorRect& scissorRect)
-		{
-			mCustomViewport = true;
-			mViewportAndScissorRects.push_back({ viewport, scissorRect });
-		}
-
-		std::size_t DrawCommand::GetViewportCount()const
-		{
-			if (!mCustomViewport)
-				return std::size_t(1);
-			else
-				return mViewportAndScissorRects.size();
-		}
-
-		void DrawCommand::GetViewportAndScissorRect(std::size_t index, Viewport& viewport, ScissorRect& scissorRect)const
-		{
-			if (!mCustomViewport)
-			{
-				assert(index == 0 && "Default viewport and scissorRect count is 1.");
-				auto renderer = Renderer::Instance();
-				auto window = renderer->GetOutputWindow();
-				viewport.left = viewport.top = .0f;
-				viewport.width = static_cast<float>(window->GetWidth());
-				viewport.height = static_cast<float>(window->GetHeight());
-
-				scissorRect.left = static_cast<long>(viewport.left);
-				scissorRect.top = static_cast<long>(viewport.top);
-				scissorRect.width = static_cast<long>(viewport.width);
-				scissorRect.height = static_cast<long>(viewport.height);
-			}
-			else
-			{
-				assert(index < mViewportAndScissorRects.size() && "viewport index out of range.");
-				const auto& vs = mViewportAndScissorRects[index];
-				viewport = vs.viewport;
-				scissorRect = vs.scissorRect;
-			}
-		}
-
 		void DrawCommand::Reset()
 		{
 			DoReset();
 		}
 
-		ICommittedDrawCommand* DrawCommand::Commit()const
+		void DrawCommand::Commit()
 		{
-			auto clonedUnit = new (CommittedDrawCommandPool::malloc()) CommittedDrawCommand;
-			clonedUnit->mPrimitiveType = GetPrimitiveType();
-			clonedUnit->mTransform = GetTransform();
-			clonedUnit->mViewMatrix = GetViewMatrix();
-			clonedUnit->mProjectionMatrix = GetProjectionMatrix();
-
-			clonedUnit->mIndexBuffer = GetIndexBuffer();
-
-			clonedUnit->mMaterial = GetMaterial();
-
-			clonedUnit->mDepthStencilBuffer = GetDepthStencilBuffer();
-			for (auto i = 0;i < GetRenderTargetCount();++i)
-			{
-				clonedUnit->mRenderTargets.push_back(GetRenderTarget(i));
-			}
-
-
-			clonedUnit->mViewportCount = GetViewportCount();
-			clonedUnit->mViewportAndScissorRects = g_RenderAllocator.Allocate 
-				<CommittedDrawCommand::ViewportAndScissorRect>(clonedUnit->mViewportCount);
-			for (auto i = 0;i < clonedUnit->mViewportCount;++i)
-			{
-				GetViewportAndScissorRect(i, clonedUnit->mViewportAndScissorRects[i].viewport
-					, clonedUnit->mViewportAndScissorRects[i].scissorRect);
-			}
-
-			clonedUnit->mVertexBufferCount = GetVertexBufferCount();
-			clonedUnit->mVertexBuffers = g_RenderAllocator.Allocate
-				<CommittedDrawCommand::VertexBufferSlot>(clonedUnit->mVertexBufferCount);
-			for (auto i = 0;i < clonedUnit->mVertexBufferCount;++i)
-			{
-				GetVertexBuffer(i, clonedUnit->mVertexBuffers[i].slot, 
-					clonedUnit->mVertexBuffers[i].vertexBuffer);
-			}
-			return clonedUnit;
+			CommitShaderParameters();
+			CommitPipelineStates();
+			CommitBuffers();
+			Draw();
 		}
 
 		void DrawCommand::DoReset()
 		{
 			mIndexBuffer.reset();
 			mMaterial.reset();
-			mDepthStencilBuffer.reset();
 			DoClearVertexBuffers();
-			DoClearRenderTargets();
-			DoClearViewportAndScissorRects();
-			mCustomDepthStencilBuffer = false;
-			mCustomRenderTargets = false;
-			mCustomViewport = false;
-		}
-
-		void DrawCommand::DoClearRenderTargets()
-		{
-			mRenderTargets.clear();
-			mCustomRenderTargets = false;
 		}
 
 		void DrawCommand::DoClearVertexBuffers()
 		{
 			mVertexBuffers.clear();
-		}
-
-		void DrawCommand::DoClearViewportAndScissorRects()
-		{
-			mViewportAndScissorRects.clear();
-			mCustomViewport = false;
 		}
 
 		void DrawCommand::Release()
@@ -319,11 +167,171 @@ namespace Lightning
 			DrawCommandPool::free(this);
 		}
 
-		void DrawCommand::Apply()
+		void DrawCommand::CommitShaderParameters()
 		{
-			//DrawCommand cannot apply
-			LOG_ERROR("Can't apply the draw call directly!Must invoke Commit and use Apply on CommittedDrawCommand!");
-			assert(0);
+			static const ShaderType shaderTypes[] =
+			{
+				ShaderType::VERTEX,
+				ShaderType::FRAGMENT,
+				ShaderType::GEOMETRY,
+				ShaderType::HULL,
+				ShaderType::DOMAIN
+			};
+			auto material = GetMaterial();
+			if (!material)
+				return;
+			auto renderer = Renderer::Instance();
+			for (auto shaderType : shaderTypes)
+			{
+				auto shader = material->GetShader(shaderType);
+				if (shader)
+				{
+					material->VisitParameters([&material, &shader](const Parameter& parameter) {
+						auto shaderParamType = shader->GetParameterType(parameter.GetName());
+						if (shaderParamType != ParameterType::UNKNOWN)
+						{
+							shader->SetParameter(parameter);
+						}
+					});
+					CommitSemanticUniforms(shader.get());
+				}
+			}
+		}
+
+		void DrawCommand::CommitPipelineStates()
+		{
+			PipelineState state;
+			state.Reset();
+			auto renderer = Renderer::Instance();
+			auto renderTargetCount = mRenderPass.GetRenderTargetCount();
+			for (auto i = 0;i < renderTargetCount;++i)
+			{
+				BlendState blendState;
+				if (mMaterial)
+				{
+					mMaterial->GetBlendState(blendState);
+					if (blendState.enable)
+					{
+						state.depthStencilState.depthWriteEnable = false;
+					}
+				}
+				auto renderTarget = mRenderPass.GetRenderTarget(i);
+				state.renderTargetBlendStates.push_back({renderTarget, blendState });
+			}
+			auto depthStencilBuffer = mRenderPass.GetDepthStencilBuffer();
+			if (depthStencilBuffer)
+			{
+				auto depthStencilTexture = depthStencilBuffer->GetTexture();
+				state.depthStencilState.bufferFormat = depthStencilTexture->GetRenderFormat();
+			}
+			//renderer->ApplyRenderTargets(renderTargets, mRenderTargets.size(), depthStencilBuffer.get());
+			if (mMaterial)
+			{
+				state.vs = mMaterial->GetShader(ShaderType::VERTEX);
+				state.fs = mMaterial->GetShader(ShaderType::FRAGMENT);
+				state.gs = mMaterial->GetShader(ShaderType::GEOMETRY);
+				state.hs = mMaterial->GetShader(ShaderType::HULL);
+				state.ds = mMaterial->GetShader(ShaderType::DOMAIN);
+			}
+			state.primType = GetPrimitiveType();
+			//TODO : Apply other pipeline states(blend state, rasterizer state etc)
+			
+			GetInputLayouts(state.inputLayouts);
+
+			renderer->ApplyPipelineState(state);
+			/*
+			auto viewportCount = GetViewportCount();
+			auto viewports = g_RenderAllocator.Allocate<Viewport>(viewportCount);
+			auto scissorRects = g_RenderAllocator.Allocate<ScissorRect>(viewportCount);
+			for (auto i = 0;i < viewportCount;++i)
+			{
+				GetViewportAndScissorRect(i, viewports[i], scissorRects[i]);
+			}
+			renderer->ApplyViewports(viewports, viewportCount);
+			renderer->ApplyScissorRects(scissorRects, viewportCount);*/
+		}
+
+		void DrawCommand::CommitBuffers()
+		{
+			auto renderer = Renderer::Instance();
+			auto vertexBufferCount = GetVertexBufferCount();
+			for (std::uint8_t i = 0; i < vertexBufferCount; i++)
+			{
+				std::size_t slot;
+				std::shared_ptr<IVertexBuffer> vertexBuffer;
+				GetVertexBuffer(i, slot, vertexBuffer);
+				vertexBuffer->Commit();
+				renderer->BindVertexBuffer(slot, vertexBuffer.get());
+			}
+			auto indexBuffer = GetIndexBuffer();
+			if (indexBuffer)
+			{
+				indexBuffer->Commit();
+				renderer->BindIndexBuffer(indexBuffer.get());
+			}
+		}
+
+		void DrawCommand::Draw()
+		{
+			auto renderer = Renderer::Instance();
+			auto indexBuffer = GetIndexBuffer();
+			if (indexBuffer)
+			{
+				DrawParam param{};
+				param.drawType = DrawType::Index;
+				param.indexCount = indexBuffer->GetIndexCount();
+				param.instanceCount = 1;
+				renderer->Draw(param);
+			}
+			else
+			{
+				//TODO : should implement
+			}
+		}
+
+		void DrawCommand::CommitSemanticUniforms(IShader* shader)
+		{
+			auto renderer = Renderer::Instance();
+			RenderSemantics* semantics{ nullptr };
+			std::uint16_t semanticCount{ 0 };
+			shader->GetUniformSemantics(&semantics, semanticCount);
+			if (semanticCount == 0)
+				return;
+			for (auto i = 0;i < semanticCount;++i)
+			{
+				auto semantic = semantics[i];
+				auto uniformName = renderer->GetUniformName(semantic);
+				switch (semantic)
+				{
+				case RenderSemantics::WVP:
+				{
+					//We know that transform.ToMatrix4 may change it's internal matrix
+					auto wvp = GetProjectionMatrix() * GetViewMatrix() * mTransform.GetMatrix();
+					shader->SetParameter(Parameter(uniformName, wvp));
+					break;
+				}
+				default:
+					LOG_WARNING("Unsupported semantics : {0}", semantic);
+					break;
+				}
+			}
+		}
+
+		void DrawCommand::GetInputLayouts(std::vector<VertexInputLayout>& inputLayouts)
+		{
+			for (auto it = mVertexBuffers.begin(); it != mVertexBuffers.end();++it)
+			{
+				VertexInputLayout layout;
+				auto& vertexDescriptor = it->second->GetVertexDescriptor();
+				layout.slot = it->first;
+				layout.componentCount = vertexDescriptor.componentCount;
+				if (layout.componentCount > 0)
+				{
+					layout.components = g_RenderAllocator.Allocate<VertexComponent>(layout.componentCount);
+					std::memcpy(layout.components, vertexDescriptor.components, sizeof(VertexComponent) * layout.componentCount);
+				}
+				inputLayouts.push_back(layout);
+			}
 		}
 	}
 }

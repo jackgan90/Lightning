@@ -55,6 +55,12 @@ namespace Lightning
 				size = visitor.size;
 				return buffer;
 			}
+
+			template<typename ValueType>
+			ValueType GetValue()const
+			{
+				return boost::get<ValueType>(mValue);
+			}
 		protected:
 			using Variant = 
 			//The order of template parameters must match that defined in ParameterType
@@ -65,7 +71,7 @@ namespace Lightning
 				Foundation::Math::Vector3f, 
 				Foundation::Math::Vector4f, 
 				Foundation::Math::Matrix4f, 
-				ITexture*, 
+				std::shared_ptr<ITexture>, 
 				SamplerState
 			>;
 			struct ValueVisitor : public boost::static_visitor<const void*>
