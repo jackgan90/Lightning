@@ -33,12 +33,12 @@ namespace Lightning
 			return command;
 		}
 
-		void RenderPass::Render(IRenderer& renderer)
+		void RenderPass::Render()
 		{
-			DoRender(renderer);
+			DoRender();
 			for (const auto& renderPass : mSubPasses)
 			{
-				renderPass->Render(renderer);
+				renderPass->Render();
 			}
 		}
 
@@ -58,9 +58,9 @@ namespace Lightning
 			return succeed;
 		}
 
-		void RenderPass::BeginRender(IRenderer& renderer)
+		void RenderPass::BeginRender()
 		{
-			mFrameResourceIndex = renderer.GetFrameResourceIndex();
+			mFrameResourceIndex = mRenderer.GetFrameResourceIndex();
 			for (auto it = mDrawCommands[mFrameResourceIndex].unsafe_begin(); it != mDrawCommands[mFrameResourceIndex].unsafe_end();++it)
 			{
 				(*it)->Release();
@@ -69,12 +69,12 @@ namespace Lightning
 
 			for (const auto& renderPass : mSubPasses)
 			{
-				renderPass->BeginRender(renderer);
+				renderPass->BeginRender();
 			}
 
 		}
 
-		void RenderPass::EndRender(IRenderer& renderer)
+		void RenderPass::EndRender()
 		{
 			for (auto i = 0;i < RENDER_FRAME_COUNT;++i)
 			{
@@ -93,7 +93,7 @@ namespace Lightning
 
 			for (const auto& renderPass : mSubPasses)
 			{
-				renderPass->EndRender(renderer);
+				renderPass->EndRender();
 			}
 		}
 	}

@@ -16,25 +16,25 @@ namespace Lightning
 
 		}
 
-		void ForwardRenderPass::DoRender(IRenderer& renderer)
+		void ForwardRenderPass::DoRender()
 		{
-			auto backBuffer = renderer.GetDefaultRenderTarget();
-			renderer.ClearRenderTarget(backBuffer.get(), mClearColor);
-			auto depthStencilBuffer = renderer.GetDefaultDepthStencilBuffer();
-			renderer.ClearDepthStencilBuffer(depthStencilBuffer.get(), DepthStencilClearFlags::CLEAR_DEPTH | DepthStencilClearFlags::CLEAR_STENCIL,
+			auto backBuffer = mRenderer.GetDefaultRenderTarget();
+			mRenderer.ClearRenderTarget(backBuffer.get(), mClearColor);
+			auto depthStencilBuffer = mRenderer.GetDefaultDepthStencilBuffer();
+			mRenderer.ClearDepthStencilBuffer(depthStencilBuffer.get(), DepthStencilClearFlags::CLEAR_DEPTH | DepthStencilClearFlags::CLEAR_STENCIL,
 				depthStencilBuffer->GetDepthClearValue(), depthStencilBuffer->GetStencilClearValue(), nullptr);
 			
 			tbb::parallel_for(tbb::blocked_range<std::size_t>(0, mCurrentDrawList->size()), 
-				[this, &renderer](const tbb::blocked_range<std::size_t>& range) {
-				auto backBuffer = renderer.GetDefaultRenderTarget();
-				auto depthStencilBuffer = renderer.GetDefaultDepthStencilBuffer();
+				[this](const tbb::blocked_range<std::size_t>& range) {
+				auto backBuffer = mRenderer.GetDefaultRenderTarget();
+				auto depthStencilBuffer = mRenderer.GetDefaultDepthStencilBuffer();
 				auto renderTargets = g_RenderAllocator.Allocate<IRenderTarget*>(1);
 				renderTargets[0] = backBuffer.get();
-				renderer.ApplyRenderTargets(renderTargets, 1, depthStencilBuffer.get());
+				mRenderer.ApplyRenderTargets(renderTargets, 1, depthStencilBuffer.get());
 
 				auto scissorRects = g_RenderAllocator.Allocate<ScissorRect>(1);
 				auto viewports = g_RenderAllocator.Allocate<Viewport>(1);
-				auto window = renderer.GetOutputWindow();
+				auto window = mRenderer.GetOutputWindow();
 
 				viewports[0].left = viewports[0].top = .0f;
 				viewports[0].width = static_cast<float>(window->GetWidth());
@@ -44,8 +44,8 @@ namespace Lightning
 				scissorRects[0].top = static_cast<long>(viewports[0].top);
 				scissorRects[0].width = static_cast<long>(viewports[0].width);
 				scissorRects[0].height = static_cast<long>(viewports[0].height);
-				renderer.ApplyViewports(viewports, 1);
-				renderer.ApplyScissorRects(scissorRects, 1);
+				mRenderer.ApplyViewports(viewports, 1);
+				mRenderer.ApplyScissorRects(scissorRects, 1);
 				std::vector<std::shared_ptr<IVertexBuffer>> vertexBuffers;
 				for (std::size_t i = range.begin(); i != range.end();++i)
 				{

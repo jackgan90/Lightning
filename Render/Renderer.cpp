@@ -62,17 +62,17 @@ namespace Lightning
 			OnFrameBegin();
 			if (mRootRenderPass)
 			{
-				mRootRenderPass->BeginRender(*this);
+				mRootRenderPass->BeginRender();
 			}
 			OnFrameUpdate();
 			if (mRootRenderPass)
 			{
-				mRootRenderPass->Render(*this);
+				mRootRenderPass->Render();
 			}
 			OnFrameEnd();
 			if (mRootRenderPass)
 			{
-				mRootRenderPass->EndRender(*this);
+				mRootRenderPass->EndRender();
 			}
 			mFrameResources[mFrameResourceIndex].frame = mFrameCount;
 			mFrameResources[mFrameResourceIndex].fence->SetTargetValue(mFrameCount);

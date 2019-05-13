@@ -17,13 +17,13 @@ namespace Lightning
 			RenderPass(IRenderer& renderer);
 			~RenderPass()override;
 			bool AddDrawable(const std::shared_ptr<IDrawable>& drawable, const std::shared_ptr<ICamera>& camera)override;
-			void BeginRender(IRenderer& renderer)override;
-			void EndRender(IRenderer& renderer)override;
+			void BeginRender()override;
+			void Render()override;
+			void EndRender()override;
 			//Render is called by renderer once per frame.Subpasses are also rendered by this method
-			void Render(IRenderer& renderer)override;
 		protected:
 			virtual bool AcceptDrawable(const std::shared_ptr<IDrawable>& drawable, const std::shared_ptr<ICamera>& camera) = 0;
-			virtual void DoRender(IRenderer& renderer) = 0;
+			virtual void DoRender() = 0;
 			IDrawCommand* NewDrawCommand();
 			struct DrawableElement
 			{

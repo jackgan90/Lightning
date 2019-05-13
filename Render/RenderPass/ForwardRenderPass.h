@@ -14,7 +14,7 @@ namespace Lightning
 			std::shared_ptr<IRenderTarget> GetRenderTarget(std::size_t index)const override;
 			std::shared_ptr<IDepthStencilBuffer> GetDepthStencilBuffer()const override;
 		protected:
-			void DoRender(IRenderer& renderer)override;
+			void DoRender()override;
 			bool AcceptDrawable(const std::shared_ptr<IDrawable>& drawable, const std::shared_ptr<ICamera>& camera)override;
 			ColorF mClearColor;
 		};
