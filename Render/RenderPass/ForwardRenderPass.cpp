@@ -16,7 +16,7 @@ namespace Lightning
 
 		}
 
-		void ForwardRenderPass::Render(IRenderer& renderer)
+		void ForwardRenderPass::DoRender(IRenderer& renderer)
 		{
 			auto backBuffer = renderer.GetDefaultRenderTarget();
 			renderer.ClearRenderTarget(backBuffer.get(), mClearColor);

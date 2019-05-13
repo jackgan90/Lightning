@@ -31,19 +31,29 @@ namespace Lightning
 			return command;
 		}
 
+		void RenderPass::Render(IRenderer& renderer)
+		{
+			DoRender(renderer);
+			for (const auto& renderPass : mSubPasses)
+			{
+				renderPass->Render(renderer);
+			}
+		}
+
 		bool RenderPass::AddDrawable(const std::shared_ptr<IDrawable>& drawable, const std::shared_ptr<ICamera>& camera)
 		{
+			bool succeed{ false };
+			if (AcceptDrawable(drawable, camera))
+			{
+				mCurrentDrawList->emplace_back(DrawableElement{ drawable, camera });
+				succeed = true;
+			}
+
 			for (const auto& renderPass : mSubPasses)
 			{
 				renderPass->AddDrawable(drawable, camera);
 			}
-
-			if (AcceptDrawable(drawable, camera))
-			{
-				mCurrentDrawList->emplace_back(DrawableElement{ drawable, camera });
-				return true;
-			}
-			return false;
+			return succeed;
 		}
 
 		void RenderPass::BeginRender(IRenderer& renderer)
@@ -54,6 +64,12 @@ namespace Lightning
 				(*it)->Release();
 			}
 			mDrawCommands[mFrameResourceIndex].clear();
+
+			for (const auto& renderPass : mSubPasses)
+			{
+				renderPass->BeginRender(renderer);
+			}
+
 		}
 
 		void RenderPass::EndRender(IRenderer& renderer)
@@ -71,6 +87,11 @@ namespace Lightning
 					mCurrentDrawList = &mDrawables[queueIndex];
 					break;
 				}
+			}
+
+			for (const auto& renderPass : mSubPasses)
+			{
+				renderPass->EndRender(renderer);
 			}
 		}
 	}
