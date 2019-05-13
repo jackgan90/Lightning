@@ -9,7 +9,7 @@ namespace Lightning
 		class ForwardRenderPass : public RenderPass
 		{
 		public:	
-			ForwardRenderPass();
+			ForwardRenderPass(IRenderer& renderer);
 			std::size_t GetRenderTargetCount()const override;
 			std::shared_ptr<IRenderTarget> GetRenderTarget(std::size_t index)const override;
 			std::shared_ptr<IDepthStencilBuffer> GetDepthStencilBuffer()const override;

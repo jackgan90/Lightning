@@ -6,7 +6,9 @@ namespace Lightning
 {
 	namespace Render
 	{
-		RenderPass::RenderPass() : mCurrentDrawList(&mDrawables[0])
+		RenderPass::RenderPass(IRenderer& renderer) 
+			: mCurrentDrawList(&mDrawables[0])
+			, mRenderer(renderer)
 		{
 
 		}
@@ -26,7 +28,7 @@ namespace Lightning
 
 		IDrawCommand* RenderPass::NewDrawCommand()
 		{
-			auto command = new (DrawCommandPool::malloc()) DrawCommand(*this);
+			auto command = new (DrawCommandPool::malloc()) DrawCommand(mRenderer, *this);
 			mDrawCommands[mFrameResourceIndex].emplace(command);
 			return command;
 		}

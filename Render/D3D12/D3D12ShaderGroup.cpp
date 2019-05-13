@@ -8,10 +8,11 @@ namespace Lightning
 {
 	namespace Render
 	{
-		D3D12ShaderGroup::D3D12ShaderGroup()
+		D3D12ShaderGroup::D3D12ShaderGroup(D3D12Renderer& renderer)
 			: mConstantBufferCount(0)
 			, mTextureCount(0)
 			, mSamplerStateCount(0)
+			, mRenderer(renderer)
 		{
 
 		}
@@ -71,7 +72,6 @@ namespace Lightning
 		void D3D12ShaderGroup::CommitDescriptorTables(ID3D12GraphicsCommandList* commandList
 			, DescriptorHeap* constantHeap, DescriptorHeap* samplerHeap)
 		{
-			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
 			UINT rootParameterIndex{ 0 };
 			CD3DX12_CPU_DESCRIPTOR_HANDLE constantCPUHandle, samplerCPUHandle;
 			CD3DX12_GPU_DESCRIPTOR_HANDLE constantGPUHandle, samplerGPUHandle;
@@ -85,6 +85,7 @@ namespace Lightning
 				samplerCPUHandle = samplerHeap->CPUHandle;
 				samplerGPUHandle = samplerHeap->GPUHandle;
 			}
+			auto device = static_cast<D3D12Device*>(mRenderer.GetDevice());
 			for (const auto& shader : mShaders)
 			{
 				auto boundResources = shader->GetRootBoundResources();
@@ -182,7 +183,6 @@ namespace Lightning
 
 		void D3D12ShaderGroup::Commit(ID3D12GraphicsCommandList* commandList)
 		{
-			auto renderer = static_cast<D3D12Renderer*>(Renderer::Instance());
 			DescriptorHeap* constantHeap{ nullptr }, *samplerHeap{ nullptr };
 			CommitDescriptorHeaps(commandList, constantHeap, samplerHeap);
 			CommitDescriptorTables(commandList, constantHeap, samplerHeap);
@@ -201,7 +201,6 @@ namespace Lightning
 
 		ComPtr<ID3D12RootSignature> D3D12ShaderGroup::CreateRootSignature()
 		{
-			auto device = static_cast<D3D12Device*>(Renderer::Instance()->GetDevice());
 			CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
 			std::vector<D3D12_ROOT_PARAMETER> rootParameters;
 			D3D12_ROOT_SIGNATURE_FLAGS flags = 
@@ -250,6 +249,7 @@ namespace Lightning
 				return ComPtr<ID3D12RootSignature>();
 			}
 
+			auto device = static_cast<D3D12Device*>(mRenderer.GetDevice());
 			mRootSignature = device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize());
 			return mRootSignature;
 		}

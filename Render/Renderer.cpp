@@ -156,7 +156,7 @@ namespace Lightning
 				mFrameResources[i].defaultDepthStencilBuffer = mDevice->CreateDepthStencilBuffer(texture);
 			}
 			mFrameResourceIndex = 0;
-			mRootRenderPass = std::make_unique<ForwardRenderPass>();
+			mRootRenderPass = std::make_unique<ForwardRenderPass>(*this);
 			mStarted = true;
 		}
 

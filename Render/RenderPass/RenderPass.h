@@ -14,7 +14,7 @@ namespace Lightning
 		class RenderPass : public IRenderPass
 		{
 		public:
-			RenderPass();
+			RenderPass(IRenderer& renderer);
 			~RenderPass()override;
 			bool AddDrawable(const std::shared_ptr<IDrawable>& drawable, const std::shared_ptr<ICamera>& camera)override;
 			void BeginRender(IRenderer& renderer)override;
@@ -35,6 +35,7 @@ namespace Lightning
 			tbb::concurrent_vector<DrawableElement>* mCurrentDrawList;
 			std::vector<std::shared_ptr<RenderPass>> mSubPasses;
 			std::size_t mFrameResourceIndex;
+			IRenderer& mRenderer;
 		};
 	}
 }

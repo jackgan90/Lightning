@@ -10,8 +10,8 @@ namespace Lightning
 	namespace Render
 	{
 		extern FrameMemoryAllocator g_RenderAllocator;
-		ForwardRenderPass::ForwardRenderPass() 
-			:RenderPass(), mClearColor{0.5f, 0.5f, 0.5f, 1.0f}
+		ForwardRenderPass::ForwardRenderPass(IRenderer& renderer) 
+			:RenderPass(renderer), mClearColor{0.5f, 0.5f, 0.5f, 1.0f}
 		{
 
 		}
@@ -79,12 +79,12 @@ namespace Lightning
 
 		std::shared_ptr<IRenderTarget> ForwardRenderPass::GetRenderTarget(std::size_t index)const
 		{
-			return Renderer::Instance()->GetDefaultRenderTarget();
+			return mRenderer.GetDefaultRenderTarget();
 		}
 
 		std::shared_ptr<IDepthStencilBuffer> ForwardRenderPass::GetDepthStencilBuffer()const
 		{
-			return Renderer::Instance()->GetDefaultDepthStencilBuffer();
+			return mRenderer.GetDefaultDepthStencilBuffer();
 		}
 	}
 }

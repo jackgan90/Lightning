@@ -320,7 +320,7 @@ namespace Lightning
 		D3D12Renderer::PipelineCacheObject D3D12Renderer::CreateAndCachePipelineState(const PipelineState& state, std::size_t hashValue)
 		{
 			PipelineCacheObject cacheObject;
-			cacheObject.shaderGroup = std::make_shared<D3D12ShaderGroup>();
+			cacheObject.shaderGroup = std::make_shared<D3D12ShaderGroup>(*this);
 			D3D12_GRAPHICS_PIPELINE_STATE_DESC desc{};
 			ApplyRasterizerState(state.rasterizerState, desc);
 			ApplyBlendStates(state.renderTargetBlendStates, desc);

@@ -13,7 +13,7 @@ namespace Lightning
 		class DrawCommand : public IDrawCommand
 		{
 		public:
-			DrawCommand(IRenderPass& renderPass);
+			DrawCommand(IRenderer& renderer, IRenderPass& renderPass);
 			~DrawCommand()override;
 			void SetPrimitiveType(PrimitiveType type)override;
 			PrimitiveType GetPrimitiveType()const override;
@@ -58,6 +58,7 @@ namespace Lightning
 			std::shared_ptr<IMaterial> mMaterial;	//shader material attributes
 			std::unordered_map<std::size_t, std::shared_ptr<IVertexBuffer>> mVertexBuffers;
 			IRenderPass& mRenderPass;
+			IRenderer& mRenderer;
 		};
 		using DrawCommandPool = boost::singleton_pool<DrawCommand, sizeof(DrawCommand)>;
 	}

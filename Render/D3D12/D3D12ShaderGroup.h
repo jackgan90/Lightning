@@ -5,10 +5,11 @@ namespace Lightning
 {
 	namespace Render
 	{
+		class D3D12Renderer;
 		class D3D12ShaderGroup : boost::noncopyable
 		{
 		public:
-			D3D12ShaderGroup();
+			D3D12ShaderGroup(D3D12Renderer& renderer);
 			~D3D12ShaderGroup();
 			//Add a shader to this group,thread unsafe
 			void AddShader(const std::shared_ptr<D3D12Shader>& shader);
@@ -38,6 +39,7 @@ namespace Lightning
 			std::size_t mConstantBufferCount;
 			std::size_t mTextureCount;
 			std::size_t mSamplerStateCount;
+			D3D12Renderer& mRenderer;
 		};
 	}
 }

@@ -1,6 +1,5 @@
 #include <cassert>
 #include <algorithm>
-#include "Renderer.h"
 #include "DrawCommand.h"
 #include "DrawCommand.h"
 #include "FrameMemoryAllocator.h"
@@ -13,8 +12,8 @@ namespace Lightning
 	namespace Render
 	{
 		extern FrameMemoryAllocator g_RenderAllocator;
-		DrawCommand::DrawCommand(IRenderPass& renderPass)
-			: mRenderPass(renderPass)
+		DrawCommand::DrawCommand(IRenderer& renderer, IRenderPass& renderPass)
+			: mRenderPass(renderPass), mRenderer(renderer)
 		{
 
 		}
@@ -180,7 +179,6 @@ namespace Lightning
 			auto material = GetMaterial();
 			if (!material)
 				return;
-			auto renderer = Renderer::Instance();
 			for (auto shaderType : shaderTypes)
 			{
 				auto shader = material->GetShader(shaderType);
@@ -202,7 +200,6 @@ namespace Lightning
 		{
 			PipelineState state;
 			state.Reset();
-			auto renderer = Renderer::Instance();
 			auto renderTargetCount = mRenderPass.GetRenderTargetCount();
 			for (auto i = 0;i < renderTargetCount;++i)
 			{
@@ -238,22 +235,11 @@ namespace Lightning
 			
 			GetInputLayouts(state.inputLayouts);
 
-			renderer->ApplyPipelineState(state);
-			/*
-			auto viewportCount = GetViewportCount();
-			auto viewports = g_RenderAllocator.Allocate<Viewport>(viewportCount);
-			auto scissorRects = g_RenderAllocator.Allocate<ScissorRect>(viewportCount);
-			for (auto i = 0;i < viewportCount;++i)
-			{
-				GetViewportAndScissorRect(i, viewports[i], scissorRects[i]);
-			}
-			renderer->ApplyViewports(viewports, viewportCount);
-			renderer->ApplyScissorRects(scissorRects, viewportCount);*/
+			mRenderer.ApplyPipelineState(state);
 		}
 
 		void DrawCommand::CommitBuffers()
 		{
-			auto renderer = Renderer::Instance();
 			auto vertexBufferCount = GetVertexBufferCount();
 			for (std::uint8_t i = 0; i < vertexBufferCount; i++)
 			{
@@ -261,19 +247,18 @@ namespace Lightning
 				std::shared_ptr<IVertexBuffer> vertexBuffer;
 				GetVertexBuffer(i, slot, vertexBuffer);
 				vertexBuffer->Commit();
-				renderer->BindVertexBuffer(slot, vertexBuffer.get());
+				mRenderer.BindVertexBuffer(slot, vertexBuffer.get());
 			}
 			auto indexBuffer = GetIndexBuffer();
 			if (indexBuffer)
 			{
 				indexBuffer->Commit();
-				renderer->BindIndexBuffer(indexBuffer.get());
+				mRenderer.BindIndexBuffer(indexBuffer.get());
 			}
 		}
 
 		void DrawCommand::Draw()
 		{
-			auto renderer = Renderer::Instance();
 			auto indexBuffer = GetIndexBuffer();
 			if (indexBuffer)
 			{
@@ -281,7 +266,7 @@ namespace Lightning
 				param.drawType = DrawType::Index;
 				param.indexCount = indexBuffer->GetIndexCount();
 				param.instanceCount = 1;
-				renderer->Draw(param);
+				mRenderer.Draw(param);
 			}
 			else
 			{
@@ -291,7 +276,6 @@ namespace Lightning
 
 		void DrawCommand::CommitSemanticUniforms(IShader* shader)
 		{
-			auto renderer = Renderer::Instance();
 			RenderSemantics* semantics{ nullptr };
 			std::uint16_t semanticCount{ 0 };
 			shader->GetUniformSemantics(&semantics, semanticCount);
@@ -300,7 +284,7 @@ namespace Lightning
 			for (auto i = 0;i < semanticCount;++i)
 			{
 				auto semantic = semantics[i];
-				auto uniformName = renderer->GetUniformName(semantic);
+				auto uniformName = mRenderer.GetUniformName(semantic);
 				switch (semantic)
 				{
 				case RenderSemantics::WVP:
