@@ -85,7 +85,7 @@ namespace Lightning
 				samplerCPUHandle = samplerHeap->CPUHandle;
 				samplerGPUHandle = samplerHeap->GPUHandle;
 			}
-			for (auto shader : mShaders)
+			for (const auto& shader : mShaders)
 			{
 				auto boundResources = shader->GetRootBoundResources();
 				for (auto i = 0;i < shader->GetRootParameterCount();++i)
