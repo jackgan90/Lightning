@@ -28,19 +28,9 @@ namespace Lightning
 			mPrimitiveType = type;
 		}
 
-		PrimitiveType DrawCommand::GetPrimitiveType()const
-		{
-			return mPrimitiveType;
-		}
-
 		void DrawCommand::SetIndexBuffer(const std::shared_ptr<IIndexBuffer>& indexBuffer)
 		{
 			mIndexBuffer = indexBuffer;
-		}
-
-		std::shared_ptr<IIndexBuffer> DrawCommand::GetIndexBuffer()const
-		{
-			return mIndexBuffer;
 		}
 
 		void DrawCommand::ClearVertexBuffers()
@@ -48,61 +38,14 @@ namespace Lightning
 			DoClearVertexBuffers();
 		}
 
-		void DrawCommand::SetVertexBuffer(std::size_t slot, const std::shared_ptr<IVertexBuffer>& vertexBuffer)
+		void DrawCommand::SetVertexBuffers(const std::vector<std::shared_ptr<IVertexBuffer>>& vertexBuffers)
 		{
-			auto it = mVertexBuffers.find(slot);
-			if (it != mVertexBuffers.end())
-			{
-				if (it->second == vertexBuffer)
-					return;
-				if (vertexBuffer)
-				{
-					it->second = vertexBuffer;
-				}
-				else
-				{
-					mVertexBuffers.erase(it);
-				}
-			}
-			else
-			{
-				if (vertexBuffer)
-				{
-					mVertexBuffers.emplace(slot, vertexBuffer);
-				}
-			}
-		}
-
-		std::size_t DrawCommand::GetVertexBufferCount()const
-		{
-			return mVertexBuffers.size();
-		}
-
-		void DrawCommand::GetVertexBuffer(std::size_t index, std::size_t& slot, std::shared_ptr<IVertexBuffer>& vertexBuffer)const
-		{
-			assert(index < mVertexBuffers.size() && "index out of range.");
-			auto i = 0;
-			for (auto it = mVertexBuffers.begin(); it != mVertexBuffers.end();++it, ++i)
-			{
-				if (i == index)
-				{
-					slot = it->first;
-					vertexBuffer = it->second;
-					break;
-				}
-			}
+			mVertexBuffers = vertexBuffers;
 		}
 
 		void DrawCommand::SetMaterial(const std::shared_ptr<IMaterial>& material)
 		{
-			if (material == mMaterial)
-				return;
 			mMaterial = material;
-		}
-
-		std::shared_ptr<IMaterial> DrawCommand::GetMaterial()const
-		{
-			return mMaterial;
 		}
 
 		void DrawCommand::SetTransform(const Transform& transform)
@@ -110,29 +53,14 @@ namespace Lightning
 			mTransform = transform;
 		}
 
-		const Transform& DrawCommand::GetTransform()const
-		{
-			return mTransform;
-		}
-
 		void DrawCommand::SetViewMatrix(const Matrix4f& matrix)
 		{
 			mViewMatrix = matrix;
 		}
 
-		const Matrix4f& DrawCommand::GetViewMatrix()const
-		{
-			return mViewMatrix;
-		}
-
 		void DrawCommand::SetProjectionMatrix(const Matrix4f& matrix)
 		{
 			mProjectionMatrix = matrix;
-		}
-
-		const Matrix4f& DrawCommand::GetProjectionMatrix()const
-		{
-			return mProjectionMatrix;
 		}
 
 		void DrawCommand::Reset()
@@ -158,6 +86,8 @@ namespace Lightning
 		void DrawCommand::DoClearVertexBuffers()
 		{
 			mVertexBuffers.clear();
+			//We don't need to deallocate the memories allocated for mVertexBuffers
+			//because the memory will be deallocated by Renderer
 		}
 
 		void DrawCommand::Release()
@@ -176,15 +106,14 @@ namespace Lightning
 				ShaderType::HULL,
 				ShaderType::DOMAIN
 			};
-			auto material = GetMaterial();
-			if (!material)
+			if (!mMaterial)
 				return;
 			for (auto shaderType : shaderTypes)
 			{
-				auto shader = material->GetShader(shaderType);
+				auto shader = mMaterial->GetShader(shaderType);
 				if (shader)
 				{
-					material->VisitParameters([&material, &shader](const Parameter& parameter) {
+					mMaterial->VisitParameters([this, &shader](const Parameter& parameter) {
 						auto shaderParamType = shader->GetParameterType(parameter.GetName());
 						if (shaderParamType != ParameterType::UNKNOWN)
 						{
@@ -230,7 +159,7 @@ namespace Lightning
 				state.hs = mMaterial->GetShader(ShaderType::HULL);
 				state.ds = mMaterial->GetShader(ShaderType::DOMAIN);
 			}
-			state.primType = GetPrimitiveType();
+			state.primType = mPrimitiveType;
 			//TODO : Apply other pipeline states(blend state, rasterizer state etc)
 			
 			GetInputLayouts(state.inputLayouts);
@@ -240,31 +169,25 @@ namespace Lightning
 
 		void DrawCommand::CommitBuffers()
 		{
-			auto vertexBufferCount = GetVertexBufferCount();
-			for (std::uint8_t i = 0; i < vertexBufferCount; i++)
+			for (std::uint8_t i = 0; i < mVertexBuffers.size(); i++)
 			{
-				std::size_t slot;
-				std::shared_ptr<IVertexBuffer> vertexBuffer;
-				GetVertexBuffer(i, slot, vertexBuffer);
-				vertexBuffer->Commit();
-				mRenderer.BindVertexBuffer(slot, vertexBuffer.get());
+				mVertexBuffers[i]->Commit();
+				mRenderer.BindVertexBuffer(i, mVertexBuffers[i].get());
 			}
-			auto indexBuffer = GetIndexBuffer();
-			if (indexBuffer)
+			if (mIndexBuffer)
 			{
-				indexBuffer->Commit();
-				mRenderer.BindIndexBuffer(indexBuffer.get());
+				mIndexBuffer->Commit();
+				mRenderer.BindIndexBuffer(mIndexBuffer.get());
 			}
 		}
 
 		void DrawCommand::Draw()
 		{
-			auto indexBuffer = GetIndexBuffer();
-			if (indexBuffer)
+			if (mIndexBuffer)
 			{
 				DrawParam param{};
 				param.drawType = DrawType::Index;
-				param.indexCount = indexBuffer->GetIndexCount();
+				param.indexCount = mIndexBuffer->GetIndexCount();
 				param.instanceCount = 1;
 				mRenderer.Draw(param);
 			}
@@ -290,7 +213,7 @@ namespace Lightning
 				case RenderSemantics::WVP:
 				{
 					//We know that transform.ToMatrix4 may change it's internal matrix
-					auto wvp = GetProjectionMatrix() * GetViewMatrix() * mTransform.GetMatrix();
+					auto wvp = mProjectionMatrix * mViewMatrix * mTransform.GetMatrix();
 					shader->SetParameter(Parameter(uniformName, wvp));
 					break;
 				}
@@ -303,11 +226,11 @@ namespace Lightning
 
 		void DrawCommand::GetInputLayouts(std::vector<VertexInputLayout>& inputLayouts)
 		{
-			for (auto it = mVertexBuffers.begin(); it != mVertexBuffers.end();++it)
+			for (auto i = 0;i < mVertexBuffers.size(); ++i)
 			{
 				VertexInputLayout layout;
-				auto& vertexDescriptor = it->second->GetVertexDescriptor();
-				layout.slot = it->first;
+				auto& vertexDescriptor = mVertexBuffers[i]->GetVertexDescriptor();
+				layout.slot = i;
 				layout.componentCount = vertexDescriptor.componentCount;
 				if (layout.componentCount > 0)
 				{

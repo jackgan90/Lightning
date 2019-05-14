@@ -20,18 +20,10 @@ namespace Lightning
 		struct IDrawCommand
 		{
 			virtual ~IDrawCommand() = default;
-			virtual PrimitiveType GetPrimitiveType()const = 0;
-			virtual std::shared_ptr<IIndexBuffer> GetIndexBuffer()const = 0;
-			virtual std::size_t GetVertexBufferCount()const = 0;
-			virtual void GetVertexBuffer(std::size_t index, std::size_t& slot, std::shared_ptr<IVertexBuffer>& vertexBuffer)const = 0;
-			virtual std::shared_ptr<IMaterial> GetMaterial()const = 0;
-			virtual const Transform& GetTransform()const = 0;
-			virtual const Matrix4f& GetViewMatrix()const = 0;
-			virtual const Matrix4f& GetProjectionMatrix()const = 0;
 			virtual void SetPrimitiveType(PrimitiveType type) = 0;
 			virtual void SetIndexBuffer(const std::shared_ptr<IIndexBuffer>& indexBuffer) = 0;
 			virtual void ClearVertexBuffers() = 0;
-			virtual void SetVertexBuffer(std::size_t slot, const std::shared_ptr<IVertexBuffer>& vertexBuffer) = 0;
+			virtual void SetVertexBuffers(const std::vector<std::shared_ptr<IVertexBuffer>>& vertexBuffers) = 0;
 			virtual void SetMaterial(const std::shared_ptr<IMaterial>& material) = 0;
 			virtual void SetTransform(const Transform& transform) = 0;
 			virtual void SetViewMatrix(const Matrix4f& matrix) = 0;

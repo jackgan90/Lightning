@@ -17,7 +17,7 @@ namespace Lightning
 			~Primitive()override;
 			PrimitiveType GetPrimitiveType()const override{ return PrimitiveType::TRIANGLE_LIST; }
 			std::shared_ptr<Render::IIndexBuffer> GetIndexBuffer()const override { return mIndexBuffer; }
-			void GetVertexBuffers(std::vector<std::shared_ptr<Render::IVertexBuffer>>& vertexBuffers)const override;
+			const std::vector<std::shared_ptr<Render::IVertexBuffer>>& GetVertexBuffers()const override;
 			std::shared_ptr<Render::IMaterial> GetMaterial()const override { return mMaterial; }
 			const Transform& GetTransform()const override { return mTransform; }
 			void SetWorldPosition(const Vector3f& pos) override{ mTransform.SetPosition(pos); }

@@ -46,18 +46,13 @@ namespace Lightning
 				scissorRects[0].height = static_cast<long>(viewports[0].height);
 				mRenderer.ApplyViewports(viewports, 1);
 				mRenderer.ApplyScissorRects(scissorRects, 1);
-				std::vector<std::shared_ptr<IVertexBuffer>> vertexBuffers;
 				for (std::size_t i = range.begin(); i != range.end();++i)
 				{
 					DrawableElement element = mCurrentDrawList->at(i);
 					auto drawCommand = NewDrawCommand();
 					drawCommand->SetPrimitiveType(element.drawable->GetPrimitiveType());
 					drawCommand->SetIndexBuffer(element.drawable->GetIndexBuffer());
-					element.drawable->GetVertexBuffers(vertexBuffers);
-					for (auto i = 0; i < vertexBuffers.size(); ++i)
-					{
-						drawCommand->SetVertexBuffer(i, vertexBuffers[i]);
-					}
+					drawCommand->SetVertexBuffers(element.drawable->GetVertexBuffers());
 					drawCommand->SetMaterial(element.drawable->GetMaterial());
 					drawCommand->SetTransform(element.drawable->GetTransform());
 					drawCommand->SetViewMatrix(element.camera->GetViewMatrix());

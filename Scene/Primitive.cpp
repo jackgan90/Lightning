@@ -158,9 +158,9 @@ namespace Lightning
 			mTransform.SetScale(GetScale());
 		}
 
-		void Primitive::GetVertexBuffers(std::vector<std::shared_ptr<Render::IVertexBuffer>>& vertexBuffers)const
+		const std::vector<std::shared_ptr<Render::IVertexBuffer>>& Primitive::GetVertexBuffers()const
 		{
-			vertexBuffers = mVertexBuffers;
+			return mVertexBuffers;
 		}
 
 		
