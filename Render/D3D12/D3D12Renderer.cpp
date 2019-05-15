@@ -391,6 +391,7 @@ namespace Lightning
 			pDesc->CullMode = D3D12TypeMapper::MapCullMode(state.cullMode);
 			pDesc->ForcedSampleCount = 0;
 			pDesc->FrontCounterClockwise = state.frontFace == WindingOrder::COUNTER_CLOCKWISE;
+			pDesc->DepthClipEnable = TRUE;
 		}
 
 		void D3D12Renderer::ApplyBlendStates(const std::vector<RenderTargetBlendState>& states, 

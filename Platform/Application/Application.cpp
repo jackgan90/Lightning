@@ -148,8 +148,8 @@ namespace Lightning
 			auto sceneMgr = scenePlugin->GetSceneManager();
 			auto scene = sceneMgr->CreateScene();
 			auto camera = scene->GetActiveCamera();
-			camera->MoveTo(Render::Vector3f({ 2.0f, 2.0f, -2.0f}));
-			camera->LookAt(Render::Vector3f({ 0.0f, 0.0f, 0.0f }));
+			camera->MoveTo(Render::Vector3f{ 2.0f, 2.0f, -2.0f});
+			camera->LookAt(Render::Vector3f{ 0.0f, 0.0f, 0.0f });
 			//camera->SetRotation(Quaternionf(EulerAnglef(3.14 + 0.0, 0, 0)));
 			//camera->SetCameraType(Render::CameraType::Orthographic);
 			GenerateSceneObjects(sceneMgr, scenePlugin);

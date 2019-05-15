@@ -11,7 +11,7 @@ namespace Lightning
 		using Foundation::Math::Vector4f;
 		using Foundation::Math::Quaternionf;
 		extern Plugins::IRenderPlugin* gRenderPlugin;
-		Camera::Camera():mType(CameraType::Perspective), mNearPlane(0.01f), mFarPlane(1000.0f), 
+		Camera::Camera():mType(CameraType::Perspective), mNearPlane(0.1f), mFarPlane(1000.0f), 
 			mFov(DegreesToRadians(60.0f)), mAspectRatio(1.0f),
 			mTransform(Vector3f::Zero(), Vector3f{1, 1, 1}, Quaternionf::Identity())
 		{
@@ -20,7 +20,7 @@ namespace Lightning
 		}
 
 		Camera::Camera(const Vector3f& worldPosition, const Vector3f& lookDir, const Vector3f& worldUp):
-			mType(CameraType::Perspective), mNearPlane(0.01f), mFarPlane(1000.0f),
+			mType(CameraType::Perspective), mNearPlane(0.1f), mFarPlane(1000.0f),
 			mFov(DegreesToRadians(60.0f)), mAspectRatio(1.0f)
 		{
 			mTransform.SetPosition(worldPosition);
