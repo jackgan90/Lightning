@@ -44,7 +44,7 @@ namespace Lightning
 			"VSOutput main(VSInput input)\n"
 			"{\n"
 			"	VSOutput output;\n"
-			"	output.pos = mul(wvp, float4(input.position, 1.0f));\n"
+			"	output.pos = mul(float4(input.position, 1.0f), wvp);\n"
 			"	output.normal = input.normal;\n"
 			"	return output;\n"
 			"}\n";

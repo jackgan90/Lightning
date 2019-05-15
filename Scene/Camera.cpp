@@ -104,26 +104,32 @@ namespace Lightning
 
 		void Camera::UpdateProjectionMatrix()
 		{
-			mProjectionMatrix.SetZero();
-			auto ndcNear = gRenderPlugin->GetRenderer()->GetNDCNearPlane();
+			mProjectionMatrix.SetIdentity();
+			//auto ndcNear = gRenderPlugin->GetRenderer()->GetNDCNearPlane();
+			//TODO £ºIf OpenGL is implemented,should adjust according to it
 			switch (mType)
 			{
 			case CameraType::Perspective:
 			{
-				mProjectionMatrix.SetCell(0, 0, static_cast<float>(1.0 / (tan(mFov / 2.0) * mAspectRatio)));
-				mProjectionMatrix.SetCell(1, 1, static_cast<float>(1.0 / tan(mFov / 2.0)));
-				mProjectionMatrix.SetCell(2, 2, (mNearPlane * ndcNear - mFarPlane) / (mFarPlane - mNearPlane));
-				mProjectionMatrix.SetCell(3, 2, -1);
-				mProjectionMatrix.SetCell(2, 3, (ndcNear - 1.0f) * mNearPlane * mFarPlane / (mFarPlane - mNearPlane));
+				auto f = 1.0f / tan(mFov * 0.5f);
+				auto d = mFarPlane - mNearPlane;
+				mProjectionMatrix.SetCell(0, 0, f / mAspectRatio);
+				mProjectionMatrix.SetCell(1, 1, f);
+				mProjectionMatrix.SetCell(2, 2, mFarPlane / d);
+				mProjectionMatrix.SetCell(3, 3, 0.0f);
+				mProjectionMatrix.SetCell(2, 3, 1.0f);
+				mProjectionMatrix.SetCell(3, 2, - mNearPlane * mFarPlane / d);
 				break;
 			}
 			case CameraType::Orthographic:
 			{
-				mProjectionMatrix.SetCell(0, 0, static_cast<float>(1.0 / (tan(mFov / 2.0) * mAspectRatio * mNearPlane)));
-				mProjectionMatrix.SetCell(1, 1, static_cast<float>(1.0 / (tan(mFov / 2.0) * mNearPlane)));
-				mProjectionMatrix.SetCell(2, 2, static_cast<float>(-2.0 / (mFarPlane - mNearPlane)));
-				mProjectionMatrix.SetCell(2, 3, -(mFarPlane + mNearPlane) / (mFarPlane - mNearPlane));
-				mProjectionMatrix.SetCell(3, 3, 1);
+				auto h = 2 * tan(mFov / 2.0f) * mNearPlane;
+				auto w = mAspectRatio * h;
+				auto d = mFarPlane - mNearPlane;
+				mProjectionMatrix.SetCell(0, 0, 2.0f / w);
+				mProjectionMatrix.SetCell(1, 1, 2.0f / h);
+				mProjectionMatrix.SetCell(2, 2, 1.0f / d);
+				mProjectionMatrix.SetCell(3, 2, - mNearPlane / d);
 				break;
 			}
 			default:
@@ -139,48 +145,33 @@ namespace Lightning
 
 		void Camera::UpdateViewMatrix()
 		{
-			/*
-				V =	| R 0 |
-					| 0 1 |
-				T =	| I A |
-					| 0 1 |
-			view matrix is the multiplication of VT
-					| R RA|
-					| 0 1 |
-			*/	
-			//static int cnt = 0;
-			//if (cnt >= 3)
-			//	return;
-			//cnt++;
 			mViewMatrix = mTransform.GlobalToLocalMatrix4();
 			mInvViewMatrix = mTransform.LocalToGlobalMatrix4();
-
-			//auto res = mViewMatrix * mInvViewMatrix;
 		}
 
 		Vector3f Camera::CameraPointToWorld(const Vector3f& point)const
 		{
-			auto res = mInvViewMatrix * Vector4f{point.x, point.y, point.z, 1.0f};
+			auto res = Vector4f{point.x, point.y, point.z, 1.0f} * mInvViewMatrix;
 			return Vector3f{ res.x, res.y, res.z };
 		}
 
 		Vector3f Camera::WorldPointToCamera(const Vector3f& point)const
 		{
-			auto res = mViewMatrix * Vector4f{point.x, point.y, point.z, 1.0f};
+			auto res = Vector4f{point.x, point.y, point.z, 1.0f} * mViewMatrix;
 			return Vector3f{ res.x, res.y, res.z };
 		}
 
 		Vector3f Camera::CameraDirectionToWorld(const Vector3f& direction)const
 		{
 			Vector4f dir{direction.x, direction.y, direction.z, 0.0f};
-			auto res = mInvViewMatrix * dir;
+			auto res = dir * mInvViewMatrix;
 			return Vector3f{ res.x, res.y, res.z };
 		}
 
 		Vector3f Camera::WorldDirectionToCamera(const Vector3f& direction)const
 		{
 			Vector4f dir{direction.x, direction.y, direction.z, 0.0f};
-			auto res = mViewMatrix * dir;
+			auto res = dir * mViewMatrix;
 			return Vector3f{ res.x, res.y, res.z };
 		}
 	}

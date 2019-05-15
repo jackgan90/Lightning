@@ -40,8 +40,9 @@ namespace Lightning
 		void GenerateSceneObjects(ISceneManager* sceneMgr, Plugins::IScenePlugin* scenePlugin)
 		{
 			auto scene = sceneMgr->GetForegroundScene();
-		/*
+		
 			auto cube = scenePlugin->CreateCube(1.0f, 1.0f, 1.0f);
+			cube->SetWorldPosition(Vector3f{0.0f, 0.0f, 0.0f});
 			Render::Color32 color;
 			color.r = 255;
 			color.g = 255;
@@ -62,39 +63,39 @@ namespace Lightning
 			device->CreateTextureFromFile("lunafreya.jpg", [cube, scene](const std::shared_ptr<Render::ITexture>& texture) {
 					cube->SetTexture("tex", texture);
 					scene->AddDrawable(cube);
-			});*/
+			});
 			
-			
+			/*
 			static std::random_device rd;
 			static std::mt19937 mt(rd());
 			static std::uniform_real_distribution<float> rDist(-2, 2);
 			static std::uniform_int_distribution<int> dist(0, 3);
 			static std::uniform_int_distribution<int> cDist(0, 255);
-			for (auto i = 0;i < 200;++i)
+			for (auto i = 0;i < 1;++i)
 			{
 				std::shared_ptr<Scene::IPrimitive> p;
-				switch (dist(mt))
-				{
-				case 0:
+				//switch (dist(mt))
+				//{
+				//case 0:
 					p = scenePlugin->CreateCube(1.0f, 1.0f, 1.0f);
-					break;
-				case 1:
-					p = scenePlugin->CreateCylinder(2.0f, 1.0f);
-					break;
-				case 2:
-					p = scenePlugin->CreateHemisphere(1.0f);
-					break;
-				case 3:
-					p = scenePlugin->CreateSphere(1.0f);
-					break;
-				default:
-					break;
-				}
+					//break;
+				//case 1:
+				//	p = scenePlugin->CreateCylinder(2.0f, 1.0f);
+				//	break;
+				//case 2:
+				//	p = scenePlugin->CreateHemisphere(1.0f);
+				//	break;
+				//case 3:
+				//	p = scenePlugin->CreateSphere(1.0f);
+				//	break;
+				//default:
+				//	break;
+				//}
 				Vector3f pos;
-				pos.x = rDist(mt);
-				pos.y = rDist(mt);
-				pos.z = rDist(mt);
-				p->SetWorldPosition(pos);
+				//pos.x = rDist(mt);
+				//pos.y = rDist(mt);
+				//pos.z = rDist(mt);
+				//p->SetWorldPosition(pos);
 				Render::Color32 color;
 				color.a = 255;
 				color.r = cDist(mt);
@@ -103,7 +104,7 @@ namespace Lightning
 				p->SetColor(color);
 				p->SetWorldRotation(Transform::RandomRotation());
 				scene->AddDrawable(p);
-			}
+			}*/
 		}
 		//For test only end
 
@@ -147,10 +148,10 @@ namespace Lightning
 			auto sceneMgr = scenePlugin->GetSceneManager();
 			auto scene = sceneMgr->CreateScene();
 			auto camera = scene->GetActiveCamera();
-			camera->MoveTo(Render::Vector3f({2.0f, 2.0f, 2.0f}));
+			camera->MoveTo(Render::Vector3f({ 2.0f, 2.0f, -2.0f}));
 			camera->LookAt(Render::Vector3f({ 0.0f, 0.0f, 0.0f }));
 			//camera->SetRotation(Quaternionf(EulerAnglef(3.14 + 0.0, 0, 0)));
-			//camera->SetCameraType(Scene::CameraType::Orthographic);
+			//camera->SetCameraType(Render::CameraType::Orthographic);
 			GenerateSceneObjects(sceneMgr, scenePlugin);
 			//camera->RotateTowards(Render::Vector3f(0.0f, 1.0f, -1.0f));
 

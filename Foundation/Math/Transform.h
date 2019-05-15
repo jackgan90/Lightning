@@ -78,14 +78,14 @@ namespace Lightning
 					up.Normalize();
 					direction.Normalize();
 
-					auto right = direction.Cross(up);
-					if (right.IsZero())
+					auto left = direction.Cross(up);
+					if (left.IsZero())
 					{
-						right = Right();
+						left = -Right();
 					}
-					auto desiredUp = right.Cross(direction);
+					auto desiredUp = left.Cross(direction);
 
-					auto rot1 = Quaternionf::MakeRotation(Vector3f::back(), direction);
+					auto rot1 = Quaternionf::MakeRotation(Vector3f::forward(), direction);
 
 					Vector3f newUp = rot1 * Vector3f::up();
 
@@ -105,7 +105,7 @@ namespace Lightning
 
 					mMatrixDirty = true;
 				}
-				Vector3f Forward()const { return mRotation * Vector3f::back(); }
+				Vector3f Forward()const { return mRotation * Vector3f::forward(); }
 				Vector3f Up()const { return mRotation * Vector3f::up(); }
 				Vector3f Right()const { return mRotation * Vector3f::right(); }
 				//ref : https://math.stackexchange.com/questions/44689/how-to-find-a-random-axis-or-unit-vector-in-3d
@@ -121,7 +121,7 @@ namespace Lightning
 
 					auto direction = Vector3f{coef * std::cos(theta), coef * std::sin(theta), z};
 
-					return Quaternionf::MakeRotation(Vector3f::back(), direction);
+					return Quaternionf::MakeRotation(Vector3f::forward(), direction);
 				}
 			private:
 				void UpdateMatrix()
@@ -132,7 +132,7 @@ namespace Lightning
 
 					Matrix4f matTrans;
 					matTrans.SetIdentity();
-					matTrans.SetColumn(3, Vector4f{mPosition.x, mPosition.y, mPosition.z, 1.0f});
+					matTrans.SetRow(3, Vector4f{mPosition.x, mPosition.y, mPosition.z, 1.0f});
 
 					Matrix4f matRotation;
 					mRotation.ToMatrix(matRotation);
@@ -143,7 +143,7 @@ namespace Lightning
 					matScale.SetCell(1, 1, mScale.y);
 					matScale.SetCell(2, 2, mScale.z);
 
-					mMatrix = matTrans * matRotation * matScale;
+					mMatrix = matScale * matRotation * matTrans;
 
 					matScale.SetIdentity();
 					matScale.SetCell(0, 0, float(1.0 / mScale.x));
@@ -153,9 +153,9 @@ namespace Lightning
 					mRotation.Inversed().ToMatrix(matRotation);
 
 					matTrans.SetIdentity();
-					matTrans.SetColumn(3, Vector4f{-mPosition.x, -mPosition.y, -mPosition.z, 1.0f});
+					matTrans.SetRow(3, Vector4f{-mPosition.x, -mPosition.y, -mPosition.z, 1.0f});
 
-					mInverseMatrix = matScale * matRotation * matTrans;
+					mInverseMatrix = matTrans * matRotation * matScale;
 				}
 				bool mMatrixDirty;
 				Vector3f mPosition;

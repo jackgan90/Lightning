@@ -213,7 +213,7 @@ namespace Lightning
 				case RenderSemantics::WVP:
 				{
 					//We know that transform.ToMatrix4 may change it's internal matrix
-					auto wvp = mProjectionMatrix * mViewMatrix * mTransform.GetMatrix();
+					auto wvp = mTransform.GetMatrix() * mViewMatrix * mProjectionMatrix;
 					shader->SetParameter(Parameter(uniformName, wvp));
 					break;
 				}

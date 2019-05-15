@@ -102,7 +102,20 @@ namespace Lightning
 			template<typename T>
 			Vector4<T> operator*(const Vector4<T>& v, const Matrix4<T>& mat)
 			{
-				return operator*(mat, v);
+				Vector4<T> res;
+				res.x = mat.GetCell(0, 0) * v.x + mat.GetCell(1, 0) * v.y + \
+					mat.GetCell(2, 0) * v.z + mat.GetCell(3, 0) * v.w;
+
+				res.y = mat.GetCell(0, 1) * v.x + mat.GetCell(1, 1) * v.y + \
+					mat.GetCell(2, 1) * v.z + mat.GetCell(3, 1) * v.w;
+
+				res.z = mat.GetCell(0, 2) * v.x + mat.GetCell(1, 2) * v.y + \
+					mat.GetCell(2, 2) * v.z + mat.GetCell(3, 2) * v.w;
+
+				res.w = mat.GetCell(0, 3) * v.x + mat.GetCell(1, 3) * v.y + \
+					mat.GetCell(2, 3) * v.z + mat.GetCell(3, 3) * v.w;
+
+				return res;
 			}
 
 			using Matrix4f = Matrix4<float>;

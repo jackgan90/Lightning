@@ -69,10 +69,10 @@ namespace Lightning
 						camOffset += Vector3f::right();
 						break;
 					case VK_W:
-						camOffset += Vector3f::back();
+						camOffset += Vector3f::forward();
 						break;
 					case VK_S:
-						camOffset += Vector3f::forward();
+						camOffset += Vector3f::back();
 						break;
 					case VK_Q:
 						camOffset += Vector3f::up();

@@ -169,58 +169,58 @@ namespace Lightning
 		{
 			auto pVecs = new Vector3f[48];			//normal and position
 			auto pos_unit = .5f;
-			pVecs[0] = { -pos_unit, -pos_unit, pos_unit };		//front face
-			pVecs[1] = { 0.f, 0.f, 1.f };		
-			pVecs[2] = { pos_unit, -pos_unit, pos_unit };
-			pVecs[3] = { 0.f, 0.f, 1.f };		
-			pVecs[4] = { pos_unit, pos_unit, pos_unit };
-			pVecs[5] = { 0.f, 0.f, 1.f };		
-			pVecs[6] = { -pos_unit, pos_unit, pos_unit };
-			pVecs[7] = { 0.f, 0.f, 1.f };		
+			pVecs[0] = { -pos_unit, -pos_unit, -pos_unit };		//front face
+			pVecs[1] = { 0.f, 0.f, -1.f };		
+			pVecs[2] = { pos_unit, -pos_unit, -pos_unit };
+			pVecs[3] = { 0.f, 0.f, -1.f };		
+			pVecs[4] = { pos_unit, pos_unit, -pos_unit };
+			pVecs[5] = { 0.f, 0.f, -1.f };		
+			pVecs[6] = { -pos_unit, pos_unit, -pos_unit };
+			pVecs[7] = { 0.f, 0.f, -1.f };		
 
-			pVecs[8] = { pos_unit, -pos_unit, pos_unit };		//right face
+			pVecs[8] = { pos_unit, -pos_unit, -pos_unit };		//right face
 			pVecs[9] = { 1.f, 0.f, 0.f };		
-			pVecs[10] = { pos_unit, -pos_unit, -pos_unit };
+			pVecs[10] = { pos_unit, -pos_unit, pos_unit };
 			pVecs[11] = { 1.f, 0.f, 0.f };		
-			pVecs[12] = { pos_unit, pos_unit, -pos_unit };
+			pVecs[12] = { pos_unit, pos_unit, pos_unit };
 			pVecs[13] = { 1.f, 0.f, 0.f };		
-			pVecs[14] = { pos_unit, pos_unit, pos_unit };
+			pVecs[14] = { pos_unit, pos_unit, -pos_unit };
 			pVecs[15] = { 1.f, 0.f, 0.f };		
 
-			pVecs[16] = { pos_unit, -pos_unit, -pos_unit };		//back face
-			pVecs[17] = { 0.f, 0.f, -1.f };		
-			pVecs[18] = { -pos_unit, -pos_unit, -pos_unit };
-			pVecs[19] = { 0.f, 0.f, -1.f };		
-			pVecs[20] = { -pos_unit, pos_unit, -pos_unit };
-			pVecs[21] = { 0.f, 0.f, -1.f };		
-			pVecs[22] = { pos_unit, pos_unit, -pos_unit };
-			pVecs[23] = { 0.f, 0.f, -1.f };		
+			pVecs[16] = { pos_unit, -pos_unit, pos_unit };		//back face
+			pVecs[17] = { 0.f, 0.f, 1.f };		
+			pVecs[18] = { -pos_unit, -pos_unit, pos_unit };
+			pVecs[19] = { 0.f, 0.f, 1.f };		
+			pVecs[20] = { -pos_unit, pos_unit, pos_unit };
+			pVecs[21] = { 0.f, 0.f, 1.f };		
+			pVecs[22] = { pos_unit, pos_unit, pos_unit };
+			pVecs[23] = { 0.f, 0.f, 1.f };		
 
-			pVecs[24] = { -pos_unit, -pos_unit, -pos_unit };	//left face
+			pVecs[24] = { -pos_unit, -pos_unit, pos_unit };	//left face
 			pVecs[25] = { -1.f, 0.f, 0.f };		
-			pVecs[26] = { -pos_unit, -pos_unit, pos_unit };
+			pVecs[26] = { -pos_unit, -pos_unit, -pos_unit };
 			pVecs[27] = { -1.f, 0.f, 0.f };		
-			pVecs[28] = { -pos_unit, pos_unit, pos_unit };
+			pVecs[28] = { -pos_unit, pos_unit, -pos_unit };
 			pVecs[29] = { -1.f, 0.f, 0.f };		
-			pVecs[30] = { -pos_unit, pos_unit, -pos_unit };
+			pVecs[30] = { -pos_unit, pos_unit, pos_unit };
 			pVecs[31] = { -1.f, 0.f, 0.f };		
 
-			pVecs[32] = { -pos_unit, pos_unit, pos_unit };	//top face
+			pVecs[32] = { -pos_unit, pos_unit, -pos_unit };	//top face
 			pVecs[33] = { 0.f, 1.f, 0.f };		
-			pVecs[34] = { pos_unit, pos_unit, pos_unit };
+			pVecs[34] = { pos_unit, pos_unit, -pos_unit };
 			pVecs[35] = { 0.f, 1.f, 0.f };		
-			pVecs[36] = { pos_unit, pos_unit, -pos_unit };
+			pVecs[36] = { pos_unit, pos_unit, pos_unit };
 			pVecs[37] = { 0.f, 1.f, 0.f };		
-			pVecs[38] = { -pos_unit, pos_unit, -pos_unit };
+			pVecs[38] = { -pos_unit, pos_unit, pos_unit };
 			pVecs[39] = { 0.f, 1.f, 0.f };		
 
-			pVecs[40] = { -pos_unit, -pos_unit, -pos_unit };	//bottom face
+			pVecs[40] = { -pos_unit, -pos_unit, pos_unit };	//bottom face
 			pVecs[41] = { 0.f, -1.f, 0.f };		
-			pVecs[42] = { pos_unit, -pos_unit, -pos_unit };
+			pVecs[42] = { pos_unit, -pos_unit, pos_unit };
 			pVecs[43] = { 0.f, -1.f, 0.f };		
-			pVecs[44] = { pos_unit, -pos_unit, pos_unit };
+			pVecs[44] = { pos_unit, -pos_unit, -pos_unit };
 			pVecs[45] = { 0.f, -1.f, 0.f };		
-			pVecs[46] = { -pos_unit, -pos_unit, pos_unit };
+			pVecs[46] = { -pos_unit, -pos_unit, -pos_unit };
 			pVecs[47] = { 0.f, -1.f, 0.f };		
 
 			vertices = reinterpret_cast<std::uint8_t*>(pVecs);
@@ -308,7 +308,7 @@ namespace Lightning
 				//upper circle
 				auto radians = DegreesToRadians(i * AngularUnit);
 				//normal
-				data[k + 1] = Vector3f::right() * std::cos(radians) + Vector3f::back() * std::sin(radians);
+				data[k + 1] = Vector3f::right() * std::cos(radians) + Vector3f::forward() * std::sin(radians);
 				data[k] = topCenter + 0.5f * data[k + 1];
 				
 				data[k + 1 + 2 * CirclePointCount] = data[k + 1];
@@ -398,7 +398,7 @@ namespace Lightning
 					auto index = i * CirclePointCount + j;
 					//pos
 					data[t++] = y * Vector3f::up() + radius_at_y * 
-						(Vector3f::right() * std::cos(xz_radians) + Vector3f::back() * std::sin(xz_radians));
+						(Vector3f::right() * std::cos(xz_radians) + Vector3f::forward() * std::sin(xz_radians));
 					//normal
 					data[t] = data[t - 1] * 2.0f;
 					++t;

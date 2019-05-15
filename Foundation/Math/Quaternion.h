@@ -170,8 +170,7 @@ namespace Lightning
 				//ref : Mathematics for 3D Game Programming And Computer Graphics
 				void ToMatrix(Matrix4<T>& mat)const
 				{
-					mat.SetZero();
-					mat.SetCell(3, 3, 1);
+					mat.SetIdentity();
 					
 					T x2 = 2 * x * x;
 					T y2 = 2 * y * y;
@@ -184,15 +183,15 @@ namespace Lightning
 					T wz = 2 * z * w;
 					
 					mat.SetCell(0, 0, 1 - y2 - z2);
-					mat.SetCell(0, 1, xy - wz);
-					mat.SetCell(0, 2, xz + wy);
+					mat.SetCell(1, 0, xy - wz);
+					mat.SetCell(2, 0, xz + wy);
 
-					mat.SetCell(1, 0, xy + wz);
+					mat.SetCell(0, 1, xy + wz);
 					mat.SetCell(1, 1, 1 - x2 - z2);
-					mat.SetCell(1, 2, yz - wx);
+					mat.SetCell(2, 1, yz - wx);
 
-					mat.SetCell(2, 0, xz - wy);
-					mat.SetCell(2, 1, yz + wx);
+					mat.SetCell(0, 2, xz - wy);
+					mat.SetCell(1, 2, yz + wx);
 					mat.SetCell(2, 2, 1 - x2 - y2);
 				}
 
