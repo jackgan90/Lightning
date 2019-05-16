@@ -17,7 +17,7 @@ namespace Lightning
 		struct ISerializer
 		{
 			virtual ~ISerializer() = default;
-			virtual void Serialize(char** buffer) = 0;
+			virtual std::shared_ptr<ISerializeBuffer> Serialize() = 0;
 			virtual void Deserialize(Foundation::IFile* file, const std::shared_ptr<ISerializeBuffer>& buffer) = 0;
 		};
 	}

@@ -4,28 +4,50 @@ message(STATUS "Configuring project Scene")
 set(HEADERS Scene.h 
 			SceneManager.h
 			Primitive.h
+			Mesh.h
+			Model.h
 			Camera.h)
 
 set(SOURCES Scene.cpp 
 			SceneManager.cpp
 			Primitive.cpp
-			Camera.cpp)
+			Camera.cpp
+			Mesh.cpp
+			Model.cpp)
 
 set(PLUGIN_HEADERS	IWorldPlugin.h)
-set(PLUGIN_SOURCES	ScenePluginImpl.cpp)
+set(PLUGIN_SOURCES	WorldPluginImpl.cpp)
+
+set(SERIALIZER_HEADERS	Serializers/ModelSerializer.h
+						Serializers/MeshSerializer.h)
+
+set(SERIALIZER_SOURCES	Serializers/ModelSerializer.cpp
+						Serializers/MeshSerializer.cpp)
 
 set(INTERFACE_HEADERS	IScene.h
 						ISceneManager.h			
+						ISerializable.h
+						IModel.h
 						IPrimitive.h)
 
-list(APPEND HEADERS	${INTERFACE_HEADERS} ${PLUGIN_HEADERS})
-list(APPEND SOURCES ${PLUGIN_SOURCES})
+set(OBJECT_HEADERS		ObjectHeaders/MeshHeader.h
+						ObjectHeaders/ModelHeader.h)
+
+list(APPEND HEADERS	${INTERFACE_HEADERS} 
+					${PLUGIN_HEADERS}
+					${SERIALIZER_HEADERS}
+					${OBJECT_HEADERS})
+
+list(APPEND SOURCES ${PLUGIN_SOURCES}
+					${SERIALIZER_SOURCES})
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 source_group("Interfaces" FILES ${INTERFACE_HEADERS})
 source_group("Plugin" FILES ${PLUGIN_HEADERS} ${PLUGIN_SOURCES})
+source_group("Serializers" FILES ${SERIALIZER_HEADERS} ${SERIALIZER_SOURCES})
+source_group("ObjectHeaders" FILES ${OBJECT_HEADERS})
 
 if (WIN32)
 	add_definitions(-DLIGHTNING_WIN32)

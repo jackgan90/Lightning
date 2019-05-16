@@ -11,7 +11,7 @@ namespace Lightning
 		public:
 			TextureSerializer(const std::string path, ResourceAsyncCallback<ITexture> callback);
 			~TextureSerializer()override;
-			void Serialize(char** buffer)override;
+			std::shared_ptr<Loading::ISerializeBuffer> Serialize()override;
 			void Deserialize(Foundation::IFile* file, const std::shared_ptr<Loading::ISerializeBuffer>& buffer)override;
 		private:
 			std::string mPath;

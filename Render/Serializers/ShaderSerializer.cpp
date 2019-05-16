@@ -21,9 +21,9 @@ namespace Lightning
 			}
 		}
 
-		void ShaderSerializer::Serialize(char** buffer)
+		std::shared_ptr<ISerializeBuffer> ShaderSerializer::Serialize()
 		{
-
+			return nullptr;
 		}
 
 		void ShaderSerializer::Deserialize(Foundation::IFile* file, const std::shared_ptr<Loading::ISerializeBuffer>& buffer)

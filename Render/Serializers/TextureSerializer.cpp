@@ -108,9 +108,9 @@ namespace Lightning
 		}
 
 
-		void TextureSerializer::Serialize(char** buffer)
+		std::shared_ptr<ISerializeBuffer> TextureSerializer::Serialize()
 		{
-			
+			return nullptr;
 		}
 
 		void TextureSerializer::Deserialize(Foundation::IFile* file, const std::shared_ptr<ISerializeBuffer>& buffer)
