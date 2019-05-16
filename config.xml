@@ -8,7 +8,7 @@
 		<Plugin>Loader</Plugin>
 		<Plugin>Window</Plugin>
 		<Plugin>Render</Plugin>
-		<Plugin>Scene</Plugin>
+		<Plugin>World</Plugin>
 	</Plugins>
 	<Resource>
 		<Root>D:\Lightning_res</Root>
