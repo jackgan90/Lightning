@@ -6,7 +6,7 @@
 
 namespace Lightning
 {
-	namespace Scene
+	namespace World
 	{
 		using Render::IRenderer;
 		extern Plugins::IRenderPlugin* gRenderPlugin;
@@ -21,12 +21,13 @@ namespace Lightning
 			auto it = mScenes.find(sceneId);
 			if (it != mScenes.end())
 			{
-				delete it->second;
 				mScenes.erase(it);
 			}
 		}
 
-		SceneManager::SceneManager():mForegroundScene(nullptr)
+		SceneManager::SceneManager()
+			: mForegroundSceneID(0)
+			, mCurrentSceneID(1)
 		{
 
 		}
@@ -43,31 +44,34 @@ namespace Lightning
 
 		void SceneManager::DestroyAllScenesImpl()
 		{
-			for (auto it = mScenes.begin();it != mScenes.end();++it)
-			{
-				delete it->second;
-			}
 			mScenes.clear();
 		}
 
 		IScene* SceneManager::CreateScene()
 		{
-			auto scene = new Scene(mCurrentSceneID);
-			mScenes[mCurrentSceneID] = scene;
-			mCurrentSceneID++;
+			auto sceneId = mCurrentSceneID++;
+			mScenes[sceneId] = std::make_unique<Scene>(sceneId);
 			if (!GetForegroundScene())
-				SetForegroundScene(scene);
-			return scene;
+				SetForegroundScene(mScenes[sceneId].get());
+			return mScenes[sceneId].get();
 		}
 
 		IScene* SceneManager::GetForegroundScene()
 		{
-			return mForegroundScene;
+			auto it = mScenes.find(mForegroundSceneID);
+			if (it != mScenes.end())
+			{
+				return it->second.get();
+			}
+			return nullptr;
 		}
 
 		void SceneManager::SetForegroundScene(IScene* scene)
 		{
-			mForegroundScene = scene;
+			if (scene)
+			{
+				mForegroundSceneID = scene->GetID();
+			}
 		}
 	}
 }

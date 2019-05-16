@@ -9,7 +9,7 @@
 #include "Loader.h"
 #include "IPluginManager.h"
 #include "IFoundationPlugin.h"
-#include "IScenePlugin.h"
+#include "IWorldPlugin.h"
 #include "IRenderPlugin.h"
 #include "IWindowPlugin.h"
 #include "tbb/task_scheduler_init.h"
@@ -18,7 +18,7 @@ namespace
 {
 	Lightning::Plugins::IWindowPlugin* windowPlugin = nullptr;
 	Lightning::Plugins::IRenderPlugin* renderPlugin = nullptr;
-	Lightning::Plugins::IScenePlugin* scenePlugin = nullptr;
+	Lightning::Plugins::IWorldPlugin* worldPlugin = nullptr;
 }
 
 namespace Lightning
@@ -30,14 +30,14 @@ namespace Lightning
 	namespace App
 	{
 		using namespace Window;
-		using Scene::ISceneManager;
+		using World::ISceneManager;
 		using Foundation::Math::EulerAnglef;
 		using Foundation::Math::Quaternionf;
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Transform;
 
 		//For test only
-		void GenerateSceneObjects(ISceneManager* sceneMgr, Plugins::IScenePlugin* scenePlugin)
+		void GenerateSceneObjects(ISceneManager* sceneMgr, Plugins::IWorldPlugin* scenePlugin)
 		{
 			auto scene = sceneMgr->GetForegroundScene();
 		
@@ -129,7 +129,7 @@ namespace Lightning
 			auto foundationPlugin = Plugins::GetPlugin<Plugins::IFoundationPlugin>(Plugins::gPluginMgr, "Foundation");
 			windowPlugin = Plugins::GetPlugin<Plugins::IWindowPlugin>(Plugins::gPluginMgr, "Window");
 			renderPlugin = Plugins::GetPlugin<Plugins::IRenderPlugin>(Plugins::gPluginMgr, "Render");
-			scenePlugin = Plugins::GetPlugin<Plugins::IScenePlugin>(Plugins::gPluginMgr, "Scene");
+			worldPlugin = Plugins::GetPlugin<Plugins::IWorldPlugin>(Plugins::gPluginMgr, "World");
 			static tbb::task_scheduler_init init(tbb::task_scheduler_init::deferred);
 			auto threadCount = foundationPlugin->GetConfigManager()->GetConfig().ThreadCount;
 			if (threadCount == 0)
@@ -145,14 +145,14 @@ namespace Lightning
 			mRenderer = renderPlugin->CreateRenderer(mWindow);
 			mRenderer->Start();
 			//Create a simple scene here just for test
-			auto sceneMgr = scenePlugin->GetSceneManager();
+			auto sceneMgr = worldPlugin->GetSceneManager();
 			auto scene = sceneMgr->CreateScene();
 			auto camera = scene->GetActiveCamera();
 			camera->MoveTo(Render::Vector3f{ 2.0f, 2.0f, -2.0f});
 			camera->LookAt(Render::Vector3f{ 0.0f, 0.0f, 0.0f });
 			//camera->SetRotation(Quaternionf(EulerAnglef(3.14 + 0.0, 0, 0)));
 			//camera->SetCameraType(Render::CameraType::Orthographic);
-			GenerateSceneObjects(sceneMgr, scenePlugin);
+			GenerateSceneObjects(sceneMgr, worldPlugin);
 			//camera->RotateTowards(Render::Vector3f(0.0f, 1.0f, -1.0f));
 
 			//End of scene creation
@@ -165,8 +165,8 @@ namespace Lightning
 			mWindow->UnregisterEventReceiver(this);
 			mRunning = false;
 			mExitCode = exitCode;
-			auto sceneMgr = Plugins::GetPlugin<Plugins::IScenePlugin>(Plugins::gPluginMgr, "Scene")->GetSceneManager();
-			sceneMgr->DestroyAllScenes();
+			auto worldPlugin = Plugins::GetPlugin<Plugins::IWorldPlugin>(Plugins::gPluginMgr, "World")->GetSceneManager();
+			worldPlugin->DestroyAllScenes();
 			mRenderer->ShutDown();
 			LOG_INFO("Application quit.");
 		}

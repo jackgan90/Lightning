@@ -5,7 +5,7 @@
 
 namespace Lightning
 {
-	namespace Scene
+	namespace World
 	{
 		class Scene : public IScene
 		{

@@ -5,7 +5,7 @@
 
 namespace Lightning
 {
-	namespace Scene
+	namespace World
 	{
 		extern Plugins::IRenderPlugin* gRenderPlugin;
 		Scene::Scene(const std::uint32_t id):mID(id)

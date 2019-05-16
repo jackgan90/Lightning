@@ -15,7 +15,7 @@ namespace Lightning
 	{
 		extern IPluginManager* gPluginMgr;
 	}
-	namespace Scene
+	namespace World
 	{
 		using Foundation::Math::Vector2f;
 		using Foundation::Math::Vector3f;

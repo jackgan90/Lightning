@@ -64,7 +64,7 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}
 					${CMAKE_SOURCE_DIR}/Render/Texture
 					${CMAKE_SOURCE_DIR}/Window
 					${CMAKE_SOURCE_DIR}/Utilities
-					${CMAKE_SOURCE_DIR}/Scene
+					${CMAKE_SOURCE_DIR}/World
 					${CMAKE_SOURCE_DIR}/Loader
 					${CMAKE_SOURCE_DIR}/Entities
 					${Boost_INCLUDE_DIR}
@@ -74,7 +74,7 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}
 
 
 add_library(${PROJECT_NAME} SHARED ${HEADERS} ${SOURCES})
-add_dependencies(${PROJECT_NAME} Foundation Window Render Scene Loader)
+add_dependencies(${PROJECT_NAME} Foundation Window Render World Loader)
 target_link_libraries(${PROJECT_NAME} ${TBB_LIBRARIES})
 if(MSVC)
 	set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /wd4251 /wd4275 /EHsc /MDd /MP")

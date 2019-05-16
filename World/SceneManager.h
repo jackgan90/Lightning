@@ -4,7 +4,7 @@
 
 namespace Lightning
 {
-	namespace Scene
+	namespace World
 	{
 		using Foundation::Singleton;
 		class SceneManager : public ISceneManager, public Singleton<SceneManager>
@@ -21,8 +21,8 @@ namespace Lightning
 		protected:
 			void DestroyAllScenesImpl();
 			std::uint32_t mCurrentSceneID;
-			std::unordered_map<std::uint32_t, IScene*> mScenes;
-			IScene* mForegroundScene;
+			std::uint32_t mForegroundSceneID;
+			std::unordered_map<std::uint32_t, std::unique_ptr<IScene>> mScenes;
 		private:
 			friend class Singleton<SceneManager>;
 		};

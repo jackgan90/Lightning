@@ -4,7 +4,7 @@
 #include "TimeSystem.h"
 #include "IPluginManager.h"
 #include "IRenderer.h"
-#include "IScenePlugin.h"
+#include "IWorldPlugin.h"
 #include "IFoundationPlugin.h"
 #undef min
 #undef max
@@ -27,8 +27,8 @@ namespace Lightning
 		void WindowsApplication::Start()
 		{
 			Application::Start();
-			auto scenePlugin = Plugins::GetPlugin<Plugins::IScenePlugin>(Plugins::gPluginMgr, "Scene");
-			mSceneMgr = scenePlugin->GetSceneManager();
+			auto worldPlugin = Plugins::GetPlugin<Plugins::IWorldPlugin>(Plugins::gPluginMgr, "World");
+			mSceneMgr = worldPlugin->GetSceneManager();
 		}
 
 		void WindowsApplication::OnWindowMouseWheel(IWindow* window, int delta, bool isVertical)

@@ -5,7 +5,7 @@
 
 namespace Lightning
 {
-	namespace Scene
+	namespace World
 	{
 		using Render::IDrawable;
 		using Render::ICamera;

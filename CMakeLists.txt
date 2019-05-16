@@ -48,8 +48,8 @@ add_subdirectory(Window)
 add_subdirectory(Render)
 add_subdirectory(Unittest)
 add_subdirectory(Loader)
-add_subdirectory(Scene)
-add_subdirectory(JobSystem)
+add_subdirectory(World)
+#add_subdirectory(JobSystem)
 
 
 

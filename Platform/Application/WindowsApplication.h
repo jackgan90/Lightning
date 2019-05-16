@@ -21,7 +21,7 @@ namespace Lightning
 			void OnWindowMouseDown(IWindow* window, VirtualKeyCode keyCode, std::size_t x, std::size_t y)override;
 			void OnWindowMouseMove(IWindow* window, VirtualKeyCode keyCode, std::size_t x, std::size_t y)override;
 		private:
-			Scene::ISceneManager* mSceneMgr;
+			World::ISceneManager* mSceneMgr;
 		};
 	}
 }

@@ -5,7 +5,7 @@
 
 namespace Lightning
 {
-	namespace Scene
+	namespace World
 	{
 		using Foundation::Math::DegreesToRadians;
 		using Foundation::Math::Vector4f;

@@ -7,7 +7,7 @@
 
 namespace Lightning
 {
-	namespace Scene
+	namespace World
 	{
 		using Foundation::Math::Transform;
 		class Primitive : public IPrimitive, public std::enable_shared_from_this<Primitive>

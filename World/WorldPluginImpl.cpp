@@ -1,4 +1,4 @@
-#include "IScenePlugin.h"
+#include "IWorldPlugin.h"
 #include "SceneManager.h"
 #include "Primitive.h"
 #include "IPluginManager.h"
@@ -9,19 +9,19 @@
 
 namespace Lightning
 {
-	using namespace Scene;
-	namespace Scene
+	using namespace World;
+	namespace World
 	{
 		Plugins::IRenderPlugin* gRenderPlugin;
 	}
 
 	namespace Plugins
 	{
-		class ScenePluginImpl : public IScenePlugin
+		class WorldPluginImpl : public IWorldPlugin
 		{
 		public:
-			ScenePluginImpl() {};
-			~ScenePluginImpl()override;
+			WorldPluginImpl() {};
+			~WorldPluginImpl()override;
 			ISceneManager* GetSceneManager()override;
 			std::shared_ptr<IPrimitive> CreateCube(float width, float height, float thickness)override;
 			std::shared_ptr<IPrimitive> CreateCylinder(float height, float radius)override;
@@ -33,51 +33,51 @@ namespace Lightning
 			IPluginManager* mPluginMgr;
 		};
 
-		void ScenePluginImpl::OnCreated(IPluginManager* mgr)
+		void WorldPluginImpl::OnCreated(IPluginManager* mgr)
 		{
 			mPluginMgr = mgr;
-			INIT_LOGGER(mgr, Scene)
-			Scene::gRenderPlugin = Plugins::GetPlugin<IRenderPlugin>(mgr, "Render");
-			mgr->MakePlugin1UpdateBeforePlugin2(this, Scene::gRenderPlugin);
+			INIT_LOGGER(mgr, World)
+			World::gRenderPlugin = Plugins::GetPlugin<IRenderPlugin>(mgr, "Render");
+			mgr->MakePlugin1UpdateBeforePlugin2(this, World::gRenderPlugin);
 			LOG_INFO("Scene plugin init.");
 		}
 
-		ScenePluginImpl::~ScenePluginImpl()
+		WorldPluginImpl::~WorldPluginImpl()
 		{
 			LOG_INFO("Scene plugin unloaded.");
 			FINALIZE_LOGGER(mPluginMgr)
 		}
 
-		void ScenePluginImpl::Tick()
+		void WorldPluginImpl::Tick()
 		{
 			SceneManager::Instance()->Tick();
 		}
 
-		ISceneManager* ScenePluginImpl::GetSceneManager()
+		ISceneManager* WorldPluginImpl::GetSceneManager()
 		{
 			return SceneManager::Instance();
 		}
 
-		std::shared_ptr<IPrimitive> ScenePluginImpl::CreateCube(float width, float height, float thickness)
+		std::shared_ptr<IPrimitive> WorldPluginImpl::CreateCube(float width, float height, float thickness)
 		{
 			return std::make_shared<Cube>(width, height, thickness);
 		}
 
-		std::shared_ptr<IPrimitive> ScenePluginImpl::CreateCylinder(float height, float radius)
+		std::shared_ptr<IPrimitive> WorldPluginImpl::CreateCylinder(float height, float radius)
 		{
 			return std::make_shared<Cylinder>(height, radius);
 		}
 
-		std::shared_ptr<IPrimitive> ScenePluginImpl::CreateHemisphere(float radius)
+		std::shared_ptr<IPrimitive> WorldPluginImpl::CreateHemisphere(float radius)
 		{
 			return std::make_shared<Hemisphere>(radius);
 		}
 
-		std::shared_ptr<IPrimitive> ScenePluginImpl::CreateSphere(float radius)
+		std::shared_ptr<IPrimitive> WorldPluginImpl::CreateSphere(float radius)
 		{
 			return std::make_shared<Sphere>(radius);
 		}
 	}
 }
 
-LIGHTNING_PLUGIN_IMPL(ScenePluginImpl)
+LIGHTNING_PLUGIN_IMPL(WorldPluginImpl)

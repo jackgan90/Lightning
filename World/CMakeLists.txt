@@ -1,4 +1,4 @@
-project(Scene)
+project(World)
 message(STATUS "Configuring project Scene")
 
 set(HEADERS Scene.h 
@@ -11,7 +11,7 @@ set(SOURCES Scene.cpp
 			Primitive.cpp
 			Camera.cpp)
 
-set(PLUGIN_HEADERS	IScenePlugin.h)
+set(PLUGIN_HEADERS	IWorldPlugin.h)
 set(PLUGIN_SOURCES	ScenePluginImpl.cpp)
 
 set(INTERFACE_HEADERS	IScene.h

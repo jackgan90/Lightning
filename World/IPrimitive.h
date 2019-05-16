@@ -9,7 +9,7 @@
 
 namespace Lightning
 {
-	namespace Scene
+	namespace World
 	{
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Quaternionf;

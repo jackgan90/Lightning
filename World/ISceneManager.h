@@ -3,7 +3,7 @@
 
 namespace Lightning
 {
-	namespace Scene
+	namespace World
 	{
 		struct ISceneManager
 		{

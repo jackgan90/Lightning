@@ -5,7 +5,7 @@
 
 namespace Lightning
 {
-	namespace Scene
+	namespace World
 	{
 		using Foundation::Math::Transform;
 		using Foundation::Math::Vector3f;
