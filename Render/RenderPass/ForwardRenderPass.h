@@ -1,6 +1,6 @@
 #pragma once
 #include "RenderPass.h"
-#include "PipelineState.h"
+#include "ThreadLocalObject.h"
 
 namespace Lightning
 {
@@ -16,6 +16,7 @@ namespace Lightning
 		protected:
 			void DoRender()override;
 			bool AcceptDrawable(const std::shared_ptr<IDrawable>& drawable, const std::shared_ptr<ICamera>& camera)override;
+			Foundation::ThreadLocalObject<std::uint64_t> mLastRenderFrame;
 			ColorF mClearColor;
 		};
 	}
