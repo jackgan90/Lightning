@@ -5,10 +5,8 @@ namespace Lightning
 {
 	namespace World
 	{
-		class Mesh : public ISerializable
+		class Mesh
 		{
-		public:
-			std::shared_ptr<ISerializer> CreateSerializer()override;
 		};
 	}
 }

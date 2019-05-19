@@ -1,13 +1,22 @@
 project(ResourceGenerator)
 message(STATUS "Configuring project ResourceGenerator")
 
+set(CONVERTER_HEADERS	Converters/AssimpConverter.h)
+set(CONVERTER_SOURCES	Converters/AssimpConverter.cpp)
+
 set(HEADERS )
 set(SOURCES ResourceGenerator.cpp)
+
+list(APPEND HEADERS ${CONVERTER_HEADERS})
+list(APPEND SOURCES ${CONVERTER_SOURCES})
+
+source_group("Converters" FILES ${CONVERTER_HEADERS} ${CONVERTER_SOURCES})
 
 set(ASSIMP_ROOT_DIR ${LIGHTNING_DEPENDENCIES_DIR}/assimp)
 find_package(assimp REQUIRED)
 
-include_directories(${ASSIMP_ROOT_DIR}/include)
+include_directories(${ASSIMP_ROOT_DIR}/include
+					${CMAKE_SOURCE_DIR}/World)
 
 
 if(MSVC)

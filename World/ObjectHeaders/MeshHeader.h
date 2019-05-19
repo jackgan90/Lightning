@@ -8,7 +8,8 @@ namespace Lightning
 	{
 		//Maximum number of vertex streams.Note position/normal/tangent/bitangent also accounts to stream count.
 		//eg.Position + Normal + Tangents + Bitangents + Other vertex attributes cannot exceed MaxVertexStreams.
-		constexpr std::uint8_t MaxVertexStreams = 8u;
+		constexpr std::uint8_t MaxVertexStreams = 16u;
+
 		struct VertexStream
 		{
 			std::uint8_t Components;
@@ -21,6 +22,8 @@ namespace Lightning
 		struct MeshHeader
 		{
 			std::uint32_t Magic;
+			std::uint32_t Version;
+			std::uint8_t PrimitiveType;		//Triangle?Or other types of primitives
 			std::uint8_t VertexStreams;		//number of vertex streams
 			std::uint8_t IndexSize;			
 			std::uint32_t IndexOffset;
