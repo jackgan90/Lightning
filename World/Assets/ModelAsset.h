@@ -2,7 +2,7 @@
 
 namespace Lightning
 {
-	namespace World
+	namespace Asset
 	{
 		struct ModelHeader
 		{

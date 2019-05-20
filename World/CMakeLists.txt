@@ -30,13 +30,14 @@ set(INTERFACE_HEADERS	IScene.h
 						IModel.h
 						IPrimitive.h)
 
-set(OBJECT_HEADERS		ObjectHeaders/MeshHeader.h
-						ObjectHeaders/ModelHeader.h)
+set(ASSET_HEADERS		Assets/AssetIdentity.h
+						Assets/MeshAsset.h
+						Assets/ModelAsset.h)
 
 list(APPEND HEADERS	${INTERFACE_HEADERS} 
 					${PLUGIN_HEADERS}
 					${SERIALIZER_HEADERS}
-					${OBJECT_HEADERS})
+					${ASSET_HEADERS})
 
 list(APPEND SOURCES ${PLUGIN_SOURCES}
 					${SERIALIZER_SOURCES})
@@ -47,7 +48,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 source_group("Interfaces" FILES ${INTERFACE_HEADERS})
 source_group("Plugin" FILES ${PLUGIN_HEADERS} ${PLUGIN_SOURCES})
 source_group("Serializers" FILES ${SERIALIZER_HEADERS} ${SERIALIZER_SOURCES})
-source_group("ObjectHeaders" FILES ${OBJECT_HEADERS})
+source_group("Assets" FILES ${ASSET_HEADERS})
 
 if (WIN32)
 	add_definitions(-DLIGHTNING_WIN32)
