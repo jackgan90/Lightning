@@ -1,11 +1,11 @@
-project(ResourceGenerator)
-message(STATUS "Configuring project ResourceGenerator")
+project(AssetPipeline)
+message(STATUS "Configuring project AssetPipeline")
 
 set(CONVERTER_HEADERS	Converters/AssimpConverter.h)
 set(CONVERTER_SOURCES	Converters/AssimpConverter.cpp)
 
 set(HEADERS )
-set(SOURCES ResourceGenerator.cpp)
+set(SOURCES AssetPipeline.cpp)
 
 list(APPEND HEADERS ${CONVERTER_HEADERS})
 list(APPEND SOURCES ${CONVERTER_SOURCES})

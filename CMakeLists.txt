@@ -49,7 +49,7 @@ add_subdirectory(Render)
 add_subdirectory(Unittest)
 add_subdirectory(Loader)
 add_subdirectory(World)
-add_subdirectory(ResourceGenerator)
+add_subdirectory(AssetPipeline)
 #add_subdirectory(JobSystem)
 
 

@@ -6,7 +6,7 @@
 int main(int argc, char** argv)
 {
 	Assimp::Importer importer;
-	auto scene = importer.ReadFile("E:\\assimp\\test\\models\\3D\\box.uc",
+	auto scene = importer.ReadFile("H:\\assimp\\test\\models\\3D\\box.uc",
 		aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
