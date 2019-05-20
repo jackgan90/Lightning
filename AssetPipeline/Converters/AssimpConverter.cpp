@@ -100,6 +100,8 @@ namespace Lightning
 				header.IndexSize = 4;
 				header.IndexOffset = meshDataOffset;
 				header.IndexCount = 0;
+				//FIXME : here I assume all the primitives of this mesh have the same primitive type
+				//so I can use the first face's mNumIndices to represent all of the primitives' number of indices
 				if (mesh->mNumFaces > 0)
 				{
 					header.IndexCount = mesh->mNumFaces * mesh->mFaces[0].mNumIndices;
