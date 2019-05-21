@@ -1,18 +1,15 @@
 #include <iostream>
-#include "assimp/Importer.hpp"
-#include "assimp/scene.h"
-#include "assimp/postprocess.h"
+#include "Converters/AssimpConverter.h"
 
 int main(int argc, char** argv)
 {
-	Assimp::Importer importer;
-	auto scene = importer.ReadFile("H:\\assimp\\test\\models\\3D\\box.uc",
-		aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
-	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	Lightning::Tools::AssimpConverter converter;
+	std::string inputFile("H:\\assimp\\test\\models\\FBX\\spider.fbx");
+	std::string outputDirectory("F:\\Lightning_res");
+	auto result = converter.Convert(inputFile, outputDirectory);
+	if (result)
 	{
-		std::cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << std::endl;
-		return -1;
+		std::cout << "Succeed in converting " << inputFile << std::endl;
 	}
-	std::cout << "Success import file " << std::endl;
 	return 0;
 }

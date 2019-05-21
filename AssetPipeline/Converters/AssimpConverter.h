@@ -12,8 +12,8 @@ namespace Lightning
 		class AssimpConverter
 		{
 		public:
-			AssimpConverter(const std::string& inputFilePath, const std::string& outputDirectory);
-			bool Convert();
+			AssimpConverter();
+			bool Convert(const std::string& inputFilePath, const std::string& outputDirectory);
 		private:
 			struct MeshMetadata
 			{
@@ -22,10 +22,10 @@ namespace Lightning
 			};
 			void VisitNode(aiNode* node);
 			MeshMetadata CreateMeshMetaData(aiMesh* mesh);
+			void FillMeshHeader(Asset::MeshHeader& header, const aiMesh* mesh, std::uint32_t& meshDataOffset);
+			void CopyMeshData(const Asset::MeshHeader& header, const aiMesh* mesh, std::uint8_t* buffer);
 			Assimp::Importer mImporter;
 			const aiScene* mScene;
-			std::string mOutputDirectory;
-			std::string mInputFilePath;
 			Asset::MeshesHeader mMeshesHeader;
 			std::vector<MeshMetadata> mMeshMetadatas;
 		};
