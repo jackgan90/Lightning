@@ -2,7 +2,7 @@
 #include "RenderConstants.h"
 #include "Quaternion.h"
 #include "Color.h"
-#include "IDrawable.h"
+#include "IRenderable.h"
 #include "Texture/ITexture.h"
 #include "Texture/Sampler.h"
 #include "IShader.h"
@@ -26,7 +26,7 @@ namespace Lightning
 			SPHERE
 		};
 
-		struct IPrimitive : Render::IDrawable
+		struct IPrimitive : IRenderable
 		{
 			virtual PrimitiveType GetPrimitiveType()const = 0;
 			virtual void SetWorldPosition(const Vector3f& pos) = 0;

@@ -37,16 +37,16 @@ namespace Lightning
 					auto aspectRatio = float(width) / height;
 					camera->SetAspectRatio(aspectRatio);
 				}
-				for (auto& drawable : mDrawables)
+				for (auto& drawable : mRenderables)
 				{
-					drawable->Draw(*renderer, camera);
+					drawable->Render(*renderer, camera);
 				}
 			}
 		}
 
-		void Scene::AddDrawable(const std::shared_ptr<IDrawable>& drawable)
+		void Scene::AddRenderable(const std::shared_ptr<IRenderable>& drawable)
 		{
-			mDrawables.emplace_back(drawable);
+			mRenderables.emplace_back(drawable);
 		}
 
 	}

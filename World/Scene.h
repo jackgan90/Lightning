@@ -14,12 +14,12 @@ namespace Lightning
 			~Scene()override;
 			std::uint32_t GetID()const override{ return mID; }
 			void Tick()override;
-			void AddDrawable(const std::shared_ptr<IDrawable>& drawable)override;
+			void AddRenderable(const std::shared_ptr<IRenderable>& drawable)override;
 			ICamera* GetActiveCamera()override;
 		protected:
 			std::vector<std::shared_ptr<ICamera>> mCameras;
 			std::uint32_t mID;
-			std::vector<std::shared_ptr<IDrawable>> mDrawables;
+			std::vector<std::shared_ptr<IRenderable>> mRenderables;
 		};
 	}
 }

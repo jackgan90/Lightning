@@ -103,7 +103,7 @@ namespace Lightning
 			mRenderResourceDirty = true;
 		}
 
-		void Primitive::Draw(Render::IRenderer& renderer, const std::shared_ptr<Render::ICamera>& camera)
+		void Primitive::Render(Render::IRenderer& renderer, const std::shared_ptr<Render::ICamera>& camera)
 		{
 			if (mRenderResourceDirty)
 			{

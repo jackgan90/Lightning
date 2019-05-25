@@ -28,6 +28,7 @@ set(INTERFACE_HEADERS	IScene.h
 						ISceneManager.h			
 						ISerializable.h
 						IModel.h
+						IRenderable.h
 						IPrimitive.h)
 
 set(ASSET_HEADERS		Assets/AssetIdentity.h

@@ -35,7 +35,7 @@ namespace Lightning
 			void SetTexture(const std::string& name, const std::shared_ptr<ITexture>& texture)override;
 			void SetSamplerState(const std::string& name, const SamplerState& state)override;
 			void SetShader(const std::shared_ptr<IShader>& shader)override;
-			void Draw(Render::IRenderer& renderer, const std::shared_ptr<Render::ICamera>& camera)override;
+			void Render(Render::IRenderer& renderer, const std::shared_ptr<Render::ICamera>& camera)override;
 		protected:
 			virtual void UpdateRenderResources();
 			virtual std::uint8_t *GetVertices() = 0;

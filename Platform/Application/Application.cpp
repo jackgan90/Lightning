@@ -103,7 +103,7 @@ namespace Lightning
 				color.b = cDist(mt);
 				p->SetColor(color);
 				p->SetWorldRotation(Transform::RandomRotation());
-				scene->AddDrawable(p);
+				scene->AddRenderable(p);
 			}
 		}
 		//For test only end
