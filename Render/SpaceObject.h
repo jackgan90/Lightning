@@ -7,9 +7,13 @@ namespace Lightning
 {
 	namespace Render
 	{
+		using Foundation::Math::Vector3f;
+		using Foundation::Math::Vector4f;
+		using Foundation::Math::Quaternionf;
 		class SpaceObject : public virtual ISpaceObject, public std::enable_shared_from_this<SpaceObject>
 		{
 		public:
+			SpaceObject(){}
 			SpaceObject(const std::shared_ptr<ISpaceObject>& parent) : mParent(parent){}
 			Transform& GetTransform()override { return mTransform; }
 			std::shared_ptr<ISpaceObject> GetParent()const override { return mParent.lock(); }
@@ -72,29 +76,30 @@ namespace Lightning
 				return false;
 			}
 
-			Matrix4f LocalToGlobalMatrix()const override
+			Transform GetGlobalTransform()const override
 			{
 				auto matrix(mTransform.LocalToGlobalMatrix4());
 				auto object(shared_from_this());
-				while (auto parent = object->GetParent())
+				Vector3f globalScale(mTransform.GetScale());
+				auto parent = object->GetParent();
+				while (parent)
 				{
-					matrix *= parent->GetTransform().LocalToGlobalMatrix4();
-					object = parent;
+					const auto& parentTransform = parent->GetTransform();
+					matrix *= parentTransform.LocalToGlobalMatrix4();
+					const auto& parentScale = parentTransform.GetScale();
+					globalScale.x *= parentScale.x;
+					globalScale.y *= parentScale.y;
+					globalScale.z *= parentScale.z;
+					parent = parent->GetParent();
 				}
-				return matrix;
-			}
+				auto globalPosition = Vector4f{0.f, 0.f, 0.f, 1.f} * matrix;
+				auto globalForward = Vector4f{ 0.f, 0.f, 1.f, 0.f } * matrix;
+				auto globalUp = Vector4f{ 0.f, 1.f, 0.f, 0.f } * matrix;
+				Transform globalTransform(Vector3f{globalPosition.x, globalPosition.y, globalPosition.z}, 
+					globalScale, Quaternionf::Identity());
+				globalTransform.OrientTo(Vector3f{ globalForward.x, globalForward.y, globalForward.z }, Vector3f{globalUp.x, globalUp.y, globalUp.z});
 
-			Matrix4f GlobalToLocalMatrix()const override
-			{
-				auto matrix(mTransform.GlobalToLocalMatrix4());
-				auto object(shared_from_this());
-				while (auto parent = object->GetParent())
-				{
-					matrix *= parent->GetTransform().GlobalToLocalMatrix4();
-					object = parent;
-				}
-
-				return matrix;
+				return globalTransform;
 			}
 
 		protected:

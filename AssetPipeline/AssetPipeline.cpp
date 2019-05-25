@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Converters/AssimpConverter.h"
+#include "SpaceObject.h"
 
 int main(int argc, char** argv)
 {

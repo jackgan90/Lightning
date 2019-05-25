@@ -18,8 +18,7 @@ namespace Lightning
 			virtual std::shared_ptr<ISpaceObject> GetChild(std::size_t index)const = 0;
 			virtual bool AddChild(const std::shared_ptr<ISpaceObject>& child) = 0;
 			virtual bool RemoveChild(const std::shared_ptr<ISpaceObject>& child) = 0;
-			virtual Matrix4f LocalToGlobalMatrix()const = 0;
-			virtual Matrix4f GlobalToLocalMatrix()const = 0;
+			virtual Transform GetGlobalTransform()const = 0;
 		};
 	}
 }
