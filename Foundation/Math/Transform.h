@@ -14,13 +14,6 @@ namespace Lightning
 			class Transform
 			{
 			public:
-				Transform()
-					: mPosition{0.0f, 0.0f, 0.0f}
-					, mRotation{0.0f, 0.0f, 0.0f, 1.0f}
-					, mScale{1.0f, 1.0f, 1.0f}
-					, mMatrixDirty(true)
-				{
-				}
 				Transform(const Vector3f& pos, const Vector3f& scale, const Quaternionf& rot)
 					: mPosition(pos)
 					, mRotation(rot)
@@ -28,6 +21,13 @@ namespace Lightning
 					, mMatrixDirty(true)
 				{
 
+				}
+
+				Transform() : Transform(
+					Vector3f{ 0.0f, 0.0f, 0.0f }, 
+					Vector3f{ 1.0f, 1.0f, 1.0f }, 
+					Quaternionf{0.0f, 0.0f, 0.0f, 1.0f})
+				{
 				}
 
 				Matrix4f LocalToGlobalMatrix4()const

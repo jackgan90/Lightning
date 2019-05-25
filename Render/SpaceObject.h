@@ -71,6 +71,32 @@ namespace Lightning
 				}
 				return false;
 			}
+
+			Matrix4f LocalToGlobalMatrix()const override
+			{
+				auto matrix(mTransform.LocalToGlobalMatrix4());
+				auto object(shared_from_this());
+				while (auto parent = object->GetParent())
+				{
+					matrix *= parent->GetTransform().LocalToGlobalMatrix4();
+					object = parent;
+				}
+				return matrix;
+			}
+
+			Matrix4f GlobalToLocalMatrix()const override
+			{
+				auto matrix(mTransform.GlobalToLocalMatrix4());
+				auto object(shared_from_this());
+				while (auto parent = object->GetParent())
+				{
+					matrix *= parent->GetTransform().GlobalToLocalMatrix4();
+					object = parent;
+				}
+
+				return matrix;
+			}
+
 		protected:
 			Transform mTransform;
 			std::weak_ptr<ISpaceObject> mParent;
