@@ -15,27 +15,27 @@ namespace Lightning
 			{
 			public:
 				Transform()
-					: mMatrixDirty(true)
-					, mPosition{0.0f, 0.0f, 0.0f}
+					: mPosition{0.0f, 0.0f, 0.0f}
 					, mRotation{0.0f, 0.0f, 0.0f, 1.0f}
 					, mScale{1.0f, 1.0f, 1.0f}
+					, mMatrixDirty(true)
 				{
 				}
 				Transform(const Vector3f& pos, const Vector3f& scale, const Quaternionf& rot)
-					: mMatrixDirty(true)
-					, mPosition(pos)
+					: mPosition(pos)
 					, mRotation(rot)
 					, mScale(scale)
+					, mMatrixDirty(true)
 				{
 
 				}
 
-				Matrix4f LocalToGlobalMatrix4()
+				Matrix4f LocalToGlobalMatrix4()const
 				{
 					UpdateMatrix();
 					return mMatrix;
 				}
-				Matrix4f GlobalToLocalMatrix4()
+				Matrix4f GlobalToLocalMatrix4()const
 				{
 					UpdateMatrix();
 					return mInverseMatrix;
@@ -47,7 +47,7 @@ namespace Lightning
 					mMatrixDirty = true;
 				}
 
-				Matrix4f GetMatrix(){ UpdateMatrix(); return mMatrix; }
+				Matrix4f GetMatrix()const{ UpdateMatrix(); return mMatrix; }
 				Vector3f GetPosition()const { return mPosition; }
 
 				void SetRotation(const Quaternionf& rotation)
@@ -124,7 +124,7 @@ namespace Lightning
 					return Quaternionf::MakeRotation(Vector3f::forward(), direction);
 				}
 			private:
-				void UpdateMatrix()
+				void UpdateMatrix()const
 				{
 					if (!mMatrixDirty)
 						return;
@@ -157,12 +157,12 @@ namespace Lightning
 
 					mInverseMatrix = matTrans * matRotation * matScale;
 				}
-				bool mMatrixDirty;
 				Vector3f mPosition;
 				Vector3f mScale;
 				Quaternionf mRotation;
-				Matrix4f mMatrix;
-				Matrix4f mInverseMatrix;
+				mutable bool mMatrixDirty;
+				mutable Matrix4f mMatrix;
+				mutable Matrix4f mInverseMatrix;
 			};
 		}
 	}
