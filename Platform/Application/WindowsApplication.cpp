@@ -123,12 +123,12 @@ namespace Lightning
 						auto forward = camera->GetForward();
 						auto dest_dir = forward + direction * 0.005f;
 						camera->RotateTowards(dest_dir);
-						//FIXME : Due to limited precision of float,the resulting forward after transformation
-						//may invert the direction and points to the opposite direction
-						//If this happens,just revert to previous forward
-						auto newForward = camera->GetForward();
-						if (forward.Dot(newForward) < 0)
-							camera->RotateTowards(forward);
+						////FIXME : Due to limited precision of float,the resulting forward after transformation
+						////may invert the direction and points to the opposite direction
+						////If this happens,just revert to previous forward
+						//auto newForward = camera->GetForward();
+						//if (forward.Dot(newForward) < 0)
+						//	camera->RotateTowards(forward);
 					}
 				}
 				mousePosition.x = static_cast<int>(x);
