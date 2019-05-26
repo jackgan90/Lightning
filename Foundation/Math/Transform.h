@@ -98,7 +98,7 @@ namespace Lightning
 					if (fwdDot < 0)
 					{
 						Quaternionf quat;
-						quat.FromAxisAndAngle(desiredUp, std::cos(fwdDot));
+						quat.FromAxisAndAngle(desiredUp, std::acos(fwdDot));
 						mRotation = quat * mRotation;
 						//LOG_INFO("TRIGGER, x, y, z, w : %f, %f, %f, %f", mRotation.x, mRotation.y, mRotation.z, mRotation.w);
 					}
