@@ -13,7 +13,6 @@ set(INTERFACE_HEADERS	IDevice.h
 						IMaterial.h
 						IDrawCommand.h
 						IDrawable.h
-						ISpaceObject.h
 						ICamera.h
 						Shader/IShader.h
 						Shader/IShaderMacros.h
@@ -32,7 +31,6 @@ set(HEADERS IndexBuffer.h
 			RenderConstants.h
 			Material.h
 			FrameMemoryAllocator.h
-			SpaceObject.h
 			DrawCommand.h
 			RenderObjectCache.h)
 set(SOURCES Renderer.cpp

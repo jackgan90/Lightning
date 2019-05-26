@@ -5,17 +5,18 @@
 
 namespace Lightning
 {
-	namespace Render
+	namespace World
 	{
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Vector4f;
 		using Foundation::Math::Quaternionf;
-		class SpaceObject : public virtual ISpaceObject, public std::enable_shared_from_this<SpaceObject>
+		template<typename Derived>
+		class SpaceObject : public virtual ISpaceObject, public std::enable_shared_from_this<Derived>
 		{
 		public:
 			SpaceObject(){}
 			SpaceObject(const std::shared_ptr<ISpaceObject>& parent) : mParent(parent){}
-			Transform& GetTransform()override { return mTransform; }
+			Transform& GetLocalTransform()override { return mTransform; }
 			std::shared_ptr<ISpaceObject> GetParent()const override { return mParent.lock(); }
 			std::size_t GetChildrenCount()const override { return mChildren.size(); }
 			void SetParent(const std::shared_ptr<ISpaceObject>& parent)override
@@ -78,11 +79,15 @@ namespace Lightning
 
 			Transform GetGlobalTransform()const override
 			{
-				auto matrix(mTransform.LocalToGlobalMatrix4());
 				auto parent = GetParent();
+				if (!parent)
+				{
+					return mTransform;
+				}
+				auto matrix(mTransform.LocalToGlobalMatrix4());
 				while (parent)
 				{
-					const auto& parentTransform = parent->GetTransform();
+					const auto& parentTransform = parent->GetLocalTransform();
 					matrix *= parentTransform.LocalToGlobalMatrix4();
 					parent = parent->GetParent();
 				}

@@ -42,7 +42,8 @@ namespace Lightning
 			auto scene = sceneMgr->GetForegroundScene();
 			
 			auto cube = scenePlugin->CreateCube(1.0f, 1.0f, 1.0f);
-			cube->SetWorldPosition(Vector3f{0.0f, 0.0f, 0.0f});
+			auto& cubeTransform = cube->GetLocalTransform();
+			cubeTransform.SetPosition(Vector3f{ 0.f, 0.f, 0.f });
 			Render::Color32 color;
 			color.r = 255;
 			color.g = 255;

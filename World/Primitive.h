@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <cstdint>
+#include "RenderableSpaceObject.h"
 #include "IDrawCommand.h"
 #include "IShader.h"
 #include "IPrimitive.h"
@@ -10,7 +11,7 @@ namespace Lightning
 	namespace World
 	{
 		using Foundation::Math::Transform;
-		class Primitive : public IPrimitive, public std::enable_shared_from_this<Primitive>
+		class Primitive : public RenderableSpaceObject<IPrimitive, Primitive>//public IPrimitive, public SpaceObject<Primitive>
 		{
 		public:
 			Primitive();
@@ -19,11 +20,6 @@ namespace Lightning
 			std::shared_ptr<Render::IIndexBuffer> GetIndexBuffer()const override { return mIndexBuffer; }
 			const std::vector<std::shared_ptr<Render::IVertexBuffer>>& GetVertexBuffers()const override;
 			std::shared_ptr<Render::IMaterial> GetMaterial()const override { return mMaterial; }
-			const Transform& GetTransform()const override { return mTransform; }
-			void SetWorldPosition(const Vector3f& pos) override{ mTransform.SetPosition(pos); }
-			Vector3f GetWorldPosition()const override{ return mTransform.GetPosition(); }
-			void SetWorldRotation(const Quaternionf& rot) override{ mTransform.SetRotation(rot); }
-			Quaternionf GetWorldRotation()const override{ return mTransform.GetRotation(); }
 			Color32 GetColor()const override{ return mColor; }
 			void GetColor(float& a, float& r, float& g, float& b)override;
 			void SetColor(const Color32& color)override;
@@ -43,7 +39,6 @@ namespace Lightning
 			virtual Vector3f GetScale() = 0;
 			virtual std::size_t GetVertexBufferSize() = 0;
 			virtual std::size_t GetIndexBufferSize() = 0;
-			Transform mTransform;
 			Color32 mColor;
 			std::shared_ptr<Render::IIndexBuffer> mIndexBuffer;
 			std::vector<std::shared_ptr<Render::IVertexBuffer>> mVertexBuffers;

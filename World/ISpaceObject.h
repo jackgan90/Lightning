@@ -4,7 +4,7 @@
 
 namespace Lightning
 {
-	namespace Render
+	namespace World
 	{
 		using Foundation::Math::Transform;
 		using Foundation::Math::Matrix4f;
@@ -13,7 +13,7 @@ namespace Lightning
 		struct ISpaceObject
 		{
 			virtual ~ISpaceObject() = default;
-			virtual Transform& GetTransform() = 0;
+			virtual Transform& GetLocalTransform() = 0;
 			virtual std::shared_ptr<ISpaceObject> GetParent()const = 0;
 			virtual std::size_t GetChildrenCount()const = 0;
 			virtual void SetParent(const std::shared_ptr<ISpaceObject>& parent) = 0;

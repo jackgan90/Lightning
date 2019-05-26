@@ -3,6 +3,8 @@ message(STATUS "Configuring project Scene")
 
 set(HEADERS Scene.h 
 			SceneManager.h
+			SpaceObject.h
+			RenderableSpaceObject.h
 			Primitive.h
 			Mesh.h
 			Model.h
@@ -27,6 +29,7 @@ set(SERIALIZER_SOURCES	Serializers/ModelSerializer.cpp
 set(INTERFACE_HEADERS	IScene.h
 						ISceneManager.h			
 						ISerializable.h
+						ISpaceObject.h
 						IModel.h
 						IRenderable.h
 						IPrimitive.h)

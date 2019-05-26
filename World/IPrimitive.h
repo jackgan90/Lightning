@@ -2,6 +2,7 @@
 #include "RenderConstants.h"
 #include "Quaternion.h"
 #include "Color.h"
+#include "ISpaceObject.h"
 #include "IRenderable.h"
 #include "Texture/ITexture.h"
 #include "Texture/Sampler.h"
@@ -26,13 +27,9 @@ namespace Lightning
 			SPHERE
 		};
 
-		struct IPrimitive : IRenderable
+		struct IPrimitive : IRenderable, virtual ISpaceObject
 		{
 			virtual PrimitiveType GetPrimitiveType()const = 0;
-			virtual void SetWorldPosition(const Vector3f& pos) = 0;
-			virtual Vector3f GetWorldPosition()const = 0;
-			virtual void SetWorldRotation(const Quaternionf& rot) = 0;
-			virtual Quaternionf GetWorldRotation()const = 0;
 			virtual Color32 GetColor()const = 0;
 			virtual void GetColor(float& a, float& r, float& g, float& b) = 0;
 			virtual void SetColor(const Color32& color) = 0;
