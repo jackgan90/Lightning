@@ -2,6 +2,7 @@
 #include "Converters/AssimpConverter.h"
 #include "SpaceObject.h"
 
+/*
 using Lightning::Foundation::Math::Matrix4f;
 using Lightning::Foundation::Math::Vector3f;
 using Lightning::Foundation::Math::Vector4f;
@@ -19,45 +20,36 @@ Matrix4f GetMatrix(const std::shared_ptr<SpaceObject>& object)
 	}
 
 	return matrix;
-}
+}*/
 
 int main(int argc, char** argv)
 {
+	/*
 	auto o1 = std::make_shared<SpaceObject>();
 	auto o2 = std::make_shared<SpaceObject>();
 	auto o3 = std::make_shared<SpaceObject>();
-	auto o4 = std::make_shared<SpaceObject>();
 	
 	o2->SetParent(o1);
 	o3->SetParent(o2);
-	o4->SetParent(o3);
 
 	o1->GetTransform().SetRotation(Transform::RandomRotation());
-	o1->GetTransform().SetScale(Vector3f{ 1.0f, 2.0f, 3.0f });
-	//o1->GetTransform().SetPosition(Vector3f{ 1.0f, 1.0f, 1.0f });
+	o1->GetTransform().SetScale(Vector3f{ 2.0f, 3.0f, 1.0f });
+	o1->GetTransform().SetPosition(Vector3f{ 1.0f, 2.0f, 3.0f });
+	//o1->GetTransform().OrientTo(Vector3f{ 0.f, 0.f, 1.f }, Vector3f{ 0.f, -1.f, 0.f });
+
+	//auto globalTransform1 = o1->GetGlobalTransform();
+	//auto globalUp1 = globalTransform1.GetRotation() * Vector3f { 0.f, 1.f, 0.f };
+	//auto globalRight1 = globalTransform1.GetRotation() * Vector3f { 1.f, 0.f, 0.f };
+	//auto globalForward1 = globalTransform1.GetRotation() * Vector3f { 0.f, 0.f, 1.f };
 
 	o2->GetTransform().SetRotation(Transform::RandomRotation());
-	o2->GetTransform().SetScale(Vector3f{ .5f, 3.f, .5f });
-	//o2->GetTransform().SetPosition(Vector3f{ -.5f, -2.f, 3.f });
+	o2->GetTransform().SetScale(Vector3f{ 1.f, 5.f, 5.f });
+	o2->GetTransform().SetPosition(Vector3f{ 4.f, 5.f, 6.f });
 
-	o3->GetTransform().SetRotation(Transform::RandomRotation());
+	//auto globalTransform2 = o2->GetGlobalTransform();
 
-	//auto matrix = GetMatrix(o4);
-
-	//auto pos = Vector4f{ 0.f, 0.f, 0.f, 1.f } *matrix;
-
-	auto localTransform3 = o3->GetTransform();
 	auto globalTransform3 = o3->GetGlobalTransform();
-	auto v0 = o3->GetTransform().GetRotation() * Vector3f { 1.0f, 0.0f, 0.0f };
-	auto normalizedV0 = v0.Normalized();
-	//auto globalPosition3 = globalTransform3.GetPosition();
-	//globalPosition3.x += 10;
-	//globalPosition3.y += 10;
-	//globalPosition3.z += 10;
-	//globalTransform3.SetPosition(globalPosition3);
 	o3->SetGlobalTransform(globalTransform3);
-	auto v1 = o3->GetTransform().GetRotation() * Vector3f { 1.0f, 0.0f, 0.0f };
-	auto normalizedV1 = v1.Normalized();
 
 	auto globalTransform3New = o3->GetGlobalTransform();
 
@@ -65,12 +57,7 @@ int main(int argc, char** argv)
 	o3->SetGlobalRotation(globalTransform3New.GetRotation());
 	o3->SetGlobalScale(globalTransform3New.GetScale());
 
-	auto globalTransform3New1 = o3->GetGlobalTransform();
-
-	auto v2 = o3->GetTransform().GetRotation() * Vector3f { 1.0f, 0.0f, 0.0f };
-	auto normalizedV2 = v2.Normalized();
-
-	auto r = v2.Dot(v0);
+	auto globalTransform3New1 = o3->GetGlobalTransform();*/
 
 	Lightning::Tools::AssimpConverter converter;
 	std::string inputFile("E:\\assimp\\test\\models\\FBX\\spider.fbx");

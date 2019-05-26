@@ -98,10 +98,10 @@ namespace Lightning
 
 				Vector3f globalScale{ globalRight.Length(), globalUp.Length(), globalForward.Length() };
 
-				Transform globalTransform(
-					globalPosition, 
-					globalScale, Quaternionf::Identity());
+				Transform globalTransform;
+				globalTransform.SetScale(globalScale);
 				globalTransform.OrientTo(globalForward, globalUp);
+				globalTransform.SetPosition(globalPosition);
 
 				return globalTransform;
 			}
@@ -164,19 +164,16 @@ namespace Lightning
 				auto globalUp = rotation * Vector3f::up();
 				auto localForward = Vector4f{ globalForward.x, globalForward.y, globalForward.z, 0.f } * parentGlobalTransform.GlobalToLocalMatrix4();
 				auto localUp = Vector4f{ globalUp.x, globalUp.y, globalUp.z, 0.f } * parentGlobalTransform.GlobalToLocalMatrix4();
-				auto localForward3 = Vector3f{ localForward.x, localForward.y, localForward.z };
-				auto localUp3 = Vector3f{ localUp.x, localUp.y, localUp.z };
-				mTransform.OrientTo(localForward3, localUp3);
+				mTransform.OrientTo(Vector3f{localForward.x, localForward.y, localForward.z}, Vector3f{ localUp.x, localUp.y, localUp.z });
 			}
 			void SetGlobalScale(const Vector3f& scale, const Transform& parentGlobalTransform)
 			{
-				auto globalTransform = GetGlobalTransform();
-				auto f = Vector4f{ 0.f, 0.f, 1.f, 0.f } * globalTransform.GlobalToLocalMatrix4();
-				auto u = Vector4f{ 0.f, 1.f, 0.f, 0.f } * globalTransform.GlobalToLocalMatrix4();
-				auto r = Vector4f{ 1.f, 0.f, 0.f, 0.f } * globalTransform.GlobalToLocalMatrix4();
+				auto matrix = mTransform.LocalToGlobalMatrix4() * parentGlobalTransform.LocalToGlobalMatrix4();
+				auto globalForward = Vector4f{ 0.f, 0.f, 1.f, 0.f } * matrix;
+				auto globalUp = Vector4f{ 0.f, 1.f, 0.f, 0.f } * matrix;
+				auto globalRight = Vector4f{ 1.f, 0.f, 0.f, 0.f } * matrix;
 
-				auto s = Vector3f{ f.Length(), u.Length(), r.Length() };
-				auto s_1 = Vector3f{ 1.f / scale.x, 1.f / scale.y, 1.f / scale.z };
+				mTransform.SetScale(Vector3f{ scale.x / globalRight.Length(), scale.y / globalUp.Length(), scale.z / globalForward.Length() });
 			}
 			Transform mTransform;
 			std::weak_ptr<ISpaceObject> mParent;
