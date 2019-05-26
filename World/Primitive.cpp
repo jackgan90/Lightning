@@ -24,7 +24,7 @@ namespace Lightning
 		using Render::ParameterType;
 		extern Plugins::IRenderPlugin* gRenderPlugin;
 
-		Primitive::Primitive(): mColor{0, 0, 0, 255}, mRenderResourceDirty(true)
+		Primitive::Primitive(): RenderableSpaceObject<IPrimitive, Primitive>(), mColor{0, 0, 0, 255}
 		{
 			auto renderer = gRenderPlugin->GetRenderer();
 			auto device = renderer->GetDevice();
@@ -103,16 +103,6 @@ namespace Lightning
 			mRenderResourceDirty = true;
 		}
 
-		void Primitive::Render(Render::IRenderer& renderer, const std::shared_ptr<Render::ICamera>& camera)
-		{
-			if (mRenderResourceDirty)
-			{
-				mRenderResourceDirty = false;
-				UpdateRenderResources();
-			}
-			renderer.Draw(shared_from_this(), camera);
-		}
-
 		void Primitive::UpdateRenderResources()
 		{
 			auto renderer = gRenderPlugin->GetRenderer();
@@ -158,12 +148,6 @@ namespace Lightning
 			mTransform.SetScale(GetScale());
 		}
 
-		const std::vector<std::shared_ptr<Render::IVertexBuffer>>& Primitive::GetVertexBuffers()const
-		{
-			return mVertexBuffers;
-		}
-
-		
 		//Cube
 		Cube::CubeDataSource::CubeDataSource()
 		{

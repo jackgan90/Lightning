@@ -17,9 +17,6 @@ namespace Lightning
 			Primitive();
 			~Primitive()override;
 			PrimitiveType GetPrimitiveType()const override{ return PrimitiveType::TRIANGLE_LIST; }
-			std::shared_ptr<Render::IIndexBuffer> GetIndexBuffer()const override { return mIndexBuffer; }
-			const std::vector<std::shared_ptr<Render::IVertexBuffer>>& GetVertexBuffers()const override;
-			std::shared_ptr<Render::IMaterial> GetMaterial()const override { return mMaterial; }
 			Color32 GetColor()const override{ return mColor; }
 			void GetColor(float& a, float& r, float& g, float& b)override;
 			void SetColor(const Color32& color)override;
@@ -31,19 +28,14 @@ namespace Lightning
 			void SetTexture(const std::string& name, const std::shared_ptr<ITexture>& texture)override;
 			void SetSamplerState(const std::string& name, const SamplerState& state)override;
 			void SetShader(const std::shared_ptr<IShader>& shader)override;
-			void Render(Render::IRenderer& renderer, const std::shared_ptr<Render::ICamera>& camera)override;
 		protected:
-			virtual void UpdateRenderResources();
+			void UpdateRenderResources()override;
 			virtual std::uint8_t *GetVertices() = 0;
 			virtual std::uint16_t *GetIndices() = 0;
 			virtual Vector3f GetScale() = 0;
 			virtual std::size_t GetVertexBufferSize() = 0;
 			virtual std::size_t GetIndexBufferSize() = 0;
 			Color32 mColor;
-			std::shared_ptr<Render::IIndexBuffer> mIndexBuffer;
-			std::vector<std::shared_ptr<Render::IVertexBuffer>> mVertexBuffers;
-			std::shared_ptr<Render::IMaterial> mMaterial;
-			bool mRenderResourceDirty;
 		};
 
 		struct PrimitiveDataSource
