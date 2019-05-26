@@ -105,6 +105,31 @@ namespace Lightning
 
 					mMatrixDirty = true;
 				}
+
+				Vector3f LocalPointToGlobal(const Vector3f& point)const
+				{
+					auto globalPoint = Vector4f{ point.x, point.y, point.z, 1.f } * LocalToGlobalMatrix4();
+					return Vector3f{ globalPoint.x, globalPoint.y, globalPoint.z };
+				}
+
+				Vector3f LocalDirectionToGlobal(const Vector3f& direction)const
+				{
+					auto globalDirection = Vector4f{ direction.x, direction.y, direction.z, 0.f } * LocalToGlobalMatrix4();
+					return Vector3f{ globalDirection.x, globalDirection.y, globalDirection.z };
+				}
+
+				Vector3f GlobalPointToLocal(const Vector3f& point)const
+				{
+					auto localPoint = Vector4f{ point.x, point.y, point.z, 1.f } * GlobalToLocalMatrix4();
+					return Vector3f{ localPoint.x, localPoint.y, localPoint.z };
+				}
+
+				Vector3f GlobalDirectionToLocal(const Vector3f& direction)const
+				{
+					auto localDirection = Vector4f{ direction.x, direction.y, direction.z, 0.f } * GlobalToLocalMatrix4();
+					return Vector3f{ localDirection.x, localDirection.y, localDirection.z };
+				}
+
 				Vector3f Forward()const { return mRotation * Vector3f::forward(); }
 				Vector3f Up()const { return mRotation * Vector3f::up(); }
 				Vector3f Right()const { return mRotation * Vector3f::right(); }

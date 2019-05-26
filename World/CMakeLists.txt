@@ -30,6 +30,7 @@ set(INTERFACE_HEADERS	IScene.h
 						ISceneManager.h			
 						ISerializable.h
 						ISpaceObject.h
+						ISpaceCamera.h
 						IModel.h
 						IRenderable.h
 						IPrimitive.h)

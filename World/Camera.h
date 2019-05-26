@@ -1,7 +1,7 @@
 #pragma once
 #include <cmath>
-#include "ICamera.h"
-#include "Transform.h"
+#include "ISpaceCamera.h"
+#include "SpaceObject.h"
 
 namespace Lightning
 {
@@ -13,7 +13,7 @@ namespace Lightning
 		using Foundation::Math::Quaternionf;
 		using Render::CameraType;
 		//Use right-handed coordinate system
-		class Camera : public Render::ICamera
+		class Camera : public ISpaceCamera, public SpaceObject<Camera>
 		{
 		public:
 			Camera();
@@ -23,12 +23,9 @@ namespace Lightning
 				const Vector3f& lookDir = Vector3f{0.0f, 0.0f, 1.0f},
 				const Vector3f& worldUp = Vector3f{0.0f, 1.0f, 0.0f});
 			~Camera()override;
-			Matrix4f GetViewMatrix()const override{ return mViewMatrix; }
+			Matrix4f GetViewMatrix()const override{ return mTransform.GlobalToLocalMatrix4(); }
 			Matrix4f GetProjectionMatrix()const override{ return mProjectionMatrix; }
-			Matrix4f GetInvViewMatrix()const override{ return mInvViewMatrix; }
-			void MoveTo(const Vector3f& worldPosition)override;
-			void LookAt(const Vector3f& lookPosition)override;
-			void RotateTowards(const Vector3f& direction)override;
+			Matrix4f GetInvViewMatrix()const override{ return mTransform.LocalToGlobalMatrix4(); }
 			void SetNear(const float nearPlane)override;
 			void SetFar(const float farPlane)override;
 			float GetNear()const override{ return mNearPlane; }
@@ -40,16 +37,7 @@ namespace Lightning
 			float GetFOV()const override{ return Foundation::Math::RadiansToDegrees(mFov); }
 			void SetAspectRatio(const float aspectRatio)override;
 			float GetAspectRatio()const override{ return mAspectRatio; }
-			Vector3f GetWorldPosition()const override{ return mTransform.GetPosition(); }
-			Vector3f CameraPointToWorld(const Vector3f& point)const override;
-			Vector3f WorldPointToCamera(const Vector3f& point)const override;
-			Vector3f CameraDirectionToWorld(const Vector3f& direction)const override;
-			Vector3f WorldDirectionToCamera(const Vector3f& direction)const;
-			Vector3f GetForward()const override{ return mTransform.Forward(); }
-			void SetRotation(const Quaternionf& rotation) override;
-			Quaternionf GetRotation()const override{ return mTransform.GetRotation(); }
 		protected:
-			void UpdateViewMatrix();
 			void UpdateProjectionMatrix();
 			CameraType mType;
 			float mNearPlane;
@@ -58,9 +46,6 @@ namespace Lightning
 			float mFov;
 			//ratio of near plane width / near plane height
 			float mAspectRatio;
-			Transform mTransform;
-			Matrix4f mViewMatrix;
-			Matrix4f mInvViewMatrix;
 			Matrix4f mProjectionMatrix;
 		};
 	}

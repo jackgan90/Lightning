@@ -59,7 +59,8 @@ namespace Lightning
 				if (camera)
 				{
 					Vector3f camOffset{ 0, 0, 0 };
-					auto position = camera->GetWorldPosition();
+					auto& cameraTransform = camera->GetLocalTransform();
+					auto position = cameraTransform.GetPosition();
 					switch (keyCode & ~VK_CONTROL_MASK)
 					{
 					case VK_A:
@@ -85,12 +86,12 @@ namespace Lightning
 					}
 					if (!camOffset.IsZero())
 					{
-						auto position = camera->GetWorldPosition();
+						auto position = cameraTransform.GetPosition();
 						camOffset.Normalize();
 						camOffset *= 0.3f;
-						camOffset = camera->CameraDirectionToWorld(camOffset);
+						camOffset = cameraTransform.LocalDirectionToGlobal(camOffset);
 						auto targetPosition = position + camOffset;
-						camera->MoveTo(targetPosition);
+						cameraTransform.SetPosition(targetPosition);
 					}
 				}
 			}
@@ -119,10 +120,12 @@ namespace Lightning
 						float delta_x = float(x) - mousePosition.x;
 						float delta_y = float(y) - mousePosition.y;
 						Vector3f direction{delta_x, -delta_y, 0};
-						direction = camera->CameraDirectionToWorld(direction);
-						auto forward = camera->GetForward();
+						auto& cameraTransform = camera->GetLocalTransform();
+						direction = cameraTransform.LocalDirectionToGlobal(direction);
+						auto forward = cameraTransform.Forward();
 						auto dest_dir = forward + direction * 0.005f;
-						camera->RotateTowards(dest_dir);
+						//camera->RotateTowards(dest_dir);
+						cameraTransform.OrientTo(dest_dir);
 						////FIXME : Due to limited precision of float,the resulting forward after transformation
 						////may invert the direction and points to the opposite direction
 						////If this happens,just revert to previous forward

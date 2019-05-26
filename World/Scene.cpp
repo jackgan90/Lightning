@@ -17,7 +17,7 @@ namespace Lightning
 		{
 		}
 
-		ICamera* Scene::GetActiveCamera()
+		ISpaceCamera* Scene::GetActiveCamera()
 		{
 			if (mCameras.empty())
 				return nullptr;

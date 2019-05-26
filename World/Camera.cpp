@@ -12,10 +12,8 @@ namespace Lightning
 		using Foundation::Math::Quaternionf;
 		extern Plugins::IRenderPlugin* gRenderPlugin;
 		Camera::Camera():mType(CameraType::Perspective), mNearPlane(0.1f), mFarPlane(1000.0f), 
-			mFov(DegreesToRadians(60.0f)), mAspectRatio(1.0f),
-			mTransform(Vector3f::Zero(), Vector3f{1, 1, 1}, Quaternionf::Identity())
+			mFov(DegreesToRadians(60.0f)), mAspectRatio(1.0f)
 		{
-			UpdateViewMatrix();
 			UpdateProjectionMatrix();
 		}
 
@@ -25,7 +23,6 @@ namespace Lightning
 		{
 			mTransform.SetPosition(worldPosition);
 			mTransform.OrientTo(lookDir, worldUp);
-			UpdateViewMatrix();
 			UpdateProjectionMatrix();
 		}
 
@@ -38,7 +35,6 @@ namespace Lightning
 		{
 			mTransform.SetPosition(worldPosition);
 			mTransform.OrientTo(lookDir, worldUp);
-			UpdateViewMatrix();
 			UpdateProjectionMatrix();
 		}
 
@@ -54,24 +50,6 @@ namespace Lightning
 				return;
 			mType = type;
 			UpdateProjectionMatrix();
-		}
-
-		void Camera::MoveTo(const Vector3f& worldPosition)
-		{
-			mTransform.SetPosition(worldPosition);
-			UpdateViewMatrix();
-		}
-
-		void Camera::RotateTowards(const Vector3f& direction)
-		{
-			mTransform.OrientTo(direction, Vector3f::up());
-			UpdateViewMatrix();
-		}
-
-		void Camera::LookAt(const Vector3f& lookPosition)
-		{
-			mTransform.LookAt(lookPosition, Vector3f::up());
-			UpdateViewMatrix();
 		}
 
 		void Camera::SetNear(const float nearPlane)
@@ -135,44 +113,6 @@ namespace Lightning
 			default:
 				break;
 			}
-		}
-
-		void Camera::SetRotation(const Quaternionf& rotation)
-		{
-			mTransform.SetRotation(rotation);
-			UpdateViewMatrix();
-		}
-
-		void Camera::UpdateViewMatrix()
-		{
-			mViewMatrix = mTransform.GlobalToLocalMatrix4();
-			mInvViewMatrix = mTransform.LocalToGlobalMatrix4();
-		}
-
-		Vector3f Camera::CameraPointToWorld(const Vector3f& point)const
-		{
-			auto res = Vector4f{point.x, point.y, point.z, 1.0f} * mInvViewMatrix;
-			return Vector3f{ res.x, res.y, res.z };
-		}
-
-		Vector3f Camera::WorldPointToCamera(const Vector3f& point)const
-		{
-			auto res = Vector4f{point.x, point.y, point.z, 1.0f} * mViewMatrix;
-			return Vector3f{ res.x, res.y, res.z };
-		}
-
-		Vector3f Camera::CameraDirectionToWorld(const Vector3f& direction)const
-		{
-			Vector4f dir{direction.x, direction.y, direction.z, 0.0f};
-			auto res = dir * mInvViewMatrix;
-			return Vector3f{ res.x, res.y, res.z };
-		}
-
-		Vector3f Camera::WorldDirectionToCamera(const Vector3f& direction)const
-		{
-			Vector4f dir{direction.x, direction.y, direction.z, 0.0f};
-			auto res = dir * mViewMatrix;
-			return Vector3f{ res.x, res.y, res.z };
 		}
 	}
 }

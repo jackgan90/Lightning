@@ -40,7 +40,7 @@ namespace Lightning
 		void GenerateSceneObjects(ISceneManager* sceneMgr, Plugins::IWorldPlugin* scenePlugin)
 		{
 			auto scene = sceneMgr->GetForegroundScene();
-			
+			/*
 			auto cube = scenePlugin->CreateCube(1.0f, 1.0f, 1.0f);
 			auto& cubeTransform = cube->GetLocalTransform();
 			cubeTransform.SetPosition(Vector3f{ 0.f, 0.f, 0.f });
@@ -64,9 +64,9 @@ namespace Lightning
 			device->CreateTextureFromFile("lunafreya.jpg", [cube, scene](const std::shared_ptr<Render::ITexture>& texture) {
 					cube->SetTexture("tex", texture);
 					scene->AddRenderable(cube);
-			});
+			});*/
 			
-			/*
+			
 			static std::random_device rd;
 			static std::mt19937 mt(rd());
 			static std::uniform_real_distribution<float> rDist(-2, 2);
@@ -96,16 +96,17 @@ namespace Lightning
 				pos.x = rDist(mt);
 				pos.y = rDist(mt);
 				pos.z = rDist(mt);
-				p->SetWorldPosition(pos);
+				auto& transform = p->GetLocalTransform();
+				transform.SetPosition(pos);
 				Render::Color32 color;
 				color.a = 255;
 				color.r = cDist(mt);
 				color.g = cDist(mt);
 				color.b = cDist(mt);
 				p->SetColor(color);
-				p->SetWorldRotation(Transform::RandomRotation());
+				transform.SetRotation(Transform::RandomRotation());
 				scene->AddRenderable(p);
-			}*/
+			}
 		}
 		//For test only end
 
@@ -149,8 +150,9 @@ namespace Lightning
 			auto sceneMgr = worldPlugin->GetSceneManager();
 			auto scene = sceneMgr->CreateScene();
 			auto camera = scene->GetActiveCamera();
-			camera->MoveTo(Render::Vector3f{ 2.0f, 2.0f, -2.0f});
-			camera->LookAt(Render::Vector3f{ 0.0f, 0.0f, 0.0f });
+			auto& cameraTransform = camera->GetLocalTransform();
+			cameraTransform.SetPosition(Render::Vector3f{ 2.0f, 2.0f, -2.0f });
+			cameraTransform.LookAt(Render::Vector3f{ 0.0f, 0.0f, 0.0f });
 			//camera->SetRotation(Quaternionf(EulerAnglef(3.14 + 0.0, 0, 0)));
 			//camera->SetCameraType(Render::CameraType::Orthographic);
 			GenerateSceneObjects(sceneMgr, worldPlugin);
