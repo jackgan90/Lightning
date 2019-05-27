@@ -1,6 +1,7 @@
 #include "Scene.h"
 #include "IRenderer.h"
 #include "IRenderPlugin.h"
+#include "IRenderable.h"
 #include "Camera.h"
 
 namespace Lightning
@@ -37,17 +38,14 @@ namespace Lightning
 					auto aspectRatio = float(width) / height;
 					camera->SetAspectRatio(aspectRatio);
 				}
-				for (auto& drawable : mRenderables)
+				for (auto& spaceObject : mChildren)
 				{
-					drawable->Render(*renderer, camera);
+					if (auto renderable = std::dynamic_pointer_cast<IRenderable>(spaceObject))
+					{
+						renderable->Render(*renderer, camera);
+					}
 				}
 			}
 		}
-
-		void Scene::AddRenderable(const std::shared_ptr<IRenderable>& drawable)
-		{
-			mRenderables.emplace_back(drawable);
-		}
-
 	}
 }
