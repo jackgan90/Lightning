@@ -50,7 +50,8 @@ namespace Lightning
 		IScene* SceneManager::CreateScene()
 		{
 			auto sceneId = mCurrentSceneID++;
-			mScenes[sceneId] = std::make_unique<Scene>(sceneId);
+			mScenes[sceneId] = std::make_shared<Scene>(sceneId);
+			mScenes[sceneId]->CreateCamera();
 			if (!GetForegroundScene())
 				SetForegroundScene(mScenes[sceneId].get());
 			return mScenes[sceneId].get();

@@ -13,6 +13,7 @@ namespace Lightning
 			virtual std::uint32_t GetID()const = 0;
 			virtual void Tick() = 0;
 			virtual ISpaceCamera* GetActiveCamera() = 0;
+			virtual ISpaceCamera* CreateCamera() = 0;
 		};
 	}
 }

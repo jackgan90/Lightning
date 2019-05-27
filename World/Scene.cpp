@@ -11,7 +11,6 @@ namespace Lightning
 		extern Plugins::IRenderPlugin* gRenderPlugin;
 		Scene::Scene(const std::uint32_t id):mID(id)
 		{
-			mCameras.emplace_back(std::make_shared<Camera>());
 		}
 
 		Scene::~Scene()
@@ -23,6 +22,14 @@ namespace Lightning
 			if (mCameras.empty())
 				return nullptr;
 			return mCameras[0].get();
+		}
+
+		ISpaceCamera* Scene::CreateCamera()
+		{
+			auto camera = std::make_shared<Camera>();
+			AddChild(camera);
+			mCameras.emplace_back(camera);
+			return camera.get();
 		}
 
 		void Scene::Tick()

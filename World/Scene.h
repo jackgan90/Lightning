@@ -16,6 +16,7 @@ namespace Lightning
 			std::uint32_t GetID()const override{ return mID; }
 			void Tick()override;
 			ISpaceCamera* GetActiveCamera()override;
+			ISpaceCamera* CreateCamera()override;
 		protected:
 			std::vector<std::shared_ptr<ISpaceCamera>> mCameras;
 			std::uint32_t mID;
