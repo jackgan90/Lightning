@@ -14,7 +14,6 @@ namespace Lightning
 			std::uint64_t GetNextSpaceObjectID();
 			bool AddChild(const std::shared_ptr<SpaceObjectBase>& parent, const std::shared_ptr<SpaceObjectBase>& child);
 			bool RemoveChild(const std::shared_ptr<SpaceObjectBase>& parent, const std::shared_ptr<SpaceObjectBase>& child);
-			void ChangeParent(const std::shared_ptr<SpaceObjectBase>& child, const std::shared_ptr<SpaceObjectBase>& parent);
 			//synchronize children add/remove operations,thread unsafe,must be invoke by only one thread!
 			void Synchronize();
 		private:
