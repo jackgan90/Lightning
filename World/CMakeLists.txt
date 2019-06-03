@@ -4,6 +4,7 @@ message(STATUS "Configuring project Scene")
 set(HEADERS Scene.h 
 			SceneManager.h
 			SpaceObject.h
+			SpaceObjectManager.h
 			RenderableSpaceObject.h
 			Primitive.h
 			Mesh.h
@@ -12,6 +13,7 @@ set(HEADERS Scene.h
 
 set(SOURCES Scene.cpp 
 			SceneManager.cpp
+			SpaceObjectManager.cpp
 			Primitive.cpp
 			Camera.cpp
 			Mesh.cpp

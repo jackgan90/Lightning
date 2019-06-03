@@ -16,7 +16,7 @@ namespace Lightning
 				scene.second->Tick();
 		}
 
-		void SceneManager::DestroyScene(const std::uint32_t sceneId)
+		void SceneManager::DestroyScene(const std::uint64_t sceneId)
 		{
 			auto it = mScenes.find(sceneId);
 			if (it != mScenes.end())
@@ -27,7 +27,6 @@ namespace Lightning
 
 		SceneManager::SceneManager()
 			: mForegroundSceneID(0)
-			, mCurrentSceneID(1)
 		{
 
 		}
@@ -49,8 +48,9 @@ namespace Lightning
 
 		IScene* SceneManager::CreateScene()
 		{
-			auto sceneId = mCurrentSceneID++;
-			mScenes[sceneId] = std::make_shared<Scene>(sceneId);
+			auto scene = std::make_shared<Scene>();
+			auto sceneId = scene->GetID();
+			mScenes[sceneId] = scene;
 			mScenes[sceneId]->CreateCamera();
 			if (!GetForegroundScene())
 				SetForegroundScene(mScenes[sceneId].get());

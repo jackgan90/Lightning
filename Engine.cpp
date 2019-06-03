@@ -35,7 +35,7 @@ namespace Lightning
 
 		auto exitCode = application->GetExitCode();
 
-		for (unsigned i = 0;i < config.Plugins.size();++i)
+		for (int i = static_cast<unsigned>(config.Plugins.size()) - 1;i >= 0; --i)
 		{
 			pluginMgr.UnloadPlugin(config.Plugins[i]);
 		}

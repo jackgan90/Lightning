@@ -6,6 +6,7 @@
 #include "Logger.h"
 #include "IFoundationPlugin.h"
 #include "Plugin.h"
+#include "SpaceObjectManager.h"
 
 namespace Lightning
 {
@@ -44,6 +45,8 @@ namespace Lightning
 
 		WorldPluginImpl::~WorldPluginImpl()
 		{
+			//Have to ensure the space objects are all flushed and corresponding destructors are called.
+			SpaceObjectManager::Instance()->Synchronize();
 			LOG_INFO("Scene plugin unloaded.");
 			FINALIZE_LOGGER(mPluginMgr)
 		}
@@ -51,6 +54,7 @@ namespace Lightning
 		void WorldPluginImpl::Tick()
 		{
 			SceneManager::Instance()->Tick();
+			SpaceObjectManager::Instance()->Synchronize();
 		}
 
 		ISceneManager* WorldPluginImpl::GetSceneManager()

@@ -1,7 +1,9 @@
 #pragma once
 #include <cassert>
-#include <vector>
+#include <list>
+#include <unordered_map>
 #include "ISpaceObject.h"
+#include "SpaceObjectManager.h"
 
 namespace Lightning
 {
@@ -10,8 +12,24 @@ namespace Lightning
 		using Foundation::Math::Vector3f;
 		using Foundation::Math::Vector4f;
 		using Foundation::Math::Quaternionf;
+
+		class SpaceObjectBase : public virtual ISpaceObject
+		{
+		public:
+			SpaceObjectBase() : mID(SpaceObjectManager::Instance()->GetNextSpaceObjectID())
+			{
+			}
+			std::uint64_t GetID()const override { return mID; }
+		protected:
+			friend class SpaceObjectManager;
+			Transform mTransform;
+			std::weak_ptr<ISpaceObject> mParent;
+			std::list<std::shared_ptr<ISpaceObject>> mChildren;
+			const std::uint64_t mID;
+		};
+
 		template<typename Derived>
-		class SpaceObject : public virtual ISpaceObject, public std::enable_shared_from_this<Derived>
+		class SpaceObject : public SpaceObjectBase, public std::enable_shared_from_this<Derived>
 		{
 		public:
 			SpaceObject(){}
@@ -19,62 +37,35 @@ namespace Lightning
 			Transform& GetLocalTransform()override { return mTransform; }
 			std::shared_ptr<ISpaceObject> GetParent()const override { return mParent.lock(); }
 			std::size_t GetChildrenCount()const override { return mChildren.size(); }
-			void SetParent(const std::shared_ptr<ISpaceObject>& parent)override
-			{
-				if (parent.get() == this)
-					return;
-				if (auto p = mParent.lock())
-				{
-					p->RemoveChild(shared_from_this());
-				}
-				if (parent)
-				{
-					parent->AddChild(shared_from_this());
-				}
-				mParent = parent;
-			}
-			std::shared_ptr<ISpaceObject> GetChild(std::size_t index)const override
-			{
-				if (index >= GetChildrenCount())
-					return nullptr;
-				return mChildren[index];
-			}
+
 			bool AddChild(const std::shared_ptr<ISpaceObject>& child)override
 			{
-				if (!child)
-					return false;
-
-				if (child.get() == this)
-					return false;
-
-				for (const auto& c : mChildren)
+				const auto& childObject = std::dynamic_pointer_cast<SpaceObjectBase>(child);
+				assert(childObject && "child must inherit from SpaceObjectBase");
+				if (SpaceObjectManager::Instance()->AddChild(shared_from_this(), childObject))
 				{
-					if (c == child)
-						return false;
+					SpaceObjectManager::Instance()->ChangeParent(childObject, shared_from_this());
+					return true;
 				}
-
-				if (auto parent = child->GetParent())
-				{
-					parent->RemoveChild(child);
-				}
-
-				mChildren.emplace_back(child);
-				child->SetParent(shared_from_this());
-				return true;
+				return false;
 			}
 
 			bool RemoveChild(const std::shared_ptr<ISpaceObject>& child)override
 			{
-				for (auto it = mChildren.begin(); it != mChildren.end(); ++it)
+				const auto& childObject = std::dynamic_pointer_cast<SpaceObjectBase>(child);
+				assert(childObject && "child must inherit from SpaceObjectBase");
+				if (SpaceObjectManager::Instance()->RemoveChild(shared_from_this(), childObject))
 				{
-					if (*it == child)
-					{
-						mChildren.erase(it);
-						child->SetParent(nullptr);
-						return true;
-					}
+					SpaceObjectManager::Instance()->ChangeParent(childObject, nullptr);
+					return true;
 				}
 				return false;
+			}
+
+			void Traverse(std::function<void(const std::shared_ptr<ISpaceObject>& object)> visitor, 
+				SpaceObjectTraversalPolocy policy)override
+			{
+
 			}
 
 			Transform GetGlobalTransform()const override
@@ -180,9 +171,6 @@ namespace Lightning
 
 				mTransform.SetScale(Vector3f{ scale.x / globalRight.Length(), scale.y / globalUp.Length(), scale.z / globalForward.Length() });
 			}
-			Transform mTransform;
-			std::weak_ptr<ISpaceObject> mParent;
-			std::vector<std::shared_ptr<ISpaceObject>> mChildren;
 		};
 	}
 }
