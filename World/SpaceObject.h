@@ -19,7 +19,7 @@ namespace Lightning
 			SpaceObjectBase() : mID(SpaceObjectManager::Instance()->GetNextSpaceObjectID())
 			{
 			}
-			std::uint64_t GetID()const override { return mID; }
+			const std::uint64_t GetID()const override { return mID; }
 		protected:
 			friend class SpaceObjectManager;
 			Transform mTransform;
@@ -40,26 +40,12 @@ namespace Lightning
 
 			bool AddChild(const std::shared_ptr<ISpaceObject>& child)override
 			{
-				const auto& childObject = std::dynamic_pointer_cast<SpaceObjectBase>(child);
-				assert(childObject && "child must inherit from SpaceObjectBase");
-				if (SpaceObjectManager::Instance()->AddChild(shared_from_this(), childObject))
-				{
-					SpaceObjectManager::Instance()->ChangeParent(childObject, shared_from_this());
-					return true;
-				}
-				return false;
+				return SpaceObjectManager::Instance()->AddChild(shared_from_this(),std::dynamic_pointer_cast<SpaceObjectBase>(child));
 			}
 
 			bool RemoveChild(const std::shared_ptr<ISpaceObject>& child)override
 			{
-				const auto& childObject = std::dynamic_pointer_cast<SpaceObjectBase>(child);
-				assert(childObject && "child must inherit from SpaceObjectBase");
-				if (SpaceObjectManager::Instance()->RemoveChild(shared_from_this(), childObject))
-				{
-					SpaceObjectManager::Instance()->ChangeParent(childObject, nullptr);
-					return true;
-				}
-				return false;
+				return SpaceObjectManager::Instance()->RemoveChild(shared_from_this(), std::dynamic_pointer_cast<SpaceObjectBase>(child));
 			}
 
 			void Traverse(std::function<void(const std::shared_ptr<ISpaceObject>& object)> visitor, 

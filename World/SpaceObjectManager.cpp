@@ -23,6 +23,7 @@ namespace Lightning
 			if (parent == child)
 				return false;
 			mOperations.emplace(Operation::Add, parent, child);
+			child->mParent = parent;
 			return true;
 		}
 
@@ -32,13 +33,11 @@ namespace Lightning
 				return false;
 			if (parent == child)
 				return false;
+			if (child->GetParent() != parent)
+				return false;
 			mOperations.emplace(Operation::Remove, parent, child);
+			child->mParent.reset();
 			return true;
-		}
-
-		void SpaceObjectManager::ChangeParent(const std::shared_ptr<SpaceObjectBase>& child, const std::shared_ptr<SpaceObjectBase>& parent)
-		{
-			child->mParent = parent;
 		}
 
 		void SpaceObjectManager::Synchronize()

@@ -21,7 +21,7 @@ namespace Lightning
 		struct ISpaceObject
 		{
 			virtual ~ISpaceObject() = default;
-			virtual std::uint64_t GetID()const = 0;
+			virtual const std::uint64_t GetID()const = 0;
 			virtual Transform& GetLocalTransform() = 0;
 			virtual std::shared_ptr<ISpaceObject> GetParent()const = 0;
 			virtual std::size_t GetChildrenCount()const = 0;
