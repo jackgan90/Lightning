@@ -1,13 +1,11 @@
 #pragma once
-#include "Math/Quaternion.h"
+#include "Math/Matrix.h"
 
 namespace Lightning
 {
 	namespace Render
 	{
 		using Foundation::Math::Matrix4f;
-		using Foundation::Math::Vector3f;
-		using Foundation::Math::Quaternionf;
 
 		enum class CameraType
 		{

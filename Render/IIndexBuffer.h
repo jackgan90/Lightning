@@ -1,6 +1,6 @@
 #pragma once
-#include "IGPUBuffer.h"
 #include "RenderConstants.h"
+#include "IGPUBuffer.h"
 
 namespace Lightning
 {

@@ -3,8 +3,6 @@
 #include <exception>
 #include <boost/functional/hash.hpp>
 #include "Semantics.h"
-#include "Math/Matrix.h"
-#include "Math/Vector.h"
 #include "IShaderMacros.h"
 #include "Parameter.h"
 #undef DOMAIN

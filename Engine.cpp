@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include "PluginMgrImpl/PluginManager.h"
 #include "IPlatformPlugin.h"
 #include "IFoundationPlugin.h"
 

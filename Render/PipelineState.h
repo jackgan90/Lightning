@@ -6,7 +6,7 @@
 #include "PlainObject.h"
 #include "IShader.h"
 #include "IRenderTarget.h"
-#include "VertexBuffer.h"
+#include "IVertexBuffer.h"
 #include "RenderConstants.h"
 #include "types/Rect.h"
 

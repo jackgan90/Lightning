@@ -1,5 +1,6 @@
 #pragma once
 #include <boost/functional/hash.hpp>
+#include "RenderConstants.h"
 #include "PlainObject.h"
 #include "IGPUBuffer.h"
 #include "Semantics.h"

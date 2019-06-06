@@ -2,7 +2,6 @@
 #include <memory>
 #include "Semantics.h"
 #include "IMaterial.h"
-#include "RefObject.h"
 #include "Parameter.h"
 
 namespace Lightning

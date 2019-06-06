@@ -6,7 +6,6 @@
 #include "IDepthStencilBuffer.h"
 #include "Color.h"
 #include "Math/Matrix.h"
-#include "IDrawCommand.h"
 #include "IDrawable.h"
 #include "ICamera.h"
 #include "IWindow.h"

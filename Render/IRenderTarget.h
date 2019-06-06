@@ -1,5 +1,4 @@
 #pragma once
-#include "RenderConstants.h"
 #include "Texture/ITexture.h"
 
 namespace Lightning

@@ -3,9 +3,9 @@
 #include <vector>
 #include "tbb/concurrent_queue.h"
 #include "tbb/concurrent_vector.h"
+#include "IRenderer.h"
 #include "IRenderPass.h"
 #include "IDrawCommand.h"
-#include "IRenderTarget.h"
 
 namespace Lightning
 {

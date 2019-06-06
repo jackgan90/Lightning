@@ -1,8 +1,6 @@
 #pragma once
 #include "IRenderer.h"
 #include "IRenderFence.h"
-#include "IFileSystem.h"
-#include "IWindow.h"
 #include "SwapChain.h"
 #include "Device.h"
 #include "RenderPass/IRenderPass.h"

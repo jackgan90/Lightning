@@ -26,12 +26,6 @@ namespace Lightning
 			TRIANGLE_STRIP
 		};
 
-		enum class GPUBufferType
-		{
-			VERTEX,
-			INDEX,
-		};
-
 		enum class IndexType
 		{
 			UINT16,

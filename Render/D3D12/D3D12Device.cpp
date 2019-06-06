@@ -2,6 +2,7 @@
 #include <d3dcompiler.h>
 #include <functional>
 #include "Common.h"
+#include "RenderConstants.h"
 #include "D3D12Renderer.h"
 #include "D3D12Device.h"
 #include "D3D12RenderTarget.h"

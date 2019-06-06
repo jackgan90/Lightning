@@ -16,8 +16,6 @@ namespace Lightning
 			std::uint32_t GetVertexSize()const override;
 			const VertexDescriptor& GetVertexDescriptor()const override { return mVertexDescriptor; }
 			std::uint32_t GetBufferSize()const override;
-			//get the buffer type
-			GPUBufferType GetType()const override { return GPUBufferType::VERTEX; }
 		protected:
 			VertexBuffer(uint32_t bufferSize, const VertexDescriptor& descriptor);
 			void CalculateVertexSize();

@@ -1,6 +1,6 @@
 #pragma once
+#include <memory>
 #include "IRenderTarget.h"
-#include "Portable.h"
 
 namespace Lightning
 {

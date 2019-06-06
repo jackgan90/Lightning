@@ -1,8 +1,7 @@
 #pragma once
 #include <cstdint>
-#include "RenderConstants.h"
+#include <memory>
 #include "Texture/ITexture.h"
-#include "Portable.h"
 
 namespace Lightning
 {

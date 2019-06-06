@@ -2,7 +2,7 @@
 #include <boost/pool/singleton_pool.hpp>
 #include <boost/pool/pool_alloc.hpp>
 #include <tbb/scalable_allocator.h>
-#include "RefObject.h"
+#include "IRenderer.h"
 #include "IDrawCommand.h"
 #include "RenderPass/IRenderPass.h"
 

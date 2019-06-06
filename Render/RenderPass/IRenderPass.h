@@ -1,5 +1,4 @@
 #pragma once
-#include "IRenderer.h"
 #include "ICamera.h"
 #include "IDrawable.h"
 #include "IRenderTarget.h"

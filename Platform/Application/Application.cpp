@@ -151,8 +151,8 @@ namespace Lightning
 			auto scene = sceneMgr->CreateScene();
 			auto camera = scene->GetActiveCamera();
 			auto& cameraTransform = camera->GetLocalTransform();
-			cameraTransform.SetPosition(Render::Vector3f{ 2.0f, 2.0f, -2.0f });
-			cameraTransform.LookAt(Render::Vector3f{ 0.0f, 0.0f, 0.0f });
+			cameraTransform.SetPosition(Vector3f{ 2.0f, 2.0f, -2.0f });
+			cameraTransform.LookAt(Vector3f{ 0.0f, 0.0f, 0.0f });
 			//camera->SetRotation(Quaternionf(EulerAnglef(3.14 + 0.0, 0, 0)));
 			//camera->SetCameraType(Render::CameraType::Orthographic);
 			GenerateSceneObjects(sceneMgr, worldPlugin);

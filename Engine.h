@@ -1,6 +1,5 @@
 #pragma once
 #include <memory>
-#include "PluginMgrImpl/PluginManager.h"
 
 namespace Lightning
 {

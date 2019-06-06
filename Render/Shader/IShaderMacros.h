@@ -1,6 +1,5 @@
 #pragma once
 #include <cstddef>
-#include "Portable.h"
 
 namespace Lightning
 {

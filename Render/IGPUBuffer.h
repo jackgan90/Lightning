@@ -1,7 +1,5 @@
 #pragma once
 #include <cstdint>
-#include "RenderConstants.h"
-#include "Portable.h"
 
 namespace Lightning
 {
@@ -18,8 +16,6 @@ namespace Lightning
 			virtual void Commit() = 0;
 			//get internal buffer size in bytes
 			virtual std::uint32_t GetBufferSize()const = 0;
-			//get the buffer type
-			virtual GPUBufferType GetType()const = 0;
 		};
 	}
 }

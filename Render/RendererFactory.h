@@ -1,7 +1,6 @@
 #pragma once
-#include "Common.h"
-#include "Singleton.h"
 #include "IRenderer.h"
+#include "Singleton.h"
 #include "IWindow.h"
 
 

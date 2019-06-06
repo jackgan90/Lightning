@@ -1,6 +1,5 @@
 #pragma once
 #include "IShader.h"
-#include "RefObject.h"
 
 namespace Lightning
 {
