@@ -6,7 +6,7 @@ namespace Lightning
 {
 	namespace World
 	{
-		struct IModel : IRenderable, virtual ISpaceObject
+		struct IModel : virtual ISpaceObject
 		{
 
 		};

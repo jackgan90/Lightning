@@ -1,15 +1,13 @@
 #pragma once
-#include "RenderableSpaceObject.h"
+#include "SpaceObject.h"
 #include "IModel.h"
 
 namespace Lightning
 {
 	namespace World
 	{
-		class Model : public RenderableSpaceObject<IModel, Model>
+		class Model : public SpaceObjectImpl<IModel, Model>
 		{
-		public:
-			bool NeedRender()const override;
 		};
 	}
 }

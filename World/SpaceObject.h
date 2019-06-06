@@ -157,5 +157,13 @@ namespace Lightning
 				mTransform.SetScale(Vector3f{ scale.x / globalRight.Length(), scale.y / globalUp.Length(), scale.z / globalForward.Length() });
 			}
 		};
+
+		template<typename Interface, typename Implementation>
+		class SpaceObjectImpl : public Interface, public SpaceObject<Implementation>
+		{
+			static_assert(std::is_base_of<ISpaceObject, Interface>::value, "Interface must be a subinterface of ISpaceObject");
+		};
+
+
 	}
 }
