@@ -9,6 +9,7 @@ namespace Lightning
 	{
 		struct IRenderable : Render::IDrawable
 		{
+			virtual bool NeedRender()const = 0;
 			virtual void Render(Render::IRenderer& renderer, const std::shared_ptr<Render::ICamera>& camera) = 0;
 		};
 	}
