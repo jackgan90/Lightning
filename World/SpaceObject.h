@@ -32,8 +32,6 @@ namespace Lightning
 		class SpaceObjectImpl : public SpaceObjectBase, public std::enable_shared_from_this<Derived>
 		{
 		public:
-			SpaceObjectImpl(){}
-			SpaceObjectImpl(const std::shared_ptr<ISpaceObject>& parent) : mParent(parent){}
 			Transform& GetLocalTransform()override { return mTransform; }
 			std::shared_ptr<ISpaceObject> GetParent()const override { return mParent.lock(); }
 			std::size_t GetChildrenCount()const override { return mChildren.size(); }
@@ -162,8 +160,6 @@ namespace Lightning
 		class SpaceObject : public Interface, public SpaceObjectImpl<Implementation>
 		{
 		public:
-			SpaceObject() : SpaceObjectImpl<Implementation>(){}
-			SpaceObject(const std::shared_ptr<ISpaceObject>& parent) : SpaceObjectImpl<Implementation>(parent){}
 			static_assert(std::is_base_of<ISpaceObject, Interface>::value, "Interface must be a subinterface of ISpaceObject");
 		};
 
