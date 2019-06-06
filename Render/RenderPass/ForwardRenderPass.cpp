@@ -60,7 +60,7 @@ namespace Lightning
 					drawCommand->SetIndexBuffer(element.drawable->GetIndexBuffer());
 					drawCommand->SetVertexBuffers(element.drawable->GetVertexBuffers());
 					drawCommand->SetMaterial(element.drawable->GetMaterial());
-					drawCommand->SetTransform(element.drawable->GetTransform());
+					drawCommand->SetTransform(element.drawable->GetDrawTransform());
 					drawCommand->SetViewMatrix(element.camera->GetViewMatrix());
 					drawCommand->SetProjectionMatrix(element.camera->GetProjectionMatrix());
 					drawCommand->Commit();

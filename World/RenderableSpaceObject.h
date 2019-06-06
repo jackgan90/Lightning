@@ -13,7 +13,7 @@ namespace Lightning
 		public:
 			RenderableSpaceObject() : mRenderResourceDirty(true), mNeedRender(true){}
 			bool NeedRender()const override { return mNeedRender; }
-			const Transform GetTransform()const override { return GetGlobalTransform(); }
+			const Transform GetDrawTransform()const override { return GetGlobalTransform(); }
 			std::shared_ptr<Render::IIndexBuffer> GetIndexBuffer()const override { return mIndexBuffer; }
 			const std::vector<std::shared_ptr<Render::IVertexBuffer>>& GetVertexBuffers()const override
 			{

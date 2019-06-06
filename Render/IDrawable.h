@@ -21,7 +21,7 @@ namespace Lightning
 			virtual const std::vector<std::shared_ptr<IVertexBuffer>>& GetVertexBuffers()const = 0;
 			virtual std::shared_ptr<IMaterial> GetMaterial()const = 0;
 			//This is the global transform
-			virtual const Transform GetTransform()const = 0;
+			virtual const Transform GetDrawTransform()const = 0;
 		};
 	}
 }
