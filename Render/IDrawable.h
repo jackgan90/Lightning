@@ -6,7 +6,6 @@
 #include "IVertexBuffer.h"
 #include "IMaterial.h"
 #include "Transform.h"
-#include "ICamera.h"
 
 namespace Lightning
 {
