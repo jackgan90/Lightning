@@ -11,8 +11,8 @@ namespace Lightning
 		{
 			static_assert(std::is_base_of<IRenderable, Interface>::value, "Interface must be a subclass of IRenderable.");
 		public:
-			RenderableSpaceObject() : mRenderResourceDirty(true), mNeedRender(true){}
-			bool NeedRender()const override { return mNeedRender; }
+			RenderableSpaceObject() : mRenderResourceDirty(true){}
+			bool NeedRender()const override { return true; }
 			const Transform GetDrawTransform()const override { return GetGlobalTransform(); }
 			std::shared_ptr<Render::IIndexBuffer> GetIndexBuffer()const override { return mIndexBuffer; }
 			const std::vector<std::shared_ptr<Render::IVertexBuffer>>& GetVertexBuffers()const override
@@ -37,7 +37,6 @@ namespace Lightning
 			std::vector<std::shared_ptr<Render::IVertexBuffer>> mVertexBuffers;
 			std::shared_ptr<Render::IMaterial> mMaterial;
 			bool mRenderResourceDirty;
-			bool mNeedRender;
 		};
 	}
 }
