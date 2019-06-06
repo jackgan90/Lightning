@@ -6,7 +6,7 @@ namespace Lightning
 {
 	namespace World
 	{
-		class Model : public SpaceObjectImpl<IModel, Model>
+		class Model : public SpaceObject<IModel, Model>
 		{
 		};
 	}

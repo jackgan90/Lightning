@@ -12,8 +12,8 @@ namespace Lightning
 		using Foundation::Math::Matrix4f;
 		using Foundation::Math::Quaternionf;
 		using Render::CameraType;
-		//Use right-handed coordinate system
-		class Camera : public ISpaceCamera, public SpaceObject<Camera>
+		//Use left-handed coordinate system
+		class Camera : public SpaceObject<ISpaceCamera, Camera>
 		{
 		public:
 			Camera();

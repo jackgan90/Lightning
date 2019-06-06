@@ -7,7 +7,7 @@ namespace Lightning
 	namespace World
 	{
 		template<typename Interface, typename Implementation>
-		class RenderableSpaceObject : public SpaceObjectImpl<Interface, Implementation>
+		class RenderableSpaceObject : public SpaceObject<Interface, Implementation>
 		{
 			static_assert(std::is_base_of<IRenderable, Interface>::value, "Interface must be a subclass of IRenderable.");
 		public:

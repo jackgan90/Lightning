@@ -8,7 +8,7 @@ namespace Lightning
 {
 	namespace World
 	{
-		class Scene : public IScene, public SpaceObject<Scene>
+		class Scene : public SpaceObject<IScene, Scene>
 		{
 		public:
 			Scene();
