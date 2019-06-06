@@ -40,7 +40,7 @@ namespace Lightning
 		void GenerateSceneObjects(ISceneManager* sceneMgr, Plugins::IWorldPlugin* scenePlugin)
 		{
 			auto scene = sceneMgr->GetForegroundScene();
-			
+			/*
 			auto cube = scenePlugin->CreateCube(1.0f, 1.0f, 1.0f);
 			auto& cubeTransform = cube->GetLocalTransform();
 			cubeTransform.SetPosition(Vector3f{ 0.f, 0.f, 0.f });
@@ -64,9 +64,9 @@ namespace Lightning
 			device->CreateTextureFromFile("lunafreya.jpg", [cube, scene](const std::shared_ptr<Render::ITexture>& texture) {
 					cube->SetTexture("tex", texture);
 					scene->AddChild(cube);
-			});
+			});*/
 			
-			/*
+			
 			static std::random_device rd;
 			static std::mt19937 mt(rd());
 			static std::uniform_real_distribution<float> rDist(-2, 2);
@@ -106,7 +106,7 @@ namespace Lightning
 				p->SetColor(color);
 				transform.SetRotation(Transform::RandomRotation());
 				scene->AddChild(p);
-			}*/
+			}
 		}
 		//For test only end
 

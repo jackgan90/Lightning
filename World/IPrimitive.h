@@ -29,6 +29,7 @@ namespace Lightning
 
 		struct IPrimitive : IRenderable, virtual ISpaceObject
 		{
+			virtual PrimitiveType GetPrimitiveType()const = 0;
 			virtual Color32 GetColor()const = 0;
 			virtual void GetColor(float& a, float& r, float& g, float& b) = 0;
 			virtual void SetColor(const Color32& color) = 0;

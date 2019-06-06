@@ -24,21 +24,15 @@ namespace Lightning
 		using Render::ParameterType;
 		extern Plugins::IRenderPlugin* gRenderPlugin;
 
-		Primitive::Primitive()
-			: RenderableSpaceObject<IPrimitive, Primitive>()
-			, mColor{0, 0, 0, 255}
-			, mRenderResourcesDirty(true)
+		Primitive::Primitive(): RenderableSpaceObject<IPrimitive, Primitive>(), mColor{0, 0, 0, 255}
 		{
 			auto renderer = gRenderPlugin->GetRenderer();
 			auto device = renderer->GetDevice();
 			auto vs = device->GetDefaultShader(Render::ShaderType::VERTEX);
 			auto ps = device->GetDefaultShader(Render::ShaderType::FRAGMENT);
-			auto renderResource = std::make_shared<RenderResource>();
-			renderResource->primitiveType = Render::PrimitiveType::TRIANGLE_LIST;
-			renderResource->material = gRenderPlugin->CreateMaterial();
-			renderResource->material->SetShader(vs->GetType(), vs);
-			renderResource->material->SetShader(ps->GetType(), ps);
-			mRenderResources.emplace_back(renderResource);
+			mMaterial = gRenderPlugin->CreateMaterial();
+			mMaterial->SetShader(vs->GetType(), vs);
+			mMaterial->SetShader(ps->GetType(), ps);
 		}
 
 		Primitive::~Primitive()
@@ -48,7 +42,7 @@ namespace Lightning
 		void Primitive::SetColor(const Color32& color)
 		{
 			mColor = color;
-			mRenderResourcesDirty = true;
+			mRenderResourceDirty = true;
 		}
 
 		void Primitive::SetColor(std::uint32_t color)
@@ -57,7 +51,7 @@ namespace Lightning
 			mColor.r = static_cast<std::uint8_t>((color & 0x00ff0000) >> 16);
 			mColor.g = static_cast<std::uint8_t>((color & 0x0000ff00) >> 8);
 			mColor.b = static_cast<std::uint8_t>(color & 0x000000ff);
-			mRenderResourcesDirty = true;
+			mRenderResourceDirty = true;
 		}
 
 		void Primitive::SetColor(float a, float r, float g, float b)
@@ -66,7 +60,7 @@ namespace Lightning
 			mColor.r = static_cast<std::uint8_t>(r * 255);
 			mColor.g = static_cast<std::uint8_t>(g * 255);
 			mColor.b = static_cast<std::uint8_t>(b * 255);
-			mRenderResourcesDirty = true;
+			mRenderResourceDirty = true;
 		}
 
 		void Primitive::GetColor(float& a, float& r, float& g, float& b)
@@ -80,33 +74,33 @@ namespace Lightning
 		void Primitive::SetTransparency(std::uint8_t transparency)
 		{
 			mColor.a = transparency;
-			mRenderResourcesDirty = true;
+			mRenderResourceDirty = true;
 		}
 
 		void Primitive::SetTransparency(float transparency)
 		{
 			mColor.a = static_cast<std::uint8_t>(255 * transparency);
-			mRenderResourcesDirty = true;
+			mRenderResourceDirty = true;
 		}
 
 		void Primitive::SetTexture(const std::string& name, const std::shared_ptr<ITexture>& texture)
 		{
-			mRenderResources.back()->material->SetParameter(name, texture);
-			mRenderResourcesDirty = true;
+			mMaterial->SetParameter(name, texture);
+			mRenderResourceDirty = true;
 		}
 
 		void Primitive::SetSamplerState(const std::string& name, const SamplerState& state)
 		{
-			mRenderResources.back()->material->SetParameter(name, state);
-			mRenderResourcesDirty = true;
+			mMaterial->SetParameter(name, state);
+			mRenderResourceDirty = true;
 		}
 
 		void Primitive::SetShader(const std::shared_ptr<IShader>& shader)
 		{
 			if (!shader)
 				return;
-			mRenderResources.back()->material->SetShader(shader->GetType(), shader);
-			mRenderResourcesDirty = true;
+			mMaterial->SetShader(shader->GetType(), shader);
+			mRenderResourceDirty = true;
 		}
 
 		void Primitive::UpdateRenderResources()
@@ -134,43 +128,24 @@ namespace Lightning
 			auto ibSize = GetIndexBufferSize();
 			descriptor.components = &components[0];
 			descriptor.componentCount = components.size();
-			auto& renderResource = mRenderResources.back();
+			mVertexBuffers.emplace_back(pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(vbSize), descriptor));
+			mIndexBuffer = pDevice->CreateIndexBuffer(static_cast<std::uint32_t>(ibSize), Render::IndexType::UINT16);
 			
-			auto& vertexBuffers = renderResource->vertexBuffers;
-			vertexBuffers.clear();
-			vertexBuffers.emplace_back(pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(vbSize), descriptor));
-
-			auto& indexBuffer = renderResource->indexBuffer;
-			indexBuffer = pDevice->CreateIndexBuffer(static_cast<std::uint32_t>(ibSize), Render::IndexType::UINT16);
-			
-			auto mem = vertexBuffers.back()->Lock(0, vbSize);
+			auto mem = mVertexBuffers.back()->Lock(0, vbSize);
 			std::memcpy(mem, GetVertices(), vbSize);
-			vertexBuffers.back()->Unlock(0, vbSize);
+			mVertexBuffers.back()->Unlock(0, vbSize);
 
-			mem = indexBuffer->Lock(0, ibSize);
+			mem = mIndexBuffer->Lock(0, ibSize);
 			std::memcpy(mem, GetIndices(), ibSize);
-			indexBuffer->Unlock(0, ibSize);
-
-			auto& material = renderResource->material;
+			mIndexBuffer->Unlock(0, ibSize);
 
 			float a, r, g, b;
 			GetColor(a, r, g, b);
-			material->SetParameter("color", Vector4f{ r, g, b, a });
-			material->SetParameter("light", Vector3f{ 3, 3, 3 });
+			mMaterial->SetParameter("color", Vector4f{ r, g, b, a });
+			mMaterial->SetParameter("light", Vector3f{ 3, 3, 3 });
 
-			material->EnableBlend(mColor.a != 0xff);
+			mMaterial->EnableBlend(mColor.a != 0xff);
 			mTransform.SetScale(GetScale());
-		}
-
-		void Primitive::Render(Render::IRenderer& renderer, const std::shared_ptr<Render::ICamera>& camera)
-		{
-			if (mRenderResourcesDirty)
-			{
-				UpdateRenderResources();
-				mRenderResourcesDirty = false;
-			}
-			mRenderResources.back()->globalTransform = GetGlobalTransform();
-			Super::Render(renderer, camera);
 		}
 
 		//Cube
@@ -255,7 +230,7 @@ namespace Lightning
 		void Cube::UpdateRenderResources()
 		{
 			Primitive::UpdateRenderResources();
-			auto textureCount = mRenderResources.back()->material->GetParameterTypeCount(Render::ParameterType::TEXTURE);
+			auto textureCount = mMaterial->GetParameterTypeCount(Render::ParameterType::TEXTURE);
 			if (textureCount > 0)
 			{
 				//generate uv
@@ -273,9 +248,8 @@ namespace Lightning
 				auto uvBufferSize = sizeof(Vector2f) * 24;
 				descriptor.components = &components[0];
 				descriptor.componentCount = components.size();
-				auto& vertexBuffers = mRenderResources.back()->vertexBuffers;
-				vertexBuffers.emplace_back(pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(uvBufferSize), descriptor));
-				auto uv = reinterpret_cast<Vector2f*>(vertexBuffers.back()->Lock(0, uvBufferSize));
+				mVertexBuffers.emplace_back(pDevice->CreateVertexBuffer(static_cast<std::uint32_t>(uvBufferSize), descriptor));
+				auto uv = reinterpret_cast<Vector2f*>(mVertexBuffers.back()->Lock(0, uvBufferSize));
 				for (auto i = 0;i < 24;i += 4)
 				{
 					uv[i].x = 0.f; uv[i].y = 0.f; 
@@ -284,7 +258,7 @@ namespace Lightning
 					uv[i + 3].x = 0.f; uv[i + 3].y = 1.f;
 				}
 
-				vertexBuffers.back()->Unlock(0, uvBufferSize);
+				mVertexBuffers.back()->Unlock(0, uvBufferSize);
 				//apply texture to material
 			}
 		}

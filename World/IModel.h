@@ -1,12 +1,11 @@
 #pragma once
-#include "ISpaceObject.h"
-#include "IRenderable.h"
+#include "IDrawable.h"
 
 namespace Lightning
 {
 	namespace World
 	{
-		struct IModel : IRenderable, virtual ISpaceObject
+		struct IModel : Render::IDrawable
 		{
 
 		};

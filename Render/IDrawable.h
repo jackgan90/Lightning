@@ -11,7 +11,6 @@ namespace Lightning
 {
 	namespace Render
 	{
-		struct IRenderer;
 		using Foundation::Math::Transform;
 
 		struct IDrawable
