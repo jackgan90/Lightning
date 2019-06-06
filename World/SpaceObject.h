@@ -51,7 +51,12 @@ namespace Lightning
 			void Traverse(std::function<void(const std::shared_ptr<ISpaceObject>& object)> visitor, 
 				SpaceObjectTraversalPolocy policy)override
 			{
-
+				//TODO : implement traversal based on policy setting
+				visitor(shared_from_this());
+				for (const auto& child : mChildren)
+				{
+					child->Traverse(visitor, policy);
+				}
 			}
 
 			Transform GetGlobalTransform()const override
@@ -61,13 +66,7 @@ namespace Lightning
 				{
 					return mTransform;
 				}
-				auto matrix(mTransform.LocalToGlobalMatrix4());
-				while (parent)
-				{
-					const auto& parentTransform = parent->GetLocalTransform();
-					matrix *= parentTransform.LocalToGlobalMatrix4();
-					parent = parent->GetParent();
-				}
+				auto matrix = mTransform.LocalToGlobalMatrix4() * parent->GetGlobalTransform().LocalToGlobalMatrix4();
 
 				//Convert Vector4{0, 0, 0, 1} with matrix yields the global position
 				auto globalPosition = Vector3f{ matrix.GetCell(3, 0), matrix.GetCell(3, 1), matrix.GetCell(3, 2) };

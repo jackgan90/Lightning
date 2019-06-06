@@ -45,13 +45,12 @@ namespace Lightning
 					auto aspectRatio = float(width) / height;
 					camera->SetAspectRatio(aspectRatio);
 				}
-				for (auto& spaceObject : mChildren)
-				{
+				Traverse([this, renderer, &camera](const std::shared_ptr<ISpaceObject>& spaceObject) {
 					if (auto renderable = std::dynamic_pointer_cast<IRenderable>(spaceObject))
 					{
 						renderable->Render(*renderer, camera);
 					}
-				}
+				}, SpaceObjectTraversalPolocy::Concurrent);
 			}
 		}
 	}
