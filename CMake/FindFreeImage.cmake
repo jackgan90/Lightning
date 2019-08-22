@@ -15,7 +15,7 @@
 ## ======================================================================== ##
 
 if (WIN32)
-	IF (${CMAKE_GENERATOR} MATCHES "(Win64|IA64)")
+	IF (CMAKE_SIZEOF_VOID_P EQUAL 8)
 		SET(FREEIMAGE_ARCH x64)
 	ELSE()
 		SET(FREEIMAGE_ARCH x32)

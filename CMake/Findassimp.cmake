@@ -3,9 +3,9 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
 elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
 	set(ASSIMP_ARCHITECTURE "32")
 endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
-	
+
 if(WIN32)
-	set(ASSIMP_ROOT_DIR CACHE PATH "ASSIMP root directory")
+	set(ASSIMP_ROOT_DIR "${LIGHTNING_DEPENDENCIES_DIR}/assimp" CACHE PATH "ASSIMP root directory")
 
 	# Find path of each library
 	find_path(ASSIMP_INCLUDE_DIR
@@ -14,12 +14,8 @@ if(WIN32)
 		HINTS
 			${ASSIMP_ROOT_DIR}/include
 	)
-
-	if(MSVC12)
-		set(ASSIMP_MSVC_VERSION "vc120")
-	elseif(MSVC14)	
-		set(ASSIMP_MSVC_VERSION "vc141")
-	endif(MSVC12)
+	
+	set(ASSIMP_MSVC_VERSION "vc${MSVC_TOOLSET_VERSION}")
 	
 	if(MSVC12 OR MSVC14)
 	
@@ -29,7 +25,6 @@ if(WIN32)
 			HINTS
 				${ASSIMP_ROOT_DIR}/lib${ASSIMP_ARCHITECTURE}
 		)
-
 		
 		find_library(ASSIMP_LIBRARY_RELEASE				assimp-${ASSIMP_MSVC_VERSION}-mt.lib 			PATHS ${ASSIMP_LIBRARY_DIR})
 		find_library(ASSIMP_LIBRARY_DEBUG				assimp-${ASSIMP_MSVC_VERSION}-mtd.lib			PATHS ${ASSIMP_LIBRARY_DIR})
